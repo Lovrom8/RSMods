@@ -1,6 +1,7 @@
 #include "ModRegistry.hpp"
 
 #include <algorithm>
+#include <atomic>
 #include <chrono>
 #include <deque>
 #include <exception>
@@ -433,6 +434,25 @@ namespace Framework {
 			return publishedStatus;
 		}
 
+		// Reset every Faulted mod to Registered and re-run OnInitialize, mirroring DispatchInitialize.
+		// A mod that faulted in OnEnabled may have left partial game state; retry is best-effort.
+		void RetryFaultedMods() {
+			for (auto& record : records) {
+				if (record.state != ModState::Faulted) continue;
+
+				record.state = ModState::Registered;
+				record.inSong = false;
+
+				if (Invoke(record, &IMod::OnInitialize, "OnInitialize")) {
+					record.state = ModState::Inactive;
+					LOG_INFO("[Framework] " << record.mod->Id() << " retried" << std::endl);
+				}
+				else {
+					Fault(record, "threw in OnInitialize on retry");
+				}
+			}
+		}
+
 		std::vector<Record> records;
 		ModContext ctx;
 		bool resourceIndexDirty = false;
@@ -441,6 +461,7 @@ namespace Framework {
 
 		mutable std::mutex statusMutex;   // MainThread writes, render thread reads.
 		std::vector<ModStatus> publishedStatus;
+		std::atomic<bool> retryFaultedRequested{ false };   // Set off-thread, consumed on the next Tick.
 	};
 
 	ModRegistry::ModRegistry() : impl(std::make_unique<Impl>()) {}
@@ -513,6 +534,10 @@ namespace Framework {
 		impl->ctx.phase = phase;
 		impl->ctx.fastTickRequested = false; // Reset before the pass; mods re-raise it from their tick hooks.
 
+		if (impl->retryFaultedRequested.exchange(false)) {
+			impl->RetryFaultedMods(); // Recovered mods settle into this pass's resolution below.
+		}
+
 		impl->HandleCommandFaults();
 		impl->DrainSettings();
 		impl->BuildResourceIndexIfNeeded();
@@ -540,6 +565,10 @@ namespace Framework {
 
 	std::vector<ModStatus> ModRegistry::StatusSnapshot() const {
 		return impl->StatusSnapshot();
+	}
+
+	void ModRegistry::RequestRetryFaulted() {
+		impl->retryFaultedRequested.store(true);
 	}
 
 	void ModRegistry::Shutdown() {

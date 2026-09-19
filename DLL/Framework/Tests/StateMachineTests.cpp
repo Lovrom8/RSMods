@@ -451,6 +451,37 @@ static void Test_StatusSnapshotReflectsStates() {
 	Expect(reg.StatusSnapshot().empty(), "status snapshot is empty after shutdown");
 }
 
+static void Test_RetryFaultedMods() {
+	ClearEvents();
+	ModRegistry reg;
+	TestMod* flaky = Add(reg, "Flaky"); flaky->throwOn = "OnInitialize"; // stops throwing before retry
+	TestMod* stuck = Add(reg, "Stuck"); stuck->throwOn = "OnInitialize"; // keeps throwing
+	reg.DispatchInitialize();
+	reg.Tick(GamePhase::Menu);
+
+	auto snap = reg.StatusSnapshot();
+	const auto* f = FindStatus(snap, "Flaky");
+	const auto* s = FindStatus(snap, "Stuck");
+	Expect(f && f->kind == Framework::ModStatusKind::Faulted, "Flaky faulted on init throw");
+	Expect(s && s->kind == Framework::ModStatusKind::Faulted, "Stuck faulted on init throw");
+
+	flaky->throwOn = "";
+	ClearEvents();
+	reg.RequestRetryFaulted();
+	reg.Tick(GamePhase::Menu);
+
+	Expect(Has("Flaky:OnInitialize"), "retry re-ran OnInitialize on the faulted mod");
+	Expect(Has("Flaky:OnEnabled"), "recovered mod activates in the same tick");
+
+	snap = reg.StatusSnapshot();
+	f = FindStatus(snap, "Flaky");
+	s = FindStatus(snap, "Stuck");
+	Expect(f && f->kind == Framework::ModStatusKind::Active, "Flaky recovers to Active after retry");
+	Expect(s && s->kind == Framework::ModStatusKind::Faulted, "still-throwing mod re-faults on retry");
+
+	reg.Shutdown();
+}
+
 int main() {
 	std::cout << "ModRegistry state-machine tests\n";
 
@@ -471,6 +502,7 @@ int main() {
 	Test_StartupOrderHarvestsSettingsBeforeDispatchInitialize();
 	Test_ShutdownRevertsAndDestroysInOrder();
 	Test_StatusSnapshotReflectsStates();
+	Test_RetryFaultedMods();
 
 	std::cout << (g_failures == 0 ? "\nALL PASS\n" : "\nFAILURES: " + std::to_string(g_failures) + "\n");
 	return g_failures == 0 ? 0 : 1;

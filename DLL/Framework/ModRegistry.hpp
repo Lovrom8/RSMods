@@ -72,6 +72,10 @@ namespace Framework {
 		// Thread-safe; call it from the render thread. Ordered by registration.
 		[[nodiscard]] std::vector<ModStatus> StatusSnapshot() const;
 
+		// Thread-safe; the next Tick re-runs OnInitialize on every Faulted mod. A still-throwing mod
+		// re-faults.
+		void RequestRetryFaulted();
+
 		void Shutdown();
 
 	private:

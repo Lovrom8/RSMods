@@ -30,7 +30,8 @@ namespace Menu {
 			return ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
 		}
 
-		// Read-only view over the registry's status snapshot, gated behind the opt-in toggle below.
+		// View over the registry's status snapshot, gated behind the opt-in toggle below. Its only
+		// action is retrying faulted mods.
 		void DrawModStatus() {
 			const auto snapshot = Framework::Registry().StatusSnapshot();
 			if (snapshot.empty()) {
@@ -49,6 +50,11 @@ namespace Menu {
 			ImGui::SameLine(); ImGui::TextUnformatted(",");
 			ImGui::SameLine();
 			ImGui::TextColored(StatusColor(Framework::ModStatusKind::Faulted), "%d faulted", counts[static_cast<int>(Framework::ModStatusKind::Faulted)]);
+
+			if (counts[static_cast<int>(Framework::ModStatusKind::Faulted)] > 0) {
+				ImGui::SameLine();
+				if (ImGui::SmallButton("Retry faulted")) Framework::Registry().RequestRetryFaulted();
+			}
 
 			if (ImGui::BeginTable("mod_status", 3,
 				ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersInnerH | ImGuiTableFlags_SizingStretchProp)) {
