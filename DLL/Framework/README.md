@@ -111,6 +111,11 @@ The framework manages two decoupled UI interaction surfaces for mods:
 - **In-game settings menu (`ctx.Menu()`):** Host-agnostic registry for ImGui settings drawers (`MidiMod`, `CalibrationMod`, `MicrophoneVolumeOverrideMod`, `VoiceOverControlMod`). Dispatched safely during `Hook_EndScene` with per-mod exception isolation. See [`docs/menu-registry.md`](docs/menu-registry.md).
 - **Procedural texture generation (`D3D::`):** Decoupled graphics utility layer for procedural texture generation (solid, gradient, CRC hashing). Mod-specific textures are owned by their respective mods (`ExtendedRangeMode`, `CustomHighwayColorsMod`) and regenerated at the `Hook_EndScene` frame boundary. See [`docs/texture-utilities.md`](docs/texture-utilities.md).
 
+The framework also publishes a read-only **mod status snapshot** (`Registry().StatusSnapshot()`):
+every mod's effective state (`Active` / `Disabled` / `Suppressed` / `Faulted`), surfacing the
+disabled-vs-suppressed distinction that `ModState` collapses and the log line otherwise owns alone. The
+in-game `RS Mods` window renders it behind an opt-in `Mod status` toggle. See [`docs/mod-status.md`](docs/mod-status.md).
+
 > For historical context on a retired framework-owned generic render-hook callback subsystem, see
 > [`docs/render-hooks.md`](docs/render-hooks.md).
 

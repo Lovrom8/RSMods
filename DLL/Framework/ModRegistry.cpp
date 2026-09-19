@@ -5,6 +5,7 @@
 #include <deque>
 #include <exception>
 #include <iomanip>
+#include <mutex>
 #include <string>
 #include <string_view>
 #include <unordered_map>
@@ -61,6 +62,18 @@ namespace Framework {
 			}
 
 			return " deactivated";
+		}
+
+		// Inactive collapses two cases: requested-but-not-Active means it lost a conflict (Suppressed).
+		ModStatusKind StatusKindFor(ModState state, bool requested) {
+			switch (state) {
+			case ModState::Faulted:    return ModStatusKind::Faulted;
+			case ModState::Active:     return ModStatusKind::Active;
+			case ModState::Registered: return ModStatusKind::Registered;
+			case ModState::Inactive:   return requested ? ModStatusKind::Suppressed : ModStatusKind::Disabled;
+			}
+
+			return ModStatusKind::Registered;
 		}
 	}
 
@@ -390,11 +403,44 @@ namespace Framework {
 			});
 		}
 
+		// Without requestedActive (i.e. outside a resolved Tick) every Inactive mod reads Disabled,
+		// corrected on the first tick.
+		void PublishStatus(const ActivationMask* requestedActive) {
+			std::vector<ModStatus> snapshot;
+			snapshot.reserve(records.size());
+
+			for (size_t i = 0; i < records.size(); ++i) {
+				const bool requested = requestedActive && i < requestedActive->size() && (*requestedActive)[i];
+
+				ModStatus status;
+				status.id = std::string(records[i].mod->Id());
+				status.kind = StatusKindFor(records[i].state, requested);
+				status.inSong = records[i].inSong;
+				status.priority = records[i].mod->Priority();
+				if (i < exclusiveResourcesByMod.size()) {
+					status.claimsExclusive = exclusiveResourcesByMod[i];
+				}
+
+				snapshot.push_back(std::move(status));
+			}
+
+			std::lock_guard<std::mutex> lock(statusMutex);
+			publishedStatus = std::move(snapshot);
+		}
+
+		std::vector<ModStatus> StatusSnapshot() const {
+			std::lock_guard<std::mutex> lock(statusMutex);
+			return publishedStatus;
+		}
+
 		std::vector<Record> records;
 		ModContext ctx;
 		bool resourceIndexDirty = false;
 		std::vector<std::vector<std::string>> exclusiveResourcesByMod;
 		HookWatchdog watchdog{ kHookBudget, kHookWarnCooldown };
+
+		mutable std::mutex statusMutex;   // MainThread writes, render thread reads.
+		std::vector<ModStatus> publishedStatus;
 	};
 
 	ModRegistry::ModRegistry() : impl(std::make_unique<Impl>()) {}
@@ -443,6 +489,8 @@ namespace Framework {
 		Commands().RefreshDiagnostics();
 		impl->PublishMenuAvailability();
 		impl->PublishDrawActive();
+		impl->BuildResourceIndexIfNeeded(); // So the pre-first-tick status view lists exclusive claims.
+		impl->PublishStatus(nullptr);
 	}
 
 	void ModRegistry::DispatchCommands(GamePhase phase, bool gameLoaded) {
@@ -481,12 +529,17 @@ namespace Framework {
 		impl->ActivateAndTickSelected(selectedActive, phase);
 		impl->PublishMenuAvailability();
 		impl->PublishDrawActive();
+		impl->PublishStatus(&requestedActive);
 
 		return impl->ctx.fastTickRequested; // Aggregate over the pass: did any mod ask for a tighter interval?
 	}
 
 	bool ModRegistry::IsOwnerAvailable(const IMod* mod, Availability required) const {
 		return impl->IsOwnerAvailable(mod, required);
+	}
+
+	std::vector<ModStatus> ModRegistry::StatusSnapshot() const {
+		return impl->StatusSnapshot();
 	}
 
 	void ModRegistry::Shutdown() {
@@ -512,6 +565,7 @@ namespace Framework {
 		impl->records.clear();
 		Ledger().Release(&registryOwner);
 		Menus().PublishAvailability({});
+		impl->PublishStatus(nullptr);
 	}
 
 	ModRegistry& Registry() {

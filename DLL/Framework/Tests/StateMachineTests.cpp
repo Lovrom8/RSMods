@@ -412,6 +412,45 @@ static void Test_StartupOrderHarvestsSettingsBeforeDispatchInitialize() {
 	Expect(Framework::SettingsSchema().Find("TestToggle") == nullptr, "schema cleaned up after mod shutdown");
 }
 
+static const Framework::ModStatus* FindStatus(const std::vector<Framework::ModStatus>& snap, const std::string& id) {
+	for (const auto& s : snap) if (s.id == id) return &s;
+	return nullptr;
+}
+
+static void Test_StatusSnapshotReflectsStates() {
+	ClearEvents();
+	ModRegistry reg;
+	// Winner (prio 10) and Loser (prio 0) contend for the same resource; Off is enabled=false;
+	// Boom faults in OnEnabled.
+	TestMod* winner = Add(reg, "Winner", true, 10); winner->claimStrings = { "res" };
+	TestMod* loser = Add(reg, "Loser", true, 0); loser->claimStrings = { "res" };
+	Add(reg, "Off", false);
+	TestMod* boom = Add(reg, "Boom"); boom->throwOn = "OnEnabled";
+
+	reg.DispatchInitialize();
+	reg.Tick(GamePhase::Song);
+
+	const auto snap = reg.StatusSnapshot();
+	Expect(snap.size() == 4, "status snapshot has one entry per registered mod");
+
+	const auto* w = FindStatus(snap, "Winner");
+	const auto* l = FindStatus(snap, "Loser");
+	const auto* o = FindStatus(snap, "Off");
+	const auto* b = FindStatus(snap, "Boom");
+
+	Expect(w && w->kind == Framework::ModStatusKind::Active, "enabled conflict winner reads Active");
+	Expect(w && w->inSong, "Active-in-song mod reports inSong");
+	Expect(l && l->kind == Framework::ModStatusKind::Suppressed, "enabled conflict loser reads Suppressed (not Disabled)");
+	Expect(o && o->kind == Framework::ModStatusKind::Disabled, "IsEnabled()==false mod reads Disabled");
+	Expect(b && b->kind == Framework::ModStatusKind::Faulted, "mod that threw in OnEnabled reads Faulted");
+	Expect(l && l->claimsExclusive == std::vector<std::string>{ "res" }, "suppressed mod exposes its exclusive claim");
+	Expect(w && w->priority == 10, "status carries the mod's priority");
+
+	// A recovered snapshot survives the registry moving on.
+	reg.Shutdown();
+	Expect(reg.StatusSnapshot().empty(), "status snapshot is empty after shutdown");
+}
+
 int main() {
 	std::cout << "ModRegistry state-machine tests\n";
 
@@ -431,6 +470,7 @@ int main() {
 	Test_DuplicateIdRejected();
 	Test_StartupOrderHarvestsSettingsBeforeDispatchInitialize();
 	Test_ShutdownRevertsAndDestroysInOrder();
+	Test_StatusSnapshotReflectsStates();
 
 	std::cout << (g_failures == 0 ? "\nALL PASS\n" : "\nFAILURES: " + std::to_string(g_failures) + "\n");
 	return g_failures == 0 ? 0 : 1;

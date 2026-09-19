@@ -3,6 +3,9 @@
 #include "Framework/Framework.hpp"
 #include "D3DOverlay.hpp"
 
+#include <string>
+#include <vector>
+
 namespace Menu {
 	/// <summary>
 	/// Checks if the EndScene call originates from an overlay (e.g., Steam)
@@ -11,6 +14,76 @@ namespace Menu {
 	/// <returns>True if the call is from an overlay, false otherwise.</returns>
 	bool IsOverlayCall() {
 		return (uint32_t)_ReturnAddress() > Offsets::baseEnd.Get();
+	}
+
+	namespace {
+		bool g_showModStatus = false;   // Session-only; the diagnostics view is opt-in per launch.
+
+		ImVec4 StatusColor(Framework::ModStatusKind kind) {
+			switch (kind) {
+			case Framework::ModStatusKind::Active:     return ImVec4(0.40f, 0.85f, 0.40f, 1.0f); // green
+			case Framework::ModStatusKind::Suppressed: return ImVec4(0.95f, 0.75f, 0.30f, 1.0f); // amber
+			case Framework::ModStatusKind::Faulted:    return ImVec4(0.95f, 0.40f, 0.40f, 1.0f); // red
+			case Framework::ModStatusKind::Disabled:   return ImVec4(0.60f, 0.60f, 0.60f, 1.0f); // gray
+			case Framework::ModStatusKind::Registered: return ImVec4(0.60f, 0.70f, 0.90f, 1.0f); // blue
+			}
+			return ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+		}
+
+		// Read-only view over the registry's status snapshot, gated behind the opt-in toggle below.
+		void DrawModStatus() {
+			const auto snapshot = Framework::Registry().StatusSnapshot();
+			if (snapshot.empty()) {
+				ImGui::TextDisabled("No mods registered.");
+				return;
+			}
+
+			int counts[5] = { 0, 0, 0, 0, 0 };
+			for (const auto& s : snapshot) counts[static_cast<int>(s.kind)]++;
+			ImGui::Text("%d mods:", static_cast<int>(snapshot.size()));
+			ImGui::SameLine();
+			ImGui::TextColored(StatusColor(Framework::ModStatusKind::Active), "%d active", counts[static_cast<int>(Framework::ModStatusKind::Active)]);
+			ImGui::SameLine(); ImGui::TextUnformatted(",");
+			ImGui::SameLine();
+			ImGui::TextColored(StatusColor(Framework::ModStatusKind::Suppressed), "%d suppressed", counts[static_cast<int>(Framework::ModStatusKind::Suppressed)]);
+			ImGui::SameLine(); ImGui::TextUnformatted(",");
+			ImGui::SameLine();
+			ImGui::TextColored(StatusColor(Framework::ModStatusKind::Faulted), "%d faulted", counts[static_cast<int>(Framework::ModStatusKind::Faulted)]);
+
+			if (ImGui::BeginTable("mod_status", 3,
+				ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersInnerH | ImGuiTableFlags_SizingStretchProp)) {
+				ImGui::TableSetupColumn("Mod");
+				ImGui::TableSetupColumn("State");
+				ImGui::TableSetupColumn("Detail");
+				ImGui::TableHeadersRow();
+
+				for (const auto& s : snapshot) {
+					ImGui::TableNextRow();
+
+					ImGui::TableSetColumnIndex(0);
+					ImGui::TextUnformatted(s.id.c_str());
+
+					ImGui::TableSetColumnIndex(1);
+					ImGui::TextColored(StatusColor(s.kind), "%s", Framework::ToString(s.kind));
+
+					ImGui::TableSetColumnIndex(2);
+					std::string detail;
+					if (s.inSong) detail += "in song";
+					if (!s.claimsExclusive.empty()) {
+						if (!detail.empty()) detail += "  ";
+						detail += "claims ";
+						for (size_t i = 0; i < s.claimsExclusive.size(); ++i) {
+							if (i) detail += ", ";
+							detail += s.claimsExclusive[i];
+						}
+					}
+					if (detail.empty()) ImGui::TextDisabled("-");
+					else ImGui::TextDisabled("%s", detail.c_str());
+				}
+
+				ImGui::EndTable();
+			}
+		}
 	}
 
 	/// <summary>
@@ -40,6 +113,20 @@ namespace Menu {
 				}
 				catch (...) {
 					LOG_ERROR("Unknown exception rendering menu '" << entry.id << "'" << std::endl);
+				}
+			}
+
+			ImGui::Separator();
+			ImGui::Checkbox("Mod status", &g_showModStatus);
+			if (g_showModStatus) {
+				try {
+					DrawModStatus();
+				}
+				catch (const std::exception& e) {
+					LOG_ERROR("Exception rendering mod status: " << e.what() << std::endl);
+				}
+				catch (...) {
+					LOG_ERROR("Unknown exception rendering mod status" << std::endl);
 				}
 			}
 			ImGui::End();
