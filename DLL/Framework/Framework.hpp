@@ -5,6 +5,7 @@
 #include "CommandRouter.hpp"
 #include "MainThreadInbox.hpp"
 #include "IMod.hpp"
+#include "HookWatchdog.hpp"
 #include "HudRegistry.hpp"
 #include "MenuRegistry.hpp"
 #include "DrawRegistry.hpp"

@@ -138,6 +138,9 @@
     <ClCompile Include="Framework\ResourceLedger.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Framework\HookWatchdog.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="Framework\DrawRegistry.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
@@ -464,6 +467,7 @@
     <ClInclude Include="Framework\ModContext.hpp" />
     <ClInclude Include="Framework\ModRegistry.hpp" />
     <ClInclude Include="Framework\ResourceLedger.hpp" />
+    <ClInclude Include="Framework\HookWatchdog.hpp" />
     <ClInclude Include="Framework\Framework.hpp" />
     <ClInclude Include="Framework\DrawRegistry.hpp" />
     <ClInclude Include="Framework\SettingsSchema.hpp" />

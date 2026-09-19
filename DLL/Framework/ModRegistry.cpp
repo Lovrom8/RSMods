@@ -1,6 +1,7 @@
 #include "ModRegistry.hpp"
 
 #include <algorithm>
+#include <chrono>
 #include <deque>
 #include <exception>
 #include <iomanip>
@@ -13,6 +14,7 @@
 
 #include "../Log.hpp"
 #include "ConflictResolver.hpp"
+#include "HookWatchdog.hpp"
 #include "HudRegistry.hpp"
 #include "MenuRegistry.hpp"
 #include "MainThreadInbox.hpp"
@@ -41,6 +43,10 @@ namespace Framework {
 
 	// Stable identity token for the registry's ledger slot. Pointer used as owner key.
 	static const char registryOwner = 0;
+
+	// Generous: no honest per-tick hook nears 50ms, so a warning means real trouble.
+	static constexpr auto kHookBudget = std::chrono::milliseconds(50);
+	static constexpr auto kHookWarnCooldown = std::chrono::seconds(5);
 
 	namespace {
 		ModState TeardownTargetState(DeactivationReason reason) {
@@ -74,8 +80,11 @@ namespace Framework {
 		bool Invoke(Record& record, Hook hook, const char* where) {
 			ctx.currentMod = record.mod.get();
 
+			const auto start = std::chrono::steady_clock::now();
 			try {
 				(record.mod.get()->*hook)(ctx);
+				const auto end = std::chrono::steady_clock::now();
+				WatchDuration(record.mod.get(), record.mod->Id(), where, start, end);
 				return true;
 			}
 			catch (const std::exception& ex) {
@@ -86,6 +95,22 @@ namespace Framework {
 			}
 
 			return false;
+		}
+
+		// The over-budget/cooldown decision lives in the pure watchdog; this only logs the result.
+		void WatchDuration(const IMod* mod, std::string_view id, const char* where,
+			std::chrono::steady_clock::time_point start, std::chrono::steady_clock::time_point end) {
+			const auto breach = watchdog.Observe(mod, where, end - start, end);
+			if (!breach) return;
+
+			LOG_WARNING("[Framework] " << id << "::" << where << " took " << breach->elapsedMs
+				<< " ms on MainThread (budget " << breach->budgetMs
+				<< " ms); hooks must not block - keybind dispatch and every other mod's tick stall while it runs" << std::endl);
+
+			if (breach->suppressed > 0) {
+				LOG_WARNING("[Framework]   (" << breach->suppressed << " more slow runs of " << id << "::" << where
+					<< " were suppressed since the last warning)" << std::endl);
+			}
 		}
 
 		bool IsRequestedSafe(Record& record) {
@@ -109,6 +134,7 @@ namespace Framework {
 			Menus().RemoveMod(record.mod.get());
 			Draw().RemoveMod(record.mod.get());
 			SettingsSchema().RemoveMod(record.mod.get());
+			watchdog.Forget(record.mod.get());
 		}
 
 		// Best-effort revert of live game state before a mod leaves Active.
@@ -135,6 +161,7 @@ namespace Framework {
 				Commands().RemoveMod(record.mod.get());
 				Menus().RemoveMod(record.mod.get());
 				Draw().RemoveMod(record.mod.get());
+				watchdog.Forget(record.mod.get());
 			}
 
 			record.state = target;
@@ -367,6 +394,7 @@ namespace Framework {
 		ModContext ctx;
 		bool resourceIndexDirty = false;
 		std::vector<std::vector<std::string>> exclusiveResourcesByMod;
+		HookWatchdog watchdog{ kHookBudget, kHookWarnCooldown };
 	};
 
 	ModRegistry::ModRegistry() : impl(std::make_unique<Impl>()) {}
@@ -478,6 +506,7 @@ namespace Framework {
 			Menus().RemoveMod(record.mod.get());
 			Draw().RemoveMod(record.mod.get());
 			SettingsSchema().RemoveMod(record.mod.get());
+			impl->watchdog.Forget(record.mod.get());
 		}
 
 		impl->records.clear();

@@ -429,6 +429,9 @@
     <ClCompile Include="Framework\ResourceLedger.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
+    <ClCompile Include="Framework\HookWatchdog.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
     <ClCompile Include="Framework\DrawRegistry.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
@@ -825,6 +828,9 @@
       <Filter>Framework</Filter>
     </ClInclude>
     <ClInclude Include="Framework\ModRegistry.hpp">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\HookWatchdog.hpp">
       <Filter>Framework</Filter>
     </ClInclude>
     <ClInclude Include="Framework\Framework.hpp">
