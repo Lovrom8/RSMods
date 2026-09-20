@@ -12,7 +12,7 @@
     <RootNamespace>RS2014_Mod_Installer</RootNamespace>
     <AssemblyName>RS2014-Mod-Installer</AssemblyName>
     <ApplicationIcon>Assets\LogoX256.ico</ApplicationIcon>
-    <Version>1.2.8.4</Version>
+    <!-- Version is inherited from the repo-root Directory.Build.props (single source of truth). -->
     <Product>Rocksmith2014-Mod-Installer</Product>
     <Copyright>Copyright © 2026</Copyright>
   </PropertyGroup>

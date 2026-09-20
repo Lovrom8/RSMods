@@ -21,13 +21,10 @@
     </UserControl.Resources>
 
     <ScrollViewer>
-        <StackPanel Margin="36,28,36,36" Spacing="18">
+        <StackPanel Classes="page">
             <TextBlock Classes="h1" Text="Custom Colors" />
             <TextBlock
-                MaxWidth="820" HorizontalAlignment="Left"
-                FontSize="13"
-                Opacity="0.7"
-                TextWrapping="Wrap"
+                Classes="pageintro"
                 Text="String, note, and highway colours. Enter a 6-digit hex value (e.g. FF4F5A); the swatch previews it. Saving writes back to RSMods.ini, and only the colours you change are written." />
 
             <StackPanel Orientation="Horizontal" Spacing="10">

@@ -17,6 +17,12 @@
             <SolidColorBrush x:Key="AccentBrushLight1" Color="{DynamicResource SystemAccentColorLight1}" />
             <SolidColorBrush x:Key="AccentBrushDark1" Color="{DynamicResource SystemAccentColorDark1}" />
 
+            <!-- Shared page-shell metrics so every tab lines up. PageMaxWidth caps content on wide
+                 windows (cards reflow within it); PageProseMaxWidth keeps help text at a readable
+                 line length. Change here, not per view. -->
+            <x:Double x:Key="PageMaxWidth">1200</x:Double>
+            <x:Double x:Key="PageProseMaxWidth">820</x:Double>
+
             <ResourceDictionary.ThemeDictionaries>
                 <ResourceDictionary x:Key="Dark">
                     <SolidColorBrush x:Key="ShellHeaderBrush" Color="#1C1F25" />
@@ -66,6 +72,25 @@
             <Setter Property="FontSize" Value="11" />
             <Setter Property="FontWeight" Value="SemiBold" />
             <Setter Property="Opacity" Value="0.6" />
+        </Style>
+
+        <!-- ============================ Page shell ============================ -->
+        <!-- The root content stack of every tab. One margin, one spacing, one max-width so tabs
+             stop drifting and the layout stays put when you switch between them. Content is
+             left-anchored under the nav and reflows/caps within PageMaxWidth. -->
+        <Style Selector="StackPanel.page">
+            <Setter Property="Margin" Value="32,28" />
+            <Setter Property="Spacing" Value="18" />
+            <Setter Property="MaxWidth" Value="{StaticResource PageMaxWidth}" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+        </Style>
+        <!-- Intro / help paragraph under a page's h1. Capped tighter than the page for readability. -->
+        <Style Selector="TextBlock.pageintro">
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="Opacity" Value="0.7" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="MaxWidth" Value="{StaticResource PageProseMaxWidth}" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
         </Style>
 
         <!-- ============================ Cards ============================ -->

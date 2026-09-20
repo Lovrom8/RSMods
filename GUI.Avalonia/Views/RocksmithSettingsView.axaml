@@ -6,13 +6,10 @@
     x:DataType="vm:RocksmithSettingsViewModel">
 
     <ScrollViewer>
-        <StackPanel Margin="36,28,36,36" Spacing="18">
+        <StackPanel Classes="page">
             <TextBlock Classes="h1" Text="Rocksmith settings" />
             <TextBlock
-                MaxWidth="820" HorizontalAlignment="Left"
-                FontSize="13"
-                Opacity="0.7"
-                TextWrapping="Wrap"
+                Classes="pageintro"
                 Text="Rocksmith.ini — the game's own audio and renderer configuration. Saving preserves comments and any entries not shown here." />
 
             <StackPanel Orientation="Horizontal" Spacing="10">

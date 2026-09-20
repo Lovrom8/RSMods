@@ -21,6 +21,8 @@
     <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.12" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.12" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+    <!-- Renders the GitHub release notes (Markdown) on the Home tab. -->
+    <PackageReference Include="Markdown.Avalonia" Version="11.0.3" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.1" />
   </ItemGroup>
 
@@ -43,17 +45,7 @@
     Wwise archives, and the remaining legacy libs - is owned and shipped from here.
   -->
   <ItemGroup>
-    <Content Include="..\RuntimeAssets\**\*.*"
-             Exclude="..\RuntimeAssets\BouncyCastle.Crypto.dll;
-                      ..\RuntimeAssets\ICSharpCode.SharpZipLib.dll;
-                      ..\RuntimeAssets\MiscUtil.dll;
-                      ..\RuntimeAssets\Newtonsoft.Json.dll;
-                      ..\RuntimeAssets\Pfim.dll;
-                      ..\RuntimeAssets\Rocksmith2014PsarcLib.dll;
-                      ..\RuntimeAssets\RocksmithToolkitLib.dll;
-                      ..\RuntimeAssets\SevenZipSharp.dll;
-                      ..\RuntimeAssets\X360.dll;
-                      ..\RuntimeAssets\zlib.net.dll">
+    <Content Include="..\RuntimeAssets\**\*.*" Exclude="..\RuntimeAssets\BouncyCastle.Crypto.dll;&#xD;&#xA;                      ..\RuntimeAssets\ICSharpCode.SharpZipLib.dll;&#xD;&#xA;                      ..\RuntimeAssets\MiscUtil.dll;&#xD;&#xA;                      ..\RuntimeAssets\Newtonsoft.Json.dll;&#xD;&#xA;                      ..\RuntimeAssets\Pfim.dll;&#xD;&#xA;                      ..\RuntimeAssets\Rocksmith2014PsarcLib.dll;&#xD;&#xA;                      ..\RuntimeAssets\RocksmithToolkitLib.dll;&#xD;&#xA;                      ..\RuntimeAssets\SevenZipSharp.dll;&#xD;&#xA;                      ..\RuntimeAssets\X360.dll;&#xD;&#xA;                      ..\RuntimeAssets\zlib.net.dll">
       <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>

@@ -8,12 +8,10 @@
     x:DataType="vm:TwitchViewModel">
 
     <ScrollViewer>
-        <StackPanel Margin="36" MaxWidth="1080" HorizontalAlignment="Left" Spacing="18">
+        <StackPanel Classes="page">
             <TextBlock Classes="h1" Text="Twitch" />
             <TextBlock
-                FontSize="13"
-                Opacity="0.7"
-                TextWrapping="Wrap"
+                Classes="pageintro"
                 Text="Authorize a streamer account, listen for Twitch events, monitor the Rocksmith effect connection, and configure which effects run for subscriptions, Bits, and Channel Points." />
 
             <Grid ColumnDefinitions="*,*,*" ColumnSpacing="12">

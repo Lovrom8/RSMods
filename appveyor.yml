@@ -14,8 +14,9 @@
         dotnet restore "$root\GUI.Avalonia\GUI.Avalonia.csproj" --nologo
         dotnet restore "$root\Installer\Installer.csproj" --nologo
 
-        [xml] $installerProject = Get-Content "$root\Installer\Installer.csproj"
-        $env:releaseVersion = $installerProject.Project.PropertyGroup.Version
+        # Version is single-sourced in Directory.Build.props (inherited by the GUI and installer).
+        [xml] $versionProps = Get-Content "$root\Directory.Build.props"
+        $env:releaseVersion = $versionProps.Project.PropertyGroup.Version
 
         $gitCommitHashFull = $env:APPVEYOR_REPO_COMMIT
         $gitCommitHash = $gitCommitHashFull.Substring(0, 8)

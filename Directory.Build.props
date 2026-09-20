@@ -1,0 +1,10 @@
+<Project>
+
+  <!-- Single source of truth for the product version. Bump this for a release: the GUI (RSMods.exe),
+       the installer (RS2014-Mod-Installer.exe) and every assembly inherit it. The installer's release
+       tag (RSModsInstaller-v<Version>) and the Home tab's "update available" check both key off it. -->
+  <PropertyGroup>
+    <Version>1.2.8.4</Version>
+  </PropertyGroup>
+
+</Project>

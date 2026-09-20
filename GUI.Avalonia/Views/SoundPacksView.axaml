@@ -7,12 +7,10 @@
     x:DataType="vm:SoundPacksViewModel">
 
     <ScrollViewer>
-        <StackPanel Margin="36" MaxWidth="820" HorizontalAlignment="Left" Spacing="18">
+        <StackPanel Classes="page">
             <TextBlock Classes="h1" Text="SoundPacks" />
             <TextBlock
-                FontSize="13"
-                Opacity="0.7"
-                TextWrapping="Wrap"
+                Classes="pageintro"
                 Text="Replace Rocksmith's result-screen voice lines with your own audio. Unpack the game's audio archive, swap any of the result lines (MP3, OGG, WAV or WEM), then repack. You can also import or export a whole sound pack to share with friends." />
 
             <!-- Busy status -->

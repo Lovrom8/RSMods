@@ -20,13 +20,10 @@
     </UserControl.Resources>
 
     <ScrollViewer>
-        <StackPanel Margin="36,28,36,36" Spacing="18">
+        <StackPanel Classes="page">
             <TextBlock Classes="h1" Text="Appearance" />
             <TextBlock
-                MaxWidth="820" HorizontalAlignment="Left"
-                FontSize="13"
-                Opacity="0.7"
-                TextWrapping="Wrap"
+                Classes="pageintro"
                 Text="Choose how the configurator itself looks. Changes preview live; Save writes them to RSMods.ini. (This themes the app, not the game.)" />
 
             <StackPanel Orientation="Horizontal" Spacing="10">

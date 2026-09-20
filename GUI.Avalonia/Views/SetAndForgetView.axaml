@@ -7,12 +7,10 @@
     x:DataType="vm:SetAndForgetViewModel">
 
     <ScrollViewer>
-        <StackPanel Margin="36" MaxWidth="860" HorizontalAlignment="Left" Spacing="18">
+        <StackPanel Classes="page">
             <TextBlock Classes="h1" Text="Set &amp; Forget" />
             <TextBlock
-                FontSize="13"
-                Opacity="0.7"
-                TextWrapping="Wrap"
+                Classes="pageintro"
                 Text="Apply one-click changes to Rocksmith's cache.psarc. Each mod keeps a backup of the original cache and repacks the archive immediately, so wait for an operation to finish before starting another." />
 
             <StackPanel Orientation="Horizontal" Spacing="10" IsVisible="{Binding ShowIndeterminateBusy}">

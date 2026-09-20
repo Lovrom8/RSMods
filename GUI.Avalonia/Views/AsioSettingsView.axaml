@@ -6,13 +6,10 @@
     x:DataType="vm:AsioSettingsViewModel">
 
     <ScrollViewer>
-        <StackPanel Margin="36,28,36,36" Spacing="18">
+        <StackPanel Classes="page">
             <TextBlock Classes="h1" Text="RS_ASIO settings" />
             <TextBlock
-                MaxWidth="820" HorizontalAlignment="Left"
-                FontSize="13"
-                Opacity="0.7"
-                TextWrapping="Wrap"
+                Classes="pageintro"
                 Text="RS_ASIO.ini — low-latency ASIO/WASAPI routing. Disabling a channel blanks its driver (Input 1 is commented out so its value is kept). Saving preserves comments and unknown entries." />
 
             <StackPanel Orientation="Horizontal" Spacing="10">

@@ -13,12 +13,10 @@
     </UserControl.Resources>
 
     <ScrollViewer>
-        <StackPanel Margin="32,24" HorizontalAlignment="Stretch" Spacing="18">
+        <StackPanel Classes="page">
             <TextBlock Classes="h1" Text="Mod Settings" />
             <TextBlock
-                FontSize="13"
-                Opacity="0.7"
-                TextWrapping="Wrap"
+                Classes="pageintro"
                 Text="Mod settings driven by the DLL schema manifest. Editing a value marks the page unsaved; Save writes back to RSMods.ini while preserving comments and unknown entries." />
 
             <StackPanel Orientation="Horizontal" Spacing="10">

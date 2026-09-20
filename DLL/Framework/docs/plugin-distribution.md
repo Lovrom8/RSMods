@@ -78,8 +78,11 @@ while not staking the project's name on unaudited native code. Review changes ro
 
 ## Recommended sequence
 
-1. **Now — make the *source* surface zero-core-edit.** Land the settings schema and the `vcxproj` glob so
-   an out-of-tree **source** mod (their repo → build) needs no core edits. This is #1 with nothing frozen.
+1. **Make the *source* surface zero-core-edit — settings schema done, `vcxproj` glob pending.** The
+   settings schema shipped end-to-end (`settings-schema.md`), so an out-of-tree **source** mod's config
+   needs no core edits. The remaining half is globbing `Mods/*.cpp` into `DLL.vcxproj` (still ~47
+   individual `ClCompile` entries); until then adding a mod still edits the project file. This is #1 with
+   nothing frozen.
 2. **Bake the API on real consumers.** Pull DropPedal and Cheesewizard's RE in *that* way. Two or three
    real external mods is the signal that `ModContext` has stopped moving.
 3. **Then cut #2 and #3 together.** Once the API is boring, ship the versioned C ABI shim **and** the

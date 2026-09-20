@@ -6,12 +6,10 @@
     x:DataType="vm:ProfilesViewModel">
 
     <ScrollViewer>
-        <StackPanel Margin="36" MaxWidth="760" HorizontalAlignment="Left" Spacing="18">
+        <StackPanel Classes="page">
             <TextBlock Classes="h1" Text="Profiles" />
             <TextBlock
-                FontSize="13"
-                Opacity="0.7"
-                TextWrapping="Wrap"
+                Classes="pageintro"
                 Text="Manage your Rocksmith save profiles. Select a profile to edit its song lists and rewards, or restore a previous backup of your save data. Each action is applied and saved immediately." />
 
             <StackPanel Orientation="Horizontal" Spacing="10">

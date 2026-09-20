@@ -104,6 +104,11 @@ already-activated mod. `Tick` deactivates losers before activating winners; beca
 `OnDisabled` reverts synchronously, it releases its resources before any winner is activated, so a
 contested handoff can't double-acquire in a single pass.
 
+`Priority()` orders mods **against each other only**. CrowdControl effects claim the same named
+resources through the ledger (`docs/resource-ledger.md`), but registry-vs-CC arbitration is
+**first-come, not priority**: a running CC effect holding a resource suppresses every mod claiming it
+regardless of the mod's priority, and a mod already holding one makes the CC effect retry.
+
 ## On-screen display & in-game menus
 
 The framework manages two decoupled UI interaction surfaces for mods:

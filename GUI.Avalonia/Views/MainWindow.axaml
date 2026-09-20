@@ -68,7 +68,7 @@
             <Border Background="{DynamicResource ShellNavBrush}" BorderBrush="{DynamicResource CardBorderBrush}" BorderThickness="0,0,1,0">
                 <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
                     <StackPanel Margin="14,16" Spacing="4">
-                        <Button Classes="nav" Command="{Binding ShowStatusCommand}" Content="Status"
+                        <Button Classes="nav" Command="{Binding ShowStatusCommand}" Content="Home"
                                 Classes.active="{Binding ActiveSection, Converter={x:Static conv:StringEqualsConverter.Instance}, ConverterParameter=Status}" />
 
                         <TextBlock Classes="eyebrow" Margin="12,14,0,4" Text="CONFIGURATION" />

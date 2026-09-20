@@ -4,6 +4,7 @@ using Avalonia.Markup.Xaml;
 using Microsoft.Extensions.DependencyInjection;
 using RSMods.Core;
 using RSMods.Core.Settings;
+using RSMods.Core.Update;
 using RSMods.Services;
 using RSMods.Util;
 using RSMods.Data;
@@ -49,6 +50,7 @@ public sealed class App : Application
             services.AddSingleton<SettingsWarningPresenter>();
             services.AddSingleton<ThemeService>();
             services.AddSingleton(new HttpClient());
+            services.AddSingleton<IGitHubReleaseService, GitHubReleaseService>();
             services.AddSingleton<TwitchOptions>();
             services.AddSingleton<ITwitchClock>(SystemTwitchClock.Instance);
             services.AddSingleton(provider =>

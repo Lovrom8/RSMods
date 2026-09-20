@@ -1,9 +1,11 @@
 # Settings schema
 
-> **Status: built and active on the DLL side.** All 32 mods are migrated to declarative `Settings()`
-> schemas; INI loading in `Settings.cpp` is data-driven; unit tests verify schema aggregation and JSON
-> dumping; and `mods.manifest.json` is exported. The remaining step is rendering the manifest on the
-> Avalonia GUI side.
+> **Status: shipped, both sides.** DLL: all 32 mods declare `Settings()` schemas, INI loading in
+> `Settings.cpp` is data-driven, unit tests verify schema aggregation and JSON dumping, and
+> `mods.manifest.json` is exported. GUI: the manifest is embedded in `GUI.Core` and rendered by
+> `SettingsCoordinator` + typed `DataTemplate`s in `ModSettingsView.axaml` (see *GUI: rendering the
+> manifest* below), covered by `GUI.Core.Tests` and a CI manifest-currency check. The phased plan below
+> is kept as the historical record of how it landed.
 
 ## The problem
 
