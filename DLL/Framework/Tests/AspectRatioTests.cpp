@@ -182,7 +182,10 @@ static void Test_LayoutsFromRealConstantTables() {
 
 	Expect(LayoutOf({ {"PhraseInfo", 0, 109} }).kind == LayoutKind::ScreenSpace, "phrase bars (second variant): screen-space");
 
-	Expect(LayoutOf({ {"ApplyRectBias", 0, 1} }).kind == LayoutKind::None, "blit quad: left alone");
+	Expect(LayoutOf({ {"ApplyRectBias", 0, 1} }).kind == LayoutKind::PassThrough, "lyrics blit quad (ApplyRectBias): pass-through, full width");
+	Expect(LayoutOf({ {"g_matWorldViewProj", 0, 4} }).kind == LayoutKind::PassThrough, "depth-of-field post pass: pass-through, not a camera");
+	Expect(LayoutOf({ {"VpXf", 0, 4} }).kind == LayoutKind::Matrix && LayoutOf({ {"WvpXf", 0, 4} }).kind == LayoutKind::Matrix
+		&& LayoutOf({ {"WorldVProj", 0, 4} }).kind == LayoutKind::Matrix, "Guitarcade and lightmap projection names are cameras");
 	Expect(LayoutOf({}).kind == LayoutKind::None, "empty table: left alone");
 
 	Expect(AspectRatio::NeedsViewportRemap(LayoutKind::Scaleform) && AspectRatio::NeedsViewportRemap(LayoutKind::ScreenSpace),
