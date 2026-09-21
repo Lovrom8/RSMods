@@ -136,6 +136,11 @@ void D3DHooks::UpdateUltrawideState(IDirect3DDevice9* pDevice) {
 	// result per draw.
 	ultrawideInGuitarcade.store(GameState::Menus::IsInGuitarcadeGame(), std::memory_order_relaxed);
 	ultrawideInVideoPlayer.store(GameState::currentMenu == "VideoPlayer", std::memory_order_relaxed);
+	// Full-stage bitmaps: the title backdrop is widened on the title screens (the "connecting"
+	// SelectionListDialog included, the loft is not up yet there) and dropped under the
+	// sign-in dialogs.
+	UltrawideFullStage::onTitle.store(GameState::currentMenu.empty() || GameState::currentMenu == "pre_enter_prompt"
+		|| GameState::currentMenu == "TitleScreen" || GameState::currentMenu == "SelectionListDialog", std::memory_order_relaxed);
 
 	// Publish the backbuffer aspect only while the correction applies. Otherwise the game must
 	// keep building its stock 16:9 frustum: the viewport and HUD paths are inert on a display
@@ -359,8 +364,9 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 	UltrawideShaders::DrawScope ultrawideScope(pDevice, PrimCount);
 	ultrawideScope.Apply();
 
-	// Full-stage bitmaps: the dim plate is widened over the whole backbuffer. Confined draws
-	// only, so inert at 16:9.
+	// Full-stage bitmaps: the dim plate and the title backdrop are widened over the whole
+	// backbuffer, the backdrops dropped under the sign-in dialogs. Confined draws only, so
+	// inert at 16:9.
 	{
 		const auto decision = UltrawideFullStage::Decide(pDevice, PrimCount, ultrawideScope.Confined());
 		switch (decision) {
