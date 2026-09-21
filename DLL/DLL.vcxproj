@@ -382,6 +382,7 @@
     <ClInclude Include="D3D/D3DHelper.hpp" />
     <ClInclude Include="D3D/D3DHooks.hpp" />
     <ClInclude Include="D3D/UltrawideShaders.hpp" />
+    <ClInclude Include="D3D/UltrawideFullStage.hpp" />
     <ClInclude Include="D3D/D3D.hpp" />
     <ClInclude Include="CC\Effects\DrunkModeEffect.hpp" />
     <ClInclude Include="CC\Effects\FYourFCEffect.hpp" />

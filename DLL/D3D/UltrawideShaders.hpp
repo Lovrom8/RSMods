@@ -246,6 +246,8 @@ namespace UltrawideShaders {
 			}
 		}
 
+		bool Confined() const { return viewportChanged || scissorChanged; }
+
 		~DrawScope() {
 			if (viewportChanged)
 				device->SetViewport(&savedViewport);

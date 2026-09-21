@@ -4,6 +4,7 @@
 #include "../D3DOverlay.hpp"
 #include "../AspectRatio.hpp"
 #include "UltrawideShaders.hpp"
+#include "UltrawideFullStage.hpp"
 #include "../Mods/UltrawideMod.hpp"
 
 using Settings::NoteColorMode;
@@ -357,6 +358,26 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 
 	UltrawideShaders::DrawScope ultrawideScope(pDevice, PrimCount);
 	ultrawideScope.Apply();
+
+	// Full-stage bitmaps: the dim plate is widened over the whole backbuffer. Confined draws
+	// only, so inert at 16:9.
+	{
+		const auto decision = UltrawideFullStage::Decide(pDevice, PrimCount, ultrawideScope.Confined());
+		switch (decision) {
+		case UltrawideFullStage::Decision::Skip:
+			return D3D_OK;
+		case UltrawideFullStage::Decision::Stretch:
+		case UltrawideFullStage::Decision::StretchWide: {
+			UltrawideFullStage::StretchViewport(pDevice, ultrawideBackBufferWidth,
+				decision == UltrawideFullStage::Decision::Stretch);
+			const HRESULT stretched = oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, StartIndex, PrimCount);
+			UltrawideFullStage::Restore(pDevice);
+			return stretched;
+		}
+		default:
+			break;
+		}
+	}
 
 	// This could potentially lead to game locking up (because DIP is called multiple times per frame) if that value is not filled, but generally it should work 
 	if (Settings::ReturnSettingValue(Setting::ExtendedRangeEnabled).length() < 2) { // Due to some weird reasons, sometimes settings decide to go missing - this may solve the problem
