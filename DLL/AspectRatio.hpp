@@ -133,7 +133,14 @@ namespace AspectRatio {
 			|| name == "g_ViewProj"
 			|| name == "g_viewProj"
 			|| name == "ViewProjXf"
-			|| name == "ViewProjMatrix";
+			|| name == "ViewProjMatrix"
+			|| name == "VpXf"         // gcskullcell* skinned Guitarcade characters
+			|| name == "WvpXf"        // gcskullcellpass0, gcforcefield, gcgradient*, gcskinnedsilhouette
+			|| name == "WorldVProj";  // svc_lightmap
+		// The whole vertex shader set in static.psarc classifies with these names: nothing is
+		// left unclassified. g_matWorldViewProj (dof.fxo) is deliberately not a camera name: it
+		// is the depth-of-field post pass, a full-screen quad that must stay full width (an
+		// affine Matrix would confine it).
 	}
 
 	inline void AccumulateConstant(ShaderLayout& layout, std::string_view name, unsigned int registerIndex, unsigned int registerCount) {
@@ -145,10 +152,17 @@ namespace AspectRatio {
 		if (layout.kind != LayoutKind::None)
 			return;
 
-		if ((name == "mvp" && registerCount == 2) || (name == "vfuniforms" && registerCount > 0))
+		// mvp[2] is the flat GFx 2x4 transform; mvp[4] with texgen is the GFx 3D variant
+		// (Session Mode HUD); vfmuniforms is the batched-instance variant. All interface.
+		if ((name == "mvp" && (registerCount == 2 || registerCount == 4))
+			|| ((name == "vfuniforms" || name == "vfmuniforms") && registerCount > 0))
 			layout = { LayoutKind::Scaleform, registerIndex, registerCount };
 		else if (name == "PhraseInfo")
 			layout = { LayoutKind::ScreenSpace, 0, 0 };
+		// lyricsapply / lyricsrender (the in-song lyrics pass, no projection constant) and
+		// dof.fxo (the depth-of-field post pass): full width, as they always were.
+		else if (name == "ApplyRectBias" || name == "RectBias" || name == "g_matWorldViewProj")
+			layout = { LayoutKind::PassThrough, 0, 0 };
 	}
 
 	inline bool IsAffine(const float* fourRegisters) {
