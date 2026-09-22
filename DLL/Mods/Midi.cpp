@@ -51,14 +51,14 @@ namespace Midi {
 		NumberOfInPorts = midiInGetNumDevs();
 
 		// For each Midi Out device, get it's capabilities.
-		for (int device = 0; device < NumberOfOutPorts; device++) {
+		for (unsigned int device = 0; device < NumberOfOutPorts; device++) {
 			MIDIOUTCAPSA temp;
 			midiOutGetDevCapsA(device, &temp, sizeof(MIDIOUTCAPSA));
 			midiOutDevices.push_back(temp);
 		}
 
 		// For each Midi In device, get it's capabilities.
-		for (int device = 0; device < NumberOfInPorts; device++) {
+		for (unsigned int device = 0; device < NumberOfInPorts; device++) {
 			MIDIINCAPSA temp;
 			midiInGetDevCapsA(device, &temp, sizeof(MIDIINCAPSA));
 			midiInDevices.push_back(temp);
@@ -96,7 +96,7 @@ namespace Midi {
 	}
 
 	void FindMidiOutDevices(const std::string& deviceToLookFor) {
-		for (int device = 0; device < NumberOfOutPorts; device++) {
+		for (unsigned int device = 0; device < NumberOfOutPorts; device++) {
 
 			std::string deviceName = "";
 
@@ -120,7 +120,7 @@ namespace Midi {
 	}
 
 	void FindMidiInDevices(const std::string& deviceToLookFor) {
-		for (int device = 0; device < NumberOfInPorts; device++) {
+		for (unsigned int device = 0; device < NumberOfInPorts; device++) {
 			std::string_view deviceName(midiInDevices[device].szPname);
 
 			// We found the device that is specified in the INI.
@@ -171,7 +171,7 @@ namespace Midi {
 				LOG_INFO("(MIDI IN) CC. Controller# = " << (int)message->at(1) << ". Value = " << std::dec << (int)message->at(2) << std::endl);
 
 				// Current Midi In mod to test | Midi RR Speed > 100%
-				RiffRepeater::SetSpeed((message->at(2) * 2), true);
+				RiffRepeater::SetSpeed(static_cast<float>(message->at(2) * 2), true);
 				RiffRepeater::EnableTimeStretch();
 
 				// Midi In Mod already tested | Controlling WAH with expression pedal.
@@ -218,14 +218,14 @@ namespace Midi {
 			default:
 				if (message->at(0) >= 0xF0) { // System Command
 					LOG_INFO("(MIDI IN) System: ");
-					for (int i = 0; i < messageSize; i++) {
+					for (size_t i = 0; i < messageSize; i++) {
 						LOG_NOHEAD ((int)message->at(i) << " ");
 					}
 					LOG_NOHEAD("" << std::endl);
 				}
 				else { // Unknown Midi Command
 					LOG_WARNING("(MIDI IN) Unknown: ");
-					for (int i = 0; i < messageSize; i++) {
+					for (size_t i = 0; i < messageSize; i++) {
 						LOG_NOHEAD((int)message->at(i) << " ");
 					}
 					LOG_NOHEAD("" << std::endl);
@@ -236,7 +236,7 @@ namespace Midi {
 		return true;
 	}
 
-	void RespondToMidiIn(double deltaTime, std::vector<unsigned char>* message, void* userData) {
+	void RespondToMidiIn(double, std::vector<unsigned char>* message, void*) {
 		IsValidMidiMessage(message);
 	}
 
@@ -246,7 +246,7 @@ namespace Midi {
 		NumberOfInPorts = midiInGetNumDevs();
 		if (NumberOfInPorts == 0) {
 			LOG_ERROR("No MIDI IN ports available!" << std::endl);
-			return -1;
+			return 0u - 1u;
 		}
 
 		midiin->openPort(SelectedMidiInDevice);
@@ -269,7 +269,7 @@ namespace Midi {
 		auto midiout = std::make_unique<RtMidiOut>();
 		std::vector<unsigned char> message;
 
-		char channel = alternativeChannel == (char)255 ? selectedPedal.PC_Channel : alternativeChannel; // If we want to bypass the PC channel (mainly for software pedals) then alternative channel won't be default.
+		char channel = alternativeChannel == kUnusedMidiSelector ? selectedPedal.PC_Channel : alternativeChannel; // If we want to bypass the PC channel (mainly for software pedals) then alternative channel won't be default.
 
 		// Are we using a dummy pedal?
 		if (selectedPedal.pedalName == MidiPedal().pedalName) {
@@ -312,8 +312,8 @@ namespace Midi {
 	/// <param name="alternativeChannel"> - Channel to use over the default. Mainly used for software pedals.</param>
 	/// <returns>Message wwas sent or not.</returns>
 	bool SendControlChange(char toePosition, char alternativeBank, char alternativeChannel) {
-		char bank = alternativeBank == (char)255 ? selectedPedal.CC_Bank : alternativeBank; // If we want to bypass the CC bank (mainly for software pedals) then alternative bank won't be default.
-		char channel = alternativeChannel == (char)255 ? selectedPedal.CC_Channel : alternativeChannel; // If we want to bypass the CC channel (mainly for software pedals) then alternative channel won't be default.
+		char bank = alternativeBank == kUnusedMidiSelector ? selectedPedal.CC_Bank : alternativeBank; // If we want to bypass the CC bank (mainly for software pedals) then alternative bank won't be default.
+		char channel = alternativeChannel == kUnusedMidiSelector ? selectedPedal.CC_Channel : alternativeChannel; // If we want to bypass the CC channel (mainly for software pedals) then alternative channel won't be default.
 
 		if (selectedPedal.pedalName == MidiPedal().pedalName) {
 			LOG_ERROR("(MIDI) SendCC: DUMMY PEDAL" << std::endl);
@@ -382,7 +382,7 @@ namespace Midi {
 			if (TrueTuning_Hertz < 260) // Give some leeway for A220 and it's true tuned offsets
 				highestTuning -= 12;
 
-			selectedPedal.autoTuneFunction(highestTuning + tuningOffset, TrueTuning_Hertz);
+			selectedPedal.autoTuneFunction(highestTuning + tuningOffset, static_cast<float>(TrueTuning_Hertz));
 
 			LOG_INFO("(MIDI) Triggered Mod: Automated Tuning (Song)" << std::endl);
 		}
@@ -414,7 +414,7 @@ namespace Midi {
 
 			// highestLowestTuning accounts for true tuning of A220. Do not add a check for it here.
 
-			selectedPedal.autoTuneFunction(highestTuning + tuningOffset, TrueTuning_Hertz);
+			selectedPedal.autoTuneFunction(highestTuning + tuningOffset, static_cast<float>(TrueTuning_Hertz));
 
 			LOG_INFO("(MIDI) Triggered Mod: Automated Tuning (Tuner)" << std::endl);
 			alreadyAutomatedTuningInThisSong = true;
@@ -458,11 +458,11 @@ namespace Midi {
 			}
 			
 			std::map<char, char> activeBypassMap = selectedPedal.activeBypassMap;
-			char originalPC = lastPC;
+			char originalPC = AsMidiByte(lastPC);
 
 			// If the user was in a song that requires a down tune AND true tuning, we use this. Ex: If 6 was 9 (Eb Standard AND A431)
 			if (lastPC_TUNING != 0 && lastPC_TUNING != lastPC)  
-				SendProgramChange(activeBypassMap.find(lastPC_TUNING)->second);
+				SendProgramChange(activeBypassMap.find(AsMidiByte(lastPC_TUNING))->second);
 
 			// Send the bypass code to revert back to normal guitar.
 			if (auto it = activeBypassMap.find(originalPC); it != activeBypassMap.end())
@@ -686,7 +686,7 @@ namespace Midi {
 				}
 
 				if (!alreadyAttemptedTrueTune && TrueTuning_Hertz != 440.f && TrueTuning_Hertz != 220.f)
-					AutoTrueTuning(TrueTuning_Hertz);
+					AutoTrueTuning(static_cast<int>(TrueTuning_Hertz));
 			}
 
 			/// <summary>
@@ -729,12 +729,12 @@ namespace Midi {
 				else
 					temp_PC = 0;
 
-				temp_CC = roundf(Target_Semitones * (127.0f / Digitech::WhammyDT::semiTones.at(temp_PC)));
+				temp_CC = static_cast<int>(roundf(Target_Semitones * (127.0f / Digitech::WhammyDT::semiTones.at(temp_PC))));
 
 				// Does the song actually NEED us to do any changes?
 				if (temp_CC != 0) {
-					SendProgramChange(temp_PC);
-					SendControlChange(temp_CC);
+					SendProgramChange(AsMidiByte(temp_PC));
+					SendControlChange(AsMidiByte(temp_CC));
 				}
 			}
 
@@ -809,12 +809,12 @@ namespace Midi {
 				else
 					temp_PC = 1;
 
-				temp_CC = roundf(Target_Semitones * (127.0f / Digitech::BassWhammy::semiTones.at(temp_PC - 1)));
+				temp_CC = static_cast<int>(roundf(Target_Semitones * (127.0f / Digitech::BassWhammy::semiTones.at(temp_PC - 1))));
 
 				// Does the song actually NEED us to do any changes?
 				if (temp_CC != 0) {
-					SendProgramChange(temp_PC + offset - 1);
-					SendControlChange(temp_CC);
+					SendProgramChange(AsMidiByte(temp_PC + offset - 1));
+					SendControlChange(AsMidiByte(temp_CC));
 				}
 			}
 		}
@@ -849,12 +849,12 @@ namespace Midi {
 				else
 					temp_PC = 3;
 
-				temp_CC = roundf(Target_Semitones * (127.0f / Digitech::WhammyFour::semiTones.at(temp_PC - 3)));
+				temp_CC = static_cast<int>(roundf(Target_Semitones * (127.0f / Digitech::WhammyFour::semiTones.at(temp_PC - 3))));
 
 				// Does the song actually NEED us to do any changes?
 				if (temp_CC != 0) {
-					SendProgramChange(temp_PC + offset - 1);
-					SendControlChange(temp_CC);
+					SendProgramChange(AsMidiByte(temp_PC + offset - 1));
+					SendControlChange(AsMidiByte(temp_CC));
 				}
 			}
 		}
@@ -907,12 +907,12 @@ namespace Midi {
 				else
 					temp_PC = 1;
 
-				temp_CC = roundf(Target_Semitones * (127.0f / Digitech::WhammyFive::semiTones.at(temp_PC - 1)));
+				temp_CC = static_cast<int>(roundf(Target_Semitones * (127.0f / Digitech::WhammyFive::semiTones.at(temp_PC - 1))));
 
 				// Does the song actually NEED us to do any changes?
 				if (temp_CC != 0) {
-					SendProgramChange(temp_PC + offset - 1);
-					SendControlChange(temp_CC);
+					SendProgramChange(AsMidiByte(temp_PC + offset - 1));
+					SendControlChange(AsMidiByte(temp_CC));
 				}
 			}
 		}
@@ -932,7 +932,7 @@ namespace Midi {
 			}
 
 			// Send MIDI command to pedal if we find the tuning in the INI.
-			if (auto it = semiToneMap.find(highestTuning); it != semiToneMap.end()) {
+			if (auto it = semiToneMap.find(AsMidiByte(highestTuning)); it != semiToneMap.end()) {
 				if (sendSemitoneCommand == programChangeStatus)
 					SendProgramChange(it->second);
 				else if (sendSemitoneCommand == controlChangeStatus)
@@ -956,7 +956,7 @@ namespace Midi {
 				TrueTuning_Hertz *= 2;
 
 			// Send MIDI command to pedal if we find the true tuning in the INI.
-			if (auto it = trueTuningMap.find(TrueTuning_Hertz); it != trueTuningMap.end()) {
+			if (auto it = trueTuningMap.find(static_cast<int>(TrueTuning_Hertz)); it != trueTuningMap.end()) {
 				if (sendTrueTuningCommand == programChangeStatus)
 					SendProgramChange(it->second, sendTrueTuningChannel);
 				else if (sendTrueTuningCommand == controlChangeStatus)
@@ -988,8 +988,8 @@ namespace Midi {
 
 				std::string semiTone_string = entry.substr(0, entry.find(delim));
 				std::string command_string = entry.erase(0, entry.find(delim) + delim.length());
-				char semiTone = std::atoi(semiTone_string.c_str());
-				char command = std::atoi(command_string.c_str());
+				char semiTone = AsMidiByte(std::atoi(semiTone_string.c_str()));
+				char command = AsMidiByte(std::atoi(command_string.c_str()));
 
 				if (!semiToneMap.contains(semiTone))
 					semiToneMap[semiTone] = command;
@@ -1025,13 +1025,13 @@ namespace Midi {
 			// Send CC on channel 12 (0 indexed). Use bank 15. When we leave a song, send 45 to CC channel 12 bank 15.
 
 			if (separated.size() > 0) {
-				semiToneShutoffTrigger = std::atoi(separated.at(0).c_str());
+				semiToneShutoffTrigger = static_cast<unsigned char>(std::atoi(separated.at(0).c_str()));
 
 				if (separated.size() > 1) {
 					if (separated.at(1) == "PC") {
 						sendSemitoneCommand = programChangeStatus;
 						if (separated.size() > 2)
-							selectedPedal.PC_Channel = std::atoi(separated.at(2).c_str()) % 16; // Only 16 channels are supported.
+							selectedPedal.PC_Channel = AsMidiByte(std::atoi(separated.at(2).c_str()) % 16); // Only 16 channels are supported.
 						else
 							LOG_ERROR("SOFTWARE LOADSETTINGS ERROR (semitones): PC set as the send method but no channel is specified" << std::endl);
 					}
@@ -1039,9 +1039,9 @@ namespace Midi {
 					if (separated.at(1) == "CC") {
 						sendSemitoneCommand = controlChangeStatus;
 						if (separated.size() > 2) {
-							selectedPedal.CC_Channel = std::atoi(separated.at(2).c_str()) % 16; // Only 16 channels are supported.
+							selectedPedal.CC_Channel = AsMidiByte(std::atoi(separated.at(2).c_str()) % 16); // Only 16 channels are supported.
 							if (separated.size() > 3)
-								selectedPedal.CC_Bank = std::atoi(separated.at(3).c_str());
+								selectedPedal.CC_Bank = AsMidiByte(std::atoi(separated.at(3).c_str()));
 							else
 								LOG_ERROR("SOFTWARE LOAD SETTINGS ERROR (semitones): CC set as the send method but no bank is specified. Defaulting to Bank 0." << std::endl);
 						}
@@ -1066,7 +1066,7 @@ namespace Midi {
 				std::string semiTone_string = entry.substr(0, entry.find(delim));
 				std::string command_string = entry.erase(0, entry.find(delim) + delim.length());
 				int trueTuning = std::atoi(semiTone_string.c_str());
-				char command = std::atoi(command_string.c_str());
+				char command = AsMidiByte(std::atoi(command_string.c_str()));
 
 				if (!trueTuningMap.contains(trueTuning))
 					trueTuningMap[trueTuning] = command;
@@ -1101,13 +1101,13 @@ namespace Midi {
 			// Send CC on channel 12 (0 indexed). Use bank 15. When we leave a song, send 45 to CC channel 12 bank 15.
 
 			if (separated.size() > 0) {
-				trueTuningShutoffTrigger = std::atoi(separated.at(0).c_str());
+				trueTuningShutoffTrigger = static_cast<unsigned char>(std::atoi(separated.at(0).c_str()));
 
 				if (separated.size() > 1) {
 					if (separated.at(1) == "PC") {
 						sendTrueTuningCommand = programChangeStatus;
 						if (separated.size() > 2)
-							sendTrueTuningChannel = std::atoi(separated.at(2).c_str()) % 16; // Only 16 channels are supported.
+							sendTrueTuningChannel = static_cast<unsigned char>(std::atoi(separated.at(2).c_str()) % 16); // Only 16 channels are supported.
 						else
 							LOG_ERROR("SOFTWARE LOADSETTINGS ERROR (truetuning): PC set as the send method but no channel is specified" << std::endl);
 					}
@@ -1115,9 +1115,9 @@ namespace Midi {
 						sendTrueTuningCommand = controlChangeStatus;
 
 						if (separated.size() > 2) {
-							sendTrueTuningChannel = std::atoi(separated.at(2).c_str()) % 16; // Only 16 channels are supported.
+							sendTrueTuningChannel = static_cast<unsigned char>(std::atoi(separated.at(2).c_str()) % 16); // Only 16 channels are supported.
 							if (separated.size() > 3)
-								trueTuningBank = std::atoi(separated.at(3).c_str());
+								trueTuningBank = static_cast<unsigned char>(std::atoi(separated.at(3).c_str()));
 							else
 								LOG_ERROR("SOFTWARE LOAD SETTINGS ERROR (truetuning): CC set as the send method but no bank is specified. Defaulting to Bank 0." << std::endl);
 						}

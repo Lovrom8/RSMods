@@ -81,9 +81,7 @@
     <ClCompile Include="Offsets.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Scrapped.hpp">
-      <Filter>Main Headers</Filter>
-    </ClCompile>
+
     <ClCompile Include="Mods\Enumeration.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
@@ -180,12 +178,7 @@
     <ClCompile Include="CC\Effects\TurboSpeedEffect.cpp">
       <Filter>CrowdControl\Effects</Filter>
     </ClCompile>
-    <ClCompile Include="CC\CCEnums.hpp">
-      <Filter>CrowdControl\Headers</Filter>
-    </ClCompile>
-    <ClCompile Include="CC\CCStructs.hpp">
-      <Filter>CrowdControl\Headers</Filter>
-    </ClCompile>
+
     <ClCompile Include="Mods\Midi.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
@@ -389,6 +382,9 @@
     <ClInclude Include="Settings.hpp">
       <Filter>Main Headers</Filter>
     </ClInclude>
+    <ClInclude Include="Scrapped.hpp">
+      <Filter>Main Headers</Filter>
+    </ClInclude>
     <ClInclude Include="Lib\DirectX\d3d9.h">
       <Filter>Main Headers\DirectX</Filter>
     </ClInclude>
@@ -531,6 +527,12 @@
       <Filter>CrowdControl\Headers</Filter>
     </ClInclude>
     <ClInclude Include="CC\ControlServer.hpp">
+      <Filter>CrowdControl\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="CC\CCEnums.hpp">
+      <Filter>CrowdControl\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="CC\CCStructs.hpp">
       <Filter>CrowdControl\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Mods\Midi.hpp">

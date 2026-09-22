@@ -71,7 +71,7 @@ Tuning SongTuning::GetTuningAtTuner() {
 
 	// Rocksmith converts all ASCII "b" to the unicode version. Since we have to use std::string (and can't use std::wstring) with nlohmann, we convert the corrupt character combination to an ASCII "b".
 	// Note "b" is capitalized at the end because we later assume all tunings are capital since Rocksmith will parse tuning names as uppercase. Since we use the non-UTF value we have to convert the "b" to a "B" for our later comparison to work.
-	while (unsanitizedTuningText.find('\xe2\x99\xad') != std::string::npos) { // Unicode b (flat)
+	while (unsanitizedTuningText.find("\xe2\x99\xad") != std::string::npos) { // Unicode b (flat)
 		size_t badFlat = unsanitizedTuningText.find("\xe2\x99\xad");
 		std::string partOne = unsanitizedTuningText.substr(0, badFlat);
 		std::string partTwo = unsanitizedTuningText.substr(badFlat + 2, unsanitizedTuningText.length() - 1);
@@ -103,7 +103,8 @@ Tuning SongTuning::GetTuningAtTuner() {
 	for (auto const& tuning : tuningJson.items()) {
 		std::string jsonKeyUpper = tuning.key();
 		std::string jsonKeyOriginal = tuning.key(); // Also you can't just make a separate copy of the uppercase string, so we keep both 
-		std::transform(jsonKeyUpper.begin(), jsonKeyUpper.end(), jsonKeyUpper.begin(), ::toupper);
+		std::transform(jsonKeyUpper.begin(), jsonKeyUpper.end(), jsonKeyUpper.begin(),
+			[](unsigned char ch) { return static_cast<char>(std::toupper(ch)); });
 
 		if (jsonKeyOriginal == tuningText || jsonKeyUpper == tuningText) { // If the tuning is all uppercase or if standard-case matches
 			tuningJson = tuningJson[jsonKeyOriginal]["Strings"];

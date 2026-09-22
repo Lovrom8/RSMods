@@ -1,4 +1,4 @@
-﻿#include "../../stdafx.h"
+#include "../../stdafx.h"
 #include "SmallNoteheadEffect.hpp"
 
 namespace CrowdControl::Effects { // Scales notes in a song to unusually small size
@@ -8,7 +8,7 @@ namespace CrowdControl::Effects { // Scales notes in a song to unusually small s
 	/// </summary>
 	/// <param name="request"> - JSON Request</param>
 	/// <returns>Enums::EffectStatus::Success if test completed without any issues. Enums::EffectStatus::Retry if we have to retry.</returns>
-	Enums::EffectStatus SmallNoteheadEffect::Test(const Structs::Request& request)
+	Enums::EffectStatus SmallNoteheadEffect::Test(const Structs::Request&)
 	{
 		LOG_INFO("SmallNoteheadEffect::Test()" << std::endl);
 

@@ -50,9 +50,7 @@ namespace Wwise::Logging {
 	/// <returns>The playing ID of the event launched, or AK_INVALID_PLAYING_ID if posting the event failed</returns>
 	AkPlayingID log_PostEvent_Name(const char* in_pszEventName, AkGameObjectID in_gameObjectID, AkUInt32 in_uFlags, AkCallbackFunc in_pfnCallback, void* in_pCookie, AkUInt32 in_cExternals, AkExternalSourceInfo* in_pExternalSources, AkPlayingID in_PlayingID)
 	{
-		_LOG_INIT;
-
-		_LOG("(Wwise) PostEvent: "
+		LOG_INFO("(Wwise) PostEvent: "
 				  << in_pszEventName
 				  << " on game object 0x"
 				  << std::hex << in_gameObjectID
@@ -70,9 +68,7 @@ namespace Wwise::Logging {
 	/// <param name="in_bSeekToNearestMarker"> - Should we skip to the nearest marker</param>
 	AKRESULT log_SeekOnEvent(char* in_pszEventName, AkGameObjectID in_gameObjectID, AkTimeMs in_iPosition, bool in_bSeekToNearestMarker)
 	{
-		_LOG_INIT;
-
-		_LOG("(Wwise) SeekOnEvent: "
+		LOG_INFO("(Wwise) SeekOnEvent: "
 				  << in_pszEventName
 				  << " on object 0x"
 				  << std::hex << in_gameObjectID
@@ -94,9 +90,7 @@ namespace Wwise::Logging {
 	/// <param name="fromBus"> - Bus to read the effect from</param>
 	AKRESULT log_CloneBusEffect(AkUniqueID toBus, AkUInt32 indexFX, AkUniqueID fromBus)
 	{
-		_LOG_INIT;
-
-		_LOG("(Wwise) CloneBusEffect: From bus 0x"
+		LOG_INFO("(Wwise) CloneBusEffect: From bus 0x"
 				  << std::hex << fromBus
 				  << " in slot "
 				  << std::dec << indexFX
@@ -117,11 +111,9 @@ namespace Wwise::Logging {
 	/// <param name="in_eFadeCurve"> - Curve to fade into the new value.</param>
 	AKRESULT log_SetRTPCValue(const char* in_pszRtpcName, AkRtpcValue in_value, AkGameObjectID in_gameObjectID, AkTimeMs in_uValueChangeDuration, AkCurveInterpolation in_eFadeCurve)
 	{
-		_LOG_INIT;
-
 		if (!Contains(std::string(in_pszRtpcName), SetRTPCBlacklist))
 		{
-			_LOG("(Wwise) SetRTPCValue: "
+			LOG_INFO("(Wwise) SetRTPCValue: "
 					  << in_pszRtpcName
 					  << " to "
 					  << in_value

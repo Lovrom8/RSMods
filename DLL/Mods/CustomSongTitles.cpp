@@ -61,13 +61,13 @@ void __declspec(naked) hook_fakeTitles() {
 /// <param name="number"> - MainGame.csv string ID number [EAX]</param>
 /// <param name="text"> - Song List Name [ESP + 0x10] **DISCARDED**</param>
 /// <returns>New songlist name</returns>
-const char* __stdcall missingLocalization(int localizationNumber, char* text) {
+const char* __stdcall missingLocalization(int localizationNumber, char*) {
 	constexpr int SONG_LIST_START = 90000;
 	constexpr int SONG_LIST_COUNT = 20;
 
 	int index = localizationNumber - SONG_LIST_START;
 
-	if (index >= 0 && index < SONG_LIST_COUNT && index < songTitles.size()) {
+	if (index >= 0 && index < SONG_LIST_COUNT && index < static_cast<int>(songTitles.size())) {
 		return songTitles[index].c_str();
 	}
 

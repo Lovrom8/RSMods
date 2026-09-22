@@ -1,4 +1,4 @@
-﻿#include "../../stdafx.h"
+#include "../../stdafx.h"
 #include "SolidNotesEffect.hpp"
 #include "../../Framework/Framework.hpp"
 
@@ -12,7 +12,7 @@ namespace CrowdControl::Effects {
 	/// </summary>
 	/// <param name="request"> - JSON Request</param>
 	/// <returns>Enums::EffectStatus::Success if test completed without any issues. Enums::EffectStatus::Retry if we have to retry.</returns>
-	Enums::EffectStatus SolidNotesCustomEffect::Test(const Structs::Request& request)
+	Enums::EffectStatus SolidNotesCustomEffect::Test(const Structs::Request&)
 	{
 		LOG_INFO("SolidNotesCustomEffect::Test()" << std::endl);
 
@@ -86,7 +86,7 @@ namespace CrowdControl::Effects {
 	/// </summary>
 	/// <param name="request"> - JSON Request</param>
 	/// <returns>Enums::EffectStatus::Success if test completed without any issues. Enums::EffectStatus::Retry if we have to retry.</returns>
-	Enums::EffectStatus SolidNotesRandomEffect::Test(const Structs::Request& request)
+	Enums::EffectStatus SolidNotesRandomEffect::Test(const Structs::Request&)
 	{
 		LOG_INFO("SolidNotesRandomEffect::Test()" << std::endl);
 
@@ -108,7 +108,7 @@ namespace CrowdControl::Effects {
 		LOG_INFO("SolidNotesRandomEffect - Colors Saved" << std::endl);
 		
 		static std::uniform_real_distribution<> urd(0, randomTextureCount - 1);
-		currentRandomTexture = urd(rng);
+		currentRandomTexture = static_cast<int>(urd(rng));
 
 		LOG_INFO("SolidNotesRandomEffect - Picked color " << currentRandomTexture << "/" << randomTextureCount << std::endl);
 
@@ -153,7 +153,7 @@ namespace CrowdControl::Effects {
 	/// </summary>
 	/// <param name="request"> - JSON Request</param>
 	/// <returns>Enums::EffectStatus::Success if test completed without any issues. Enums::EffectStatus::Retry if we have to retry.</returns>
-	Enums::EffectStatus SolidNotesCustomRGBEffect::Test(const Structs::Request& request)
+	Enums::EffectStatus SolidNotesCustomRGBEffect::Test(const Structs::Request&)
 	{
 		LOG_INFO("SolidNotesCustomRGBEffect::Test()" << std::endl);
 

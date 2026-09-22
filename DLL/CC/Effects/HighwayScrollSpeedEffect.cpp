@@ -1,4 +1,4 @@
-﻿#include "../../stdafx.h"
+#include "../../stdafx.h"
 #include "HighwayScrollSpeedEffect.hpp"
 
 using namespace CrowdControl::Enums;
@@ -10,7 +10,7 @@ namespace CrowdControl::Effects {
 	/// </summary>
 	/// <param name="request"> - JSON Request</param>
 	/// <returns>Enums::EffectStatus::Success if test completed without any issues. Enums::EffectStatus::Retry if we have to retry.</returns>
-	Enums::EffectStatus HighwayScrollSpeedEffect::Test(const Structs::Request& request)
+	Enums::EffectStatus HighwayScrollSpeedEffect::Test(const Structs::Request&)
 	{
 		LOG_INFO("HighwayScrollSpeedEffect::Test()" << std::endl);
 

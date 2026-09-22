@@ -65,7 +65,7 @@ void AudioDevices::SetupMicrophones() {
 	UINT totalMicrophones = 0;
 	microphones->GetCount(&totalMicrophones);
 
-	for (int i = 0; i < totalMicrophones; i++) {
+	for (UINT i = 0; i < totalMicrophones; i++) {
 		// Take a microphone
 		IMMDevice* selectedMicrophone;
 		microphones->Item(i, &selectedMicrophone);
@@ -212,12 +212,12 @@ int AudioDevices::GetMicrophoneVolume(std::string microphoneName) {
 				break;
 			}
 
-			return 17.f;
+			return 17;
 		}
 
 		if (!deviceEnumerator) {
 			LOG_ERROR("CoCreateInstance failed while getting microphone volume. DeviceEnumerator is null" << std::endl);
-			return 17.f;
+			return 17;
 		}
 
 		// Get the microphone we want
@@ -227,7 +227,7 @@ int AudioDevices::GetMicrophoneVolume(std::string microphoneName) {
 
 		if (!microphone) {
 			LOG_ERROR("GetDevice failed to get a microphone in GetVolume." << std::endl);
-			return 17.f;
+			return 17;
 		}
 
 		// Get the endpoint volume
@@ -241,12 +241,12 @@ int AudioDevices::GetMicrophoneVolume(std::string microphoneName) {
 		microphone->Release();
 		microphoneVolume->Release();
 
-		return currentVolume * 100;
+		return static_cast<int>(currentVolume * 100);
 	}
 	else
 	{
 		LOG_ERROR("Unable to find microphone (Get volume): \"" << microphoneName << "\"" << std::endl);
-		return 17.f;
+		return 17;
 	}
 }
 

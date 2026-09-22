@@ -1,4 +1,4 @@
-﻿#include "../../stdafx.h"
+#include "../../stdafx.h"
 #include "RainbowStringsEffect.hpp"
 
 namespace CrowdControl::Effects {
@@ -8,7 +8,7 @@ namespace CrowdControl::Effects {
 	/// </summary>
 	/// <param name="request"> - JSON Request</param>
 	/// <returns>Enums::EffectStatus::Success if test completed without any issues. Enums::EffectStatus::Retry if we have to retry.</returns>
-	Enums::EffectStatus RainbowStringsEffect::Test(const Structs::Request& request)
+	Enums::EffectStatus RainbowStringsEffect::Test(const Structs::Request&)
 	{
 		LOG_INFO("RainbowStringsEffect::Test()" << std::endl);
 

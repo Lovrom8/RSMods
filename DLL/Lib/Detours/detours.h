@@ -614,5 +614,6 @@ inline PBYTE DetourGenNop(PBYTE pbCode)
 #endif // __cplusplus
 
 #endif // _DETOURS_H_
+#pragma warning(pop)
 //
 ////////////////////////////////////////////////////////////////  End of File.

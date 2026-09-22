@@ -1,7 +1,7 @@
 #pragma once
 
-enum AKRESULT;
-enum AkMemPoolAttributes;
+enum AKRESULT : int;
+enum AkMemPoolAttributes : int;
 
 struct PoolMemInfo;
 struct PoolStats;
