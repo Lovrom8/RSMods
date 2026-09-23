@@ -155,6 +155,7 @@ namespace Offsets {
 	inline VersioningStruct<uintptr_t> ptr_PortAudioInCrash; 
 	inline VersioningStruct<uintptr_t> ptr_AdditionalAudioDevicesCrash;
 	inline VersioningStruct<uintptr_t> ptr_ModdedPtrCrashFix;
+	inline VersioningStruct<uintptr_t> ptr_InvalidInputTreeRootBranch;
 
 	// Audio In Background
 	inline VersioningStruct<uintptr_t> ptr_IsWindowInFocus;

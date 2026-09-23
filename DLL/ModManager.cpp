@@ -86,6 +86,7 @@ namespace ModManager {
 		BugPrevention::PreventAdvancedDisplayCrash();
 		BugPrevention::PreventPortAudioInDeviceCrash();
 		BugPrevention::PreventExtraAudioDevicesCrash();
+		BugPrevention::PreventInvalidInputTreeRootCrash();
 		BugPrevention::FixCalibrationSampleCount();
 
 		if (Settings::IsOn(Setting::FixBrokenTones)) {

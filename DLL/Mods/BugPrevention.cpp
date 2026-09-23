@@ -115,6 +115,22 @@ namespace BugPrevention {
 	}
 
 	/// <summary>
+	/// The sign-in notification can look up "Cancel" in an input-action tree whose root
+	/// is a negative, invalid pointer. GetRoot checks only for zero before reading that node.
+	/// Treat negative roots like empty trees using the function's existing return path.
+	/// Original report: https://discord.com/channels/238233332511539200/305406306821472257/1552076343632728065
+	/// </summary>
+	void PreventInvalidInputTreeRootCrash() {
+		const BYTE jumpIfLessOrEqual = 0x8E; // TEST EBX,EBX; JLE follows the original empty-tree path.
+		if (!MemUtil::PatchAdr(Offsets::ptr_InvalidInputTreeRootBranch, &jumpIfLessOrEqual, sizeof(jumpIfLessOrEqual))) {
+			LOG_ERROR("(BUG PREVENTION) Failed Invalid Input Tree Root fix" << std::endl);
+			return;
+		}
+
+		LOG_INFO("(BUG PREVENTION) Prevented Invalid Input Tree Root Crash" << std::endl);
+	}
+
+	/// <summary>
 	/// Clamps the sample count to the buffer's real capacity before it is stored.
 	/// </summary>
 	void __declspec(naked) calibrationSampleCountClampHook() {
