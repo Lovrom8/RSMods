@@ -56,7 +56,11 @@ void Offsets::Initialize() {
 	ptr_PortAudioInCrash = { {0x00C43AF5, baseHandle + 0x00842C25} };		// Code | 8b 85 c8 fe ff ff 80 b8 df 1b 00 00 00 (two opcodes before this - cmp)
 	ptr_AdditionalAudioDevicesCrash = { { 0x00E7CF70, baseHandle + 0x00A7BFD0 } };   // Code 8b 8d c4 fd ff ff 8b 1c 81
 	ptr_ModdedPtrCrashFix = { {0x0001C640, 0x0001C8A0} };		// Code | 89 46 1c 89 46 2c 89 7e 28 (MOV for ForceSuccess)
-	ptr_InvalidInputTreeRootBranch = { {0x0092DB53, baseHandle + 0x00570133} };	// GetRoot: 85 db 0f 84 98 00 00 00 (0x84 is the branch opcode)
+	ptr_ControllerAxisBounds = { {0x005E2080, baseHandle + 0x001E3070} };
+	ptr_ControllerAxisBoundsJmpBck = { {0x005E2086, baseHandle + 0x001E3076} };
+	ptr_InvalidInputTreeRootCheck = { {0x0092DB50, baseHandle + 0x00570130} };
+	ptr_InvalidInputTreeRootJmpBck = { {0x0092DB58, baseHandle + 0x00570138} };
+	ptr_InvalidInputTreeRootEmptyJmpBck = { {0x0092DBF0, baseHandle + 0x005701D0} };
 	ptr_IsWindowInFocus = { {0x1251A78, baseHandle + 0x00E52A78} };						// Static Memory | 00 00 00 80 01 00 00 00 04 00 00 00 01 00 00 00 (second variable)
 	ptr_WindowNotInFocusValue = { {0xEC5D46, baseHandle + 0x00AC5496} };    // Code | c6 05 78 2a 02 01 00 (we want to change that 00 to an 01).
 

@@ -86,6 +86,7 @@ namespace ModManager {
 		BugPrevention::PreventAdvancedDisplayCrash();
 		BugPrevention::PreventPortAudioInDeviceCrash();
 		BugPrevention::PreventExtraAudioDevicesCrash();
+		BugPrevention::PreventControllerAxisOverflow();
 		BugPrevention::PreventInvalidInputTreeRootCrash();
 		BugPrevention::FixCalibrationSampleCount();
 

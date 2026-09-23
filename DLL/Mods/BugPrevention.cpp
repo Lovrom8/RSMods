@@ -114,20 +114,98 @@ namespace BugPrevention {
 		LOG_INFO("(BUG PREVENTION) Prevented Additional Audio Devices Crash" << std::endl);
 	}
 
+	void __declspec(naked) controllerAxisBoundsHook() {
+		__asm {
+			pushfd
+			pushad
+			mov eax, dword ptr [esp + 40] // First argument.
+			cmp dword ptr [eax + 8], -1
+			jne validControllerAxisRecord
+			cmp dword ptr [eax + 4], 4
+			jb validControllerAxisRecord // Unsigned comparison also rejects negative indices.
+			popad
+			popfd
+			ret 4
+
+		validControllerAxisRecord:
+			lea ecx, Offsets::ptr_ControllerAxisBoundsJmpBck
+			call VersioningStruct<uintptr_t>::GetValue
+			mov Offsets::runtimeVersionStructValue, eax
+			popad
+			popfd
+			push ebp
+			mov ebp, esp
+			sub esp, 8 // Original six-byte prologue
+			jmp Offsets::runtimeVersionStructValue
+		}
+	}
+
 	/// <summary>
-	/// The sign-in notification can look up "Cancel" in an input-action tree whose root
-	/// is a negative, invalid pointer. GetRoot checks only for zero before reading that node.
-	/// Treat negative roots like empty trees using the function's existing return path.
+	/// Ignore controller-axis updates with indices outside the game's supported range.
+	/// Button input remains available.
+	/// </summary>
+	void PreventControllerAxisOverflow() {
+		if (!MemUtil::PlaceHook(Offsets::ptr_ControllerAxisBounds, controllerAxisBoundsHook, 6)) {
+			LOG_ERROR("(BUG PREVENTION) Failed controller input crash guard" << std::endl);
+			return;
+		}
+		FlushInstructionCache(GetCurrentProcess(), (void*)Offsets::ptr_ControllerAxisBounds.Get(), 6);
+		LOG_INFO("(BUG PREVENTION) Prevented controller input crash" << std::endl);
+	}
+
+	void __stdcall LogInvalidUIInputCrash() {
+		LOG_WARNING("(BUG PREVENTION) Prevented crash from invalid UI input" << std::endl);
+	}
+
+	void __declspec(naked) invalidInputTreeRootHook() {
+		__asm {
+			test ebx, ebx
+			jz emptyInputTree
+			js invalidInputTree
+			cmp ebx, 0x10000
+			jb invalidInputTree
+			test ebx, ebx // Preserve the original TEST flags on the normal lookup path.
+			pushfd
+			pushad
+			lea ecx, Offsets::ptr_InvalidInputTreeRootJmpBck
+			call VersioningStruct<uintptr_t>::GetValue
+			mov Offsets::runtimeVersionStructValue, eax
+			popad
+			popfd
+			jmp Offsets::runtimeVersionStructValue
+
+		invalidInputTree:
+			pushfd
+			pushad
+			call LogInvalidUIInputCrash
+			popad
+			popfd
+		emptyInputTree:
+			pushfd
+			pushad
+			lea ecx, Offsets::ptr_InvalidInputTreeRootEmptyJmpBck
+			call VersioningStruct<uintptr_t>::GetValue
+			mov Offsets::runtimeVersionStructValue, eax
+			popad
+			popfd
+			jmp Offsets::runtimeVersionStructValue
+		}
+	}
+
+	/// <summary>
+	/// Sign-in UI can access an invalid input root while looking up an action.
+	/// Treat negative or low addresses like empty input to avoid a crash.
 	/// Original report: https://discord.com/channels/238233332511539200/305406306821472257/1552076343632728065
 	/// </summary>
 	void PreventInvalidInputTreeRootCrash() {
-		const BYTE jumpIfLessOrEqual = 0x8E; // TEST EBX,EBX; JLE follows the original empty-tree path.
-		if (!MemUtil::PatchAdr(Offsets::ptr_InvalidInputTreeRootBranch, &jumpIfLessOrEqual, sizeof(jumpIfLessOrEqual))) {
-			LOG_ERROR("(BUG PREVENTION) Failed Invalid Input Tree Root fix" << std::endl);
+		constexpr int hookLength = 8; // Replaces the original input check.
+		if (!MemUtil::PlaceHook(Offsets::ptr_InvalidInputTreeRootCheck, invalidInputTreeRootHook, hookLength)) {
+			LOG_ERROR("(BUG PREVENTION) Failed UI input crash guard" << std::endl);
 			return;
 		}
 
-		LOG_INFO("(BUG PREVENTION) Prevented Invalid Input Tree Root Crash" << std::endl);
+		FlushInstructionCache(GetCurrentProcess(), (void*)Offsets::ptr_InvalidInputTreeRootCheck.Get(), hookLength);
+		LOG_INFO("(BUG PREVENTION) Installed UI input crash guard" << std::endl);
 	}
 
 	/// <summary>
