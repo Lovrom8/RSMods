@@ -51,6 +51,7 @@ void Offsets::Initialize() {
 	ptr_PnpJmp_2 = { {0x00E7D220, baseHandle + 0x00A7C280 } };							// Code | 89 85 dc fd ff ff 3b 83 34 04 00 00 (opcode after this)
 	ptr_Password_LimitCharacters_Clipboard = { {0x005CF24E, baseHandle + 0x001D03CE} };	// Code | 8d 55 b4 52 8d 45 c8 50 8b ce (opcode before this)
 	ptr_Password_LimitCharacters = { {0x005CF318, baseHandle + 0x001D0498} };			// Code | 8b 43 10 8d 7b 10 8b cb 39 7b 14 (opcode before this)
+	ptr_SaveFilePlatformIdCheck = { {0x007CE5C1, baseHandle + 0x003CF151} };	// Code | 74 2f JZ skips service-ID comparison; patch opcode to EB
 	ptr_AdvancedDisplayCrash = { {0x0091FB73, baseHandle + 0x0051E343} };				// Code | 8a 51 04 57 8b 7e 0c 88 10 2b 01 33 d2 (first opcode)
 	ptr_AdvancedDisplayCrashJmpBck = { {0x0091FB7A, baseHandle + 0x0051E34A} };			// Code | 8a 51 04 57 8b 7e 0c 88 10 2b 01 33 d2 (fourth opcode)
 	ptr_PortAudioInCrash = { {0x00C43AF5, baseHandle + 0x00842C25} };		// Code | 8b 85 c8 fe ff ff 80 b8 df 1b 00 00 00 (two opcodes before this - cmp)
