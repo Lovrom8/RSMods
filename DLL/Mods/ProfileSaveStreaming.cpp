@@ -2,6 +2,7 @@
 #include "ProfileSaveStreaming.hpp"
 #include "../MemUtil.hpp"
 #include "../SamplingProfiler.hpp"
+#include <atomic>
 #include <condition_variable>
 #include <deque>
 #include <mutex>
@@ -52,7 +53,7 @@ namespace ProfileSaveStreaming {
 		typedef int(__cdecl* tCompress2)(uint8_t* dest, uint32_t* destLen, const uint8_t* source, uint32_t sourceLen, int level);
 		typedef void(__fastcall* tStringDestroy)(EngineString* str);
 
-		constexpr int Z_OK = 0, Z_STREAM_END = 1, Z_STREAM_ERROR = -2, Z_BUF_ERROR = -5;
+		constexpr int Z_OK = 0, Z_STREAM_END = 1, Z_STREAM_ERROR = -2, Z_MEM_ERROR = -4, Z_BUF_ERROR = -5;
 		constexpr int Z_NO_FLUSH = 0, Z_FINISH = 4;
 		constexpr int compressionLevel = 6;					// The game uses 9. On 100MB+ of JSON that costs seconds for a ~5% smaller file.
 		constexpr uint32_t drainThreshold = 1024 * 1024;	// Hand the JSON to zlib every MB instead of holding all of it.
@@ -63,13 +64,35 @@ namespace ProfileSaveStreaming {
 			void* value;
 		};
 
-		std::vector<Section> sections;
+		enum class Payload {
+			None,		// The game compresses its own JSON.
+			Streamed,	// compressed holds this save's PRFLDB data.
+			Cancelled,	// The profile couldn't be streamed. Fail the write so the file on disk stays as it was.
+		};
+
+		/// <summary>
+		/// Everything one save hands from the clone hook to the PRFLDB writer.
+		/// SaveProfileToDisk runs clone, print, CommitFile and the writer in one call on one thread, and our SaveDatabase wraps that call,
+		/// so a save owns this from start to end. Only one save can own it at a time (see SaveDatabase).
+		/// </summary>
+		struct SaveState {
+			std::vector<Section> sections;
+			bool recordFailed = false;
+			std::vector<uint8_t> compressed;
+			uint32_t uncompressedSize = 0;
+			Payload payload = Payload::None;
+			bool armed = false;	// The PRFLDB writer asked for the payload; the next compress2 on this thread takes it.
+		};
+
+		SaveState save;
+		std::atomic<DWORD> saveThread = 0; // Thread running the save that owns `save`, or 0.
+
+		bool OnSaveThread() {
+			return saveThread.load() == GetCurrentThreadId();
+		}
+
 		ZStream stream;
-		bool streamFailed = false;
-		std::vector<uint8_t> compressed;
-		uint32_t uncompressedSize = 0;
-		bool pendingValid = false;	// compressed holds this save's PRFLDB payload.
-		bool pendingArmed = false;	// The PRFLDB writer asked for it; the next compress2 hands it over.
+		std::atomic<bool> streamFailed = false;
 		tCompressBound origCompressBound = nullptr;
 		tCompress2 origCompress2 = nullptr;
 
@@ -98,6 +121,7 @@ namespace ProfileSaveStreaming {
 		/// </summary>
 		bool Feed(const uint8_t* bytes, uint32_t length, int flush) {
 			const tDeflate deflate = reinterpret_cast<tDeflate>(Offsets::func_zlibDeflate.Get());
+			std::vector<uint8_t>& compressed = save.compressed;
 
 			stream.next_in = bytes;
 			stream.avail_in = length;
@@ -125,7 +149,7 @@ namespace ProfileSaveStreaming {
 				}
 			}
 			catch (const std::exception&) {
-				return false; // Out of memory. The caller falls back to the game's own save.
+				return false; // Out of memory. The save is cancelled.
 			}
 		}
 
@@ -167,7 +191,7 @@ namespace ProfileSaveStreaming {
 
 				if (!streamFailed && !Feed(reinterpret_cast<const uint8_t*>(sinkBuffers[filled.first].data()), static_cast<uint32_t>(filled.second), Z_NO_FLUSH))
 					streamFailed = true;
-				uncompressedSize += static_cast<uint32_t>(filled.second);
+				save.uncompressedSize += static_cast<uint32_t>(filled.second);
 
 				{
 					std::lock_guard lock(sinkMutex);
@@ -288,10 +312,15 @@ namespace ProfileSaveStreaming {
 			if (length >= 0 && length < static_cast<int>(sizeof(buffer)))
 				Write(buffer, length);
 			else {
-				std::vector<char> big(static_cast<size_t>(gameVscprintf(format, args)) + 1);
-				const int bigLength = gameVsnprintf(big.data(), big.size(), format, args);
-				if (bigLength > 0)
-					Write(big.data(), bigLength);
+				try {
+					std::vector<char> big(static_cast<size_t>(gameVscprintf(format, args)) + 1);
+					const int bigLength = gameVsnprintf(big.data(), big.size(), format, args);
+					if (bigLength > 0)
+						Write(big.data(), bigLength);
+				}
+				catch (const std::exception&) {
+					streamFailed = true; // We're inside the game's Print, so nothing can be thrown through it.
+				}
 			}
 			va_end(args);
 		}
@@ -304,6 +333,7 @@ namespace ProfileSaveStreaming {
 		/// Same output as the game's JSON::Object::Print on the root it builds out of the cloned sections.
 		/// </summary>
 		void PrintSections(tJsonWriter writer, tJsonIndent indent, void* out) {
+			const std::vector<Section>& sections = save.sections;
 			writer(out, "{\n");
 			for (size_t i = 0; i < sections.size(); i++) {
 				indent(writer, out, 1);
@@ -320,41 +350,40 @@ namespace ProfileSaveStreaming {
 		/// We only keep a reference; the section itself can't go in a second parent (SetKeyValue detaches it from the live database).
 		/// </summary>
 		void __stdcall RecordSection(EngineString* name, void* value) {
-			AddRef(value);
+			if (!OnSaveThread()) // Every save comes through SaveDatabase. If one ever doesn't, PrintProfile makes sure it writes nothing.
+				return;
 
 			const char* nameStr = Data(name);
-			for (Section& section : sections) {
+			for (Section& section : save.sections) {
 				if (section.name == nameStr) { // SetKeyValue replaces duplicates
+					AddRef(value);
 					Release(section.value);
 					section.value = value;
 					return;
 				}
 			}
 
-			sections.push_back({ nameStr, value });
+			try {
+				save.sections.push_back({ nameStr, value });
+			}
+			catch (const std::exception&) {
+				save.recordFailed = true; // We're inside the game's save, so nothing can be thrown through it.
+				return;
+			}
+			AddRef(value);
 		}
 
 		/// <summary>
-		/// Replaces "root->Print(writer, stub, out, 0);". Prints the sections straight into a deflate stream.
+		/// Prints the recorded sections straight into a deflate stream, 1MB at a time.
 		/// </summary>
-		void __stdcall PrintProfile(void* root, EngineString* out) {
-			const tJsonWriter writer = reinterpret_cast<tJsonWriter>(Offsets::func_profileJsonWriter.Get());
-
-			pendingValid = pendingArmed = false;
-			std::vector<uint8_t>().swap(compressed);
-
-			if (sections.empty()) { // Nothing was recorded (hook not placed?), so the game filled the root itself.
-				Print(root, writer, NoIndent, out, 0);
-				return;
-			}
-
+		bool StreamSections() {
 			const tDeflateInit deflateInit = reinterpret_cast<tDeflateInit>(Offsets::func_zlibDeflateInit.Get());
 			const tDeflateEnd deflateEnd = reinterpret_cast<tDeflateEnd>(Offsets::func_zlibDeflateEnd.Get());
 
 			bool streamed = false;
 			stream = {};
-			uncompressedSize = 0;
-			streamFailed = !gameVsnprintf || !gameVscprintf || !StartSink();
+			save.uncompressedSize = 0;
+			streamFailed = !StartSink();
 
 			if (!streamFailed && deflateInit(&stream, compressionLevel, "1.2.7", sizeof(ZStream)) == Z_OK) {
 				std::thread compressor;
@@ -377,8 +406,8 @@ namespace ProfileSaveStreaming {
 
 					const uint8_t terminator = '\0'; // The game compresses the string's null terminator too, and the loader expects it.
 					if (!streamFailed && Feed(&terminator, 1, Z_FINISH)) {
-						uncompressedSize += 1;
-						compressed.resize(stream.total_out);
+						save.uncompressedSize += 1;
+						save.compressed.resize(stream.total_out);
 						streamed = true;
 					}
 				}
@@ -386,24 +415,42 @@ namespace ProfileSaveStreaming {
 				deflateEnd(&stream);
 			}
 			FreeSink();
+			return streamed;
+		}
 
-			if (streamed) {
-				pendingValid = true;
-				LOG_INFO("(PROFILE SAVE) Streamed profile save: " << uncompressedSize / 1024 << " KB of JSON into " << compressed.size() / 1024 << " KB" << std::endl);
+		/// <summary>
+		/// Replaces "root->Print(writer, stub, out, 0);".
+		/// If the profile can't be streamed, the save is cancelled instead of handed to the game's print: that builds the whole
+		/// profile in one string, and running out of memory is the usual reason we got here, so it would likely crash.
+		/// The file on disk stays as it was, and the next save tries again.
+		/// </summary>
+		void __stdcall PrintProfile(void* root, EngineString* out) {
+			if (!OnSaveThread()) {
+				// The clone hook skipped this save's sections, so the root is empty. Leave the string empty; Compress2 fails the write.
+				LOG_ERROR("(PROFILE SAVE) A profile save didn't come through SaveDatabase, not writing it" << std::endl);
+				return;
+			}
+
+			if (save.recordFailed) {
+				save.payload = Payload::Cancelled;
+				LOG_ERROR("(PROFILE SAVE) Ran out of memory collecting the profile, not saving it this time" << std::endl);
+				return;
+			}
+
+			if (save.sections.empty()) { // No persistent sections, so the game's root is the whole (tiny) profile.
+				Print(root, reinterpret_cast<tJsonWriter>(Offsets::func_profileJsonWriter.Get()), NoIndent, out, 0);
+				return;
+			}
+
+			if (StreamSections()) {
+				save.payload = Payload::Streamed;
+				LOG_INFO("(PROFILE SAVE) Streamed profile save: " << save.uncompressedSize / 1024 << " KB of JSON into " << save.compressed.size() / 1024 << " KB" << std::endl);
 			}
 			else {
-				// Start over the way the game does it: the whole profile in one string.
-				std::vector<uint8_t>().swap(compressed);
-				char* data = Data(out);
-				out->finish = data;
-				*data = '\0';
-				PrintSections(writer, NoIndent, out);
-				LOG_WARNING("(PROFILE SAVE) Couldn't stream the profile save, used the game's save instead" << std::endl);
+				save.payload = Payload::Cancelled;
+				std::vector<uint8_t>().swap(save.compressed);
+				LOG_ERROR("(PROFILE SAVE) Couldn't stream the profile save (out of memory?), not saving it this time" << std::endl);
 			}
-
-			for (Section& section : sections)
-				Release(section.value);
-			sections.clear();
 		}
 
 		/// <summary>
@@ -411,26 +458,31 @@ namespace ProfileSaveStreaming {
 		/// We already have the compressed data, and GRProfileSave::CommitFile passes an empty buffer because our JSON string is empty.
 		/// </summary>
 		uint32_t __cdecl CompressBound(uint32_t sourceLen) {
-			if (sourceLen == 0 && pendingValid) {
-				pendingArmed = true;
-				return static_cast<uint32_t>(compressed.size());
+			if (sourceLen == 0 && OnSaveThread() && save.payload == Payload::Streamed) {
+				save.armed = true;
+				return static_cast<uint32_t>(save.compressed.size());
 			}
 			return origCompressBound(sourceLen);
 		}
 
 		/// <summary>
 		/// Hand over the already compressed profile. The EVAS header was filled from the (empty) source, so fix its uncompressed size, the dword before dest.
+		/// Any other empty source is a cancelled save. Failing here takes the writer's own "couldn't write the file" path, so the file isn't touched.
 		/// </summary>
 		int __cdecl Compress2(uint8_t* dest, uint32_t* destLen, const uint8_t* source, uint32_t sourceLen, int level) {
-			if (!pendingArmed || sourceLen != 0)
+			if (sourceLen != 0)
 				return origCompress2(dest, destLen, source, sourceLen, level);
 
-			memcpy(dest, compressed.data(), compressed.size());
-			*destLen = static_cast<uint32_t>(compressed.size());
-			reinterpret_cast<uint32_t*>(dest)[-1] = uncompressedSize;
+			if (!save.armed || !OnSaveThread() || save.payload != Payload::Streamed)
+				return Z_MEM_ERROR;
 
-			pendingValid = pendingArmed = false;
-			std::vector<uint8_t>().swap(compressed);
+			memcpy(dest, save.compressed.data(), save.compressed.size());
+			*destLen = static_cast<uint32_t>(save.compressed.size());
+			reinterpret_cast<uint32_t*>(dest)[-1] = save.uncompressedSize;
+
+			save.armed = false;
+			save.payload = Payload::None;
+			std::vector<uint8_t>().swap(save.compressed);
 			return Z_OK;
 		}
 
@@ -487,12 +539,58 @@ namespace ProfileSaveStreaming {
 			}
 		}
 
-		bool RedirectCall(VersioningStruct<uintptr_t>& callSite, void* newTarget, uintptr_t& originalTarget) {
+		uintptr_t CallTarget(VersioningStruct<uintptr_t>& callSite) {
 			const uintptr_t site = callSite.Get();
-			originalTarget = site + 5 + *reinterpret_cast<int32_t*>(site + 1);
-			const int32_t relative = static_cast<int32_t>(reinterpret_cast<uintptr_t>(newTarget) - (site + 5));
-			return MemUtil::PatchAdr(site + 1, &relative, sizeof(relative), false);
+			return site + 5 + *reinterpret_cast<int32_t*>(site + 1);
 		}
+
+		/// <summary>
+		/// Hooks that only work together. If one can't be placed, Undo puts back the ones that were, so the game never runs with half of them.
+		/// </summary>
+		class PatchGroup {
+			struct Saved {
+				uintptr_t address;
+				uint8_t bytes[8];
+				size_t length;
+			};
+			std::vector<Saved> saved;
+
+			void Save(uintptr_t address, size_t length) {
+				Saved entry{ address, {}, length };
+				memcpy(entry.bytes, reinterpret_cast<void*>(address), length);
+				saved.push_back(entry);
+			}
+
+		public:
+			bool Hook(VersioningStruct<uintptr_t>& at, void* hook, int length) {
+				Save(at.Get(), length);
+				if (!MemUtil::PlaceHook(at, hook, length))
+					return false;
+				FlushInstructionCache(GetCurrentProcess(), (void*)at.Get(), length);
+				return true;
+			}
+
+			/// <summary>
+			/// Point a CALL rel32 somewhere else. Read the original target with CallTarget first.
+			/// </summary>
+			bool Redirect(VersioningStruct<uintptr_t>& callSite, void* newTarget) {
+				const uintptr_t site = callSite.Get();
+				Save(site + 1, sizeof(int32_t));
+				const int32_t relative = static_cast<int32_t>(reinterpret_cast<uintptr_t>(newTarget) - (site + 5));
+				if (!MemUtil::PatchAdr(site + 1, &relative, sizeof(relative), false))
+					return false;
+				FlushInstructionCache(GetCurrentProcess(), (void*)site, 5);
+				return true;
+			}
+
+			void Undo() {
+				for (auto it = saved.rbegin(); it != saved.rend(); it++) {
+					MemUtil::PatchAdr(reinterpret_cast<LPVOID>(it->address), it->bytes, it->length);
+					FlushInstructionCache(GetCurrentProcess(), (void*)it->address, it->length);
+				}
+				saved.clear();
+			}
+		};
 
 		// ---- Loading ----
 
@@ -645,16 +743,36 @@ namespace ProfileSaveStreaming {
 		/// <summary>
 		/// LoadProfileAsyncStart empties the profile in memory before reading the file, and the game keeps running while it's parsed.
 		/// Anything that saves in the meantime would write that empty profile over the real one.
+		///
+		/// This call is also the only way into the profile save: WriteJSONToFile's only caller is SaveDatabasePersistentDataToDisk,
+		/// whose only caller is this call site, and it runs the clone, print, CommitFile and the PRFLDB writer before returning.
+		/// So the save owns `save` for exactly this call. The game only saves from its main loop, but if a second thread ever
+		/// started a save while one is running, it is skipped rather than allowed to mix its sections and data with the first.
 		/// </summary>
 		void __fastcall SaveDatabase(void* profileSave, void*) {
 			if (loadState != LoadState::Idle) {
 				LOG_WARNING("(PROFILE SAVE) Skipped a profile save while the profile is loading" << std::endl);
 				return;
 			}
+
+			DWORD idle = 0;
+			if (!saveThread.compare_exchange_strong(idle, GetCurrentThreadId())) {
+				LOG_WARNING("(PROFILE SAVE) Skipped a profile save that started while another was running" << std::endl);
+				return;
+			}
+			save = SaveState{};
+
 			const ULONGLONG start = GetTickCount64();
 			SamplingProfiler::Start(GetCurrentThreadId(), "profile_save");
 			origSaveDatabase(profileSave, nullptr);
 			SamplingProfiler::Stop();
+
+			// CommitFile can return before the writer runs (no Steam account, etc.), so whatever is left is dropped here.
+			for (Section& section : save.sections)
+				Release(section.value);
+			save = SaveState{};
+			saveThread = 0;
+
 			LOG_INFO("(PROFILE SAVE) Saved profile in " << (GetTickCount64() - start) / 1000.0 << "s" << std::endl);
 		}
 
@@ -914,61 +1032,69 @@ namespace ProfileSaveStreaming {
 				LOG_ERROR("(PROFILE SAVE) Failed to replace the PlaynextStats trim" << std::endl);
 		}
 
+		/// <summary>
+		/// SaveDatabase: the load's save guard, and the owner of each streamed save. Both of the groups below need it.
+		/// </summary>
+		bool InitializeSaveDatabase() {
+			origSaveDatabase = reinterpret_cast<tSaveDatabase>(CallTarget(Offsets::ptr_profileSaveDatabaseCall));
+			PatchGroup patches;
+			if (!patches.Redirect(Offsets::ptr_profileSaveDatabaseCall, SaveDatabase)) {
+				patches.Undo();
+				LOG_ERROR("(PROFILE SAVE) Failed to hook profile saves, not streaming saves or loading profiles in the background" << std::endl);
+				return false;
+			}
+			return true;
+		}
+
 		void InitializeSaving() {
 			HMODULE msvcr100 = GetModuleHandleA("msvcr100.dll");
 			if (msvcr100) {
 				gameVsnprintf = reinterpret_cast<tVsnprintf>(GetProcAddress(msvcr100, "_vsnprintf"));
 				gameVscprintf = reinterpret_cast<tVscprintf>(GetProcAddress(msvcr100, "_vscprintf"));
 			}
-
-			uintptr_t compressBound = 0, compress2 = 0;
-			if (!RedirectCall(Offsets::ptr_profileSaveCompressBoundCall, CompressBound, compressBound)
-				|| !RedirectCall(Offsets::ptr_profileSaveCompress2Call, Compress2, compress2)) {
-				LOG_ERROR("(PROFILE SAVE) Failed to hook the profile writer, not streaming profile saves" << std::endl);
+			if (!gameVsnprintf || !gameVscprintf) {
+				LOG_ERROR("(PROFILE SAVE) Couldn't find the game's printf, not streaming profile saves" << std::endl);
 				return;
 			}
-			origCompressBound = reinterpret_cast<tCompressBound>(compressBound);
-			origCompress2 = reinterpret_cast<tCompress2>(compress2);
 
-			// Print first: on its own it falls back to the game's print. The clone hook on its own would save an empty profile.
-			if (!MemUtil::PlaceHook(Offsets::ptr_profileSavePrintRoot, printRootHook, 5)
-				|| !MemUtil::PlaceHook(Offsets::ptr_profileSaveCloneSection, cloneSectionHook, 5)) {
+			origCompressBound = reinterpret_cast<tCompressBound>(CallTarget(Offsets::ptr_profileSaveCompressBoundCall));
+			origCompress2 = reinterpret_cast<tCompress2>(CallTarget(Offsets::ptr_profileSaveCompress2Call));
+
+			// All or nothing: the clone hook without the others would save an empty profile.
+			PatchGroup patches;
+			if (!patches.Redirect(Offsets::ptr_profileSaveCompressBoundCall, CompressBound)
+				|| !patches.Redirect(Offsets::ptr_profileSaveCompress2Call, Compress2)
+				|| !patches.Hook(Offsets::ptr_profileSavePrintRoot, printRootHook, 5)
+				|| !patches.Hook(Offsets::ptr_profileSaveCloneSection, cloneSectionHook, 5)) {
+				patches.Undo();
 				LOG_ERROR("(PROFILE SAVE) Failed to hook the profile save, not streaming profile saves" << std::endl);
 				return;
 			}
-			FlushInstructionCache(GetCurrentProcess(), (void*)Offsets::ptr_profileSavePrintRoot.Get(), 5);
-			FlushInstructionCache(GetCurrentProcess(), (void*)Offsets::ptr_profileSaveCloneSection.Get(), 5);
 
 			LOG_INFO("(PROFILE SAVE) Streaming profile saves" << std::endl);
 		}
 
 		void InitializeLoading() {
-			if (MemUtil::PlaceHook(Offsets::ptr_profileLoadClearDocument, loadClearDocumentHook, 6))
-				FlushInstructionCache(GetCurrentProcess(), (void*)Offsets::ptr_profileLoadClearDocument.Get(), 6);
-			else
-				LOG_ERROR("(PROFILE SAVE) Failed to free the loaded profile text" << std::endl);
+			origParse = reinterpret_cast<tJsonParse>(CallTarget(Offsets::ptr_profileParseCall));
 
-			// The save guard goes in first: without it, a save during the load would overwrite the profile.
-			uintptr_t saveDatabase = 0, parse = 0;
-			if (!RedirectCall(Offsets::ptr_profileSaveDatabaseCall, SaveDatabase, saveDatabase)) {
-				LOG_ERROR("(PROFILE SAVE) Failed to hook profile saves, loading profiles on the main thread" << std::endl);
-				return;
-			}
-			origSaveDatabase = reinterpret_cast<tSaveDatabase>(saveDatabase);
-
-			if (!RedirectCall(Offsets::ptr_profileParseCall, Parse, parse)) {
-				LOG_ERROR("(PROFILE SAVE) Failed to hook the profile parser, loading profiles on the main thread" << std::endl);
-				return;
-			}
-			origParse = reinterpret_cast<tJsonParse>(parse);
-
-			if (!MemUtil::PlaceHook(Offsets::ptr_profileLoadTick, loadTickHook, 7)) {
+			// The parse redirect only hands over what the tick parsed, and the tick needs it to use that parse.
+			PatchGroup patches;
+			if (!patches.Redirect(Offsets::ptr_profileParseCall, Parse)
+				|| !patches.Hook(Offsets::ptr_profileLoadTick, loadTickHook, 7)) {
+				patches.Undo();
 				LOG_ERROR("(PROFILE SAVE) Failed to hook the profile load, loading profiles on the main thread" << std::endl);
 				return;
 			}
-			FlushInstructionCache(GetCurrentProcess(), (void*)Offsets::ptr_profileLoadTick.Get(), 7);
 
 			LOG_INFO("(PROFILE SAVE) Loading profiles in the background" << std::endl);
+		}
+
+		void InitializeClearDocument() {
+			PatchGroup patches;
+			if (!patches.Hook(Offsets::ptr_profileLoadClearDocument, loadClearDocumentHook, 6)) {
+				patches.Undo();
+				LOG_ERROR("(PROFILE SAVE) Failed to free the loaded profile text" << std::endl);
+			}
 		}
 	}
 
@@ -995,7 +1121,10 @@ namespace ProfileSaveStreaming {
 
 		InitializeNumberHash();
 		InitializePlaynextTrim();
-		InitializeSaving();
-		InitializeLoading();
+		InitializeClearDocument();
+		if (InitializeSaveDatabase()) {
+			InitializeSaving();
+			InitializeLoading();
+		}
 	}
 }
