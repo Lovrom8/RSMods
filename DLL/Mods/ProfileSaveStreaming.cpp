@@ -454,12 +454,9 @@ namespace ProfileSaveStreaming {
 				push eax
 				call RecordSection
 
-				lea ecx, Offsets::ptr_profileSaveCloneSectionJmpBck
-				call VersioningStruct<uintptr_t>::GetValue
-				mov Offsets::runtimeVersionStructValue, eax
-
 				popad
-				jmp Offsets::runtimeVersionStructValue // Releases the section, skipping the clone and insert.
+				push offset Offsets::ptr_profileSaveCloneSectionJmpBck // Releases the section, skipping the clone and insert.
+				jmp MemUtil::JumpToVersioned
 			}
 		}
 
@@ -470,12 +467,9 @@ namespace ProfileSaveStreaming {
 				push ebx						// Root
 				call PrintProfile
 
-				lea ecx, Offsets::ptr_profileSavePrintRootJmpBck
-				call VersioningStruct<uintptr_t>::GetValue
-				mov Offsets::runtimeVersionStructValue, eax
-
 				popad
-				jmp Offsets::runtimeVersionStructValue
+				push offset Offsets::ptr_profileSavePrintRootJmpBck
+				jmp MemUtil::JumpToVersioned
 			}
 		}
 
@@ -487,12 +481,9 @@ namespace ProfileSaveStreaming {
 				push esi						// GRProfileSave's JSON text
 				call ReleaseLoadedDocument
 
-				lea ecx, Offsets::ptr_profileLoadClearDocumentJmpBck
-				call VersioningStruct<uintptr_t>::GetValue
-				mov Offsets::runtimeVersionStructValue, eax
-
 				popad
-				jmp Offsets::runtimeVersionStructValue
+				push offset Offsets::ptr_profileLoadClearDocumentJmpBck
+				jmp MemUtil::JumpToVersioned
 			}
 		}
 
@@ -673,12 +664,9 @@ namespace ProfileSaveStreaming {
 				push ebx						// RSProfileService_Win32
 				call LoadTick
 
-				lea ecx, Offsets::ptr_profileLoadTickJmpBck
-				call VersioningStruct<uintptr_t>::GetValue
-				mov Offsets::runtimeVersionStructValue, eax
-
 				popad
-				jmp Offsets::runtimeVersionStructValue // End of OnTick
+				push offset Offsets::ptr_profileLoadTickJmpBck // End of OnTick
+				jmp MemUtil::JumpToVersioned
 			}
 		}
 
