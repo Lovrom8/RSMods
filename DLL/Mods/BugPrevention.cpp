@@ -63,15 +63,8 @@ namespace BugPrevention {
 			push EDI						// The code we are overwriting to place this hook
 			MOV EDI, DWORD PTR DS : [ESI + 0xC] // The code we are overwriting to place this hook
 
-			pushad
-
-			lea ecx, Offsets::ptr_AdvancedDisplayCrashJmpBck
-			call VersioningStruct<uintptr_t>::GetValue
-			mov Offsets::runtimeVersionStructValue, eax
-
-			popad
-
-			jmp Offsets::runtimeVersionStructValue
+			push offset Offsets::ptr_AdvancedDisplayCrashJmpBck
+			jmp MemUtil::JumpToVersioned
 
 			prevAdvancedDisplayCrash :
 			ret							// ECX is NULL, so we need to leave this function or we will crash.
@@ -128,15 +121,13 @@ namespace BugPrevention {
 			ret 4
 
 		validControllerAxisRecord:
-			lea ecx, Offsets::ptr_ControllerAxisBoundsJmpBck
-			call VersioningStruct<uintptr_t>::GetValue
-			mov Offsets::runtimeVersionStructValue, eax
 			popad
 			popfd
 			push ebp
 			mov ebp, esp
 			sub esp, 8 // Original six-byte prologue
-			jmp Offsets::runtimeVersionStructValue
+			push offset Offsets::ptr_ControllerAxisBoundsJmpBck
+			jmp MemUtil::JumpToVersioned
 		}
 	}
 
@@ -165,14 +156,8 @@ namespace BugPrevention {
 			cmp ebx, 0x10000
 			jb invalidInputTree
 			test ebx, ebx // Preserve the original TEST flags on the normal lookup path.
-			pushfd
-			pushad
-			lea ecx, Offsets::ptr_InvalidInputTreeRootJmpBck
-			call VersioningStruct<uintptr_t>::GetValue
-			mov Offsets::runtimeVersionStructValue, eax
-			popad
-			popfd
-			jmp Offsets::runtimeVersionStructValue
+			push offset Offsets::ptr_InvalidInputTreeRootJmpBck
+			jmp MemUtil::JumpToVersioned
 
 		invalidInputTree:
 			pushfd
@@ -181,14 +166,8 @@ namespace BugPrevention {
 			popad
 			popfd
 		emptyInputTree:
-			pushfd
-			pushad
-			lea ecx, Offsets::ptr_InvalidInputTreeRootEmptyJmpBck
-			call VersioningStruct<uintptr_t>::GetValue
-			mov Offsets::runtimeVersionStructValue, eax
-			popad
-			popfd
-			jmp Offsets::runtimeVersionStructValue
+			push offset Offsets::ptr_InvalidInputTreeRootEmptyJmpBck
+			jmp MemUtil::JumpToVersioned
 		}
 	}
 
@@ -220,15 +199,8 @@ namespace BugPrevention {
 		keepCalibrationSampleCount:
 			mov dword ptr [ebx + 0x788], edx	// The code we are overwriting to place this hook
 
-			pushad
-
-			lea ecx, Offsets::ptr_calibrationSampleCountClampJmpBck
-			call VersioningStruct<uintptr_t>::GetValue
-			mov Offsets::runtimeVersionStructValue, eax
-
-			popad
-
-			jmp Offsets::runtimeVersionStructValue
+			push offset Offsets::ptr_calibrationSampleCountClampJmpBck
+			jmp MemUtil::JumpToVersioned
 		}
 	}
 

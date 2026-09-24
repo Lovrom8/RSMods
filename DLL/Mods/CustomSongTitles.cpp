@@ -44,14 +44,8 @@ void __declspec(naked) hook_fakeTitles() {
 	ExitHookFakeTitle:
 		popad									// Return EAX, ECX, and EDX from the stack.
 
-		pushad
-
-		lea ecx, Offsets::hookBackAddr_FakeTitles
-		call VersioningStruct<uintptr_t>::GetValue
-		mov Offsets::runtimeVersionStructValue, eax
-
-		popad
-		jmp[Offsets::runtimeVersionStructValue]	// Return to the original code.
+		push offset Offsets::hookBackAddr_FakeTitles	// Return to the original code.
+		jmp MemUtil::JumpToVersioned
 	}
 }
 
@@ -95,15 +89,8 @@ void __declspec(naked) missingLocalizationHookFunc() {
 		add esp, 0x8									// Replace original instruction we were replacing
 		push eax										// Replace original instruction we were replacing
 
-		pushad
-
-		lea ecx, Offsets::hookBackAddr_missingLocalization
-		call VersioningStruct<uintptr_t>::GetValue
-		mov Offsets::runtimeVersionStructValue, eax
-
-		popad
-
-		jmp[Offsets::runtimeVersionStructValue]	// Jump back to the original instructions.
+		push offset Offsets::hookBackAddr_missingLocalization	// Jump back to the original instructions.
+		jmp MemUtil::JumpToVersioned
 	}
 }
 

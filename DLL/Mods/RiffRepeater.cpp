@@ -136,15 +136,8 @@ void __declspec(naked) hook_timeStretchCalculations() {
 		pop EBP // Restore EBP from stack
 
 
-		pushad
-
-		lea ecx, Offsets::ptr_timeStretchCalculationsJmpBck
-		call VersioningStruct<uintptr_t>::GetValue
-		mov Offsets::runtimeVersionStructValue, eax
-
-		popad
-
-		jmp Offsets::runtimeVersionStructValue
+		push offset Offsets::ptr_timeStretchCalculationsJmpBck
+		jmp MemUtil::JumpToVersioned
 	}
 }
 

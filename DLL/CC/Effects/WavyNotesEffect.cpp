@@ -44,16 +44,10 @@ namespace CrowdControl::Effects {
 			fstp dword ptr[ebx + 0x74]
 			fld dword ptr[esp + 0x2C]
 			fstp dword ptr[ebx + 0x78]
+			test esp, esp // ZF = 0: the game's jz right after isn't taken (ApplyWavyNotes leaves the flags unknown)
 
-			pushad
-
-			lea ecx, Offsets::ptr_wavyNotesJmpBck
-			call VersioningStruct<uintptr_t>::GetValue
-			mov Offsets::runtimeVersionStructValue, eax
-
-			popad
-
-			jmp [Offsets::runtimeVersionStructValue]
+			push offset Offsets::ptr_wavyNotesJmpBck
+			jmp MemUtil::JumpToVersioned
 		}
 	}
 
