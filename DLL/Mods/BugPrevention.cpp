@@ -51,6 +51,15 @@ namespace BugPrevention {
 		LOG_INFO("(BUG PREVENTION) Allowed Complex Uplay Passwords" << std::endl);
 	}
 
+	/// <summary>
+	/// Skip profile save file Steam Account Id check to allow sharing profiles without needing external tooling.
+	/// </summary>
+	void BypassSaveFilePlatformIdCheck() {
+		constexpr byte alwaysContinue = 0xEB;
+		MemUtil::PatchAdr(Offsets::ptr_SaveFilePlatformIdCheck, &alwaysContinue, sizeof(alwaysContinue));
+		LOG_INFO("(BUG PREVENTION) Allowed cross-platform-ID PRFLDB and JSON reads" << std::endl);
+	}
+
 	void __declspec(naked) advancedDisplayCrashHook()
 	{
 		__asm {
