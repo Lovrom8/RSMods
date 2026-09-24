@@ -35,29 +35,15 @@ void __declspec(naked) disableTrueTuning()
 		forceUserToTrueTune:
 		pop EAX										// Restore EAX from the stack
 
-		pushad
-
-		lea ecx, Offsets::ptr_disableTrueTuning_forceTT
-		call VersioningStruct<uintptr_t>::GetValue
-		mov Offsets::runtimeVersionStructValue, eax
-
-		popad
-
-		jmp Offsets::runtimeVersionStructValue
+		push offset Offsets::ptr_disableTrueTuning_forceTT
+		jmp MemUtil::JumpToVersioned
 
 		trueTuningForceA440:
 		pop EAX										// Restore EAX from the stack
 		fld ForcedTrueTuning						// Set ST(0) to 440 | A440. This tells note detection that we want to use A440 as our true tuning.
 
-		pushad
-
-		lea ecx, Offsets::ptr_disableTrueTuning_jmpBck
-		call VersioningStruct<uintptr_t>::GetValue
-		mov Offsets::runtimeVersionStructValue, eax
-
-		popad
-
-		jmp Offsets::runtimeVersionStructValue
+		push offset Offsets::ptr_disableTrueTuning_jmpBck
+		jmp MemUtil::JumpToVersioned
 	}
 }
 

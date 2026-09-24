@@ -75,6 +75,26 @@ bool MemUtil::PlaceHook(VersioningStruct<uintptr_t>& hookSpot, void* ourFunct, i
 }
 
 /// <summary>
+/// Leave an x86 ASM hook by jumping to a versioned address. Every register and flag is kept as it was.
+/// Usage, at the end of a naked hook:
+///		push offset Offsets::ptr_SomethingJmpBck
+///		jmp MemUtil::JumpToVersioned
+/// The address only lives on this thread's stack, so hooks running on different threads can't send each other to the wrong place.
+/// </summary>
+void __declspec(naked) MemUtil::JumpToVersioned() {
+	__asm {
+		pushfd
+		pushad
+		mov ecx, [esp + 36]							// The VersioningStruct the hook pushed (above 8 registers and the flags)
+		call VersioningStruct<uintptr_t>::GetValue
+		mov [esp + 36], eax							// Replace it with the address it resolves to
+		popad
+		popfd
+		ret											// Jump there
+	}
+}
+
+/// <summary>
 /// Place x86 ASM (__asm) hook
 /// </summary>
 /// <param name="hookSpot"> - Where should we hook?</param>
