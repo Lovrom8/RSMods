@@ -4,6 +4,7 @@
 #include "Mods/VolumeControl.hpp"
 #include "Mods/AudioDevices.hpp"
 #include "Mods/BugPrevention.hpp"
+#include "Mods/ProfileSaveStreaming.hpp"
 #include "Keyboard.hpp"
 #include "Keybindings.hpp"
 #include "Mods/ExtendedRangeMode.hpp"

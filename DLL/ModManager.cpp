@@ -165,6 +165,7 @@ namespace ModManager {
 	{
 		AudioDevices::SetupMicrophones();
 		ApplyBugPrevention();
+		ProfileSaveStreaming::Initialize();
 
 		#ifdef _WWISE_LOGS
 				Wwise::Logging::Init();

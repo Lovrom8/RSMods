@@ -320,6 +320,15 @@ BOOL APIENTRY DllMain(HMODULE hModule, uint32_t dwReason, LPVOID) {
 		case DLL_PROCESS_ATTACH:
 			SetupLogging();
 			DisableThreadLibraryCalls(hModule); // Disables the DLL_THREAD_ATTACH and DLL_THREAD_DETACH notifications. | https://docs.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-disablethreadlibrarycalls
+
+			// The game FreeLibrary's xinput1_3 while shutting down its input service, but our hooks and threads stay live until it exits.
+			// Unloading then would jump into freed code, and our std::jthread globals would join under the loader lock (hangs on close).
+			// Pinning keeps us loaded until process exit, when the other threads are already gone.
+			{
+				HMODULE self = nullptr;
+				GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_PIN | GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, reinterpret_cast<LPCWSTR>(&DllMain), &self);
+			}
+
 			Proxy::Init(); // Proxy all real XInput commands to the actual xinput1_3.dll.
 			Initialize(); // Inject our mod code.
 			return TRUE;

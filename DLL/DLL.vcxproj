@@ -128,6 +128,11 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug with Wwise Logging|Win32'">../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="Mods\ProfileSaveStreaming.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug with Wwise Logging|Win32'">../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
     <ClCompile Include="Mods\Loft.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug with Wwise Logging|Win32'">../stdafx.h</PrecompiledHeaderFile>
@@ -385,6 +390,7 @@
     <ClInclude Include="ModManager.hpp" />
     <ClInclude Include="Mods\AudioDevices.hpp" />
     <ClInclude Include="Mods\BugPrevention.hpp" />
+    <ClInclude Include="Mods\ProfileSaveStreaming.hpp" />
     <ClInclude Include="Mods\DisableControllers.hpp" />
     <ClInclude Include="Mods\Loft.hpp" />
     <ClInclude Include="Mods\LoftMod.hpp" />
@@ -472,6 +478,7 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="MemUtil.cpp" />
+    <ClCompile Include="SamplingProfiler.cpp" />
     <ClCompile Include="Mods\GuitarSkeletons.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug with Wwise Logging|Win32'">../stdafx.h</PrecompiledHeaderFile>
@@ -582,6 +589,7 @@
     <ClInclude Include="Lib\ImGUI\imstb_textedit.h" />
     <ClInclude Include="Lib\ImGUI\imstb_truetype.h" />
     <ClInclude Include="MemUtil.hpp" />
+    <ClInclude Include="SamplingProfiler.hpp" />
     <ClInclude Include="Offsets.hpp" />
     <ClInclude Include="Settings.hpp" />
     <ClInclude Include="StringState.h" />
