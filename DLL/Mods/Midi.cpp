@@ -353,6 +353,18 @@ namespace Midi {
 	}
 
 	/// <summary>
+	/// Formats a tuning and true tuning for the log, ex: "Tuning = { -2, 0, 0, 0, 0, 0 } . True Tuning = A440"
+	/// </summary>
+	static std::string DescribeTuning(const std::array<byte, 6>& tuning, int trueTuning_Hertz) {
+		std::ostringstream description;
+		description << "Tuning = { ";
+		for (size_t i = 0; i < tuning.size(); i++)
+			description << (i ? ", " : "") << static_cast<int>(static_cast<signed char>(tuning[i])); // The game stores -5 as 251.
+		description << " } . True Tuning = A" << trueTuning_Hertz;
+		return description.str();
+	}
+
+	/// <summary>
 	/// Send a command to the pedal to change to a specific setting based on the current song's tuning.
 	/// </summary>
 	void AutomateTuning() {
@@ -366,7 +378,7 @@ namespace Midi {
 
 			Sleep(1500); // The menu is called when the animation starts. The tuning isn't set at that point, so we need to wait to get the value. This doesn't seem to lag the game.
 
-			std::array<int, 2> highestLowestTuning = SongTuning::GetHighestLowestString();
+			std::array<int, 2> highestLowestTuning = SongTuning::GetHighestLowestString(true);
 
 			int highestTuning = highestLowestTuning[0];
 			int lowestTuning = highestLowestTuning[1];
@@ -379,44 +391,57 @@ namespace Midi {
 
 			int TrueTuning_Hertz = SongTuning::GetTrueTuning();
 
-			if (TrueTuning_Hertz < 260) // Give some leeway for A220 and it's true tuned offsets
-				highestTuning -= 12;
+			// No A220 adjustment here: GetHighestLowestString's cancels out, and the pedal functions double A220 back to A440.
+			// Taking 12 off as well would send the pedal an extra octave down.
 
 			selectedPedal.autoTuneFunction(highestTuning + tuningOffset, static_cast<float>(TrueTuning_Hertz));
 
-			LOG_INFO("(MIDI) Triggered Mod: Automated Tuning (Song)" << std::endl);
+			LOG_INFO("(MIDI) Triggered Mod: Automated Tuning (Song) " << DescribeTuning(SongTuning::GetCurrentTuning(), TrueTuning_Hertz) << std::endl);
 		}
 	}
 
 	void AttemptTuningInTuner() {
 		if (!alreadyAttemptedTuningInTuner) {
 			alreadyAttemptedTuningInTuner = true;
+			tunerAutoTuneFailed = false;
 
 			if (!selectedPedal.supportsDropTuning) {
 				LOG_ERROR("(MIDI) Your pedal doesn't support drop tuning." << std::endl);
 				return;
 			}
 
-			Sleep(2000); // The menu is called when the animation starts. We need to wait for the tuning name to appear in the bottom-right corner so we can read it and get the tuning we need.
+			// The menu is reported as soon as its animation starts, before the tuner has ticked. Give it up to 2 seconds.
+			Tuning tunerTuning;
+			for (int waitedMs = 0; waitedMs < 2000; waitedMs += 100) {
+				tunerTuning = SongTuning::GetTuningAtTuner(false);
+				if (tunerTuning.lowE != Tuning().lowE)
+					break;
+				Sleep(100);
+			}
+			if (tunerTuning.lowE == Tuning().lowE)
+				tunerTuning = SongTuning::GetTuningAtTuner(); // Once more, logging why it failed.
 
-			std::array<int, 2> highestLowestTuning = SongTuning::GetHighestLowestString(SongTuning::GetTuningAtTuner());
+			std::array<int, 2> highestLowestTuning = SongTuning::GetHighestLowestString(tunerTuning, true);
 
 			int highestTuning = highestLowestTuning[0];
 			int lowestTuning = highestLowestTuning[1];
 
-			// Invalid pointer check
+			// Couldn't read the tuner. The player is now tuning by hand to what the tuner shows, so tuning the pedal once the
+			// song starts would stack on top of that. Leave this song alone.
 			if (highestTuning == 666 && lowestTuning == 666) {
-				LOG_ERROR("(MIDI) Cannot read tuning in tuner. Will attempt to automate tuning once the user is in the song." << std::endl);
+				tunerAutoTuneFailed = true;
+				LOG_ERROR("(MIDI) Cannot read tuning in tuner. Not automating tuning for this song, since it would stack on the manual tuning." << std::endl);
 				return;
 			}
 
 			int TrueTuning_Hertz = SongTuning::GetTrueTuning();
 
-			// highestLowestTuning accounts for true tuning of A220. Do not add a check for it here.
+			// No A220 adjustment here, same as the song path (see AutomateTuning).
 
 			selectedPedal.autoTuneFunction(highestTuning + tuningOffset, static_cast<float>(TrueTuning_Hertz));
 
-			LOG_INFO("(MIDI) Triggered Mod: Automated Tuning (Tuner)" << std::endl);
+			const std::array<byte, 6> tunerStrings = { tunerTuning.lowE, tunerTuning.strA, tunerTuning.strD, tunerTuning.strG, tunerTuning.strB, tunerTuning.highE };
+			LOG_INFO("(MIDI) Triggered Mod: Automated Tuning (Tuner) " << DescribeTuning(tunerStrings, TrueTuning_Hertz) << std::endl);
 			alreadyAutomatedTuningInThisSong = true;
 		}
 	}

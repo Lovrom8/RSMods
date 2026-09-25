@@ -7,11 +7,12 @@
 namespace SongTuning {
 	std::array<byte, 6> GetCurrentTuning(bool verbose = false);
 	bool IsExtendedRangeSong();
-	std::array<int, 2> GetHighestLowestString();
-	std::array<int, 2> GetHighestLowestString(Tuning tuningOverride);
+	std::array<int, 2> GetHighestLowestString(bool alwaysIgnoreBlankBassStrings = false);
+	std::array<int, 2> GetHighestLowestString(Tuning tuningOverride, bool alwaysIgnoreBlankBassStrings = false);
 	bool IsSongInDrop(Tuning tuning);
 	bool IsSongInStandard(Tuning tuning);
 	int GetTrueTuning();
-	Tuning GetTuningAtTuner();
+	void InstallTunerHook();
+	Tuning GetTuningAtTuner(bool logFailures = true);
 	bool IsExtendedRangeTuner();
 };

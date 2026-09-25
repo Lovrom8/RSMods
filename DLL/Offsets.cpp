@@ -12,6 +12,8 @@ void Offsets::Initialize() {
 	ptr_disableTrueTuning_jmpBck = { {0x004DCCF8, baseHandle + 0x00DD978 } };			// Code | Bytes 33 c0 after the mask below (roughly 0x37 bytes away)
 	ptr_disableTrueTuning_forceTT = { {0x004DCCC1, baseHandle + 0x00DD941 } };			// Code | 83 7d 08 00 53 57 74 ? db 45 08 (db is the byte we want)
 	ptr_disableTrueTuningGate = { {0x004DCCBF, baseHandle + 0x00DD93F } };				// Code | 83 7d 08 00 53 57 74 ? db 45 08 (74 is the byte we want)
+	ptr_tunerTickSlot = { {0x011C2270, baseHandle + 0x00DC3AF0} };					// Static Memory | The tuner menu's vtable, slot 6 (per-frame tick): the only data reference to func_tunerTick
+	func_tunerTick = { {0x0073E210, baseHandle + 0x0033EC60} };						// Code | 55 8b ec 83 e4 c0 83 ec 74 a1 ? ? ? ? 33 c4 89 44 24 70 53 56 57 8b d9 53 e8 (start of function). thiscall, no stack args
 	ptr_tuningText = { {0x00F5F62C, 0x00F6062C} };										// Memory | Copied from loft
 	ptr_guitarSpeak = { {0x00F5F57C, 0x00F6057C} };										// Memory | Copied from timer
 	func_ForceEnumeration = { {0x008c9cb0, baseHandle + 0x004C9310 } };					// Code | c6 86 dc 00 00 00 01 38 5e 05 (we want addresss of the start of the function)
