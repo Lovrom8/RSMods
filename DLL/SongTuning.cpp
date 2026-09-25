@@ -44,26 +44,56 @@ namespace {
 	// (the same values the song's tuning definition uses). The tuner's name text ("C STANDARD", "CUSTOM TUNING") is computed
 	// from these, so reading them directly works for every tuning, named or not.
 	//
-	// The tuner's per-frame tick is hooked with a vtable slot swap only to learn which tuner object is live. Nothing in the game
-	// is changed or called from our side; the six ints are read from the object.
+	// The tuner's per-frame tick is hooked with a vtable slot swap to learn which tuner object is live, and, once per tuner, to ask
+	// the game which instrument the player is on. Nothing in the game is changed; the six ints are read from the object.
 	constexpr uintptr_t off_tunerStringOffsets = 0x1B8;
+	constexpr uintptr_t off_tunerPlayer = 0x1F8;		// The tuner's player index, what the game passes to its own instrument lookups.
 	constexpr uintptr_t off_tunerHasTuning = 0x1FC;		// The tuner only names the tuning from the ints above while this is nonzero.
 	constexpr uintptr_t tunerTickSlotIndex = 6;			// The tick's slot in the tuner menu's vtable.
 	constexpr ULONGLONG tunerTickFreshMs = 500;			// A tuner that hasn't ticked this recently isn't the open menu.
 	constexpr int maxStringOffset = 24;					// RSMods treats anything beyond two octaves as invalid.
+	constexpr int guitarClassBass = 2;					// The game's player guitar class: 1 Standard (guitar), 2 Bass, 0xFF unknown.
 
 	using TunerTickFn = int(__fastcall*)(void* self, void* edx);
 	TunerTickFn originalTunerTick = nullptr;
 	uintptr_t tunerVtable = 0;
 	std::atomic<uintptr_t> liveTuner = 0;
 	std::atomic<ULONGLONG> liveTunerTickMs = 0;
+	std::atomic<bool> tunerPlayerOnBass = false;
+
+	// The game's player guitar class lookup takes the player index on the stack in one version and in ECX in the other, and
+	// leaves the stack to the caller in both. Passing it both ways works for either.
+	__declspec(naked) int __cdecl CallResolveGuitarClass(uintptr_t /*function*/, int /*player*/) {
+		__asm {
+			mov ecx, [esp + 8]			// player
+			push ecx
+			call dword ptr [esp + 8]	// function (shifted by the push)
+			add esp, 4
+			ret
+		}
+	}
 
 	// thiscall with no stack arguments; the original returns a value in EAX, which is passed through.
 	int __fastcall Hook_TunerTick(void* self, void* edx) {
-		liveTuner.store(reinterpret_cast<uintptr_t>(self), std::memory_order_relaxed);
-		liveTunerTickMs.store(GetTickCount64(), std::memory_order_relaxed);
+		const uintptr_t tuner = reinterpret_cast<uintptr_t>(self);
+		const ULONGLONG now = GetTickCount64();
+
+		// A new tuner was opened: look up the instrument once. This is the game thread, and the tick itself makes the same call.
+		if (tuner != liveTuner.load(std::memory_order_relaxed) || now - liveTunerTickMs.load(std::memory_order_relaxed) > tunerTickFreshMs) {
+			const uintptr_t resolveGuitarClass = Offsets::func_resolveGuitarClass;
+			const int player = *reinterpret_cast<const int*>(tuner + off_tunerPlayer);
+			tunerPlayerOnBass.store(resolveGuitarClass && CallResolveGuitarClass(resolveGuitarClass, player) == guitarClassBass, std::memory_order_relaxed);
+		}
+
+		liveTuner.store(tuner, std::memory_order_relaxed);
+		liveTunerTickMs.store(now, std::memory_order_relaxed);
 		return originalTunerTick(self, edx);
 	}
+}
+
+/// <returns>Was the player on bass when the tuner last opened? False if no tuner has opened yet.</returns>
+bool SongTuning::IsPlayerOnBass() {
+	return tunerPlayerOnBass.load(std::memory_order_relaxed);
 }
 
 /// <summary>
@@ -246,7 +276,7 @@ bool SongTuning::IsExtendedRangeTuner() {
 /// Gets the highest tuned string, and the lowest tuned string.
 /// </summary>
 /// <returns>[0] - Highest, [1] - Lowest</returns>
-std::array<int, 2> SongTuning::GetHighestLowestString(bool alwaysIgnoreBlankBassStrings) {
+std::array<int, 2> SongTuning::GetHighestLowestString(bool bass) {
 	int highestTuning = 0;
 	int lowestTuning = 256;
 	int currentStringTuning = 0;
@@ -256,7 +286,7 @@ std::array<int, 2> SongTuning::GetHighestLowestString(bool alwaysIgnoreBlankBass
 		return { 666, 666 };
 	}
 
-	int numberOfStrings = ((alwaysIgnoreBlankBassStrings || Settings::IsOn(Setting::ExtendedRangeFixBassTuning)) && (songTuning[4] == 0 || songTuning[4] == 12) && (songTuning[5] == 0 || songTuning[5] == 12)) ? 4 : 6; // When a charter makes a bad bass tuning, and leaves the last two strings blank, let's fix that.
+	int numberOfStrings = (bass || (Settings::IsOn(Setting::ExtendedRangeFixBassTuning) && (songTuning[4] == 0 || songTuning[4] == 12) && (songTuning[5] == 0 || songTuning[5] == 12))) ? 4 : 6; // When a charter makes a bad bass tuning, and leaves the last two strings blank, let's fix that.
 
 	bool bassOctaveEffect = GetTrueTuning() == 220;
 
@@ -300,7 +330,7 @@ std::array<int, 2> SongTuning::GetHighestLowestString(bool alwaysIgnoreBlankBass
 /// Gets the highest tuned string, and the lowest tuned string.
 /// </summary>
 /// <returns>[0] - Highest, [1] - Lowest</returns>
-std::array<int, 2> SongTuning::GetHighestLowestString(Tuning tuningOverride, bool alwaysIgnoreBlankBassStrings) {
+std::array<int, 2> SongTuning::GetHighestLowestString(Tuning tuningOverride, bool bass) {
 	int highestTuning = 0;
 	int lowestTuning = 256;
 
@@ -308,7 +338,7 @@ std::array<int, 2> SongTuning::GetHighestLowestString(Tuning tuningOverride, boo
 		return { 666, 666 };
 	}
 
-	int numberOfStrings = ((alwaysIgnoreBlankBassStrings || Settings::IsOn(Setting::ExtendedRangeFixBassTuning)) && (tuningOverride.strB == 0 || tuningOverride.strB == 12) && (tuningOverride.highE == 0 || tuningOverride.highE == 12)) ? 4 : 6; // When a charter makes a bad bass tuning, and leaves the last two strings blank, let's fix that.
+	int numberOfStrings = (bass || (Settings::IsOn(Setting::ExtendedRangeFixBassTuning) && (tuningOverride.strB == 0 || tuningOverride.strB == 12) && (tuningOverride.highE == 0 || tuningOverride.highE == 12))) ? 4 : 6; // When a charter makes a bad bass tuning, and leaves the last two strings blank, let's fix that.
 
 	bool bassOctaveEffect = GetTrueTuning() == 220;
 

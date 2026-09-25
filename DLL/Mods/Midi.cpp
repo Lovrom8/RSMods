@@ -353,14 +353,14 @@ namespace Midi {
 	}
 
 	/// <summary>
-	/// Formats a tuning and true tuning for the log, ex: "Tuning = { -2, 0, 0, 0, 0, 0 } . True Tuning = A440"
+	/// Formats a tuning, true tuning, and instrument for the log, ex: "Tuning = { -2, 0, 0, 0, 0, 0 } . True Tuning = A440 . IsBass = false"
 	/// </summary>
-	static std::string DescribeTuning(const std::array<byte, 6>& tuning, int trueTuning_Hertz) {
+	static std::string DescribeTuning(const std::array<byte, 6>& tuning, int trueTuning_Hertz, bool bass) {
 		std::ostringstream description;
 		description << "Tuning = { ";
 		for (size_t i = 0; i < tuning.size(); i++)
 			description << (i ? ", " : "") << static_cast<int>(static_cast<signed char>(tuning[i])); // The game stores -5 as 251.
-		description << " } . True Tuning = A" << trueTuning_Hertz;
+		description << " } . True Tuning = A" << trueTuning_Hertz << " . IsBass = " << std::boolalpha << bass;
 		return description.str();
 	}
 
@@ -378,7 +378,8 @@ namespace Midi {
 
 			Sleep(1500); // The menu is called when the animation starts. The tuning isn't set at that point, so we need to wait to get the value. This doesn't seem to lag the game.
 
-			std::array<int, 2> highestLowestTuning = SongTuning::GetHighestLowestString(true);
+			const bool bass = SongTuning::IsPlayerOnBass();
+			std::array<int, 2> highestLowestTuning = SongTuning::GetHighestLowestString(bass); // Bass has 4 strings; charts often leave 5 and 6 at 0.
 
 			int highestTuning = highestLowestTuning[0];
 			int lowestTuning = highestLowestTuning[1];
@@ -391,12 +392,15 @@ namespace Midi {
 
 			int TrueTuning_Hertz = SongTuning::GetTrueTuning();
 
-			// No A220 adjustment here: GetHighestLowestString's cancels out, and the pedal functions double A220 back to A440.
-			// Taking 12 off as well would send the pedal an extra octave down.
+			// A220 is a -1200 cent offset: charts raise every string by 12 (B standard bass is 7) and drop the reference an
+			// octave. GetHighestLowestString's A220 adjustment cancels out and the pedal functions double A220 back to A440, so
+			// the octave has to come off here.
+			if (TrueTuning_Hertz < 260)
+				highestTuning -= 12;
 
 			selectedPedal.autoTuneFunction(highestTuning + tuningOffset, static_cast<float>(TrueTuning_Hertz));
 
-			LOG_INFO("(MIDI) Triggered Mod: Automated Tuning (Song) " << DescribeTuning(SongTuning::GetCurrentTuning(), TrueTuning_Hertz) << std::endl);
+			LOG_INFO("(MIDI) Triggered Mod: Automated Tuning (Song) " << DescribeTuning(SongTuning::GetCurrentTuning(), TrueTuning_Hertz, bass) << std::endl);
 		}
 	}
 
@@ -421,7 +425,8 @@ namespace Midi {
 			if (tunerTuning.lowE == Tuning().lowE)
 				tunerTuning = SongTuning::GetTuningAtTuner(); // Once more, logging why it failed.
 
-			std::array<int, 2> highestLowestTuning = SongTuning::GetHighestLowestString(tunerTuning, true);
+			const bool bass = SongTuning::IsPlayerOnBass();
+			std::array<int, 2> highestLowestTuning = SongTuning::GetHighestLowestString(tunerTuning, bass);
 
 			int highestTuning = highestLowestTuning[0];
 			int lowestTuning = highestLowestTuning[1];
@@ -436,12 +441,14 @@ namespace Midi {
 
 			int TrueTuning_Hertz = SongTuning::GetTrueTuning();
 
-			// No A220 adjustment here, same as the song path (see AutomateTuning).
+			// Same A220 adjustment as the song path (see AutomateTuning).
+			if (TrueTuning_Hertz < 260)
+				highestTuning -= 12;
 
 			selectedPedal.autoTuneFunction(highestTuning + tuningOffset, static_cast<float>(TrueTuning_Hertz));
 
 			const std::array<byte, 6> tunerStrings = { tunerTuning.lowE, tunerTuning.strA, tunerTuning.strD, tunerTuning.strG, tunerTuning.strB, tunerTuning.highE };
-			LOG_INFO("(MIDI) Triggered Mod: Automated Tuning (Tuner) " << DescribeTuning(tunerStrings, TrueTuning_Hertz) << std::endl);
+			LOG_INFO("(MIDI) Triggered Mod: Automated Tuning (Tuner) " << DescribeTuning(tunerStrings, TrueTuning_Hertz, bass) << std::endl);
 			alreadyAutomatedTuningInThisSong = true;
 		}
 	}
