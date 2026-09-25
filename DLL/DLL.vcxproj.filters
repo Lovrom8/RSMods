@@ -242,6 +242,9 @@
     <ClCompile Include="Mods\EnumerationDrain.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
+    <ClCompile Include="Mods\JsonNumberHash.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
     <ClCompile Include="Mods\ProfileBackups.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
@@ -632,6 +635,9 @@
       <Filter>Mods\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Mods\EnumerationDrain.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\JsonNumberHash.hpp">
       <Filter>Mods\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Mods\ProfileBackups.hpp">

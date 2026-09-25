@@ -173,6 +173,7 @@ namespace ModManager {
 
 		// Before the game's first DLC scan. Read once, like the other hooks that must be in place at startup.
 		if (Settings::IsOn(Setting::FastEnumeration)) {
+			JsonNumberHash::Install(); // The manifest database built after the scan parses faster with it
 			EnumerationDrain::Install();
 			if (EnumerationDrain::IsInstalled())
 				AssetLoadDrain::Install();
