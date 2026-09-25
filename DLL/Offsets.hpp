@@ -231,17 +231,17 @@ namespace Offsets {
 	inline VersioningStruct<uintptr_t> func_engineStringDestroy;
 	inline VersioningStruct<uintptr_t> ptr_profileLoadTick;
 	inline VersioningStruct<uintptr_t> ptr_profileLoadTickJmpBck;
-	inline VersioningStruct<uintptr_t> ptr_rsConnectConfigAdapter;
-	inline VersioningStruct<uintptr_t> ptr_grService;
+	inline VersioningStruct<uintptr_t> ptr_profileAdapter;
+	inline VersioningStruct<uintptr_t> ptr_gameServices;
 	inline VersioningStruct<uintptr_t> ptr_profileParseCall;
-	inline VersioningStruct<uintptr_t> ptr_profileSaveDatabaseCall;
+	inline VersioningStruct<uintptr_t> ptr_profileSaveCall;
 	inline VersioningStruct<uintptr_t> func_jsonNumberHash;
 	inline VersioningStruct<uintptr_t> func_jsonNumberTableRehash;
 	inline VersioningStruct<uintptr_t> ptr_jsonNumberTable;
 	inline VersioningStruct<uintptr_t> ptr_jsonNumberTableLock;
-	inline VersioningStruct<uintptr_t> func_memManagerGet;
-	inline VersioningStruct<uintptr_t> func_trimPlaynextProfileStats;
-	inline VersioningStruct<uintptr_t> func_findProfileSongs;
+	inline VersioningStruct<uintptr_t> func_getAllocatorOwner;
+	inline VersioningStruct<uintptr_t> func_playnextTrim;
+	inline VersioningStruct<uintptr_t> func_profileSongs;
 
 	// Runtime data.
 	inline uintptr_t runtimeVersionStructValue;

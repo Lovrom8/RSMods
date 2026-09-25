@@ -113,34 +113,34 @@ void Offsets::Initialize() {
 	ptr_calibrationSampleCountClamp = { {0x005EA378, baseHandle + 0x001EADF1} };		// Code | d9 81 c0 00 00 00 d9 e8 de f1 (0x4D bytes after the first byte in the mask - the 10 byte load + store pair 8b 54 24 10 89 93 88 07 00 00)
 	ptr_calibrationSampleCountClampJmpBck = { {0x005EA382, baseHandle + 0x001EADFB} };	// Code | ptr_calibrationSampleCountClamp + 0xA, the first byte after the 10 stolen ones (d9 6c 24 0e)
 
-	// Large profile save / load. All of these sit in save::GRSaveManager::WriteJSONToFile, the PRFLDB writer (the function that
-	// compresses, encrypts and writes the file) and save::GRSaveManager::LoadProfileAsyncFinish.
+	// Large profile save / load. All of these sit in the profile JSON writer, the PRFLDB writer (the function that
+	// compresses, encrypts and writes the file) and the profile load.
 	ptr_profileSaveCloneSection = { {0x0089709F, baseHandle + 0x00496C50} };			// Code | 8b 13 8b 52 10 8d 45 cc 50 8b cb ff d2 (first opcode - the section->Clone() vcall)
 	ptr_profileSaveCloneSectionJmpBck = { {0x008970E0, baseHandle + 0x00496C91} };		// Code | 8b 13 8b 42 04 8b cb ff d0 8b 7d c8 (first opcode - section->Release())
 	ptr_profileSavePrintRoot = { {0x00897162, baseHandle + 0x00496D13} };				// Code | 8b 45 c4 8b 13 8b 52 68 6a 00 50 68 (first opcode - root->Print())
 	ptr_profileSavePrintRootJmpBck = { {0x0089717B, baseHandle + 0x00496D2C} };		// Code | 8b 03 8b 50 04 8b cb ff d2 8b 4d d4 (first opcode - root->Release())
 	ptr_profileSaveCompressBoundCall = { {0x007CE0F7, baseHandle + 0x003CEC87} };		// Code | 8b 4d 0c 51 e8 ? ? ? ? 83 c4 04 89 45 d4 83 c0 24 (the e8)
 	ptr_profileSaveCompress2Call = { {0x007CE147, baseHandle + 0x003CECD7} };			// Code | 8b 4d d8 51 8d 55 d4 8d 46 14 52 50 e8 ? ? ? ? 83 c4 14 (the e8)
-	func_profileJsonWriter = { {0x007CDCD0, baseHandle + 0x00496B10} };				// Code | Pushed as the first callback to root->Print() in WriteJSONToFile (push imm32 right after push 0 / push eax)
+	func_profileJsonWriter = { {0x007CDCD0, baseHandle + 0x00496B10} };				// Code | Pushed as the first callback to root->Print() in the profile JSON writer (push imm32 right after push 0 / push eax)
 	func_zlibDeflateInit = { {0x00E351D0, baseHandle + 0x00A34250} };					// Code | zlib 1.2.7 deflateInit_, first call in compress2
 	func_zlibDeflate = { {0x00E34720, baseHandle + 0x00A337A0} };						// Code | zlib 1.2.7 deflate, second call in compress2
 	func_zlibDeflateEnd = { {0x00E33500, baseHandle + 0x00A32580} };					// Code | zlib 1.2.7 deflateEnd, third call in compress2
-	ptr_profileLoadClearDocument = { {0x007CDABE, baseHandle + 0x003CE6BE} };			// Code | 8b 56 14 8d 4e 10 88 45 0f (first opcode, right after DeserializeProfileFromString)
+	ptr_profileLoadClearDocument = { {0x007CDABE, baseHandle + 0x003CE6BE} };			// Code | 8b 56 14 8d 4e 10 88 45 0f (first opcode, right after the profile parse)
 	ptr_profileLoadClearDocumentJmpBck = { {0x007CDAE7, baseHandle + 0x003CE6E7} };	// Code | 80 7d 0f 00 75 0e c7 47 08 04 00 00 00 (first opcode)
 	func_engineStringDestroy = { {0x0085C810, baseHandle + 0x00555910} };				// Code | 8b 41 14 8d 51 10 3b c2 74 3e 56 8b 31 85 f6 74 36 (start of function)
-	ptr_profileLoadTick = { {0x008CB326, baseHandle + 0x004CA986} };					// Code | 80 7b 68 00 0f 84 ? ? ? ? 83 3d (the 83 3d - RSProfileService_Win32::OnTick's Start / wait / Finish block)
+	ptr_profileLoadTick = { {0x008CB326, baseHandle + 0x004CA986} };					// Code | 80 7b 68 00 0f 84 ? ? ? ? 83 3d (the 83 3d - the profile tick's start / wait / finish block)
 	ptr_profileLoadTickJmpBck = { {0x008CB418, baseHandle + 0x004CAA78} };			// Code | Target of the 0f 84 above (8b 8c 24 10 01 00 00, the epilogue)
-	ptr_rsConnectConfigAdapter = { {0x01374E94, baseHandle + 0x00F75E94} };			// Static Memory | The dword compared by the 83 3d above
-	ptr_grService = { {0x0135FBFC, baseHandle + 0x00F60BFC} };						// Static Memory | Same global as func_ecxAddress (GRService*, save manager at +0x30)
-	ptr_profileParseCall = { {0x00896CDC, baseHandle + 0x0049681C} };				// Code | 8d 54 24 10 52 8d 44 24 2c 6a 00 50 e8 (the e8 - JSON::Parse in DeserializeProfileFromString)
-	ptr_profileSaveDatabaseCall = { {0x007CD730, baseHandle + 0x003CE330} };		// Code | 8b ce c7 46 08 00 00 00 00 c7 46 0c 00 00 00 00 c7 46 10 00 00 00 00 e8 (the e8 - SaveDatabasePersistentDataToDisk in SaveProfileToDisk)
+	ptr_profileAdapter = { {0x01374E94, baseHandle + 0x00F75E94} };			// Static Memory | The dword compared by the 83 3d above
+	ptr_gameServices = { {0x0135FBFC, baseHandle + 0x00F60BFC} };						// Static Memory | Same global as func_ecxAddress (game services, save manager at +0x30)
+	ptr_profileParseCall = { {0x00896CDC, baseHandle + 0x0049681C} };				// Code | 8d 54 24 10 52 8d 44 24 2c 6a 00 50 e8 (the e8 - the JSON parse in the profile parse)
+	ptr_profileSaveCall = { {0x007CD730, baseHandle + 0x003CE330} };		// Code | 8b ce c7 46 08 00 00 00 00 c7 46 0c 00 00 00 00 c7 46 10 00 00 00 00 e8 (the e8 - the profile save call)
 	func_jsonNumberHash = { {0x0087FEF0, baseHandle + 0x00480650} };				// Code | 55 8b ec 83 ec 10 dd 00 68 1d f3 01 00 d9 7d fe (start of function - hashes a double in EAX)
 	func_jsonNumberTableRehash = { {0x008800E0, baseHandle + 0x00480880} };		// Code | 55 8b ec 8b 47 08 d9 47 28 db 47 08 (start of function - the one the number table's insert calls; table in EDI)
-	ptr_jsonNumberTable = { {0x013604C8, baseHandle + 0x00F614C8} };				// Static Memory | a1 ? ? ? ? after the EnterCriticalSection in efd::DataStore::AcquireNumberNode
-	ptr_jsonNumberTableLock = { {0x01358154, baseHandle + 0x00F59154} };			// Static Memory | 8b 35 ? ? ? ? at the start of efd::DataStore::AcquireNumberNode
-	func_memManagerGet = { {0x0091FFA0, baseHandle + 0x0051E770} };				// Code | 80 3d ? ? ? ? 00 74 06 a1 ? ? ? ? c3 f6 05 (start of function - efd::MemManager::Get, returns it in EAX)
-	func_trimPlaynextProfileStats = { {0x0056DF00, baseHandle + 0x0016F690} };	// Code | 55 8b ec 83 ec 18 53 56 8d 45 f8 57 50 8b 45 08 e8 (start of function - songs::TrimPlaynextProfileStats)
-	func_findProfileSongs = { {0x0056D9D0, baseHandle + 0x0016F170} };			// Code | The e8 at the end of the pattern above (songs::FindProfileSongs - profile id in EAX, out pointer on the stack)
+	ptr_jsonNumberTable = { {0x013604C8, baseHandle + 0x00F614C8} };				// Static Memory | a1 ? ? ? ? after the EnterCriticalSection in the number intern function
+	ptr_jsonNumberTableLock = { {0x01358154, baseHandle + 0x00F59154} };			// Static Memory | 8b 35 ? ? ? ? at the start of the number intern function
+	func_getAllocatorOwner = { {0x0091FFA0, baseHandle + 0x0051E770} };				// Code | 80 3d ? ? ? ? 00 74 06 a1 ? ? ? ? c3 f6 05 (start of function - returns the allocator owner in EAX)
+	func_playnextTrim = { {0x0056DF00, baseHandle + 0x0016F690} };	// Code | 55 8b ec 83 ec 18 53 56 8d 45 f8 57 50 8b 45 08 e8 (start of function - the PlaynextStats trim)
+	func_profileSongs = { {0x0056D9D0, baseHandle + 0x0016F170} };			// Code | The e8 at the end of the pattern above (finds the profile's songs - profile id in EAX, out pointer on the stack)
 }
 
 namespace Offsets { // Addresses for pre-2021 patch are in the comments

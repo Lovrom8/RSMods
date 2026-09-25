@@ -11,7 +11,7 @@
 namespace ProfileSaveStreaming {
 	namespace {
 		/// <summary>
-		/// The game's std::string (STLport + efd::CustomAllocator). Strings of 15 chars or less live in the 16 byte inline buffer,
+		/// The game's string layout. Strings of 15 chars or less live in the 16 byte inline buffer,
 		/// and endOfStorage then points at finish (the end of that buffer).
 		/// </summary>
 		struct EngineString {
@@ -73,8 +73,8 @@ namespace ProfileSaveStreaming {
 
 		/// <summary>
 		/// Everything one save hands from the clone hook to the PRFLDB writer.
-		/// SaveProfileToDisk runs clone, print, CommitFile and the writer in one call on one thread, and our SaveDatabase wraps that call,
-		/// so a save owns this from start to end. Only one save can own it at a time (see SaveDatabase).
+		/// The game's profile save runs the clone, print, commit and the writer in one call on one thread, and SaveWrapper wraps that call,
+		/// so a save owns this from start to end. Only one save can own it at a time (see SaveWrapper).
 		/// </summary>
 		struct SaveState {
 			std::vector<Section> sections;
@@ -331,7 +331,7 @@ namespace ProfileSaveStreaming {
 		}
 
 		/// <summary>
-		/// Same output as the game's JSON::Object::Print on the root it builds out of the cloned sections.
+		/// Same output as the game's own JSON print of the root it builds out of the cloned sections.
 		/// </summary>
 		void PrintSections(tJsonWriter writer, tJsonIndent indent, void* out) {
 			const std::vector<Section>& sections = save.sections;
@@ -347,16 +347,16 @@ namespace ProfileSaveStreaming {
 		}
 
 		/// <summary>
-		/// Replaces "section->Clone(); root->SetKeyValue(name, clone);" for each persistent section.
-		/// We only keep a reference; the section itself can't go in a second parent (SetKeyValue detaches it from the live database).
+		/// Replaces cloning each persistent section into the root that gets printed.
+		/// We only keep a reference; the section itself can't go in a second parent (adding it to the root detaches it from the live database).
 		/// </summary>
 		void __stdcall RecordSection(EngineString* name, void* value) {
-			if (!OnSaveThread()) // Every save comes through SaveDatabase. If one ever doesn't, PrintProfile makes sure it writes nothing.
+			if (!OnSaveThread()) // Every save comes through SaveWrapper. If one ever doesn't, PrintProfile makes sure it writes nothing.
 				return;
 
 			const char* nameStr = Data(name);
 			for (Section& section : save.sections) {
-				if (section.name == nameStr) { // SetKeyValue replaces duplicates
+				if (section.name == nameStr) { // the game replaces duplicates
 					AddRef(value);
 					Release(section.value);
 					section.value = value;
@@ -428,7 +428,7 @@ namespace ProfileSaveStreaming {
 		void __stdcall PrintProfile(void* root, EngineString* out) {
 			if (!OnSaveThread()) {
 				// The clone hook skipped this save's sections, so the root is empty. Leave the string empty; Compress2 fails the write.
-				LOG_ERROR("(PROFILE SAVE) A profile save didn't come through SaveDatabase, not writing it" << std::endl);
+				LOG_ERROR("(PROFILE SAVE) A profile save didn't come through SaveWrapper, not writing it" << std::endl);
 				return;
 			}
 
@@ -456,7 +456,7 @@ namespace ProfileSaveStreaming {
 
 		/// <summary>
 		/// The PRFLDB writer asks for the worst case compressed size of the JSON before compressing it.
-		/// We already have the compressed data, and GRProfileSave::CommitFile passes an empty buffer because our JSON string is empty.
+		/// We already have the compressed data, and the game's commit step passes an empty buffer because our JSON string is empty.
 		/// </summary>
 		uint32_t __cdecl CompressBound(uint32_t sourceLen) {
 			if (sourceLen == 0 && OnSaveThread() && save.payload == Payload::Streamed) {
@@ -528,10 +528,10 @@ namespace ProfileSaveStreaming {
 
 		void __declspec(naked) loadClearDocumentHook() {
 			__asm {
-				mov byte ptr [ebp + 0xF], al	// The code we are overwriting to place this hook (DeserializeProfileFromString's result)
+				mov byte ptr [ebp + 0xF], al	// The code we are overwriting to place this hook (the profile parse result)
 
 				pushad
-				push esi						// GRProfileSave's JSON text
+				push esi						// The profile's loaded JSON text
 				call ReleaseLoadedDocument
 
 				popad
@@ -596,20 +596,20 @@ namespace ProfileSaveStreaming {
 		// ---- Loading ----
 
 		typedef void(__fastcall* tProfileCall)(void* adapter, void* edx, int index);
-		typedef bool(__fastcall* tProfileIsComplete)(void* adapter, void* edx, int index);
+		typedef bool(__fastcall* tProfileReady)(void* adapter, void* edx, int index);
 		typedef int(__fastcall* tProfileResult)(void* adapter, void* edx, int index);
 		typedef void(__cdecl* tJsonParse)(void** out, int flags, const char** cursor);
-		typedef void(__fastcall* tSaveDatabase)(void* profileSave, void* edx);
+		typedef void(__fastcall* tSaveCall)(void* profileSave, void* edx);
 
-		// RSConnectConfigAdapter slots RSProfileService_Win32::OnTick uses to load a profile.
+		// Profile adapter slots the profile tick uses to load a profile.
 		constexpr int slotLoadStart = 0x7C / 4;
-		constexpr int slotLoadIsComplete = 0x80 / 4;
+		constexpr int slotLoadReady = 0x80 / 4;
 		constexpr int slotLoadFinish = 0x84 / 4;
 		constexpr int slotLoadResult = 0x88 / 4;
 
 		enum class LoadState {
 			Idle,
-			Reading,	// LoadProfileAsyncStart ran; waiting for its file operation.
+			Reading,	// The profile read started; waiting for its file operation.
 			Parsing,	// The JSON is being parsed on parseThread.
 		};
 
@@ -619,19 +619,19 @@ namespace ProfileSaveStreaming {
 		void* parsedRoot = nullptr;
 		ULONGLONG loadStartTime = 0, parseStartTime = 0, parseEndTime = 0;
 		tJsonParse origParse = nullptr;
-		tSaveDatabase origSaveDatabase = nullptr;
+		tSaveCall origSave = nullptr;
 
-		typedef void* (*tMemManagerGet)();
+		typedef void* (*tGetAllocatorOwner)();
 		typedef void(__fastcall* tAllocatorCall)(void* allocator, void* edx);
 		constexpr int slotAllocatorPerThreadInit = 9;
 		constexpr int slotAllocatorPerThreadShutdown = 10;
 
 		/// <summary>
-		/// Game threads give efd's small object allocator a per thread cache; without one every allocation takes the pool's lock.
+		/// Game threads give the game's small object allocator a per thread cache; without one every allocation takes the pool's lock.
 		/// </summary>
 		void* AllocatorPerThread(int slot) {
-			void* memManager = reinterpret_cast<tMemManagerGet>(Offsets::func_memManagerGet.Get())();
-			void* allocator = memManager ? *reinterpret_cast<void**>(memManager) : nullptr;
+			void* allocatorOwner = reinterpret_cast<tGetAllocatorOwner>(Offsets::func_getAllocatorOwner.Get())();
+			void* allocator = allocatorOwner ? *reinterpret_cast<void**>(allocatorOwner) : nullptr;
 			if (allocator)
 				reinterpret_cast<tAllocatorCall>(VTable(allocator)[slot])(allocator, nullptr);
 			return allocator;
@@ -650,15 +650,15 @@ namespace ProfileSaveStreaming {
 		}
 
 		/// <summary>
-		/// Start parsing the profile LoadProfileAsyncStart read, if LoadProfileAsyncFinish is going to parse it.
+		/// Start parsing the profile the game just read, if the game's load step is going to parse it.
 		/// </summary>
 		bool StartParse(int index) {
-			uint8_t* grService = *reinterpret_cast<uint8_t**>(Offsets::ptr_grService.Get());
-			uint8_t* saveManager = *reinterpret_cast<uint8_t**>(grService + 0x30);
+			uint8_t* services = *reinterpret_cast<uint8_t**>(Offsets::ptr_gameServices.Get());
+			uint8_t* saveManager = *reinterpret_cast<uint8_t**>(services + 0x30);
 			uint8_t* profileSave = *reinterpret_cast<uint8_t**>(saveManager + index * 4);
 
 			const int loadResult = *reinterpret_cast<int*>(profileSave + 0x8);
-			if (loadResult != 0 && loadResult != 5) // LoadProfileAsyncFinish only deserializes on these.
+			if (loadResult != 0 && loadResult != 5) // The game only parses the profile on these.
 				return false;
 
 			EngineString* document = reinterpret_cast<EngineString*>(profileSave + 0x18);
@@ -677,11 +677,11 @@ namespace ProfileSaveStreaming {
 		}
 
 		/// <summary>
-		/// Replaces "Start(); while (!IsComplete()) Sleep(100); Finish();" in RSProfileService_Win32::OnTick with one step per tick.
+		/// Replaces the profile tick's start, wait loop (100ms sleeps) and finish with one step per tick.
 		/// The sign-in flow already waits on loadRequested (this + 0x68) every tick, so the game keeps running while the profile loads.
 		/// </summary>
 		void __stdcall LoadTick(uint8_t* profileService) {
-			void* adapter = *reinterpret_cast<void**>(Offsets::ptr_rsConnectConfigAdapter.Get());
+			void* adapter = *reinterpret_cast<void**>(Offsets::ptr_profileAdapter.Get());
 			void** vtable = VTable(adapter);
 			const int index = *reinterpret_cast<int*>(profileService + 0x5C);
 
@@ -692,7 +692,7 @@ namespace ProfileSaveStreaming {
 			}
 
 			if (loadState == LoadState::Reading) {
-				if (!reinterpret_cast<tProfileIsComplete>(vtable[slotLoadIsComplete])(adapter, nullptr, index))
+				if (!reinterpret_cast<tProfileReady>(vtable[slotLoadReady])(adapter, nullptr, index))
 					return;
 
 				if (StartParse(index)) {
@@ -730,7 +730,7 @@ namespace ProfileSaveStreaming {
 		}
 
 		/// <summary>
-		/// DeserializeProfileFromString's JSON::Parse. Hand over what ParseProfile already parsed.
+		/// The game's profile parse call. Hand over what ParseProfile already parsed.
 		/// </summary>
 		void __cdecl Parse(void** out, int flags, const char** cursor) {
 			if (parsedRoot && *cursor == parseText) {
@@ -742,15 +742,15 @@ namespace ProfileSaveStreaming {
 		}
 
 		/// <summary>
-		/// LoadProfileAsyncStart empties the profile in memory before reading the file, and the game keeps running while it's parsed.
+		/// Starting a profile load empties the profile in memory before reading the file, and the game keeps running while it's parsed.
 		/// Anything that saves in the meantime would write that empty profile over the real one.
 		///
-		/// This call is also the only way into the profile save: WriteJSONToFile's only caller is SaveDatabasePersistentDataToDisk,
-		/// whose only caller is this call site, and it runs the clone, print, CommitFile and the PRFLDB writer before returning.
+		/// This call is also the only way into the profile save: everything the save hooks touch is only reached through it,
+		/// and it runs the clone, print, commit and the PRFLDB writer before returning.
 		/// So the save owns `save` for exactly this call. The game only saves from its main loop, but if a second thread ever
 		/// started a save while one is running, it is skipped rather than allowed to mix its sections and data with the first.
 		/// </summary>
-		void __fastcall SaveDatabase(void* profileSave, void*) {
+		void __fastcall SaveWrapper(void* profileSave, void*) {
 			if (loadState != LoadState::Idle) {
 				LOG_WARNING("(PROFILE SAVE) Skipped a profile save while the profile is loading" << std::endl);
 				return;
@@ -767,11 +767,11 @@ namespace ProfileSaveStreaming {
 			SamplingProfiler::Start(GetCurrentThreadId(), "profile_save");
 			{
 				const ProfileBackups::SaveGuard backupGuard;
-				origSaveDatabase(profileSave, nullptr);
+				origSave(profileSave, nullptr);
 			}
 			SamplingProfiler::Stop();
 
-			// CommitFile can return before the writer runs (no Steam account, etc.), so whatever is left is dropped here.
+			// The commit step can return before the writer runs (no Steam account, etc.), so whatever is left is dropped here.
 			for (Section& section : save.sections)
 				Release(section.value);
 			save = SaveState{};
@@ -783,11 +783,11 @@ namespace ProfileSaveStreaming {
 		void __declspec(naked) loadTickHook() {
 			__asm {
 				pushad
-				push ebx						// RSProfileService_Win32
+				push ebx						// The profile service
 				call LoadTick
 
 				popad
-				push offset Offsets::ptr_profileLoadTickJmpBck // End of OnTick
+				push offset Offsets::ptr_profileLoadTickJmpBck // End of the tick
 				jmp MemUtil::JumpToVersioned
 			}
 		}
@@ -795,7 +795,7 @@ namespace ProfileSaveStreaming {
 		// ---- Number interning ----
 
 		/// <summary>
-		/// efd::DataStore interns every JSON number in a hash set keyed by value. The game's hash truncates the double to an integer first,
+		/// The game interns every JSON number in a hash set keyed by value. The game's hash truncates the double to an integer first,
 		/// so every value in [n, n+1) shares a bucket, and that bucket is a sorted list walked one entry at a time.
 		/// A big profile has ~39,000 distinct numbers in [0, 1) (accuracies and such), which makes parsing it billions of comparisons.
 		/// Equal doubles still hash equal: -0.0 is folded into 0.0 because they compare equal.
@@ -875,19 +875,19 @@ namespace ProfileSaveStreaming {
 		// ---- Playnext stats trim ----
 
 		/// <summary>
-		/// songs::TrimPlaynextProfileStats keeps at most 100 PlaynextStats across the profile's songs, but it removes one per pass,
+		/// The game's PlaynextStats trim keeps at most 100 PlaynextStats across the profile's songs, but it removes one per pass,
 		/// and each pass walks every song (building the "PlaynextStats" key string, which takes the intern lock, for each one).
 		/// A profile with ~25,000 of them makes that ~25,000 passes over ~43,000 songs whenever a song gets new stats (song load
 		/// and end), which locks the game up. This reads each song's timestamps once and runs the same selection over plain
 		/// arrays, including its comparison (a song's own TimeStamp against the current oldest PlaynextStats' TimeStamp), so on a
-		/// normal profile it removes exactly what the game would have, through the game's own RemoveChild.
+		/// normal profile it removes exactly what the game would have, through the game's own remove call.
 		/// Profiles far over the cap are left untouched instead of being trimmed down to it.
 		/// </summary>
-		typedef void* (__fastcall* tJsonGetByName)(void* object, void* edx, const char* name);
+		typedef void* (__fastcall* tJsonFind)(void* object, void* edx, const char* name);
 		typedef void* (__fastcall* tJsonCast)(void* value, void* edx);
 		typedef uint32_t(__fastcall* tJsonCount)(void* object, void* edx);
 		typedef void(__fastcall* tJsonGetAll)(void* object, void* edx, void** elements);
-		typedef void(__fastcall* tJsonRemoveChild)(void* object, void* edx, void* child);
+		typedef void(__fastcall* tJsonRemove)(void* object, void* edx, void* child);
 		typedef void(__fastcall* tAllocatorDeallocate)(void* allocator, void* edx, void* pointer, int hint, size_t size);
 
 		constexpr uint32_t maxPlaynextStats = 100;
@@ -902,7 +902,7 @@ namespace ProfileSaveStreaming {
 		};
 
 		bool ReadTimeStamp(void* object, double& time) {
-			void* value = reinterpret_cast<tJsonGetByName>(VTable(object)[0x14 / 4])(object, nullptr, "TimeStamp");
+			void* value = reinterpret_cast<tJsonFind>(VTable(object)[0x14 / 4])(object, nullptr, "TimeStamp");
 			if (!value)
 				return false;
 			uint8_t* number = static_cast<uint8_t*>(reinterpret_cast<tJsonCast>(VTable(value)[0x50 / 4])(value, nullptr));
@@ -923,10 +923,10 @@ namespace ProfileSaveStreaming {
 			return candidate.songTime < oldest.statsTime;
 		}
 
-		void* FindProfileSongs(void* profile) {
+		void* ProfileSongs(void* profile) {
 			void* songs = nullptr;
 			void** songsOut = &songs;
-			const uintptr_t find = Offsets::func_findProfileSongs.Get();
+			const uintptr_t find = Offsets::func_profileSongs.Get();
 			__asm {
 				push songsOut
 				mov eax, profile
@@ -936,8 +936,8 @@ namespace ProfileSaveStreaming {
 			return songs;
 		}
 
-		void __cdecl TrimPlaynextProfileStats(void* profile) {
-			void* songs = FindProfileSongs(profile);
+		void __cdecl TrimPlaynext(void* profile) {
+			void* songs = ProfileSongs(profile);
 			if (!songs)
 				return;
 
@@ -954,7 +954,7 @@ namespace ProfileSaveStreaming {
 				void* song = *it;
 				if (!song)
 					continue;
-				void* value = reinterpret_cast<tJsonGetByName>(VTable(song)[0x18 / 4])(song, nullptr, "PlaynextStats");
+				void* value = reinterpret_cast<tJsonFind>(VTable(song)[0x18 / 4])(song, nullptr, "PlaynextStats");
 				if (!value || !reinterpret_cast<tJsonCast>(VTable(value)[0x5C / 4])(value, nullptr))
 					continue;
 				void* stats = reinterpret_cast<tJsonCast>(VTable(value)[0x5C / 4])(value, nullptr);
@@ -1002,7 +1002,7 @@ namespace ProfileSaveStreaming {
 				if (!parentObject)
 					continue;
 				AddRef(parentObject);
-				reinterpret_cast<tJsonRemoveChild>(VTable(parentObject)[0x70 / 4])(parentObject, nullptr, stats);
+				reinterpret_cast<tJsonRemove>(VTable(parentObject)[0x70 / 4])(parentObject, nullptr, stats);
 				Release(parentObject);
 			}
 
@@ -1014,8 +1014,8 @@ namespace ProfileSaveStreaming {
 					Release(*it);
 
 			if (elements[0]) {
-				void* memManager = reinterpret_cast<tMemManagerGet>(Offsets::func_memManagerGet.Get())();
-				void* allocator = *reinterpret_cast<void**>(memManager);
+				void* allocatorOwner = reinterpret_cast<tGetAllocatorOwner>(Offsets::func_getAllocatorOwner.Get())();
+				void* allocator = *reinterpret_cast<void**>(allocatorOwner);
 				const size_t size = (std::max)(static_cast<size_t>(static_cast<uint8_t*>(elements[2]) - static_cast<uint8_t*>(elements[0])), static_cast<size_t>(1));
 				reinterpret_cast<tAllocatorDeallocate>(VTable(allocator)[2])(allocator, nullptr, elements[0], 9, size);
 			}
@@ -1028,8 +1028,8 @@ namespace ProfileSaveStreaming {
 
 		void InitializePlaynextTrim() {
 			// The replacement has the same cdecl signature, so the hook just jumps to it.
-			if (MemUtil::PlaceHook(Offsets::func_trimPlaynextProfileStats, TrimPlaynextProfileStats, 6)) {
-				FlushInstructionCache(GetCurrentProcess(), (void*)Offsets::func_trimPlaynextProfileStats.Get(), 6);
+			if (MemUtil::PlaceHook(Offsets::func_playnextTrim, TrimPlaynext, 6)) {
+				FlushInstructionCache(GetCurrentProcess(), (void*)Offsets::func_playnextTrim.Get(), 6);
 				LOG_INFO("(PROFILE SAVE) Replaced the PlaynextStats trim" << std::endl);
 			}
 			else
@@ -1037,12 +1037,12 @@ namespace ProfileSaveStreaming {
 		}
 
 		/// <summary>
-		/// SaveDatabase: the load's save guard, and the owner of each streamed save. Both of the groups below need it.
+		/// SaveWrapper: the load's save guard, and the owner of each streamed save. Both of the groups below need it.
 		/// </summary>
-		bool InitializeSaveDatabase() {
-			origSaveDatabase = reinterpret_cast<tSaveDatabase>(CallTarget(Offsets::ptr_profileSaveDatabaseCall));
+		bool InitializeSaveWrapper() {
+			origSave = reinterpret_cast<tSaveCall>(CallTarget(Offsets::ptr_profileSaveCall));
 			PatchGroup patches;
-			if (!patches.Redirect(Offsets::ptr_profileSaveDatabaseCall, SaveDatabase)) {
+			if (!patches.Redirect(Offsets::ptr_profileSaveCall, SaveWrapper)) {
 				patches.Undo();
 				LOG_ERROR("(PROFILE SAVE) Failed to hook profile saves, not streaming saves or loading profiles in the background" << std::endl);
 				return false;
@@ -1105,17 +1105,17 @@ namespace ProfileSaveStreaming {
 	/// <summary>
 	/// Big profiles (100MB+ of JSON, 10M+ values) crash the game when it saves them, and make every save freeze the game for a while.
 	/// The game is 32-bit without large address awareness, so it only has 2GB of address space, and a save used to need:
-	///  - a deep copy of every section of the profile (JSON::Object::Clone), as many small allocations as the profile itself,
+	///  - a deep copy of every section of the profile, as many small allocations as the profile itself,
 	///  - the JSON as one string (grown by doubling, so up to 2x its size), a copy of it passed by value, and another copy for the writer,
 	///  - a buffer for zlib's worst case output, the size of the JSON again.
-	/// When one of those allocations fails the game writes through a null pointer (efd::FixedSizeAllocator::FillCache for the clone).
+	/// When one of those allocations fails the game writes through a null pointer (in the allocator, for the clone).
 	/// This prints each section straight into a deflate stream instead, 1MB at a time, and gives the writer the compressed data.
 	/// Only the compressed profile (a few MB) is ever held in memory. The file is the same format; only the compression level changes.
 	/// It also frees the loaded JSON text once the profile is parsed, which the game otherwise keeps for the whole session.
 	///
-	/// Loading: RSProfileService_Win32::OnTick reads the profile, waits for it and parses it (JSON::Parse) in one tick, which freezes the game
+	/// Loading: the game reads the profile, waits for it and parses it in one tick, which freezes the game
 	/// for minutes on a big profile. This spreads that over ticks and parses on a worker thread, so the game keeps rendering while it loads.
-	/// The JSON code is safe to run next to the main thread: interned strings and numbers are locked (JSON::s_UseInternCS is on),
+	/// The JSON code is safe to run next to the main thread: interned strings and numbers are locked (the game turns its intern locks on),
 	/// ref counts are interlocked, the small object allocator locks, and nothing else can see the parsed tree until Finish attaches it.
 	///
 	/// This rewrites how the profile is saved, so none of it goes in unless all of these hold at startup:
@@ -1146,7 +1146,7 @@ namespace ProfileSaveStreaming {
 		InitializeNumberHash();
 		InitializePlaynextTrim();
 		InitializeClearDocument();
-		if (InitializeSaveDatabase()) {
+		if (InitializeSaveWrapper()) {
 			InitializeSaving();
 			InitializeLoading();
 		}

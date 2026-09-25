@@ -69,8 +69,7 @@ namespace ProfileBackups {
 
 		/// <summary>
 		/// The save folder of the Steam account that's logged in: <Steam>\userdata\<account>\221680\remote.
-		/// The game can't tell us this: it only builds "<profile>_PRFLDB" and hands the name to Steam Cloud, which picks the folder.
-		/// </summary>
+				/// </summary>
 		bool FindSaveFolder(fs::path& folder, DWORD& account) {
 			DWORD size = sizeof(account);
 			if (RegGetValueW(HKEY_CURRENT_USER, L"Software\\Valve\\Steam\\ActiveProcess", L"ActiveUser", RRF_RT_REG_DWORD, nullptr, &account, &size) != ERROR_SUCCESS || account == 0)
