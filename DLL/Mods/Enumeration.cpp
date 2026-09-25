@@ -1,10 +1,11 @@
 #include "../stdafx.h"
 #include "Enumeration.hpp"
+#include "EnumerationDrain.hpp"
 
 void SaveSteamServicePointer(uint32_t eax) {
 	if (Enumeration::rsSteamServiceFlagsPtr == nullptr) {
 		printf("Found DLC service pointer at: %X\n", eax + 4);
-		Enumeration::rsSteamServiceFlagsPtr = (uint32_t*)(eax + 4);
+		Enumeration::rsSteamServiceFlagsPtr = reinterpret_cast<std::uint8_t*>(eax + 4);
 	}
 }
 
@@ -67,8 +68,9 @@ void Enumeration::ForceEnumeration() {
 	if (rsSteamServiceFlagsPtr)
 	{
 		// Set Enumeration flags to 1.
-		*(BYTE*)rsSteamServiceFlagsPtr = 1;
-		*(BYTE*)(rsSteamServiceFlagsPtr + 1) = 1;
+		rsSteamServiceFlagsPtr[0] = 1;
+		rsSteamServiceFlagsPtr[1] = 1; // Byte +0x05. Was pointer math on a uint32_t*, which wrote +0x08 instead.
+		EnumerationDrain::NoteManualRequest();
 	}
 }
 

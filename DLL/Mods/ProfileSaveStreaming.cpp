@@ -691,7 +691,7 @@ namespace ProfileSaveStreaming {
 			if (loadState == LoadState::Parsing) {
 				if (WaitForSingleObject(parseThread, 0) != WAIT_OBJECT_0)
 					return;
-				SamplingProfiler::Stop();
+				SamplingProfiler::Stop("profile_parse");
 				CloseHandle(parseThread);
 				parseThread = nullptr;
 			}
@@ -756,7 +756,7 @@ namespace ProfileSaveStreaming {
 				const ProfileBackups::SaveGuard backupGuard;
 				origSave(profileSave, nullptr);
 			}
-			SamplingProfiler::Stop();
+			SamplingProfiler::Stop("profile_save");
 
 			// The commit step can return before the writer runs (no Steam account, etc.), so whatever is left is dropped here.
 			for (Section& section : save.sections)
