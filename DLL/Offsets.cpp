@@ -154,6 +154,23 @@ void Offsets::Initialize() {
 	func_getAllocatorOwner = { {0x0091FFA0, baseHandle + 0x0051E770} };				// Code | 80 3d ? ? ? ? 00 74 06 a1 ? ? ? ? c3 f6 05 (start of function - returns the allocator owner in EAX)
 	func_playnextTrim = { {0x0056DF00, baseHandle + 0x0016F690} };	// Code | 55 8b ec 83 ec 18 53 56 8d 45 f8 57 50 8b 45 08 e8 (start of function - the PlaynextStats trim)
 	func_profileSongs = { {0x0056D9D0, baseHandle + 0x0016F170} };			// Code | The e8 at the end of the pattern above (finds the profile's songs - profile id in EAX, out pointer on the stack)
+
+	// Fast DLC enumeration. The DLC service, the scan queue it installs from, and the game's package lists.
+	ptr_dlcServiceTickSlot = { {0x011DBF6C, baseHandle + 0x00DDD83C} };				// Static Memory | The DLC service's vtable, slot 10: the only data reference to func_dlcServiceTick
+	func_dlcServiceTick = { {0x008C9CB0, baseHandle + 0x004C9310} };					// Code | Same function as func_ForceEnumeration: c6 86 dc 00 00 00 01 38 5e 05 (start of function)
+	func_dlcServiceLoadTick = { {0x008C6FD0, baseHandle + 0x004C6570} };				// Code | First e8 in func_dlcServiceTick (8b f1 e8 ? ? ? ? e8, the first e8). thiscall, service in ECX
+	func_dlcScanInstallNext = { {0x008C9F20, baseHandle + 0x004C9580} };				// Code | Second e8 in func_dlcServiceTick. Service in ESI, no stack args
+	func_dlcScanQueueRemoveLast = { {0x008CA8B0, baseHandle + 0x004C9F10} };				// Code | 8d 86 e0 00 00 00 89 5d fc e8 (the e8 target) in func_dlcScanInstallNext. Vector in EAX
+	ptr_packageList = { {0x0135F51C, baseHandle + 0x00F6051C} };					// Static Memory | a1 ? ? ? ? 53 8b 18 3b 58 04 74 ? 56 8b ff 8b 03 80 78 38 00 (the a1 operand)
+	ptr_packageLoadQueue = { {0x0135F520, baseHandle + 0x00F60520} };				// Static Memory | 83 be d0 00 00 00 00 75 ? e8 ? ? ? ? 8b 15 ? ? ? ? (the 8b 15 operand) in func_dlcServiceLoadTick
+	ptr_dlcInstallRegisterCall = { {0x008CA7EA, baseHandle + 0x004C9E4A} };		// Code | 8b c6 32 c9 c6 45 fc 0a e8 (the e8) - the package install calling func_registerPackage
+	func_registerPackage = { {0x00414300, baseHandle + 0x00014490} };			// Code | Target of the e8 above
+	ptr_packageShaderScanCall = { {0x0041472D, baseHandle + 0x000148BD} };			// Code | 84 db 0f 85 ? ? ? ? 56 e8 (the e8) - package registration calling func_packageShaderScan
+	func_packageShaderScan = { {0x00414860, baseHandle + 0x000149F0} };			// Code | Target of the e8 above. cdecl, one stack arg
+	ptr_dlcBannerCall = { {0x007BDFAB, baseHandle + 0x003BECCA} };						// Code | ba 16 00 00 00 6a 00 8d 4a eb 8d b4 24 ac 00 00 00 e8 ? ? ? ? 83 c4 30 (the e8)
+	func_showBanner = { {0x007524A0, baseHandle + 0x00352F80} };			// Code | Target of the e8 above
+	ptr_assetLoaderStepCall = { {0x0090ADF2, baseHandle + 0x00509A02} };				// Code | 83 be 84 00 00 00 00 74 1e 56 e8 ? ? ? ? 56 e8 ? ? ? ? 84 c0 75 06 56 e8 (the last e8)
+	func_assetLoaderStep = { {0x0090B570, baseHandle + 0x0050A180} };				// Code | Target of the e8 above. stdcall(this), returns AL = made progress
 }
 
 namespace Offsets { // Addresses for pre-2021 patch are in the comments

@@ -130,6 +130,11 @@ void Settings::Initialize()
 		{Setting::Ultrawide, "off"},
 		{Setting::BackupProfile, "on"},
 		{Setting::FastProfileLoadAndSave, "off"},
+		{Setting::FastEnumeration, "off"},
+		{Setting::FastEnumerationSkipUnchanged, "on"},
+		{Setting::FastEnumerationSkipShaderScan, "on"},
+		{Setting::FastEnumerationPrefetchHddOnly, "off"},
+		{Setting::FastEnumerationEarlyScan, "off"},
 	};
 
 	customSettings = {
@@ -165,7 +170,19 @@ void Settings::Initialize()
 		{Setting::GuitarSpeakCBracket, 0},
 		{Setting::GuitarSpeakTildea, 0},
 		{Setting::GuitarSpeakForSlash, 0},
-		{Setting::GuitarSpeakAlt, 0}
+		{Setting::GuitarSpeakAlt, 0},
+
+		{Setting::FastEnumerationInstallsPerTick, 16},
+		{Setting::FastEnumerationLoadsPerTick, 32},
+		{Setting::FastEnumerationBudgetMs, 24},
+		{Setting::FastEnumerationMenuBudgetMs, 6},
+		{Setting::FastEnumerationStreamLimit, 2048},
+		{Setting::FastEnumerationFileCeiling, 1792},
+		{Setting::FastEnumerationPrefetchKB, 128},
+		{Setting::FastEnumerationEarlyScanMax, 1500},
+		{Setting::FastEnumerationBootBudgetMs, 30},
+		{Setting::FastEnumerationBootInstallsPerTick, 32},
+		{Setting::FastEnumerationAssetLoadsPerTick, 64},
 	};
 
 	twitchSettings = {
@@ -289,6 +306,18 @@ void Settings::ReadModSettings() {
 		{Setting::GuitarSpeakTildea, reader.GetLongValue("Guitar Speak", "GuitarSpeakTildeaWhen", 0)},
 		{Setting::GuitarSpeakForSlash, reader.GetLongValue("Guitar Speak", "GuitarSpeakForSlashWhen", 0)},
 		{Setting::GuitarSpeakAlt, reader.GetLongValue("Guitar Speak", "GuitarSpeakAltWhen", 0)},
+
+		{Setting::FastEnumerationInstallsPerTick, reader.GetLongValue("Fast Enumeration", "FastEnumerationInstallsPerTick", 16)},
+		{Setting::FastEnumerationLoadsPerTick, reader.GetLongValue("Fast Enumeration", "FastEnumerationLoadsPerTick", 32)},
+		{Setting::FastEnumerationBudgetMs, reader.GetLongValue("Fast Enumeration", "FastEnumerationBudgetMs", 24)},
+		{Setting::FastEnumerationMenuBudgetMs, reader.GetLongValue("Fast Enumeration", "FastEnumerationMenuBudgetMs", 6)},
+		{Setting::FastEnumerationStreamLimit, reader.GetLongValue("Fast Enumeration", "FastEnumerationStreamLimit", 2048)},
+		{Setting::FastEnumerationFileCeiling, reader.GetLongValue("Fast Enumeration", "FastEnumerationFileCeiling", 1792)},
+		{Setting::FastEnumerationPrefetchKB, reader.GetLongValue("Fast Enumeration", "FastEnumerationPrefetchKB", 128)},
+		{Setting::FastEnumerationEarlyScanMax, reader.GetLongValue("Fast Enumeration", "FastEnumerationEarlyScanMax", 1500)},
+		{Setting::FastEnumerationBootBudgetMs, reader.GetLongValue("Fast Enumeration", "FastEnumerationBootBudgetMs", 30)},
+		{Setting::FastEnumerationBootInstallsPerTick, reader.GetLongValue("Fast Enumeration", "FastEnumerationBootInstallsPerTick", 32)},
+		{Setting::FastEnumerationAssetLoadsPerTick, reader.GetLongValue("Fast Enumeration", "FastEnumerationAssetLoadsPerTick", 64)},
 	};
 
 	modSettings[Setting::ToggleLoftEnabled] = reader.GetValue("Toggle Switches", "ToggleLoft", "off");
@@ -351,6 +380,11 @@ void Settings::ReadModSettings() {
 	modSettings[Setting::RemoveFingerprints] = reader.GetValue("Toggle Switches", "RemoveFingerprints", "off");
 	modSettings[Setting::BackupProfile] = reader.GetValue("GUI Settings", "BackupProfile", "on"); // Same default as the GUI.
 	modSettings[Setting::FastProfileLoadAndSave] = reader.GetValue("Toggle Switches", "FastProfileLoadAndSave", "off");
+	modSettings[Setting::FastEnumeration] = reader.GetValue("Toggle Switches", "FastEnumeration", "off");
+	modSettings[Setting::FastEnumerationSkipUnchanged] = reader.GetValue("Fast Enumeration", "FastEnumerationSkipUnchanged", "on");
+	modSettings[Setting::FastEnumerationSkipShaderScan] = reader.GetValue("Fast Enumeration", "FastEnumerationSkipShaderScan", "on");
+	modSettings[Setting::FastEnumerationPrefetchHddOnly] = reader.GetValue("Fast Enumeration", "FastEnumerationPrefetchHddOnly", "off");
+	modSettings[Setting::FastEnumerationEarlyScan] = reader.GetValue("Fast Enumeration", "FastEnumerationEarlyScan", "off");
 }
 
 /// <summary>

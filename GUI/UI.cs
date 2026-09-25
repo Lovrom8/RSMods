@@ -816,6 +816,7 @@ namespace RSMods
             checkBox_RemoveFingerprints.Checked = ReadSettings.ProcessSettings(ReadSettings.RemoveFingerprintsIdentifier) == "on";
             checkBox_FastProfileLoadAndSave.Checked = ReadSettings.ProcessSettings(ReadSettings.FastProfileLoadAndSaveIdentifier) == "on";
             ProfileBackups_RequireForFastLoadAndSave();
+            checkBox_FastEnumeration.Checked = ReadSettings.ProcessSettings(ReadSettings.FastEnumerationIdentifier) == "on";
             groupBox_NSPTimer.Visible = checkBox_CustomNSPTimer.Checked;
             {
                 string rawNsp = ReadSettings.ProcessSettings(ReadSettings.CustomNSPTimeLimitIdentifier);
@@ -2779,6 +2780,8 @@ namespace RSMods
             SaveSettings_Save(ReadSettings.FastProfileLoadAndSaveIdentifier, checkBox_FastProfileLoadAndSave.Checked.ToString().ToLower());
             ProfileBackups_RequireForFastLoadAndSave();
         }
+
+        private void Save_FastEnumeration(object sender, EventArgs e) => SaveSettings_Save(ReadSettings.FastEnumerationIdentifier, checkBox_FastEnumeration.Checked.ToString().ToLower());
 
         /// <summary>
         /// Fast profile load/save changes how the game writes the profile, so Backup Profile is always on with it.
