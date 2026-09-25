@@ -1,5 +1,6 @@
 #include "../stdafx.h"
 #include "ProfileSaveStreaming.hpp"
+#include "ProfileBackups.hpp"
 #include "../MemUtil.hpp"
 #include "../SamplingProfiler.hpp"
 #include <atomic>
@@ -764,7 +765,10 @@ namespace ProfileSaveStreaming {
 
 			const ULONGLONG start = GetTickCount64();
 			SamplingProfiler::Start(GetCurrentThreadId(), "profile_save");
-			origSaveDatabase(profileSave, nullptr);
+			{
+				const ProfileBackups::SaveGuard backupGuard;
+				origSaveDatabase(profileSave, nullptr);
+			}
 			SamplingProfiler::Stop();
 
 			// CommitFile can return before the writer runs (no Steam account, etc.), so whatever is left is dropped here.
@@ -1113,8 +1117,28 @@ namespace ProfileSaveStreaming {
 	/// for minutes on a big profile. This spreads that over ticks and parses on a worker thread, so the game keeps rendering while it loads.
 	/// The JSON code is safe to run next to the main thread: interned strings and numbers are locked (JSON::s_UseInternCS is on),
 	/// ref counts are interlocked, the small object allocator locks, and nothing else can see the parsed tree until Finish attaches it.
+	///
+	/// This rewrites how the profile is saved, so none of it goes in unless all of these hold at startup:
+	///  - FastProfileLoadAndSave is on,
+	///  - BackupProfile is on,
+	///  - the profiles, as they are right now, have a backup (one is made here if needed).
+	/// Otherwise the game loads and saves profiles exactly as it always has.
+	/// Both settings are read once at startup, here and in ProfileBackupsMod, so neither can change mid-session.
 	/// </summary>
 	void Initialize() {
+		if (!Settings::IsOn(Settings::Setting::FastProfileLoadAndSave)) {
+			LOG_INFO("(PROFILE SAVE) Fast profile load and save is off" << std::endl);
+			return;
+		}
+		if (!Settings::IsOn(Settings::Setting::BackupProfile)) {
+			LOG_WARNING("(PROFILE SAVE) Fast profile load and save needs Backup Profile on, leaving it off" << std::endl);
+			return;
+		}
+		if (!ProfileBackups::BackUpBeforeHooking()) {
+			LOG_ERROR("(PROFILE SAVE) The profiles have no backup, leaving fast profile load and save off" << std::endl);
+			return;
+		}
+
 		// The read and decompress before the parse still happen on the main thread and can take a few seconds on a big profile.
 		// Without this, Windows swaps the window for a "Not Responding" ghost (and offers to close the game) while they run.
 		DisableProcessWindowsGhosting();

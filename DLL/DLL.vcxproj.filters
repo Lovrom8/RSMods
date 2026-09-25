@@ -236,6 +236,9 @@
     <ClCompile Include="Mods\BugPrevention.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
+    <ClCompile Include="Mods\ProfileBackups.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
     <ClCompile Include="Mods\ProfileSaveStreaming.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
@@ -608,6 +611,9 @@
       <Filter>Wwise\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Mods\BugPrevention.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\ProfileBackups.hpp">
       <Filter>Mods\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Mods\ProfileSaveStreaming.hpp">
