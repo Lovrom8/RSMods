@@ -22,18 +22,12 @@ HRESULT APIENTRY D3DHooks::Hook_DP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE P
 	if (ERMode::AttemptedERInThisSong && ERMode::UseEROrColorsInThisSong && NOTE_TAILS) {
 		GameState::ToggleCB(ERMode::UseERExclusivelyInThisSong);
 
-		switch (Settings::GetModSetting(Setting::SeparateNoteColors)) {
-			case 0: // Use same color scheme on notes as we do on strings
-				pDevice->SetTexture(1, customStringColorTexture);
-				break;
-			case 1: // Default Colors, so don't do anything.
-				break;
-			case 2: // Use Custom Note Color Scheme
-				pDevice->SetTexture(1, customNoteColorTexture);
-				break;
-			default:
-				break;
-		}
+		// Same rule as the note heads in Hook_DIP. SeparateNoteColors is an on/off toggle, so it can't be read as the mode.
+		if (Settings::GetNoteColorMode() == NoteColorMode::SameAsStrings)
+			pDevice->SetTexture(1, customStringColorTexture);
+		else if (Settings::IsOn(Setting::SeparateNoteColors) && Settings::GetNoteColorMode() == NoteColorMode::Custom)
+			pDevice->SetTexture(1, customNoteColorTexture);
+		// NoteColorMode::Default: leave the game's texture alone.
 	}
 
 	// Note-tails for Twitch mod - Remove Notes.
