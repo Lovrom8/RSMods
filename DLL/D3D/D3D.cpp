@@ -337,7 +337,7 @@ void D3D::GenerateTextures(IDirect3DDevice9* pDevice, TextureType type) {
 		GenerateColorTexture(pDevice, &customStringColorTexture, Settings::GetStringColors(false), Settings::GetStringColors(true));
 		break;
 	case Notes:
-		GenerateColorTexture(pDevice, &customStringColorTexture, Settings::GetNoteColors(false), Settings::GetNoteColors(true));
+		GenerateColorTexture(pDevice, &customNoteColorTexture, Settings::GetNoteColors(false), Settings::GetNoteColors(true));
 		break;
 	case Noteway:
 		GenerateNotewayTexture(pDevice);

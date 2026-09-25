@@ -77,20 +77,26 @@ namespace ModManager {
 	}
 
 	/// <summary>
-	/// Applies bug prevention patches for game crashing bugs and similar issues.
+	/// Applies bug prevention patches for game crashing bugs and similar issues that don't depend on a setting.
+	/// Runs as soon as the offsets are known: PortAudio builds its device list inside Wwise init, 2-4 s into boot,
+	/// so the audio patches have to be in before then to stop the crash on machines with many audio endpoints.
 	/// </summary>
-	void ApplyBugPrevention() {
+	void ApplyAlwaysOnBugPrevention() {
 		BugPrevention::PreventPnPCrash();
-		QualityOfLife::StopTwoRSInstances();
+		BugPrevention::PreventPortAudioInDeviceCrash();
+		BugPrevention::PreventExtraAudioDevicesCrash();
 		BugPrevention::AllowComplexPasswords();
 		BugPrevention::BypassSaveFilePlatformIdCheck();
 		BugPrevention::PreventAdvancedDisplayCrash();
-		BugPrevention::PreventPortAudioInDeviceCrash();
-		BugPrevention::PreventExtraAudioDevicesCrash();
 		BugPrevention::PreventControllerAxisOverflow();
 		BugPrevention::PreventInvalidInputTreeRootCrash();
 		BugPrevention::FixCalibrationSampleCount();
+	}
 
+	/// <summary>
+	/// Applies bug prevention patches the user turns on in RSMods.ini. Needs the settings read first.
+	/// </summary>
+	void ApplySettingBasedBugPrevention() {
 		if (Settings::IsOn(Setting::FixBrokenTones)) {
 			BugPrevention::PreventStuckTone();
 		}
@@ -135,6 +141,7 @@ namespace ModManager {
 	/// </summary>
 	void UpdateSettings() {
 		Settings::UpdateSettings();
+		ApplySettingBasedBugPrevention();
 		Sleep(500);
 		CustomSongTitles::LoadSettings();
 		Sleep(500);
@@ -149,6 +156,7 @@ namespace ModManager {
 		D3DHooks::debug = debug;
 		Offsets::Initialize();
 		BugPrevention::FixModifyingFunctions();
+		ApplyAlwaysOnBugPrevention();
 		Settings::Initialize();
 		UpdateSettings();
 		ERMode::Initialize();
@@ -165,8 +173,8 @@ namespace ModManager {
 	void ApplyStartupMods()
 	{
 		AudioDevices::SetupMicrophones();
-		ApplyBugPrevention();
-		ProfileSaveStreaming::Initialize();
+		QualityOfLife::StopTwoRSInstances(); // Looks for the second instance's error dialog once, so it keeps its old timing
+    ProfileSaveStreaming::Initialize();
 
 		#ifdef _WWISE_LOGS
 				Wwise::Logging::Init();
