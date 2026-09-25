@@ -150,6 +150,7 @@ namespace Offsets {
 	inline VersioningStruct<uintptr_t> ptr_PnpJmp_2;
 	inline VersioningStruct<uintptr_t> ptr_Password_LimitCharacters_Clipboard;
 	inline VersioningStruct<uintptr_t> ptr_Password_LimitCharacters;
+	inline VersioningStruct<uintptr_t> ptr_SaveFilePlatformIdCheck;
 	inline VersioningStruct<uintptr_t> ptr_AdvancedDisplayCrash;
 	inline VersioningStruct<uintptr_t> ptr_AdvancedDisplayCrashJmpBck;
 	inline VersioningStruct<uintptr_t> ptr_PortAudioInCrash; 

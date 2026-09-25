@@ -328,7 +328,6 @@ BOOL APIENTRY DllMain(HMODULE hModule, uint32_t dwReason, LPVOID) {
 				HMODULE self = nullptr;
 				GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_PIN | GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, reinterpret_cast<LPCWSTR>(&DllMain), &self);
 			}
-
 			Proxy::Init(); // Proxy all real XInput commands to the actual xinput1_3.dll.
 			Initialize(); // Inject our mod code.
 			return TRUE;

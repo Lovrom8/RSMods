@@ -5,6 +5,7 @@ namespace BugPrevention {
 	void PreventStuckTone();
 	void PreventPnPCrash();
 	void AllowComplexPasswords();
+	void BypassSaveFilePlatformIdCheck();
 	void PreventAdvancedDisplayCrash();
 	void PreventPortAudioInDeviceCrash();
 	void PreventExtraAudioDevicesCrash();

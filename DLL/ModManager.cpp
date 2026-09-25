@@ -83,6 +83,7 @@ namespace ModManager {
 		BugPrevention::PreventPnPCrash();
 		QualityOfLife::StopTwoRSInstances();
 		BugPrevention::AllowComplexPasswords();
+		BugPrevention::BypassSaveFilePlatformIdCheck();
 		BugPrevention::PreventAdvancedDisplayCrash();
 		BugPrevention::PreventPortAudioInDeviceCrash();
 		BugPrevention::PreventExtraAudioDevicesCrash();
