@@ -142,15 +142,15 @@ void RiffRepeaterMod::OnDisabled(ModContext&) {
 void RiffRepeaterMod::ChangeSpeed(const ModContext& c, const KeyEvent& event) {
 	const float interval = static_cast<float>(c.Int(Setting::RRSpeedInterval));
 
-	float realSongSpeed = RiffRepeater::GetSpeed(true);
-	realSongSpeed += event.control ? -interval : interval;
-	realSongSpeed = std::clamp(realSongSpeed, 25.f, 1600.f);
+	float newSongSpeed = RiffRepeater::GetSpeed(true);
+	newSongSpeed += event.control ? -interval : interval;
+	newSongSpeed = std::clamp(newSongSpeed, 25.f, 1600.f);
 
-	RiffRepeater::SetSpeed(realSongSpeed, true);
+	RiffRepeater::SetSpeed(newSongSpeed, true);
 	RiffRepeater::EnableTimeStretch();
 	RiffRepeater::saveNewRRSpeedToFile = true;
 
-	LOG_INFO("Triggered Mod: Song Speed set to " << realSongSpeed << "%" << std::endl);
+	LOG_INFO("Triggered Mod: Song Speed set to " << newSongSpeed << "%" << std::endl);
 }
 
 void RiffRepeaterMod::OnTick(ModContext& c) {

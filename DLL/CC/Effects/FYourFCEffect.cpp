@@ -1,4 +1,4 @@
-﻿#include "../../stdafx.h"
+#include "../../stdafx.h"
 #include "FYourFCEffect.hpp"
 
 namespace CrowdControl::Effects { // Kills user's current note streak
@@ -8,7 +8,7 @@ namespace CrowdControl::Effects { // Kills user's current note streak
 	/// </summary>
 	/// <param name="request"> - JSON Request</param>
 	/// <returns>Enums::EffectStatus::Success if test completed without any issues. Enums::EffectStatus::Retry if we have to retry.</returns>
-	Enums::EffectStatus FYourFCEffect::Test(const Structs::Request& request)
+	Enums::EffectStatus FYourFCEffect::Test(const Structs::Request&)
 	{
 		LOG_INFO("FYourFC::Test()" << std::endl);
 
@@ -22,7 +22,7 @@ namespace CrowdControl::Effects { // Kills user's current note streak
 	/// Kills the player's current note streak for a certain duration
 	/// </summary>
 	/// <returns> Enums::EffectStatus::Retry if we aren't currently in a song or incompatible effects are running, or Enums::EffectStatus::Success if we are</returns>
-	Enums::EffectStatus FYourFCEffect::OnStart(const Structs::Request& request)
+	Enums::EffectStatus FYourFCEffect::OnStart(const Structs::Request&)
 	{
 		LOG_INFO("FYourFC::Start()" << std::endl);
 

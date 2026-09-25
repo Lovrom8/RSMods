@@ -108,7 +108,7 @@ bool GuitarSpeak::RunGuitarSpeak() {
 
 		newNote = false;
 
-		if (buttonToPress.c_str() != "") {
+		if (!buttonToPress.empty()) {
 
 			// We should send a keystroke, and the key being pressed isn't null.
 			if (sendKeystrokesToRS2014) { 

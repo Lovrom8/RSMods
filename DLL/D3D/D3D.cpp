@@ -23,20 +23,22 @@ namespace {
 		for (int i = 0; i < howManyLines; i++) {
 			RSColor currColor = colorSet[i];
 			Color middleColor(static_cast<byte>(currColor.r * 255), static_cast<byte>(currColor.g * 255), static_cast<byte>(currColor.b * 255));
-			std::array<Color, 3> gradientColors = { Color::Black, middleColor, Color::White };
+			const Color black(static_cast<ARGB>(Color::Black));
+			const Color white(static_cast<ARGB>(Color::White));
+			std::array<Color, 3> gradientColors = { black, middleColor, white };
 
 			LinearGradientBrush linGrBrush(
 				Point(0, 0),
 				Point(width, lineHeight),
-				Color::Black,
-				Color::White
+				black,
+				white
 			);
 
 			LinearGradientBrush whiteCoverupBrush(
 				Point(width - 3, lineHeight * 5),
 				Point(width, height),
-				Color::White,
-				Color::White
+				white,
+				white
 			);
 
 			linGrBrush.SetInterpolationColors(gradientColors.data(), blendPositions.data(), gradientColors.size());
@@ -168,7 +170,7 @@ namespace {
 
 		pDevice->GetDeviceCaps(&pDeviceCaps);
 
-		for (int i = 0; i < pDeviceCaps.NumSimultaneousRTs - 1; i++) {
+		for (int i = 0; i < static_cast<int>(pDeviceCaps.NumSimultaneousRTs) - 1; i++) {
 			LOG_INFO("CRCForTexture: Trying RenderTarget(" << i << ")" << std::endl);
 
 			HRESULT rRenderTarget = pDevice->GetRenderTarget(i, &pRenderTarget);

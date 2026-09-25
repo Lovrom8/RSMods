@@ -1,4 +1,4 @@
-﻿#include "../../stdafx.h"
+#include "../../stdafx.h"
 #include "ChangeToToneSlot.hpp"
 #include "../../Keyboard.hpp"
 
@@ -10,7 +10,7 @@ namespace CrowdControl::Effects {
 	/// </summary>
 	/// <param name="request"> - JSON Request</param>
 	/// <returns>Enums::EffectStatus::Success if test completed without any issues. Enums::EffectStatus::Retry if we have to retry.</returns>
-	Enums::EffectStatus ChangeToToneSlot::Test(const Structs::Request& request)
+	Enums::EffectStatus ChangeToToneSlot::Test(const Structs::Request&)
 	{
 		LOG_INFO("ChangeToToneSlot::Test()" << std::endl);
 
@@ -25,7 +25,7 @@ namespace CrowdControl::Effects {
 	/// Sends a keystroke to the game for the current tone slot (presses number 1 for first tone slot, number 2 for second, etc.)
 	/// </summary>
 	/// <returns> Enums::EffectStatus::Retry if we aren't currently in a song, or Enums::EffectStatus::Success if we are</returns>
-	Enums::EffectStatus ChangeToToneSlot::OnStart(const Structs::Request& request)
+	Enums::EffectStatus ChangeToToneSlot::OnStart(const Structs::Request&)
 	{
 		LOG_INFO("ChangeToToneSlot::Start()" << std::endl);
 

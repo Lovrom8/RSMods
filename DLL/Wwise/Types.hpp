@@ -792,6 +792,10 @@ AkForceInline void* operator new(size_t /*size*/, void* memory, const AkPlacemen
 	return memory;
 }
 
+AkForceInline void operator delete(void* /*ptr*/, void* /*memory*/, const AkPlacementNewKey& /*key*/) noexcept
+{
+}
+
 #define AKASSERT(Condition) ((void)0)
 
 /// Specific implementation of array
@@ -1154,6 +1158,7 @@ public:
 	/// Resize the array.
 	bool GrowArray(AkUInt32 in_uGrowBy = TGrowBy)
 	{
+		(void)in_uGrowBy;
 		AKASSERT(in_uGrowBy);
 		return true;
 	}

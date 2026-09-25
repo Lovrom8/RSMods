@@ -226,11 +226,11 @@ void MidiMod::DrawMenu() {
 	static std::string previewValue = "Select a device";
 	if (ImGui::BeginCombo("MIDI devices", previewValue.c_str())) {
 		for (size_t i = 0; i < Midi::NumberOfOutPorts; ++i) {
-			const bool isSelected = (Midi::SelectedMidiOutDevice == i);
+			const bool isSelected = (Midi::SelectedMidiOutDevice == static_cast<int>(i));
 			const auto& device = Midi::midiOutDevices[i];
 
 			if (ImGui::Selectable(device.szPname, isSelected, ImGuiSelectableFlags_DontClosePopups)) {
-				Midi::SelectedMidiOutDevice = i;
+				Midi::SelectedMidiOutDevice = static_cast<int>(i);
 			}
 
 			if (isSelected) {
@@ -245,10 +245,10 @@ void MidiMod::DrawMenu() {
 	ImGui::SliderInt("Control Change", &Midi::MidiCC, 0, 127);
 
 	if (ImGui::Button("Send PC MIDI Message"))
-		Midi::SendDataToThread_PC(Midi::MidiPC);
+		Midi::SendDataToThread_PC(Midi::AsMidiByte(Midi::MidiPC));
 
 	if (ImGui::Button("Send CC MIDI Message"))
-		Midi::SendDataToThread_CC(Midi::MidiCC);
+		Midi::SendDataToThread_CC(Midi::AsMidiByte(Midi::MidiCC));
 }
 
 static Framework::ModRegistrar<MidiMod> _midiReg;

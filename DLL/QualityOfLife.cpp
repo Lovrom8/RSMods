@@ -8,7 +8,7 @@ namespace QualityOfLife {
 	void PatchTwoRTC()
 	{
 		char patch[25];
-		std::fill_n(patch, 25, 0x90);
+		std::fill_n(patch, 25, static_cast<char>(0x90));
 		MemUtil::PatchAdr(Offsets::ptr_twoRTCBypass, patch, sizeof(patch));
 	}
 
@@ -52,7 +52,10 @@ namespace QualityOfLife {
 				std::wstring processName(processNameBuffer.data());
 
 				if (processName == L"Rocksmith2014.exe") {
-					std::string narrowName(processName.begin(), processName.end());
+					std::string narrowName;
+					narrowName.resize(processName.size());
+					std::transform(processName.begin(), processName.end(), narrowName.begin(),
+						[](wchar_t ch) { return static_cast<char>(ch); });
 					LOG_INFO("Found parasitic process '" << narrowName << "'. Terminating." << std::endl);
 
 					if (!TerminateProcess(handle, 0)) {
@@ -60,7 +63,10 @@ namespace QualityOfLife {
 					}
 				}
 				else {
-					std::string narrowName(processName.begin(), processName.end());
+					std::string narrowName;
+					narrowName.resize(processName.size());
+					std::transform(processName.begin(), processName.end(), narrowName.begin(),
+						[](wchar_t ch) { return static_cast<char>(ch); });
 					LOG_INFO("Found dialog box, but process '" << narrowName << "' is not the target. Not terminating." << std::endl);
 				}
 			}

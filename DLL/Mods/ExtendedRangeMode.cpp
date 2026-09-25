@@ -508,8 +508,8 @@ static void RainbowWorker() {
 
 		// For each string
 		for (int i = 0; i < 6; i++) {
-			int newH = h + (stringOffset * i);
-			c.setH(newH);
+			int newH = static_cast<int>(h + (stringOffset * i));
+			c.setH(static_cast<float>(newH));
 
 			if (newH > 360)
 				newH -= 360;

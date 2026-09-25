@@ -64,15 +64,15 @@ void CustomHighwayColorsMod::OnInitialize(ModContext& c) {
 			auto pack = s_textures.load(std::memory_order_acquire);
 			if (!pack) return { DrawOutcome::Pass };
 
-			auto crc = ctx.StageCRC(1);
-			if (crc) {
-				if (*crc == D3D::Crc::NoteLanes && s_hasNotewayColors.load(std::memory_order_relaxed) && pack->noteway) {
+			auto stageCrc = ctx.StageCRC(1);
+			if (stageCrc) {
+				if (*stageCrc == D3D::Crc::NoteLanes && s_hasNotewayColors.load(std::memory_order_relaxed) && pack->noteway) {
 					return { DrawOutcome::ReplaceTexture, 1, pack->noteway };
 				}
-				if (*crc == D3D::Crc::NotewayFretNumbers && s_hasFretNumColor.load(std::memory_order_relaxed) && pack->fretNum) {
+				if (*stageCrc == D3D::Crc::NotewayFretNumbers && s_hasFretNumColor.load(std::memory_order_relaxed) && pack->fretNum) {
 					return { DrawOutcome::ReplaceTexture, 1, pack->fretNum };
 				}
-				if (*crc == D3D::Crc::NotewayGutters && s_hasGutterColor.load(std::memory_order_relaxed) && pack->gutter) {
+				if (*stageCrc == D3D::Crc::NotewayGutters && s_hasGutterColor.load(std::memory_order_relaxed) && pack->gutter) {
 					return { DrawOutcome::ReplaceTexture, 1, pack->gutter };
 				}
 			}

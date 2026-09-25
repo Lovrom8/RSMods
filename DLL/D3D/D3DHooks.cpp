@@ -197,12 +197,14 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 
 		if (GetAsyncKeyState(VK_F8) & 1) { // Save logged meshes to file
 			for (const auto& mesh : allMeshes) {
+				(void)mesh;
 				//Log(mesh.ToString().c_str());
 			}
 		}
 
 		if (GetAsyncKeyState(VK_F7) & 1) { // Save only removed 
 			for (const auto& mesh : removedMeshes) {
+				(void)mesh;
 				//Log(mesh.ToString().c_str());
 			}
 		}

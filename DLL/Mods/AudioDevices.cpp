@@ -65,7 +65,7 @@ void AudioDevices::SetupMicrophones() {
 	UINT totalMicrophones = 0;
 	microphones->GetCount(&totalMicrophones);
 
-	for (int i = 0; i < totalMicrophones; i++) {
+	for (UINT i = 0; i < totalMicrophones; i++) {
 		// Take a microphone
 		IMMDevice* selectedMicrophone;
 		microphones->Item(i, &selectedMicrophone);
@@ -212,12 +212,12 @@ int AudioDevices::GetMicrophoneVolume(std::string microphoneName) {
 				break;
 			}
 
-			return 17.f;
+			return 17;
 		}
 
 		if (!deviceEnumerator) {
 			LOG_ERROR("CoCreateInstance failed while getting microphone volume. DeviceEnumerator is null" << std::endl);
-			return 17.f;
+			return 17;
 		}
 
 		// Get the microphone we want
@@ -227,7 +227,7 @@ int AudioDevices::GetMicrophoneVolume(std::string microphoneName) {
 
 		if (!microphone) {
 			LOG_ERROR("GetDevice failed to get a microphone in GetVolume." << std::endl);
-			return 17.f;
+			return 17;
 		}
 
 		// Get the endpoint volume
@@ -241,12 +241,12 @@ int AudioDevices::GetMicrophoneVolume(std::string microphoneName) {
 		microphone->Release();
 		microphoneVolume->Release();
 
-		return currentVolume * 100;
+		return static_cast<int>(currentVolume * 100);
 	}
 	else
 	{
 		LOG_ERROR("Unable to find microphone (Get volume): \"" << microphoneName << "\"" << std::endl);
-		return 17.f;
+		return 17;
 	}
 }
 
@@ -256,16 +256,10 @@ int AudioDevices::GetMicrophoneVolume(std::string microphoneName) {
 void __declspec(naked) hook_changeSampleRate() {
 	__asm {
 		mov EAX, AudioDevices::output_SampleRate					// Move user-provided sample rate into EAX
+		test ESP, ESP												// ZF = 0 so the game's jnz right after keeps our rate instead of loading 24000
 
-		pushad
-
-		lea ecx, Offsets::ptr_sampleRateRequirementAudioOutput_JmpBck
-		call VersioningStruct<uintptr_t>::GetValue
-		mov Offsets::runtimeVersionStructValue, eax
-
-		popad
-
-		jmp Offsets::runtimeVersionStructValue
+		push offset Offsets::ptr_sampleRateRequirementAudioOutput_JmpBck
+		jmp MemUtil::JumpToVersioned
 	}
 }
 
@@ -279,15 +273,8 @@ void __declspec(naked) hook_sampleRate_FixDivZeroCrash() {
 		mov EBX, 0x1									// Move 1 into the EBX register. This prevents the divide by 0 crash when using a sample rate above 48kHz.
 		shr esi, 0x10									// Replace the original code we overwrote.
 
-		pushad
-
-		lea ecx, Offsets::ptr_sampleRateDivZeroCrash_JmpBck
-		call VersioningStruct<uintptr_t>::GetValue
-		mov Offsets::runtimeVersionStructValue, eax
-
-		popad
-
-		jmp Offsets::runtimeVersionStructValue
+		push offset Offsets::ptr_sampleRateDivZeroCrash_JmpBck
+		jmp MemUtil::JumpToVersioned
 	}
 }
 

@@ -356,31 +356,31 @@ float CollectColors::Max(float fR, float fG, float fB) {
 /// <param name="H"> - Hue **OUTPUT**</param>
 /// <param name="S"> - Saturation **OUTPUT**</param>
 /// <param name="L"> - Lightness **OUTPUT**</param>
-void CollectColors::RGB2HSL(float R, float G, float B, int& H, float& S, float& L) { //R,G,B [0,1], H [0,360], S,L [0,1] 
-	float min = Min(R, G, B);
-	float max = Max(R, G, B);
+void CollectColors::RGB2HSL(float inR, float inG, float inB, int& outH, float& outS, float& outL) { //R,G,B [0,1], H [0,360], S,L [0,1] 
+	float minVal = Min(inR, inG, inB);
+	float maxVal = Max(inR, inG, inB);
 	float d, h;
 
-	L = (min + max) / 2;
+	outL = (minVal + maxVal) / 2;
 
-	if (max != min) {
-		d = max - min;
+	if (maxVal != minVal) {
+		d = maxVal - minVal;
 
-		S = (L <= 0.5) ? (d / (min + max)) : (d / (2 - max - min));
+		outS = (outL <= 0.5) ? (d / (minVal + maxVal)) : (d / (2 - maxVal - minVal));
 
-		if (R == max)
-			h = (G - B) / d;
-		else if (G == max)
-			h = 2 + (B - R) / d;
-		else if (B == max)
-			h = 4 + (R - G) / d;
+		if (inR == maxVal)
+			h = (inG - inB) / d;
+		else if (inG == maxVal)
+			h = 2 + (inB - inR) / d;
+		else if (inB == maxVal)
+			h = 4 + (inR - inG) / d;
 		else
 			h = 0.0f;
 
-		H = 60 * h;
+		outH = static_cast<int>(60 * h);
 
-		if (H < 0)
-			H += 360;
+		if (outH < 0)
+			outH += 360;
 	}
 }
 
@@ -393,37 +393,37 @@ void CollectColors::RGB2HSL(float R, float G, float B, int& H, float& S, float& 
 /// <param name="R"> - Red **OUTPUT**</param>
 /// <param name="G"> - Green **OUTPUT**</param>
 /// <param name="B"> - Blue **OUTPUT**</param>
-void CollectColors::HSL2RGB(float H, float S, float L, float& R, float& G, float& B) {
-	float v, min, sv, fract, vsf, mid1, mid2;
+void CollectColors::HSL2RGB(float inH, float inS, float inL, float& outR, float& outG, float& outB) {
+	float v, minVal, sv, fract, vsf, mid1, mid2;
 	int sextant;
 
-	v = (float)(((double)L <= 0.5) ? ((double)L * (1.0 + (double)S)) : ((double)L + (double)S - (double)L * (double)S));
+	v = (float)(((double)inL <= 0.5) ? ((double)inL * (1.0 + (double)inS)) : ((double)inL + (double)inS - (double)inL * (double)inS));
 
 	if (v > 0) {
-		min = 2 * L - v;
-		sv = (v - min) / v;
-		H = (H == 360) ? 0 : H / 60;
+		minVal = 2 * inL - v;
+		sv = (v - minVal) / v;
+		inH = (inH == 360) ? 0 : inH / 60;
 
-		sextant = (int)floor(H);
-		fract = H - sextant;
+		sextant = (int)floor(inH);
+		fract = inH - sextant;
 		vsf = v * sv * fract;
-		mid1 = min + vsf;
+		mid1 = minVal + vsf;
 		mid2 = v - vsf;
 
 		switch (sextant)
 		{
-			case 0: R = v; G = mid1; B = min; break;
-			case 1: R = mid2; G = v; B = min; break;
-			case 2: R = min; G = v; B = mid1; break;
-			case 3: R = min; G = mid2; B = v; break;
-			case 4: R = mid1; G = min; B = v; break;
-			case 5: R = v; G = min; B = mid2; break;
+			case 0: outR = v; outG = mid1; outB = minVal; break;
+			case 1: outR = mid2; outG = v; outB = minVal; break;
+			case 2: outR = minVal; outG = v; outB = mid1; break;
+			case 3: outR = minVal; outG = mid2; outB = v; break;
+			case 4: outR = mid1; outG = minVal; outB = v; break;
+			case 5: outR = v; outG = minVal; outB = mid2; break;
 		}
 	}
 	else {
-		R = 0.0f;
-		G = 0.0f;
-		B = 0.0f;
+		outR = 0.0f;
+		outG = 0.0f;
+		outB = 0.0f;
 	}
 }
 

@@ -34,10 +34,10 @@ unsigned WINAPI MidiThread() {
 	while (!GameState::GameClosing) {
 		// If we have sent a Midi PC/CC value to this thread, send the Midi value.
 		if (Midi::sendPC)
-			Midi::SendProgramChange(Midi::dataToSendPC);
+			Midi::SendProgramChange(Midi::AsMidiByte(Midi::dataToSendPC));
 
 		if (Midi::sendCC)
-			Midi::SendControlChange(Midi::dataToSendCC);
+			Midi::SendControlChange(Midi::AsMidiByte(Midi::dataToSendCC));
 
 		Sleep(Midi::sleepFor);
 	}
@@ -127,8 +127,8 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 			POINT mPos;
 			GetCursorPos(&mPos);
 			ScreenToClient(hWnd, &mPos);
-			ImGui::GetIO().MousePos.x = mPos.x;
-			ImGui::GetIO().MousePos.y = mPos.y;
+			ImGui::GetIO().MousePos.x = static_cast<float>(mPos.x);
+			ImGui::GetIO().MousePos.y = static_cast<float>(mPos.y);
 			break;
 	}
 
@@ -319,7 +319,7 @@ static bool IsRunningUnderGame() {
 /// <param name="dwReason"></param>
 /// <param name="lpReserved"></param>
 /// <returns>Always returns TRUE</returns>
-BOOL APIENTRY DllMain(HMODULE hModule, uint32_t dwReason, LPVOID lpReserved) {
+BOOL APIENTRY DllMain(HMODULE hModule, uint32_t dwReason, LPVOID) {
 	switch (dwReason) {
 		case DLL_PROCESS_ATTACH:
 			DisableThreadLibraryCalls(hModule); // Disables the DLL_THREAD_ATTACH and DLL_THREAD_DETACH notifications. | https://docs.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-disablethreadlibrarycalls
@@ -328,6 +328,14 @@ BOOL APIENTRY DllMain(HMODULE hModule, uint32_t dwReason, LPVOID lpReserved) {
 				return TRUE;
 			}
 			SetupLogging();
+
+			// The game FreeLibrary's xinput1_3 while shutting down its input service, but our hooks and threads stay live until it exits.
+			// Unloading then would jump into freed code, and our std::jthread globals would join under the loader lock (hangs on close).
+			// Pinning keeps us loaded until process exit, when the other threads are already gone.
+			{
+				HMODULE self = nullptr;
+				GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_PIN | GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, reinterpret_cast<LPCWSTR>(&DllMain), &self);
+			}
 			Proxy::Init(); // Proxy all real XInput commands to the actual xinput1_3.dll.
 			Initialize(); // Inject our mod code.
 			return TRUE;
@@ -356,7 +364,7 @@ BOOL APIENTRY DllMain(HMODULE hModule, uint32_t dwReason, LPVOID lpReserved) {
 /// Rundll32-compatible entrypoint to dump the aggregate mod schema manifest to a JSON file.
 /// Usage: rundll32 RSMods.dll,DumpManifest [path\to\mods.manifest.json]
 /// </summary>
-extern "C" __declspec(dllexport) void CALLBACK DumpManifest(HWND hwnd, HINSTANCE hinst, LPSTR lpszCmdLine, int nCmdShow) {
+extern "C" __declspec(dllexport) void CALLBACK DumpManifest(HWND, HINSTANCE, LPSTR lpszCmdLine, int) {
 	Framework::Registry().InstantiatePending();
 	std::string outputPath = (lpszCmdLine && *lpszCmdLine) ? lpszCmdLine : "mods.manifest.json";
 	if (outputPath.size() >= 2 && outputPath.front() == '"' && outputPath.back() == '"') {

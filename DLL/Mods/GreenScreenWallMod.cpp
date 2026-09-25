@@ -19,7 +19,7 @@ SettingDefs GreenScreenWallMod::Settings() const {
 	};
 }
 
-bool GreenScreenWallMod::IsEnabled(const ModContext& c) const {
+bool GreenScreenWallMod::IsEnabled(const ModContext&) const {
 	return true;
 }
 

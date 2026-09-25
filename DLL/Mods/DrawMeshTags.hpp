@@ -44,15 +44,15 @@ namespace DrawMesh {
     // Query the stage CRC through ctx and compare against tag values from D3D::Crc.
 
     inline bool StageMatches(Framework::DrawContext& ctx, DWORD stage, DWORD tagCrc) {
-        auto crc = ctx.StageCRC(stage);
-        return crc.has_value() && *crc == tagCrc;
+        auto stageCrc = ctx.StageCRC(stage);
+        return stageCrc.has_value() && *stageCrc == tagCrc;
     }
 
     inline bool StageMatchesAny(Framework::DrawContext& ctx, DWORD stage, std::initializer_list<DWORD> tagCrcs) {
-        auto crc = ctx.StageCRC(stage);
-        if (!crc.has_value()) return false;
+        auto stageCrc = ctx.StageCRC(stage);
+        if (!stageCrc.has_value()) return false;
         for (DWORD tag : tagCrcs) {
-            if (*crc == tag) return true;
+            if (*stageCrc == tag) return true;
         }
         return false;
     }

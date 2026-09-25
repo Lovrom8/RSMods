@@ -1,4 +1,4 @@
-﻿#include "../../stdafx.h"
+#include "../../stdafx.h"
 #include "TransparentNotesEffect.hpp"
 #include "../../Framework/Framework.hpp"
 
@@ -13,7 +13,7 @@ namespace CrowdControl::Effects { // Changes textures for noteheads to a nonexis
 	/// </summary>
 	/// <param name="request"> - JSON Request</param>
 	/// <returns>Enums::EffectStatus::Success if test completed without any issues. Enums::EffectStatus::Retry if we have to retry.</returns>
-	Enums::EffectStatus TransparentNotesEffect::Test(const Structs::Request& request)
+	Enums::EffectStatus TransparentNotesEffect::Test(const Structs::Request&)
 	{
 		LOG_INFO("TransparentNotesEffect::Test()" << std::endl);
 

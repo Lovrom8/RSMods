@@ -55,11 +55,11 @@ void ShowSongTimerMod::OnSettingsChanged(ModContext& c) {
 	shown = automatic && c.phase == GamePhase::Song;
 }
 
-void ShowSongTimerMod::OnSongEnter(ModContext& c) {
+void ShowSongTimerMod::OnSongEnter(ModContext&) {
 	if (automatic) shown = true;
 }
 
-void ShowSongTimerMod::OnSongExit(ModContext& c) {
+void ShowSongTimerMod::OnSongExit(ModContext&) {
 	if (automatic) shown = false;
 }
 
