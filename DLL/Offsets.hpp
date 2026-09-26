@@ -223,6 +223,34 @@ namespace Offsets {
 	inline VersioningStruct<uintptr_t> ptr_calibrationSampleCountClamp;
 	inline VersioningStruct<uintptr_t> ptr_calibrationSampleCountClampJmpBck;
 
+	// Large profile save / load
+	inline VersioningStruct<uintptr_t> ptr_profileSaveCloneSection;
+	inline VersioningStruct<uintptr_t> ptr_profileSaveCloneSectionJmpBck;
+	inline VersioningStruct<uintptr_t> ptr_profileSavePrintRoot;
+	inline VersioningStruct<uintptr_t> ptr_profileSavePrintRootJmpBck;
+	inline VersioningStruct<uintptr_t> ptr_profileSaveCompressBoundCall;
+	inline VersioningStruct<uintptr_t> ptr_profileSaveCompress2Call;
+	inline VersioningStruct<uintptr_t> func_profileJsonWriter;
+	inline VersioningStruct<uintptr_t> func_zlibDeflateInit;
+	inline VersioningStruct<uintptr_t> func_zlibDeflate;
+	inline VersioningStruct<uintptr_t> func_zlibDeflateEnd;
+	inline VersioningStruct<uintptr_t> ptr_profileLoadClearDocument;
+	inline VersioningStruct<uintptr_t> ptr_profileLoadClearDocumentJmpBck;
+	inline VersioningStruct<uintptr_t> func_engineStringDestroy;
+	inline VersioningStruct<uintptr_t> ptr_profileLoadTick;
+	inline VersioningStruct<uintptr_t> ptr_profileLoadTickJmpBck;
+	inline VersioningStruct<uintptr_t> ptr_profileAdapter;
+	inline VersioningStruct<uintptr_t> ptr_gameServices;
+	inline VersioningStruct<uintptr_t> ptr_profileParseCall;
+	inline VersioningStruct<uintptr_t> ptr_profileSaveCall;
+	inline VersioningStruct<uintptr_t> func_jsonNumberHash;
+	inline VersioningStruct<uintptr_t> func_jsonNumberTableRehash;
+	inline VersioningStruct<uintptr_t> ptr_jsonNumberTable;
+	inline VersioningStruct<uintptr_t> ptr_jsonNumberTableLock;
+	inline VersioningStruct<uintptr_t> func_getAllocatorOwner;
+	inline VersioningStruct<uintptr_t> func_playnextTrim;
+	inline VersioningStruct<uintptr_t> func_profileSongs;
+
 	// Runtime data.
 	inline uintptr_t runtimeVersionStructValue;
 

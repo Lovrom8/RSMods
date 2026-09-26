@@ -100,6 +100,9 @@
     <ClCompile Include="MemUtil.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SamplingProfiler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="Lib\ImGUI\imgui.cpp">
       <Filter>Main Headers\ImGUI</Filter>
     </ClCompile>
@@ -231,6 +234,12 @@
       <Filter>Wwise</Filter>
     </ClCompile>
     <ClCompile Include="Mods\BugPrevention.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mods\ProfileBackups.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mods\ProfileSaveStreaming.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
     <ClCompile Include="Tests.cpp">
@@ -374,6 +383,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MemUtil.hpp">
+      <Filter>Main Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="SamplingProfiler.hpp">
       <Filter>Main Headers</Filter>
     </ClInclude>
     <ClInclude Include="Offsets.hpp">
@@ -599,6 +611,12 @@
       <Filter>Wwise\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Mods\BugPrevention.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\ProfileBackups.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\ProfileSaveStreaming.hpp">
       <Filter>Mods\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Tests.hpp">

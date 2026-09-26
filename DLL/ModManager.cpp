@@ -176,6 +176,7 @@ namespace ModManager {
 	{
 		AudioDevices::SetupMicrophones();
 		QualityOfLife::StopTwoRSInstances(); // Looks for the second instance's error dialog once, so it keeps its old timing
+    ProfileSaveStreaming::Initialize();
 
 		#ifdef _WWISE_LOGS
 				Wwise::Logging::Init();

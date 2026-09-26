@@ -321,6 +321,8 @@ namespace RSMods
             this.button_ChangeNumberedFrets = new System.Windows.Forms.Button();
             this.groupBox_Backups = new System.Windows.Forms.GroupBox();
             this.checkBox_UnlimitedBackups = new System.Windows.Forms.CheckBox();
+            this.groupBox_ProfileLoadSave = new System.Windows.Forms.GroupBox();
+            this.checkBox_FastProfileLoadAndSave = new System.Windows.Forms.CheckBox();
             this.nUpDown_NumberOfBackups = new System.Windows.Forms.NumericUpDown();
             this.groupBox_RRSpeed = new System.Windows.Forms.GroupBox();
             this.nUpDown_RiffRepeaterSpeed = new System.Windows.Forms.NumericUpDown();
@@ -613,6 +615,7 @@ namespace RSMods
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_OverrideInputVolume)).BeginInit();
             this.groupBox_CustomHighway.SuspendLayout();
             this.groupBox_Backups.SuspendLayout();
+            this.groupBox_ProfileLoadSave.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_NumberOfBackups)).BeginInit();
             this.groupBox_RRSpeed.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_RiffRepeaterSpeed)).BeginInit();
@@ -3905,6 +3908,7 @@ namespace RSMods
             this.tabPage_ModSettings_Misc.Controls.Add(this.button_ResetModsToDefault);
             this.tabPage_ModSettings_Misc.Controls.Add(this.groupBox_CustomHighway);
             this.tabPage_ModSettings_Misc.Controls.Add(this.groupBox_Backups);
+            this.tabPage_ModSettings_Misc.Controls.Add(this.groupBox_ProfileLoadSave);
             this.tabPage_ModSettings_Misc.Controls.Add(this.groupBox_RRSpeed);
             this.tabPage_ModSettings_Misc.Controls.Add(this.groupBox_ControlVolumeIncrement);
             this.tabPage_ModSettings_Misc.Location = new System.Drawing.Point(4, 22);
@@ -4232,6 +4236,29 @@ namespace RSMods
             this.button_ChangeNumberedFrets.UseVisualStyleBackColor = true;
             this.button_ChangeNumberedFrets.Click += new System.EventHandler(this.NotewayColors_ChangeNotewayColor);
             this.button_ChangeNumberedFrets.MouseHover += new System.EventHandler(this.ToolTips_Show);
+            // 
+            // groupBox_ProfileLoadSave
+            // 
+            this.groupBox_ProfileLoadSave.Controls.Add(this.checkBox_FastProfileLoadAndSave);
+            this.groupBox_ProfileLoadSave.Location = new System.Drawing.Point(27, 234);
+            this.groupBox_ProfileLoadSave.Name = "groupBox_ProfileLoadSave";
+            this.groupBox_ProfileLoadSave.Size = new System.Drawing.Size(166, 38);
+            this.groupBox_ProfileLoadSave.TabIndex = 100014;
+            this.groupBox_ProfileLoadSave.TabStop = false;
+            this.groupBox_ProfileLoadSave.Text = "Profiles";
+            this.groupBox_ProfileLoadSave.MouseHover += new System.EventHandler(this.ToolTips_Show);
+            // 
+            // checkBox_FastProfileLoadAndSave
+            // 
+            this.checkBox_FastProfileLoadAndSave.AutoSize = true;
+            this.checkBox_FastProfileLoadAndSave.Location = new System.Drawing.Point(8, 15);
+            this.checkBox_FastProfileLoadAndSave.Name = "checkBox_FastProfileLoadAndSave";
+            this.checkBox_FastProfileLoadAndSave.Size = new System.Drawing.Size(135, 17);
+            this.checkBox_FastProfileLoadAndSave.TabIndex = 0;
+            this.checkBox_FastProfileLoadAndSave.Text = "Fast Profile Load/Save";
+            this.checkBox_FastProfileLoadAndSave.UseVisualStyleBackColor = true;
+            this.checkBox_FastProfileLoadAndSave.CheckedChanged += new System.EventHandler(this.Save_FastProfileLoadAndSave);
+            this.checkBox_FastProfileLoadAndSave.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // groupBox_Backups
             // 
@@ -7011,6 +7038,8 @@ namespace RSMods
             this.groupBox_CustomHighway.PerformLayout();
             this.groupBox_Backups.ResumeLayout(false);
             this.groupBox_Backups.PerformLayout();
+            this.groupBox_ProfileLoadSave.ResumeLayout(false);
+            this.groupBox_ProfileLoadSave.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_NumberOfBackups)).EndInit();
             this.groupBox_RRSpeed.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_RiffRepeaterSpeed)).EndInit();
@@ -7401,6 +7430,8 @@ namespace RSMods
         private System.Windows.Forms.CheckBox checkBox_BackupProfile;
         private System.Windows.Forms.GroupBox groupBox_Backups;
         private System.Windows.Forms.CheckBox checkBox_UnlimitedBackups;
+        private System.Windows.Forms.GroupBox groupBox_ProfileLoadSave;
+        private System.Windows.Forms.CheckBox checkBox_FastProfileLoadAndSave;
         private System.Windows.Forms.NumericUpDown nUpDown_NumberOfBackups;
         private System.Windows.Forms.CheckBox checkBox_RainbowNotes;
         private System.Windows.Forms.Label label_RainbowNotesKey;
