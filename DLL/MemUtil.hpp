@@ -4,6 +4,7 @@
 #include "winternl.h"
 #include <span>
 #include <string_view>
+#include <type_traits>
 
 #ifndef STATUS_SUCCESS
 #define STATUS_SUCCESS ((NTSTATUS)0x00000000L)
@@ -24,6 +25,10 @@ namespace MemUtil {
 	void JumpToVersioned();
 	PBYTE TrampHook(PBYTE src, PBYTE dst, unsigned int len);
 	bool IsBadReadPtr(void* pointer);
+	template <typename T>
+		requires std::is_trivially_copyable_v<T>
+	bool TryRead(uintptr_t address, T& value);
+	bool MatchesBytes(uintptr_t address, std::span<const unsigned char> expected);
 	uintptr_t FindDMAAddy(uintptr_t ptr, std::span<const unsigned int> offsets, bool safe = false);
 	uintptr_t ReadPtr(uintptr_t adr);
 	template <typename T>
@@ -45,6 +50,20 @@ namespace MemUtil {
 	uint32_t GetTextSectionLength();
 	void CheckMemoryProtection(void* address);
 };
+
+template <typename T> requires std::is_trivially_copyable_v<T>
+bool MemUtil::TryRead(uintptr_t address, T& value) {
+	if (!address)
+		return false;
+
+	__try {
+		value = *reinterpret_cast<const T*>(address);
+		return true;
+	}
+	__except (EXCEPTION_EXECUTE_HANDLER) {
+		return false;
+	}
+}
 
 template <typename T>
 /// <summary>

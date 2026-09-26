@@ -22,6 +22,7 @@ New-Item -ItemType Directory -Force -Path $OutDir | Out-Null
 $Tests = @(
     @{ Name = 'ConflictResolverTests';  Sources = @() },  # header-only resolver
     @{ Name = 'ResourceLedgerTests';    Sources = @('ResourceLedger.cpp') },
+    @{ Name = 'AspectRatioTests';      Sources = @() },  # header-only aspect math
     @{ Name = 'CommandRouterTests';     Sources = @('CommandRouter.cpp', 'CommandCollisionDiagnostics.cpp') },
     @{ Name = 'MainThreadInboxTests';   Sources = @('MainThreadInbox.cpp') },
     @{ Name = 'StateMachineTests';      Sources = @('ModRegistry.cpp', 'ResourceLedger.cpp', 'CommandRouter.cpp', 'MainThreadInbox.cpp', 'CommandCollisionDiagnostics.cpp') }

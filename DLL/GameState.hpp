@@ -181,6 +181,16 @@ namespace GameState {
 		"H2H_SongReview"sv
 	};
 
+	// A Guitarcade minigame is being played or paused. Used by the ultrawide
+	// correction: the 2D minigames draw their scene with an orthographic
+	// projection that the correction's affine test cannot tell apart from a 2D
+	// interface element, so the scene gets confined to 16:9. The correction skips
+	// that clamp here while keeping it for Scaleform interface draws.
+	inline constexpr std::array guitarcadeGameModes = {
+		"Guitarcade_Game"sv,
+		"Guitarcade_Pause"sv
+	};
+
 	inline constexpr std::array onlineModes = {
 		"ScoreAttack_Game"sv,
 		"Guitarcade_Game"sv
@@ -228,5 +238,6 @@ namespace GameState {
 		bool IsInLessonModes();
 		bool IsInMenusWithDisallowedAutoEnter();
 		bool IsInCalibrationMenus();
+		bool IsInGuitarcadeGame();
 	}
 };

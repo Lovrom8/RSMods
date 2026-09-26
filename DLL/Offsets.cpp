@@ -7,6 +7,15 @@ void Offsets::Initialize() {
 	baseEnd = { {0x04F80000, baseHandle + MemUtil::GetTextSectionLength()  } };			// End of Rocksmith /* or close enough */
 	ptr_loft = { {0x00F5F56C, 0x00F6056C} };											// Memory | Scan for a float, rounded (default), of 10000. Grab all of them. Then in chunks set them to 1. Once the loft turns off, narrow down to the specific one. Pointer map to far offsets.
 	ptr_tuning = { {0x00F5F62C, 0x00F6062C} };											// Memory | Interpolated from Loft. +0x1000.
+	// LoftManager::SetLoftState (0x00775370) dispatches the selected state to the lights manager
+	// and then, at this site, to the post-effects manager. The site is +0x7A into the
+	// function on both builds.
+	// Code | 8b 4d 0c 8b 53 0c 8b 42 20 51 50 8b c7 e8 51 17 00 00 (the e8 is the site)
+	hook_loftPostFxSetState = { {0x007753EA, baseHandle + 0x00375B5A} };
+	// LoftPostEffectsManager::SetLoftState. EAX = requested state, [esp+4] = manager,
+	// [esp+8] = immediate flag, RET 8.
+	// Code | 55 8b ec 53 8b 5d 08 83 7b 0c 00 56 57 8b f0
+	func_loftPostFxSetState = { {0x00776B40, baseHandle + 0x00377360} };
 	ptr_trueTuning = { {0x00F5F57C, 0x00F6057C} };										// Memory | Copied from timer
 	ptr_disableTrueTuning = { {0x004DCCF2, baseHandle + 0x00DD972 } };					// Code | Bytes d9 05 68 44 22 01 after the mask below (roughly 0x31 bytes away)
 	ptr_disableTrueTuning_jmpBck = { {0x004DCCF8, baseHandle + 0x00DD978 } };			// Code | Bytes 33 c0 after the mask below (roughly 0x37 bytes away)

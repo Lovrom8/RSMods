@@ -158,6 +158,16 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug with Wwise Logging|Win32'">../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="Mods\UltrawideMod.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug with Wwise Logging|Win32'">../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\UltrawideRRDim.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug with Wwise Logging|Win32'">../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
     <ClCompile Include="Mods\RemoveHeadstockMod.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug with Wwise Logging|Win32'">../stdafx.h</PrecompiledHeaderFile>
@@ -370,6 +380,8 @@
     </ClCompile>
     <ClInclude Include="D3D/D3DHelper.hpp" />
     <ClInclude Include="D3D/D3DHooks.hpp" />
+    <ClInclude Include="D3D/UltrawideShaders.hpp" />
+    <ClInclude Include="D3D/UltrawideFullStage.hpp" />
     <ClInclude Include="D3D/D3D.hpp" />
     <ClInclude Include="CC\Effects\DrunkModeEffect.hpp" />
     <ClInclude Include="CC\Effects\FYourFCEffect.hpp" />
@@ -402,6 +414,8 @@
     <ClInclude Include="Mods\LoftMod.hpp" />
     <ClInclude Include="Mods\EnumerationMod.hpp" />
     <ClInclude Include="Mods\RemoveSkylineMod.hpp" />
+    <ClInclude Include="Mods\UltrawideMod.hpp" />
+    <ClInclude Include="Mods\UltrawideRRDim.hpp" />
     <ClInclude Include="Mods\RemoveHeadstockMod.hpp" />
     <ClInclude Include="Mods\RemoveLyricsMod.hpp" />
     <ClInclude Include="Mods\ShowSongTimerMod.hpp" />
@@ -598,6 +612,7 @@
     <ClInclude Include="SamplingProfiler.hpp" />
     <ClInclude Include="Offsets.hpp" />
     <ClInclude Include="Settings.hpp" />
+    <ClInclude Include="AspectRatio.hpp" />
     <ClInclude Include="StringState.h" />
   </ItemGroup>
   <ItemGroup>
