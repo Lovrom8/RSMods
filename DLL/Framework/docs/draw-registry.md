@@ -493,10 +493,10 @@ original draw call, and on the `Hide`/`Show` early returns too, so a terminal ou
 interceptor can't leak the state. Only draws that reach the walk are covered: `Hook_DIP` has a few
 early returns above it.
 
-`DrawPath::IndexedUP` / `PrimitiveUP` are registered and published, but **nothing dispatches them yet**:
-the `DrawPrimitiveUP` / `DrawIndexedPrimitiveUP` hooks arrive with the Ultrawide PR
-(`ultrawide-merge.md`). They get the same walk as `Hook_DP`, with the matching path and
-`VertexStreamZeroStride` as the stride. `Both` deliberately does not include them, so the existing
+`DrawPath::IndexedUP` / `PrimitiveUP` are walked by `Hook_DrawIndexedPrimitiveUP` /
+`Hook_DrawPrimitiveUP` (added with Ultrawide), the same way as `Hook_DP`, with the matching path and
+`VertexStreamZeroStride` as the stride. When nothing is registered for a UP path, the hook skips
+building the context entirely. `Both` deliberately does not include them, so the existing
 mesh-signature interceptors never see user-pointer draws. Opt in with `All` or the UP flags.
 
 ---

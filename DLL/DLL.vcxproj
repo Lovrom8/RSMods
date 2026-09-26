@@ -19,6 +19,19 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="SamplingProfiler.cpp" />
+    <ClCompile Include="Mods\UltrawideRRDim.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\UltrawideMod.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\ProfileSaveStreaming.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\ProfileBackups.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
     <ClCompile Include="CC\CCEffect.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug with Wwise Logging|Win32'">../stdafx.h</PrecompiledHeaderFile>
@@ -337,6 +350,10 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug with Wwise Logging|Win32'">../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
+    <ClInclude Include="Mods\UltrawideRRDim.hpp" />
+    <ClInclude Include="Mods\UltrawideMod.hpp" />
+    <ClInclude Include="Mods\ProfileSaveStreaming.hpp" />
+    <ClInclude Include="Mods\ProfileBackups.hpp" />
     <ClInclude Include="CC\CCEffectList.hpp" />
     <ClInclude Include="CC\CCEnums.hpp" />
     <ClInclude Include="CC\CCStructs.hpp" />
@@ -372,6 +389,8 @@
     </ClCompile>
     <ClInclude Include="D3D/D3DHelper.hpp" />
     <ClInclude Include="D3D/D3DHooks.hpp" />
+    <ClInclude Include="D3D/UltrawideShaders.hpp" />
+    <ClInclude Include="D3D/UltrawideFullStage.hpp" />
     <ClInclude Include="D3D/D3D.hpp" />
     <ClInclude Include="CC\Effects\DrunkModeEffect.hpp" />
     <ClInclude Include="CC\Effects\FYourFCEffect.hpp" />
@@ -583,8 +602,10 @@
     <ClInclude Include="Lib\ImGUI\imstb_textedit.h" />
     <ClInclude Include="Lib\ImGUI\imstb_truetype.h" />
     <ClInclude Include="MemUtil.hpp" />
+    <ClInclude Include="SamplingProfiler.hpp" />
     <ClInclude Include="Offsets.hpp" />
     <ClInclude Include="Settings.hpp" />
+    <ClInclude Include="AspectRatio.hpp" />
     <ClInclude Include="StringState.h" />
   </ItemGroup>
   <ItemGroup>

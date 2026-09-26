@@ -1863,5 +1863,65 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null
+  },
+  {
+    "key": "BackupProfile",
+    "ini": {
+      "section": "GUI Settings",
+      "name": "BackupProfile"
+    },
+    "type": "Bool",
+    "default": "on",
+    "label": "Backup Profile",
+    "hint": "Every time you play Rocksmith there is an extremely small chance your save can get corrupted.\nWhen your save gets corrupted, most of the time you can't recover and need to start anew.\nThis mod will create a backup of your save every time you open this GUI,\nand every 10 minutes while Rocksmith is running (only when your save changed).\nBackups go in the Profile_AutoBackups folder: the last hour, 6 hourly, 4 quarter-daily and 30 daily backups are kept.\nFast Profile Load/Save needs this on.",
+    "category": "Toggle Switches",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null
+  },
+  {
+    "key": "FastProfileLoadAndSave",
+    "ini": {
+      "section": "Toggle Switches",
+      "name": "FastProfileLoadAndSave"
+    },
+    "type": "Bool",
+    "default": "off",
+    "label": "Fast Profile Load/Save",
+    "hint": "Big profiles can freeze Rocksmith for minutes when it loads them, and crash it when it saves them.\nThis mod saves and loads the profile in pieces instead, so the game keeps running and doesn't run out of memory.\nBecause it changes how your profile is saved, it needs Backup Profile on, and only runs once your profiles have been backed up.\nThis mod must be enabled when you start the game for it to take effect.",
+    "category": "Toggle Switches",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": {
+      "key": "BackupProfile",
+      "equals": "on"
+    },
+    "editor": null
+  },
+  {
+    "key": "Ultrawide",
+    "ini": {
+      "section": "Toggle Switches",
+      "name": "Ultrawide"
+    },
+    "type": "Bool",
+    "default": "off",
+    "label": "Ultrawide",
+    "hint": "Ultrawide (21:9 / 32:9) display support. The interface stays 16:9.",
+    "category": "Toggle Switches",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null
   }
 ]

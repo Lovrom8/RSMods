@@ -203,6 +203,8 @@ namespace RSMods
             public static bool DisplayCurrentAccuracy { get => _toggleSwitches.GetBool(); set => _toggleSwitches.SetBool(value); }
             public static bool PreventMidSongPause { get => _toggleSwitches.GetBool(); set => _toggleSwitches.SetBool(value); }
             public static bool RemoveFingerprints { get => _toggleSwitches.GetBool(); set => _toggleSwitches.SetBool(value); }
+            public static bool Ultrawide { get => _toggleSwitches.GetBool(); set => _toggleSwitches.SetBool(value); }
+            public static bool FastProfileLoadAndSave { get => _toggleSwitches.GetBool(); set => _toggleSwitches.SetBool(value); }
         }
 
         public static class StringColors

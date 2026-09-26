@@ -131,7 +131,7 @@ Framework::Hud().SetLayoutAspect(0.0f);          // whole display again
 
 `CenteredArea` ignores an aspect the display isn't wider than, so the call is safe at any resolution.
 It is an atomic and may be set from any thread; a frame callback (`draw-registry.md` §8.7) sets it
-before the HUD is drawn that frame. The first user is Ultrawide (`ultrawide-merge.md`), whose game UI
+before the HUD is drawn that frame. The first user is `UltrawideMod`, whose game UI
 stays in a centred 16:9 band.
 
 ### Decisions taken

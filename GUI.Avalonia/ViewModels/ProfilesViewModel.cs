@@ -26,7 +26,7 @@ internal sealed partial class ProfilesViewModel(
     private bool _initialized;
 
     public ObservableCollection<string> AvailableProfiles { get; } = [];
-    public ObservableCollection<string> Backups { get; } = [];
+    public ObservableCollection<ProfileBackup> Backups { get; } = [];
     public ObservableCollection<SongRowViewModel> SongRows { get; } = [];
 
     /// <summary>Checkbox column descriptors for the grid (Favorites + the profile's song lists). The view
@@ -47,7 +47,7 @@ internal sealed partial class ProfilesViewModel(
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(RevertToBackupCommand))]
-    private string? _selectedBackup;
+    private ProfileBackup? _selectedBackup;
 
     [ObservableProperty]
     private int _songListCount;
@@ -114,8 +114,8 @@ internal sealed partial class ProfilesViewModel(
         Backups.Clear();
         try
         {
-            foreach (string name in ProfileBackupService.GetFormattedBackupNames(GenUtil.GetRSDirectory()))
-                Backups.Add(name);
+            foreach (ProfileBackup backup in ProfileBackupService.ListBackups(GenUtil.GetRSDirectory(), GenUtil.GetSaveDirectory()))
+                Backups.Add(backup);
         }
         catch
         {
@@ -240,24 +240,19 @@ internal sealed partial class ProfilesViewModel(
         StatusMessage = "Backup list refreshed.";
     }
 
-    private bool CanRevert => !string.IsNullOrEmpty(SelectedBackup) && !IsBusy;
+    private bool CanRevert => SelectedBackup is not null && !IsBusy;
 
     [RelayCommand(CanExecute = nameof(CanRevert))]
     private async Task RevertToBackupAsync()
     {
-        if (SelectedBackup is not string name)
+        if (SelectedBackup is not ProfileBackup backup)
             return;
 
+        string name = backup.ToString();
         if (!await dialogs.ShowConfirmAsync($"Revert your save data to the backup '{name}'?\nThis overwrites your current save profiles.", "Revert to backup?"))
             return;
 
-        string? sourceDir = ProfileBackupService.GetBackupSourceDirectory(GenUtil.GetRSDirectory(), name);
-        if (string.IsNullOrEmpty(sourceDir))
-        {
-            await dialogs.ShowErrorAsync("Could not identify the backup date format.");
-            return;
-        }
-
+        string sourceDir = backup.Folder;
         if (!Directory.Exists(sourceDir))
         {
             await dialogs.ShowErrorAsync("The selected backup folder could not be found.");

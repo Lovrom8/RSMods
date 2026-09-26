@@ -53,6 +53,8 @@ internal sealed class StartupService(IDialogService dialogs, IAppEnvironment env
             RsModsSettings.ValidationWarning -= Collect;
         }
 
+        await BackUpProfilesAsync(rsFolder, savePath);
+
         return new StartupResult
         {
             Completed = true,
@@ -60,5 +62,29 @@ internal sealed class StartupService(IDialogService dialogs, IAppEnvironment env
             SavePath = savePath,
             Warnings = warnings,
         };
+    }
+
+    /// <summary>
+    /// Backs up the profiles into "Before GUI" before any screen can edit them, so a profile changed here while the
+    /// game is closed always has a backup. The DLL makes the in-game backups; both are governed by BackupProfile.
+    /// </summary>
+    private async Task BackUpProfilesAsync(string rsFolder, string savePath)
+    {
+        if (string.IsNullOrEmpty(savePath) || !RsModsSettings.GUISettings.BackupProfile)
+            return;
+
+        try
+        {
+            int keep = RsModsSettings.GUISettings.NumberOfBackups;
+            await Task.Run(() =>
+            {
+                ProfileBackupService.CreateBackup(savePath, rsFolder);
+                ProfileBackupService.DeleteOldBackups(rsFolder, savePath, keep);
+            });
+        }
+        catch (Exception ex)
+        {
+            await dialogs.ShowErrorAsync($"Could not back up your profiles:\n{ex.Message}");
+        }
     }
 }

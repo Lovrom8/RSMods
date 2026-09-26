@@ -75,6 +75,18 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Mods\UltrawideRRDim.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mods\UltrawideMod.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mods\ProfileSaveStreaming.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mods\ProfileBackups.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
     <ClCompile Include="dllmain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -232,6 +244,9 @@
       <Filter>Mods</Filter>
     </ClCompile>
     <ClCompile Include="MemUtil.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SamplingProfiler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Lib\ImGUI\imgui.cpp">
@@ -434,7 +449,28 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Mods\UltrawideRRDim.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\UltrawideMod.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\ProfileSaveStreaming.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\ProfileBackups.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D/UltrawideShaders.hpp">
+      <Filter>D3D</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D/UltrawideFullStage.hpp">
+      <Filter>D3D</Filter>
+    </ClInclude>
     <ClInclude Include="MemUtil.hpp">
+      <Filter>Main Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="SamplingProfiler.hpp">
       <Filter>Main Headers</Filter>
     </ClInclude>
     <ClInclude Include="Offsets.hpp">
@@ -443,7 +479,7 @@
     <ClInclude Include="Settings.hpp">
       <Filter>Main Headers</Filter>
     </ClInclude>
-    <ClInclude Include="Scrapped.hpp">
+    <ClInclude Include="AspectRatio.hpp">
       <Filter>Main Headers</Filter>
     </ClInclude>
     <ClInclude Include="Lib\DirectX\d3d9.h">

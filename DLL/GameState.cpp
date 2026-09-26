@@ -197,6 +197,10 @@ namespace GameState {
 			return Contains(currentMenu, onlineModes);
 		}
 
+		bool IsInGuitarcadeGame() {
+			return Contains(currentMenu, guitarcadeGameModes);
+		}
+
 		bool IsInLASPlayingModes() {
 			return Contains(currentMenu, learnASongPlaying);
 		}

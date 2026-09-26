@@ -76,6 +76,7 @@ $Tests = @(
     @{ Name = 'ConflictResolverTests';  Sources = @() },  # header-only resolver
     @{ Name = 'ResourceLedgerTests';    Sources = @('ResourceLedger.cpp') },
     @{ Name = 'HookWatchdogTests';      Sources = @('HookWatchdog.cpp') },
+    @{ Name = 'AspectRatioTests';      Sources = @() },  # header-only aspect math
     @{ Name = 'CommandRouterTests';     Sources = @('CommandRouter.cpp', 'CommandCollisionDiagnostics.cpp') },
     @{ Name = 'MainThreadInboxTests';   Sources = @('MainThreadInbox.cpp') },
     @{ Name = 'HudRegistryTests';       Sources = @('HudRegistry.cpp') },

@@ -135,6 +135,8 @@ namespace Settings {
 		inline constexpr char FixBrokenTones[]      = "FixBrokenTones";
 		inline constexpr char FixOculusCrash[]      = "FixOculusCrash";
 		inline constexpr char PreventMidSongPause[] = "PreventMidSongPause";
+		inline constexpr char BackupProfile[]           = "BackupProfile"; // Shared with the GUI, which also backs up when it opens.
+		inline constexpr char FastProfileLoadAndSave[]  = "FastProfileLoadAndSave";
 
 		// Standalone toggles
 		inline constexpr char AllowAudioInBackground[]  = "AllowAudioInBackground";
@@ -149,6 +151,9 @@ namespace Settings {
 
 		// Solid Notes (user-defined hex color; lives in modSettings, set by the Twitch/CC SolidNotes effect)
 		inline constexpr char SolidNoteColor[]         = "SolidNoteColor";
+
+		// Ultrawide support
+		inline constexpr char Ultrawide[]               = "Ultrawide";
 
 		// Wwise RTPC channel names passed to SetRTPCValue / GetRTPCValue.
 		namespace Channel {

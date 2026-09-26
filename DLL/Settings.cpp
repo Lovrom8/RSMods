@@ -138,6 +138,9 @@ void Settings::Initialize()
 		{Setting::PreventMidSongPause, "off"},
 		{Setting::RemoveFingerprints, "off"},
 		{Setting::AlternativeOutputSampleRate, "48000"},
+		{Setting::Ultrawide, "off"},
+		{Setting::BackupProfile, "on"},
+		{Setting::FastProfileLoadAndSave, "off"},
 	};
 
 	customSettings = {

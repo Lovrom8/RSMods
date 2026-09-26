@@ -74,4 +74,15 @@ namespace QualityOfLife {
 
 		CloseHandle(handle);
 	}
+
+	/// <summary>
+	/// Rocksmith ignores any note below MIDI 24 (C1, 32.7 Hz), so a bass low E tuned more than 4 semitones down at A440
+	/// can never be detected. This lowers that floor to 18, about as low as the game can pick up a pitch at 48 kHz (~23.4 Hz).
+	/// The game reads the floor when note detection starts, so this has to be patched early.
+	/// </summary>
+	void LowerNoteDetectionFloor() {
+		MemUtil::PatchAdr(Offsets::ptr_noteDetectionFloor, "\x12", 1);
+
+		LOG_INFO("Lowered note detection floor" << std::endl);
+	}
 }
