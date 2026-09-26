@@ -39,23 +39,72 @@ instead of `ModManager` doing it, and adding a mod is adding one `.cpp` rather t
 
 ## Adding a mod
 
-1. `Mods/MyMod.hpp`: a class deriving `Framework::IMod`; put `MOD_ID(MyMod)` in its public
-   section, read settings via explicit `Settings::Setting` keys, and keep state as members.
-2. `Mods/MyMod.cpp`:
-   ```cpp
-   #include "stdafx.h"
-   #include "MyMod.hpp"
-   static Framework::ModRegistrar<MyMod> _myReg;   // MUST be in the .cpp, never a header.
-   ```
-   The static registrar only pushes a POD factory node at load time (loader-lock safe); the
-   registry constructs the mod later from MainThread (`InstantiatePending`).
-3. If you migrated logic out of `ModManager`, delete it there. Cross-tick state a mod carried through the
-   game loop should become a member of the mod (or, for a signal another mod reads, a flag on the relevant
-   namespace helper).
+1. **Scaffold it:** `powershell Build/New-Mod.ps1 -Name ShowBpm` writes `Mods/ShowBpmMod.hpp/.cpp`
+   (a mod with one toggle that builds as-is) and lists both in `DLL.vcxproj` and `.filters`.
+2. **Write the mod.** Declare every setting and key binding in `Settings()` and read them through
+   `ctx`. Keep state as members.
+3. **Build `RSMods.sln`** (Release|Win32). A `.cpp` that isn't listed in `DLL.vcxproj` fails the build
+   by name: an unlisted file never compiles, so its mod would otherwise silently not exist.
+4. **Regenerate the manifest:** `powershell DLL/Framework/Tests/BuildAndRun.ps1 -DumpManifest`. The GUI
+   renders its settings screen and keybindings page from it, so there's no GUI code to write.
+
+That's the whole list. A mod doesn't edit `Settings.hpp`/`.cpp`, `ModManager`, `dllmain.cpp`,
+`D3DHooks` or the GUI.
+
+### Worked example: a toggle, a hotkey and a HUD line
+
+```cpp
+namespace {
+	// Every mod's settings share one key space, so keys carry the mod's name.
+	constexpr char kEnabled[] = "ShowBpmEnabled";
+	constexpr char kToggleKey[] = "ShowBpmKey";
+}
+
+SettingDefs ShowBpmMod::Settings() const {
+	return {
+		SettingDef::Toggle(kEnabled, "Show BPM")
+			.Hint("Shows the song's tempo in the top right corner."),     // becomes the GUI tooltip
+		Framework::KeyBind(kToggleKey, "Show / Hide BPM", "J"),           // appears on the keybindings page
+	};
+}
+
+bool ShowBpmMod::IsEnabled(const ModContext& c) const {
+	return c.IsOn(kEnabled);   // the registry activates and deactivates the mod from this
+}
+
+void ShowBpmMod::OnInitialize(ModContext& c) {
+	c.Commands().BindSetting(kToggleKey, KeyEdge::Up, Availability::Active,
+		[this](ModContext&, const KeyEvent&) { shown = !shown; });
+}
+
+void ShowBpmMod::OnSongTick(ModContext& c) {
+	c.Hud().Set("bpm", { HudAnchor::TopRight, 10 },
+		{ .visible = shown, .text = std::to_string(CurrentBpm()) + " BPM" });   // CurrentBpm(): your game read
+}
+
+void ShowBpmMod::OnSongExit(ModContext& c) {
+	c.Hud().Set("bpm", { HudAnchor::TopRight, 10 }, {});   // otherwise the last line stays up in the menus
+}
+```
+
+Things worth knowing:
+
+- **Setting keys** live in the mod as `constexpr` strings, as above; the schema is the source of truth.
+  The `Settings::Setting` constants in `Settings.hpp` are how the older mods were written; new mods don't
+  need to add one.
+- **Hooks:** `OnTick` runs every active tick in every phase, including `Loading` (guard game memory
+  there), before `OnMenuTick`/`OnSongTick`. A mod that must undo its patch when switched off keeps the
+  toggle check inside its ticks and reverts in `OnDisabled`; an apply-only mod can gate on `IsEnabled()`.
+- **HUD elements** are cleared automatically when the mod deactivates. A mod that owns one must be
+  `Active` whenever it can show, so gate the element's visibility, not the mod.
+- **Game addresses** can be a `VersioningStruct` in the mod's own `.cpp`; shared ones live in
+  `Offsets.cpp`.
 
 `MOD_ID(Type)` makes the internal framework ID match the concrete class name and verifies that
 its argument names the containing class. IDs must be **unique**; duplicates are rejected at
-registration. They are deliberately separate from settings keys.
+registration. They are deliberately separate from settings keys. The
+`static Framework::ModRegistrar<T>` line must stay in the `.cpp`, never a header: it only pushes a POD
+factory node at load time (loader-lock safe), and the registry constructs the mod later on MainThread.
 
 ## Lifecycle state machine
 
@@ -212,10 +261,9 @@ reload path stays outside the lock.
 
 ## Testing
 
-The framework has no game or Windows dependencies, so it is unit-tested in isolation. `Tests/`
-holds eight standalone console test suites (`ConflictResolverTests`, `ResourceLedgerTests`,
-`HookWatchdogTests`, `CommandRouterTests`, `MainThreadInboxTests`, `HudRegistryTests`,
-`MenuRegistryTests`, `StateMachineTests`), each with its own `main()` that returns non-zero on failure.
+The framework has no game or Windows dependencies, so it is unit-tested in isolation. Each
+`Tests/*Tests.cpp` is a standalone console program with its own `main()` that returns non-zero on
+failure; a new suite also needs an entry in the `$Tests` list in `BuildAndRun.ps1`.
 
 Build and run them all with:
 

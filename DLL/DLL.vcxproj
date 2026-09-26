@@ -846,6 +846,21 @@ IF EXIST "C:\Program Files (x86)\Steam\steamapps\common\Rocksmith2014" copy /Y "
     </PropertyGroup>
     <WriteLinesToFile File="$(IntDir)GitVersion.h" Lines="#define RSMODS_GIT_HASH &quot;$(GitCommitHash)&quot;;#define RSMODS_GIT_HASH_FULL &quot;$(GitCommitHashFull)&quot;" Overwrite="true" />
   </Target>
+  <!-- An unlisted .cpp never compiles, so a mod in it never registers and silently isn't there. The
+       wildcard lives inside a target on purpose: VS rewrites wildcard items, but leaves targets alone. -->
+  <Target Name="CheckAllSourcesListed" BeforeTargets="ClCompile">
+    <ItemGroup>
+      <_SourceOnDisk Include="**\*.cpp" Exclude="Lib\**;Framework\Tests\**;$(IntDir)**" />
+      <!-- Full paths, because the project spells some paths with forward slashes. -->
+      <_UnlistedSource Include="@(_SourceOnDisk->'%(FullPath)')" />
+      <_UnlistedSource Remove="@(ClCompile->'%(FullPath)')" />
+    </ItemGroup>
+    <PropertyGroup>
+      <_UnlistedText>@(_UnlistedSource, ', ')</_UnlistedText>
+      <_UnlistedText>$(_UnlistedText.Replace('$(MSBuildProjectDirectory)\', ''))</_UnlistedText>
+    </PropertyGroup>
+    <Error Condition="'$(_UnlistedText)' != ''" Text="Not listed in DLL.vcxproj, so never compiled: $(_UnlistedText). Add it with Build\New-Mod.ps1 (new mods) or Add &gt; Existing Item in Visual Studio." />
+  </Target>
   <Target Name="ApplyGitVersionToLinker" BeforeTargets="ComputeLinkSwitches" DependsOnTargets="GenerateGitVersionHeader">
     <ItemGroup>
       <Link>

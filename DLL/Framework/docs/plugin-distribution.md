@@ -4,6 +4,10 @@
 > what stops replacing maintainer review as the trust boundary — and, more importantly, how to sequence
 > that change so it doesn't tax a framework that is still moving. It revisits the `abi-shim` decision
 > (reviewed in-tree source) in light of "if people want plugins in their own repos, let them."
+>
+> **Update 2026-09-26:** nobody currently needs #2. Contributors are core team working in-tree, and the one
+> outside author keeps their own fork. The route for "a mod in its own repo" is #1, designed below and not
+> built yet; build it when an author outside the team asks.
 
 ## The one question is really three
 
@@ -21,11 +25,31 @@ it") and you pay #2's cost to get #1's benefit, and back into #3 without decidin
 ## #1 — Out-of-tree distribution: cheap, do it
 
 A mod is one `.cpp` implementing `IMod` plus a `ModRegistrar`. Nothing about that requires it to live in
-this repo. Authors can keep mods in their own repos and pull them into a build (a submodule, a
-`Mods/external/` glob, a documented drop-in). This delivers most of "their own repo" with **zero contract
-commitment**: the mod still compiles against the current `IMod`/`ModContext`, so the framework stays free
-to change. The blockers are the same two seams that block clean in-tree contribution — the settings
-schema (`settings-schema.md`) and globbing `Mods/*.cpp` into `DLL.vcxproj` — not anything about trust.
+this repo. Authors can keep mods in their own repos and pull them into a build. This delivers most of
+"their own repo" with **zero contract commitment**: the mod still compiles against the current
+`IMod`/`ModContext`, so the framework stays free to change. The two seams that used to block it are gone:
+settings, key bindings and GUI rendering come from the mod's own schema (`settings-schema.md`), and a mod
+needs no core edits (README, "Adding a mod").
+
+**Design (not built):**
+
+- **Folder:** a git-ignored `DLL/ExternalMods/`. Each mod repo is cloned or submoduled into its own
+  subfolder, with its `.cpp` files at the top of that folder.
+- **Project:** a small `ExternalMods.targets`, imported by `DLL.vcxproj`, compiles `ExternalMods\*\*.cpp`
+  with a wildcard. The main project stays wildcard-free because Visual Studio rewrites wildcards in the
+  project file it edits. It doesn't edit imported files, and these files arrive through git rather than
+  the IDE, so the import should be safe. **Verify in the IDE before relying on it.**
+- **Precompiled header:** external mods include `../../stdafx.h`, as `CC/Effects/` already does from the
+  same depth.
+- **Unlisted-file check:** the import lists the external files, so `CheckAllSourcesListed` passes.
+- **Settings and GUI:** `DumpManifest` includes external mods' settings. The GUI prefers a loose
+  `mods.manifest.json` next to its exe over the embedded one, so a custom build ships its manifest without
+  rebuilding the GUI.
+- **API changes:** the mod compiles against the framework as source, so a breaking `ModContext` change fails
+  loudly in the mod's own build. No versioning, nothing frozen.
+
+**Limit:** end users can't drop a mod in; someone builds a DLL that includes it. The badge idea below
+still works at source level: the official build can pin a vetted set of external repos as submodules.
 
 ## #2 — Runtime binary loading: the expensive one, and the real subject of the old deferral
 
@@ -37,10 +61,10 @@ and some things structurally cannot cross it — the raw D3D device handle, whic
 render callbacks stay deleted (`render-hooks.md`).
 
 Building the shim is not the hard part. **The hard part is that a published binary contract freezes
-`ModContext` while it is still being reshaped.** Recent and pending changes make the point: RenderHooks
-was deleted, `Registry().Tick` lost its `GameLoopState&`, and `Settings()` is about to be added. Every
-one of those is free today and becomes a breaking-change negotiation with strangers the moment an ABI
-ships. The original deferral (README, `abi-shim`) was about **timing**, not principle: freeze a contract
+`ModContext` while it is still being reshaped.** Recent changes make the point: RenderHooks was deleted,
+`Registry().Tick` lost its `GameLoopState&`, and `Settings()`, key bindings, draw callbacks and HUD layout
+areas were added. Every one of those was free and would have been a breaking-change negotiation with
+strangers under a shipped ABI. The original deferral (README, `abi-shim`) was about **timing**, not principle: freeze a contract
 that has stopped moving and the freeze is cheap; freeze one mid-flight and it taxes every future refactor.
 
 ## #3 — The trust boundary: for native in-process code you can't keep review as *enforcement*
@@ -78,16 +102,24 @@ while not staking the project's name on unaudited native code. Review changes ro
 
 ## Recommended sequence
 
-1. **Make the *source* surface zero-core-edit — settings schema done, `vcxproj` glob pending.** The
-   settings schema shipped end-to-end (`settings-schema.md`), so an out-of-tree **source** mod's config
-   needs no core edits. The remaining half is globbing `Mods/*.cpp` into `DLL.vcxproj` (still ~47
-   individual `ClCompile` entries); until then adding a mod still edits the project file. This is #1 with
-   nothing frozen.
-2. **Bake the API on real consumers.** Pull DropPedal and Cheesewizard's RE in *that* way. Two or three
-   real external mods is the signal that `ModContext` has stopped moving.
-3. **Then cut #2 and #3 together.** Once the API is boring, ship the versioned C ABI shim **and** the
-   signed/verified loader model in the same step — because #2 forces #3, so decide them as one. Freezing a
-   contract that has already stopped changing is the cheap version of this.
+1. **Make the *source* surface zero-core-edit — done (2026-09-26).** Settings, key bindings and the GUI
+   come from the schema, and `Build/New-Mod.ps1` writes a new mod's explicit project entries. The project
+   deliberately stays wildcard-free (Visual Studio rewrites wildcards); a build check fails on any `.cpp`
+   missing from it. The external-repo route in #1 is designed and waits for an author who needs it.
+2. **Bake the API on real consumers.** This is where it stands: DropPedal was dropped (PR #233), and
+   Cheesewizard keeps their own fork. Two or three real external mods is the signal that `ModContext` has
+   stopped moving.
+3. **Then cut #2 and #3 together**, once both hold:
+   - the mod-facing headers (`ModContext`, `IMod`, the HUD/draw/menu/settings/command types) go about two
+     months without a breaking change (they changed in 5 of the 8 weeks to late September 2026), and
+   - at least two outside authors want to ship binaries from their own repos and can name the hooks they
+     need.
+
+   Then ship the versioned C ABI shim **and** the signed/verified loader model in the same step, because
+   #2 forces #3. Keep v1 to the parts that are already data: the settings schema, HUD text snapshots and
+   named commands. Draw interceptors and ImGui menus stay in-tree only: a raw device handle can't cross the
+   boundary (`render-hooks.md`), and a plugin's ImGui must match the host's version and context exactly.
+   Until then, prefer adding to the mod-facing API over changing it, so the eventual freeze is cheap.
 
 ## What this doesn't change
 
@@ -96,5 +128,5 @@ while not staking the project's name on unaudited native code. Review changes ro
   replacement for the internal C++ API.
 - **`IMod`/`ModContext` remain internal and unfrozen** until step 3. Do not treat them as an ABI before
   then (README design boundary still stands).
-- **Capabilities stay decoupling-only.** They organize the surface and shrink review diffs; they are not
-  and cannot be a security boundary against a binary (`abi-shim`).
+- **Capabilities stay decoupling-only** (planned, not built). They would organize the surface and shrink
+  review diffs; they are not and cannot be a security boundary against a binary (`abi-shim`).
