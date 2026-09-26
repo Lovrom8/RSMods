@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Menu.hpp"
+#include "DirectInputCapture.hpp"
 #include "Framework/Framework.hpp"
 #include "D3DOverlay.hpp"
 
@@ -188,6 +189,8 @@ namespace Menu {
 		ImGui_ImplDX9_Init(pDevice);
 		ImGui::GetIO().ImeWindowHandle = D3DHooks::hThisWnd;
 		ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+
+		DirectInputCapture::Install();
 
 		LOG_INFO("ImGUI Init" << std::endl);
 

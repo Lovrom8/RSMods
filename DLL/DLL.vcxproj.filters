@@ -129,9 +129,6 @@
     <ClCompile Include="Mods\CustomSongTitles.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
-    <ClCompile Include="Mods\DisableControllers.cpp">
-      <Filter>Mods</Filter>
-    </ClCompile>
     <ClCompile Include="Mods\Enumeration.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
@@ -399,6 +396,9 @@
     <ClCompile Include="Menu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="DirectInputCapture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="QualityOfLife.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -618,9 +618,6 @@
       <Filter>Mods\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Mods\CustomSongTitles.hpp">
-      <Filter>Mods\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Mods\DisableControllers.hpp">
       <Filter>Mods\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Mods\DrawMeshTags.hpp">
@@ -865,6 +862,12 @@
     </ClInclude>
     <ClInclude Include="Framework\MenuRegistry.hpp">
       <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\InputCapture.hpp">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectInputCapture.hpp">
+      <Filter>Main Headers</Filter>
     </ClInclude>
     <ClInclude Include="Framework\MainThreadInbox.hpp">
       <Filter>Framework</Filter>

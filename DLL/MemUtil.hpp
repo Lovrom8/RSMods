@@ -2,6 +2,8 @@
 
 #include "Offsets.hpp"
 #include "winternl.h"
+#include <array>
+#include <atomic>
 #include <span>
 #include <string_view>
 #include <type_traits>
@@ -23,6 +25,34 @@ namespace MemUtil {
 	bool PlaceHook(VersioningStruct<uintptr_t>& hookSpot, void* ourFunct, int len, bool addBaseHandle = false);
 	bool PlaceHook(void* hookSpot, void* ourFunct, int len);
 	void JumpToVersioned();
+	void** GetVTable(void* object);
+	bool PatchVTableSlot(void** vtable, size_t slot, void* replacement);
+
+	// Patches vtable slots and keeps the originals, so one hook installed in several vtables (e.g. a COM
+	// class's A and W variants) can find the function it replaced for the object it was called on.
+	// Patch/RestoreAll from one thread; Original is safe from any thread, including from inside the hook.
+	class VTablePatcher {
+	public:
+		bool Patch(void** vtable, size_t slot, void* replacement);
+
+		// nullptr if this object's vtable slot wasn't patched here.
+		[[nodiscard]] void* Original(void* object, size_t slot) const;
+		template <typename Fn>
+		[[nodiscard]] Fn Original(void* object, size_t slot) const { return reinterpret_cast<Fn>(Original(object, slot)); }
+
+		// Records stay, so a call already inside a hook still resolves its original.
+		void RestoreAll();
+
+	private:
+		struct Entry {
+			void** vtable = nullptr;
+			size_t slot = 0;
+			void* original = nullptr;
+		};
+		// Fixed storage: readers on other threads never see a reallocation.
+		std::array<Entry, 16> entries{};
+		std::atomic<size_t> count{ 0 };
+	};
 	PBYTE TrampHook(PBYTE src, PBYTE dst, unsigned int len);
 	bool IsBadReadPtr(void* pointer);
 	template <typename T>

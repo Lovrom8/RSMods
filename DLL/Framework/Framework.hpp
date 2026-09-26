@@ -6,6 +6,7 @@
 #include "MainThreadInbox.hpp"
 #include "IMod.hpp"
 #include "HookWatchdog.hpp"
+#include "InputCapture.hpp"
 #include "HudRegistry.hpp"
 #include "MenuRegistry.hpp"
 #include "DrawRegistry.hpp"

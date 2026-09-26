@@ -77,6 +77,7 @@ $Tests = @(
     @{ Name = 'ResourceLedgerTests';    Sources = @('ResourceLedger.cpp') },
     @{ Name = 'HookWatchdogTests';      Sources = @('HookWatchdog.cpp') },
     @{ Name = 'AspectRatioTests';      Sources = @() },  # header-only aspect math
+    @{ Name = 'InputCaptureTests';      Sources = @() },  # header-only mouse filters
     @{ Name = 'CommandRouterTests';     Sources = @('CommandRouter.cpp', 'CommandCollisionDiagnostics.cpp') },
     @{ Name = 'MainThreadInboxTests';   Sources = @('MainThreadInbox.cpp') },
     @{ Name = 'HudRegistryTests';       Sources = @('HudRegistry.cpp') },

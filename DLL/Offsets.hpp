@@ -80,11 +80,6 @@ namespace Offsets {
 	extern const char* patch_ListNumbers;
 	extern const char* patch_SprintfArgs;
 
-	// Disable Controllers
-	inline VersioningStruct<uintptr_t> hookAddr_DirectInput8, hookBackAddr_DirectInput8;
-	inline VersioningStruct<uintptr_t> xinputModule;
-	inline VersioningStruct<uintptr_t> xinputEnable;
-
 	// Multiplayer
 	inline VersioningStruct<uintptr_t> ptr_multiplayer;
 	extern std::vector<unsigned int> ptr_multiplayerOffsets;

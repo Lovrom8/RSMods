@@ -113,6 +113,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Menu.cpp" />
+    <ClCompile Include="DirectInputCapture.cpp" />
     <ClCompile Include="ModManager.cpp" />
     <ClCompile Include="Framework\CommandCollisionDiagnostics.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -172,9 +173,6 @@
       <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="Mods\CustomSongTitles.cpp">
-      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
-    </ClCompile>
-    <ClCompile Include="Mods\DisableControllers.cpp">
       <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="Mods\Enumeration.cpp">
@@ -425,7 +423,6 @@
     <ClInclude Include="Mods\CollectColors.hpp" />
     <ClInclude Include="Mods\CustomHighwayColorsMod.hpp" />
     <ClInclude Include="Mods\CustomSongTitles.hpp" />
-    <ClInclude Include="Mods\DisableControllers.hpp" />
     <ClInclude Include="Mods\DrawMeshTags.hpp" />
     <ClInclude Include="Mods\Enumeration.hpp" />
     <ClInclude Include="Mods\EnumerationMod.hpp" />
@@ -477,6 +474,8 @@
     <ClInclude Include="Framework\ModRegistry.hpp" />
     <ClInclude Include="Framework\ResourceLedger.hpp" />
     <ClInclude Include="Framework\HookWatchdog.hpp" />
+    <ClInclude Include="Framework\InputCapture.hpp" />
+    <ClInclude Include="DirectInputCapture.hpp" />
     <ClInclude Include="Framework\Framework.hpp" />
     <ClInclude Include="Framework\DrawRegistry.hpp" />
     <ClInclude Include="Framework\DeviceEvents.hpp" />

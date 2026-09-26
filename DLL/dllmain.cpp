@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Proxy.hpp"
+#include "DirectInputCapture.hpp"
 #include "ModManager.hpp"
 #include "Framework/Framework.hpp"
 #include "Mods/Midi.hpp"
@@ -82,6 +83,36 @@ const bool ensureForcedTopMode = false;
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 	if (Menu::menuEnabled && ImGui_ImplWin32_WndProcHandler(hWnd, msg, keyPressed, lParam))
 		return true;
+
+	// Releases reach ImGui even with the menu closed, or a button let go after closing stays down and input
+	// capture blocks the game's mouse on reopen. Not presses: ImGui would SetCapture the game's window.
+	if (!Menu::menuEnabled) {
+		switch (msg) {
+			case WM_LBUTTONUP:
+			case WM_RBUTTONUP:
+			case WM_MBUTTONUP:
+			case WM_XBUTTONUP:
+			case WM_KEYUP:
+			case WM_SYSKEYUP:
+			case WM_SETFOCUS:
+			case WM_KILLFOCUS:
+				ImGui_ImplWin32_WndProcHandler(hWnd, msg, keyPressed, lParam);
+				break;
+		}
+	}
+
+	// Typing into a text field or nudging a slider mustn't also fire mod hotkeys. Not io.WantCaptureKeyboard:
+	// with keyboard nav on it's true whenever the menu has focus, which would eat the key that closes it.
+	if (Menu::menuEnabled && Menu::ImGuiInit && ImGui::IsAnyItemActive()) {
+		switch (msg) {
+			case WM_KEYDOWN:
+			case WM_KEYUP:
+			case WM_SYSKEYDOWN:
+			case WM_SYSKEYUP:
+			case WM_CHAR:
+				return true;
+		}
+	}
 
 	if (Settings::IsOn(Setting::PreventMidSongPause) && D3DHooks::cachedIsInSong) {
 		switch (msg) {
@@ -173,6 +204,7 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 	Framework::Draw().RunFrame(pDevice); // Before the ImGui frame, so a mod's HUD layout change lands this frame.
 	Menu::Init(pDevice, (LONG_PTR)WndProc);
 	Menu::RenderImGuiMenu();
+	Framework::Input().SetMouseCaptured(Menu::menuEnabled && ImGui::GetIO().WantCaptureMouse);
 	D3D::LoadTextures(pDevice);
 	D3DHooks::CheckRecreateTextures(pDevice);
 	Framework::Draw().RunPendingReleases();
@@ -344,6 +376,7 @@ BOOL APIENTRY DllMain(HMODULE hModule, uint32_t dwReason, LPVOID) {
 			if (!IsRunningUnderGame()) {
 				return TRUE;
 			}
+			DirectInputCapture::Shutdown();
 			Proxy::Shutdown(); // Kill Proxy to xinput1_3.dll
 
 			if (Menu::ImGuiInit)

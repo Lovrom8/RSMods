@@ -39,10 +39,6 @@ void Offsets::Initialize() {
 	patch_addedSpaces = { {0x00551234, baseHandle + 0x00152544 } };			// Code | 8d 45 b0 8d 55 a8 8d 4d c0 89 45 c0 89 4d c4 8b c6 39 55 ac (function call right before these bytes)
 	patch_addedNumbers = { {0x00551275, baseHandle + 0x00152585 } };		// Code | 8b d6 3b d7 74 19 8d 45 c0 39 45 c4 (function call right before these bytes)
 	patch_sprintfArg = { {0x00832653, baseHandle + 0x00432923 } };			// Code | 83 c4 0c 8b 44 24 18 8b 48 4c 2b 48 48 b8 ab aa aa 2a (we want byte 0c)
-	hookAddr_DirectInput8 = { {0x00C019EC, baseHandle + 0x00800B0C } };		// Code | 56 6a 00 8d b7 80 00 00 00 56 (we want 6 bytes after)
-	hookBackAddr_DirectInput8 = { {0x00C019F1, baseHandle + 0x00800B11 } };	// Code | 56 6a 00 8d b7 80 00 00 00 56 (we want 11 bytes after)
-	xinputModule = { {0x01360e98, baseHandle + 0x00F61E98 } };				// Code | 56 6a 00 8d b7 80 00 00 00 56 68 ? ? ? ? 68 00 08 00 00 50 (we want the static variable set at the end)
-	xinputEnable = { {0x01360eac, baseHandle + 0x00F61EAC } };				// Code | 56 6a 00 8d b7 80 00 00 00 56 68 ? ? ? ? 68 00 08 00 00 50 (we want the static variable set before the get keystroke - XInputGetDSoundAudioDeviceGuids)
 	ptr_multiplayer = { {0x00F5F57C, 0x00F6057C} };							// Memory | Copied from timer
 	ptr_currentMenu = { {0x135F62C, baseHandle + 0x00F6062C} };				// Memory | Look for menu names with offset matching ptr_currentMenuOffsets; probably easiest way is by x-refing FECalibrationMeter and finding the place where it dereferences the pointer at the beginning of the function
 	ptr_timer = { {0x00F5F62C, 0x00F6062C} };								// Memory | Start song, keep narrowing down with song time increasing. Eventually do pointer map with ptr_timerBaseOffsets.

@@ -143,6 +143,75 @@ bool MemUtil::PlaceHook(void* hookSpot, void* ourFunct, int len)
 }
 
 /// <summary>
+/// Get the vtable of a C++ / COM object.
+/// </summary>
+void** MemUtil::GetVTable(void* object)
+{
+	return *reinterpret_cast<void***>(object);
+}
+
+/// <summary>
+/// Redirect one vtable slot. Every instance of the class shares the vtable, including ones created before the patch.
+/// Read the original out of the slot first if you need to call it.
+/// </summary>
+/// <param name="vtable"> - Vtable to patch (see GetVTable)</param>
+/// <param name="slot"> - Method index</param>
+/// <param name="replacement"> - Function to call instead</param>
+/// <returns>Was the slot patched?</returns>
+bool MemUtil::PatchVTableSlot(void** vtable, size_t slot, void* replacement)
+{
+	return SetStaticValue(reinterpret_cast<uintptr_t>(&vtable[slot]), replacement, sizeof(void*));
+}
+
+bool MemUtil::VTablePatcher::Patch(void** vtable, size_t slot, void* replacement)
+{
+	const size_t n = count.load(std::memory_order_relaxed);
+
+	bool known = false;
+	for (size_t i = 0; i < n; ++i)
+	{
+		if (entries[i].vtable == vtable && entries[i].slot == slot)
+			known = true;
+	}
+
+	if (!known)
+	{
+		if (n == entries.size())
+			return false;
+
+		// Publish the original before writing the slot, so a thread entering the hook mid-patch finds it.
+		entries[n] = { vtable, slot, vtable[slot] };
+		count.store(n + 1, std::memory_order_release);
+	}
+
+	return PatchVTableSlot(vtable, slot, replacement);
+}
+
+void* MemUtil::VTablePatcher::Original(void* object, size_t slot) const
+{
+	void** vtable = GetVTable(object);
+	const size_t n = count.load(std::memory_order_acquire);
+
+	for (size_t i = 0; i < n; ++i)
+	{
+		if (entries[i].vtable == vtable && entries[i].slot == slot)
+			return entries[i].original;
+	}
+
+	return nullptr;
+}
+
+void MemUtil::VTablePatcher::RestoreAll()
+{
+	const size_t n = count.load(std::memory_order_relaxed);
+
+	for (size_t i = 0; i < n; ++i)
+	{
+		PatchVTableSlot(entries[i].vtable, entries[i].slot, entries[i].original);
+	}
+}
+
+/// <summary>
 /// Hook DirectX Functions
 /// </summary>
 /// <param name="src"> - Where should we hook?</param>
