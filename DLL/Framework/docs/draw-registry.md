@@ -181,7 +181,8 @@ immutable snapshot:
    drive `OnSettingsChanged` and mod enable/disable in `ModRegistry` — call
    `DrawRegistry::RebuildActive(...)`. It filters to interceptors whose owner is currently
    enabled, sorts by `(priority, ownerId)`, and publishes **two** immutable vectors (one for
-   `Indexed`, one for `Primitive`; a `Both` registration lands in both).
+   `Indexed`, one for `Primitive`; a `Both` registration lands in both). It also publishes the
+   enabled mods' frame callbacks (§8.7).
 3. Publish via `std::atomic<std::shared_ptr<const vector>>` (C++20 atomic shared_ptr). The
    render thread does one relaxed load per hook call and walks the copy. No lock, no
    per-call `IsOwnerAvailable`.
@@ -442,6 +443,33 @@ private:
     static inline std::atomic<IDirect3DTexture9*> s_texture  = nullptr;
 };
 ```
+
+### 8.7 Frame and device-reset callbacks
+
+Two render-thread callbacks for mods that keep render-side state outside a single draw:
+
+```cpp
+void MyMod::OnInitialize(ModContext& c) {
+    // Once per frame from EndScene, before the ImGui frame (so HUD changes land this frame).
+    // Enabled mods only; published by RebuildActive like interceptors.
+    c.Draw().RegisterFrame([](IDirect3DDevice9* device) { /* per-frame state */ });
+
+    // After every successful IDirect3DDevice9::Reset, enabled or not.
+    c.Draw().RegisterDeviceReset([](IDirect3DDevice9* device) { /* drop pointer-keyed caches */ });
+}
+```
+
+- **Reset:** the game releases and recreates its textures, shaders and render targets, so any cache
+  keyed by a D3D object pointer can hand a new object an old verdict. Clear such caches here.
+  Resets run for disabled mods too, because a disabled mod's caches are still stale.
+- **Frame:** because it only runs while enabled, it won't run once more to switch things off. Undo
+  its effects in `OnDisabled`.
+- Same lifetime rule as interceptors (§8.4): anything the callback reads must stay valid after
+  `OnDisabled`, and device resources are released through `RequestTextureRelease`, never on the
+  MainThread. That is why these callbacks don't need the `Deactivating`/quiescence machinery the
+  removed render hooks had (`render-hooks.md`).
+- Neither is caught if it throws, same as interceptors.
+- One of each per mod; registering again replaces it. `RemoveMod` (shutdown, fault) drops both.
 
 ---
 

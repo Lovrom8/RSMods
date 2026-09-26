@@ -71,6 +71,11 @@ namespace Framework {
 	using TextureRegenCallback = std::function<void(IDirect3DDevice9*)>;
 	// Texture release callback called at frame boundaries (EndScene) when a release was requested.
 	using TextureReleaseCallback  = std::function<void()>;
+	// Render thread, once per frame from EndScene, enabled mods only. Runs before the HUD is laid out.
+	using FrameCallback = std::function<void(IDirect3DDevice9*)>;
+	// Render thread, after a successful IDirect3DDevice9::Reset, every registered mod (enabled or not).
+	// Drop anything keyed by D3D object pointers: the game recreates its resources and addresses get reused.
+	using DeviceResetCallback = std::function<void(IDirect3DDevice9*)>;
 
 	struct ActiveEntry {
 		int priority = 0;
@@ -107,7 +112,13 @@ namespace Framework {
 		// MainThread: cancel a previously requested deferred texture release for `owner`.
 		void CancelTextureRelease(const IMod* owner);
 
-		// MainThread: drop every interceptor, regen, and release callback owned by this mod.
+		// MainThread: register this mod's per-frame callback (replaces any earlier one).
+		void RegisterFrame(const IMod* owner, FrameCallback fn);
+
+		// MainThread: register this mod's device-reset callback (replaces any earlier one).
+		void RegisterDeviceReset(const IMod* owner, DeviceResetCallback fn);
+
+		// MainThread: drop every interceptor, regen, release, frame, and reset callback owned by this mod.
 		void RemoveMod(const IMod* owner);
 
 		// MainThread: rebuild the active snapshot from currently-enabled owners.
@@ -115,6 +126,12 @@ namespace Framework {
 
 		// Render thread: lock-free load of the immutable, priority-sorted active list for a path.
 		[[nodiscard]] std::shared_ptr<const std::vector<ActiveEntry>> ActiveSnapshot(DrawPath path) const;
+
+		// Render thread (EndScene): run enabled mods' frame callbacks, lock-free.
+		void RunFrame(IDirect3DDevice9* pDevice);
+
+		// Render thread (after a successful Reset): run every registered reset callback.
+		void RunDeviceReset(IDirect3DDevice9* pDevice);
 
 		// Render thread (EndScene): execute all registered texture regeneration callbacks.
 		void RegenerateAllTextures(IDirect3DDevice9* pDevice);

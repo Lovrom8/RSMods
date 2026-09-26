@@ -49,9 +49,28 @@ namespace Framework {
 		DrawInterceptor fn;
 	};
 
+	namespace {
+		template <typename Fn>
+		struct OwnedCallback {
+			const IMod* owner = nullptr;
+			Fn fn;
+		};
+
+		template <typename Fn>
+		void Upsert(std::vector<OwnedCallback<Fn>>& list, const IMod* owner, Fn fn) {
+			auto it = std::find_if(list.begin(), list.end(), [owner](const OwnedCallback<Fn>& r) { return r.owner == owner; });
+			if (it == list.end())
+				list.push_back({ owner, std::move(fn) });
+			else
+				it->fn = std::move(fn);
+		}
+	}
+
 	struct DrawRegistry::Impl {
 		mutable std::mutex mutex;
 		std::vector<RegisteredInterceptor> interceptors;
+		std::vector<OwnedCallback<FrameCallback>> frameCallbacks;
+		std::vector<OwnedCallback<DeviceResetCallback>> resetCallbacks;
 
 		struct RegisteredRegen {
 			const IMod* owner = nullptr;
@@ -68,11 +87,13 @@ namespace Framework {
 
 		std::atomic<std::shared_ptr<const std::vector<ActiveEntry>>> activeIndexed;
 		std::atomic<std::shared_ptr<const std::vector<ActiveEntry>>> activePrimitive;
+		std::atomic<std::shared_ptr<const std::vector<FrameCallback>>> activeFrame;
 
 		Impl() {
 			auto empty = std::make_shared<const std::vector<ActiveEntry>>();
 			activeIndexed.store(empty, std::memory_order_relaxed);
 			activePrimitive.store(empty, std::memory_order_relaxed);
+			activeFrame.store(std::make_shared<const std::vector<FrameCallback>>(), std::memory_order_relaxed);
 		}
 	};
 
@@ -149,9 +170,21 @@ namespace Framework {
 		std::erase_if(impl->pendingReleases, [owner](const IMod* p) { return p == owner; });
 	}
 
+	void DrawRegistry::RegisterFrame(const IMod* owner, FrameCallback fn) {
+		std::lock_guard<std::mutex> lock(impl->mutex);
+		Upsert(impl->frameCallbacks, owner, std::move(fn));
+	}
+
+	void DrawRegistry::RegisterDeviceReset(const IMod* owner, DeviceResetCallback fn) {
+		std::lock_guard<std::mutex> lock(impl->mutex);
+		Upsert(impl->resetCallbacks, owner, std::move(fn));
+	}
+
 	void DrawRegistry::RemoveMod(const IMod* owner) {
 		std::lock_guard<std::mutex> lock(impl->mutex);
-		
+
+		std::erase_if(impl->frameCallbacks, [owner](const OwnedCallback<FrameCallback>& r) { return r.owner == owner; });
+		std::erase_if(impl->resetCallbacks, [owner](const OwnedCallback<DeviceResetCallback>& r) { return r.owner == owner; });
 		std::erase_if(impl->interceptors, [owner](const RegisteredInterceptor& r) { return r.owner == owner; });
 		std::erase_if(impl->regenCallbacks, [owner](const Impl::RegisteredRegen& r) { return r.owner == owner; });
 		std::erase_if(impl->releaseCallbacks, [owner](const Impl::RegisteredRelease& r) { return r.owner == owner; });
@@ -192,6 +225,19 @@ namespace Framework {
 
 		impl->activeIndexed.store(newIndexed, std::memory_order_release);
 		impl->activePrimitive.store(newPrimitive, std::memory_order_release);
+
+		// Frame callbacks in owner-Id order, so the run order doesn't depend on registration order.
+		std::vector<const OwnedCallback<FrameCallback>*> enabledFrames;
+		for (const auto& reg : impl->frameCallbacks) {
+			if (reg.owner && reg.fn && isOwnerEnabled(reg.owner)) enabledFrames.push_back(&reg);
+		}
+		std::stable_sort(enabledFrames.begin(), enabledFrames.end(),
+			[](const auto* a, const auto* b) { return a->owner->Id() < b->owner->Id(); });
+
+		auto frames = std::make_shared<std::vector<FrameCallback>>();
+		frames->reserve(enabledFrames.size());
+		for (const auto* reg : enabledFrames) frames->push_back(reg->fn);
+		impl->activeFrame.store(frames, std::memory_order_release);
 	}
 
 	std::shared_ptr<const std::vector<ActiveEntry>> DrawRegistry::ActiveSnapshot(DrawPath path) const {
@@ -199,6 +245,32 @@ namespace Framework {
 			return impl->activePrimitive.load(std::memory_order_acquire);
 		}
 		return impl->activeIndexed.load(std::memory_order_acquire);
+	}
+
+	void DrawRegistry::RunFrame(IDirect3DDevice9* pDevice) {
+		if (!pDevice) return;
+
+		const auto frames = impl->activeFrame.load(std::memory_order_acquire);
+		for (const auto& fn : *frames) {
+			fn(pDevice);
+		}
+	}
+
+	void DrawRegistry::RunDeviceReset(IDirect3DDevice9* pDevice) {
+		if (!pDevice) return;
+
+		std::vector<DeviceResetCallback> callbacks;
+		{
+			std::lock_guard<std::mutex> lock(impl->mutex);
+			callbacks.reserve(impl->resetCallbacks.size());
+			for (const auto& r : impl->resetCallbacks) {
+				if (r.fn) callbacks.push_back(r.fn);
+			}
+		}
+
+		for (const auto& cb : callbacks) {
+			cb(pDevice);
+		}
 	}
 
 	void DrawRegistry::RegenerateAllTextures(IDirect3DDevice9* pDevice) {

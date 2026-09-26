@@ -170,6 +170,7 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 		return originalReturn;
 	}
 
+	Framework::Draw().RunFrame(pDevice); // Before the ImGui frame, so a mod's HUD layout change lands this frame.
 	Menu::Init(pDevice, (LONG_PTR)WndProc);
 	Menu::RenderImGuiMenu();
 	D3D::LoadTextures(pDevice);

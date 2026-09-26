@@ -196,7 +196,7 @@ on the MainThread.
    real consumer needs it, not before.
 2. **`MenuBinder`** — the menu-registration sibling of `HudBinder`/`CommandBinder`. Deliberately deferred
    until a real menu consumer (likely DropPedal) exists; do not build it speculatively.
-3. **Owner-scoped D3D callbacks** stay deleted (see `render-hooks.md`). They are structurally excluded
-   from the external mod API (a raw device handle can't cross the ABI shim, and it forfeits the
-   off-render-thread invariant) and revive **only** for an in-tree mod that owns device resources with an
-   enable/disable lifecycle. The declarative surface above is the drawing API for everyone else.
+3. **Owner-scoped D3D callbacks** came back in a narrow form: per-frame and device-reset callbacks on
+   `DrawRegistry` (`draw-registry.md` §8.7), for in-tree mods with render-side state (Ultrawide). They are
+   still not a drawing API. A raw device handle stays out of the external mod API, and the declarative
+   surface above is the drawing API for everyone else. See `render-hooks.md`.

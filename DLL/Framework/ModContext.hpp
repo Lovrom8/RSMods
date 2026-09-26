@@ -91,6 +91,16 @@ namespace Framework {
 		void CancelTextureRelease() const {
 			draw.CancelTextureRelease(mod);
 		}
+
+		// Once per frame on the render thread while this mod is enabled, before the HUD is laid out.
+		void RegisterFrame(FrameCallback fn) const {
+			draw.RegisterFrame(mod, std::move(fn));
+		}
+
+		// After every successful device Reset, enabled or not: drop caches keyed by D3D object pointers.
+		void RegisterDeviceReset(DeviceResetCallback fn) const {
+			draw.RegisterDeviceReset(mod, std::move(fn));
+		}
 	};
 
 	// Internal per-hook context

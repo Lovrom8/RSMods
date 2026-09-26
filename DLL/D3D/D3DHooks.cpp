@@ -145,6 +145,7 @@ HRESULT APIENTRY D3DHooks::Hook_Reset(IDirect3DDevice9* pDevice, D3DPRESENT_PARA
 	// retries Reset next frame; recreating against a lost device leaves a broken frame.
 	if (SUCCEEDED(ResetReturn)) {
 		ImGui_ImplDX9_CreateDeviceObjects();
+		Framework::Draw().RunDeviceReset(pDevice);
 	}
 
 	return ResetReturn;

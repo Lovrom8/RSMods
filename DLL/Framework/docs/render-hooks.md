@@ -9,6 +9,15 @@
 > The real code is a `git revert` away, find the removal commit with:
 > `git log --oneline --all -- DLL/Framework/HostHooks.cpp`
 
+> **Update (Ultrawide, PR #240):** render-side tenants now exist: Ultrawide's per-frame state and its
+> caches keyed by D3D pointers, plus Twitch's hand-wired `RunPerFrameEffects`. So a narrow form is back as
+> `DrawRegistry` frame and device-reset callbacks (`draw-registry.md` §8.7).
+> It does **not** bring back `Deactivating` or quiescence. These callbacks follow the interceptors'
+> lifetime rule instead: they are gated by the same active snapshot, and device resources are freed
+> only on the render thread through `RequestTextureRelease`. So `OnDisabled` never frees anything a
+> callback in flight could still touch. If a future tenant needs to free render resources
+> synchronously on disable, that is the point to reconsider the machinery below.
+
 ## What it was
 
 A way for a mod to own a **per-frame draw callback** with framework-managed lifetime:

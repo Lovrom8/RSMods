@@ -288,6 +288,50 @@ int main() {
 		Check("RemoveMod cancels pending releases and unregisters release callback", modAReleaseCount == 1);
 	}
 
+	// Frame callbacks follow enabled state; reset callbacks reach every registered mod; RemoveMod drops both.
+	{
+		auto* device = reinterpret_cast<IDirect3DDevice9*>(static_cast<std::uintptr_t>(0x1000));
+		DrawRegistry reg;
+		std::vector<std::string> frames;
+		int resetsA = 0, resetsB = 0;
+
+		reg.RegisterFrame(&modB, [&](IDirect3DDevice9*) { frames.push_back("B"); });
+		reg.RegisterFrame(&modA, [&](IDirect3DDevice9*) { frames.push_back("A"); });
+		reg.RegisterDeviceReset(&modA, [&](IDirect3DDevice9*) { ++resetsA; });
+		reg.RegisterDeviceReset(&modB, [&](IDirect3DDevice9*) { ++resetsB; });
+
+		reg.RunFrame(device);
+		Check("frame callbacks wait for RebuildActive", frames.empty());
+
+		reg.RebuildActive([](const IMod*) { return true; });
+		reg.RunFrame(device);
+		Check("frame callbacks run in owner-Id order", frames == std::vector<std::string>{ "A", "B" });
+
+		frames.clear();
+		reg.RebuildActive([&](const IMod* m) { return m == &modB; });
+		reg.RunFrame(device);
+		Check("disabled mod gets no frame callback", frames == std::vector<std::string>{ "B" });
+
+		reg.RunDeviceReset(device);
+		Check("reset reaches disabled mods too", resetsA == 1 && resetsB == 1);
+
+		reg.RunFrame(nullptr);
+		reg.RunDeviceReset(nullptr);
+		Check("null device runs nothing", frames.size() == 1 && resetsA == 1);
+
+		reg.RegisterDeviceReset(&modA, [&](IDirect3DDevice9*) { resetsA += 10; });
+		reg.RunDeviceReset(device);
+		Check("re-registering replaces the reset callback", resetsA == 11);
+
+		reg.RemoveMod(&modA);
+		reg.RemoveMod(&modB);
+		reg.RebuildActive([](const IMod*) { return true; });
+		frames.clear();
+		reg.RunFrame(device);
+		reg.RunDeviceReset(device);
+		Check("RemoveMod drops frame and reset callbacks", frames.empty() && resetsA == 11 && resetsB == 2);
+	}
+
 	std::cout << (g_failures == 0 ? "ALL DRAWREGISTRY TESTS PASSED\n" : "DRAWREGISTRY TESTS FAILED\n");
 	return g_failures == 0 ? 0 : 1;
 }
