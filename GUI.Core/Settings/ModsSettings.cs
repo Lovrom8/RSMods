@@ -26,8 +26,6 @@ namespace RSMods
         private static IniManager _ini;
         public static IniManager Ini => _ini;
         private static IniSection _songListTitles;
-        private static IniSection _keybinds;
-        private static IniSection _audioKeybindings;
         private static IniSection _toggleSwitches;
         private static IniSection _stringColors;
         private static IniSection _modSettings;
@@ -47,8 +45,6 @@ namespace RSMods
             _ini.Load();
 
             _songListTitles = new IniSection(_ini, "[SongListTitles]");
-            _keybinds = new IniSection(_ini, "[Keybinds]");
-            _audioKeybindings = new IniSection(_ini, "[Audio Keybindings]");
             _toggleSwitches = new IniSection(_ini, "[Toggle Switches]");
             _stringColors = new IniSection(_ini, "[String Colors]");
             _modSettings = new IniSection(_ini, "[Mod Settings]");
@@ -99,51 +95,6 @@ namespace RSMods
             }
 
             _ini.Save();
-        }
-
-        public static class Keybinds
-        {
-            private static string GetConvertedKey([CallerMemberName] string key = "")
-            {
-                string val = _keybinds.GetString("", key);
-                string converted = KeyConversion.VirtualKey(val);
-                return !string.IsNullOrEmpty(converted) ? converted : val;
-            }
-
-            public static string ToggleLoftKey { get => GetConvertedKey(); set => _keybinds.SetString(value); }
-            public static string ShowSongTimerKey { get => GetConvertedKey(); set => _keybinds.SetString(value); }
-            public static string ForceReEnumerationKey { get => GetConvertedKey(); set => _keybinds.SetString(value); }
-            public static string RainbowStringsKey { get => GetConvertedKey(); set => _keybinds.SetString(value); }
-            public static string RainbowNotesKey { get => GetConvertedKey(); set => _keybinds.SetString(value); }
-            public static string RemoveLyricsKey { get => GetConvertedKey(); set => _keybinds.SetString(value); }
-            public static string RRSpeedKey { get => GetConvertedKey(); set => _keybinds.SetString(value); }
-            public static string TuningOffsetKey { get => GetConvertedKey(); set => _keybinds.SetString(value); }
-            public static string ToggleExtendedRangeKey { get => GetConvertedKey(); set => _keybinds.SetString(value); }
-            public static string LoopStartKey { get => GetConvertedKey(); set => _keybinds.SetString(value); }
-            public static string LoopEndKey { get => GetConvertedKey(); set => _keybinds.SetString(value); }
-            public static string RewindKey { get => GetConvertedKey(); set => _keybinds.SetString(value); }
-        }
-
-        public static class AudioKeybindings
-        {
-            private static string GetConvertedKey([CallerMemberName] string key = "")
-            {
-                string val = _audioKeybindings.GetString("", key);
-                string converted = KeyConversion.VirtualKey(val);
-                return !string.IsNullOrEmpty(converted) ? converted : val;
-            }
-
-            public static string MasterVolumeKey { get => GetConvertedKey(); set => _audioKeybindings.SetString(value); }
-            public static string SongVolumeKey { get => GetConvertedKey(); set => _audioKeybindings.SetString(value); }
-            public static string Player1VolumeKey { get => GetConvertedKey(); set => _audioKeybindings.SetString(value); }
-            public static string Player2VolumeKey { get => GetConvertedKey(); set => _audioKeybindings.SetString(value); }
-            public static string MicrophoneVolumeKey { get => GetConvertedKey(); set => _audioKeybindings.SetString(value); }
-            public static string VoiceOverVolumeKey { get => GetConvertedKey(); set => _audioKeybindings.SetString(value); }
-            public static string SFXVolumeKey { get => GetConvertedKey(); set => _audioKeybindings.SetString(value); }
-            public static string DisplayMixerKey { get => GetConvertedKey(); set => _audioKeybindings.SetString(value); }
-            public static string MutePlayer1Key { get => GetConvertedKey(); set => _audioKeybindings.SetString(value); }
-            public static string MutePlayer2Key { get => GetConvertedKey(); set => _audioKeybindings.SetString(value); }
-            public static string ChangedSelectedVolumeKey { get => GetConvertedKey(); set => _audioKeybindings.SetString(value); }
         }
 
         public static class Toggles

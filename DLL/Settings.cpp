@@ -54,33 +54,6 @@ void Settings::Initialize()
 	std::unique_lock lock(g_settingsMutex);
 
 	modSettings = {
-		{Setting::Key::CustomSongListTitles, "K"},
-		{Setting::Key::ToggleLoft,          "T"},
-		{Setting::Key::ShowSongTimer,        "S"},
-		{Setting::Key::ForceReEnumeration,   "F"},
-		{Setting::Key::RainbowStrings,       "V"},
-		{Setting::Key::RainbowNotes,         "N"},
-		{Setting::Key::RemoveLyrics,         "L"},
-		{Setting::Key::RRSpeed,              "R"},
-		{Setting::Key::MenuToggle,           "M"},
-		{Setting::Key::TuningOffset,         "O"},
-		{Setting::Key::ToggleExtendedRange,  "E"},
-		{Setting::Key::LoopStart,            "Y"},
-		{Setting::Key::LoopEnd,              "U"},
-		{Setting::Key::Rewind,               "Z"},
-
-		{Setting::Key::MasterVolume,         "5"},
-		{Setting::Key::SongVolume,           "6"},
-		{Setting::Key::Player1Volume,        "7"},
-		{Setting::Key::Player2Volume,        "8"},
-		{Setting::Key::MicrophoneVolume,     "9"},
-		{Setting::Key::VoiceOverVolume,      "0"},
-		{Setting::Key::SFXVolume,            "S"},
-		{Setting::Key::DisplayMixer,         "P"},
-		{Setting::Key::MutePlayer1,              "X"},
-		{Setting::Key::MutePlayer2,              "C"},
-		{Setting::Key::ChangedSelectedVolume,    "B"},
-
 		{Setting::ForceReEnumerationEnabled, "off"},
 
 		{Setting::ToggleLoftEnabled, "off"},
@@ -187,6 +160,14 @@ void Settings::Initialize()
 		{Setting::Twitch::DrunkMode, "off"},
 		{Setting::Twitch::FYourFC, "off"},
 	};
+
+	// Without an INI the readers below keep this, so schema settings (key binds included) need their defaults here too.
+	for (const auto& decl : Framework::SettingsSchema().GetAll()) {
+		if (decl.type == Framework::SettingType::Int)
+			customSettings.try_emplace(decl.key, decl.GetIntDefault());
+		else
+			modSettings.try_emplace(decl.key, decl.def);
+	}
 }
 
 
@@ -211,48 +192,6 @@ std::vector<std::string> Settings::GetCustomSongTitles() {
 }
 
 /// <summary>
-/// Parse Mod / Volume Keybind Toggles
-/// </summary>
-void Settings::ReadKeyBinds() {
-	CSimpleIniA reader;
-	if (reader.LoadFile("RSMods.ini") < 0) {
-		LOG_ERROR("Error reading saved settings" << std::endl);
-		return;
-	}
-
-	std::unique_lock lock(g_settingsMutex);
-
-	modSettings = {
-		{ Setting::Key::ToggleLoft,         reader.GetValue("Keybinds", Setting::Key::ToggleLoft,         "T") },
-		{ Setting::Key::CustomSongListTitles, reader.GetValue("Keybinds", Setting::Key::CustomSongListTitles, "K") },
-		{ Setting::Key::ShowSongTimer,       reader.GetValue("Keybinds", Setting::Key::ShowSongTimer,       "N") },
-		{ Setting::Key::ForceReEnumeration,  reader.GetValue("Keybinds", Setting::Key::ForceReEnumeration,  "F") },
-		{ Setting::Key::MenuToggle,          reader.GetValue("Keybinds", Setting::Key::MenuToggle,          "M") },
-		{ Setting::Key::RainbowStrings,      reader.GetValue("Keybinds", Setting::Key::RainbowStrings,      "V") },
-		{ Setting::Key::RainbowNotes,        reader.GetValue("Keybinds", Setting::Key::RainbowNotes,        "N") },
-		{ Setting::Key::RemoveLyrics,        reader.GetValue("Keybinds", Setting::Key::RemoveLyrics,        "L") },
-		{ Setting::Key::RRSpeed,             reader.GetValue("Keybinds", Setting::Key::RRSpeed,             "R") },
-		{ Setting::Key::TuningOffset,        reader.GetValue("Keybinds", Setting::Key::TuningOffset,        "O") },
-		{ Setting::Key::ToggleExtendedRange, reader.GetValue("Keybinds", Setting::Key::ToggleExtendedRange, "E") },
-		{ Setting::Key::LoopStart,           reader.GetValue("Keybinds", Setting::Key::LoopStart,           "Y") },
-		{ Setting::Key::LoopEnd,             reader.GetValue("Keybinds", Setting::Key::LoopEnd,             "U") },
-		{ Setting::Key::Rewind,              reader.GetValue("Keybinds", Setting::Key::Rewind,              "Z") },
-
-		{ Setting::Key::MasterVolume,        reader.GetValue("Audio Keybindings", Setting::Key::MasterVolume,        "5") },
-		{ Setting::Key::SongVolume,          reader.GetValue("Audio Keybindings", Setting::Key::SongVolume,          "6") },
-		{ Setting::Key::Player1Volume,       reader.GetValue("Audio Keybindings", Setting::Key::Player1Volume,       "7") },
-		{ Setting::Key::Player2Volume,       reader.GetValue("Audio Keybindings", Setting::Key::Player2Volume,       "8") },
-		{ Setting::Key::MicrophoneVolume,    reader.GetValue("Audio Keybindings", Setting::Key::MicrophoneVolume,    "9") },
-		{ Setting::Key::VoiceOverVolume,     reader.GetValue("Audio Keybindings", Setting::Key::VoiceOverVolume,     "0") },
-		{ Setting::Key::SFXVolume,           reader.GetValue("Audio Keybindings", Setting::Key::SFXVolume,           "S") },
-		{ Setting::Key::DisplayMixer,        reader.GetValue("Audio Keybindings", Setting::Key::DisplayMixer,        "P") },
-		{ Setting::Key::MutePlayer1,             reader.GetValue("Audio Keybindings", Setting::Key::MutePlayer1,             "X") },
-		{ Setting::Key::MutePlayer2,             reader.GetValue("Audio Keybindings", Setting::Key::MutePlayer2,             "C") },
-		{ Setting::Key::ChangedSelectedVolume,   reader.GetValue("Audio Keybindings", Setting::Key::ChangedSelectedVolume,   "B") },
-	};
-}
-
-/// <summary>
 /// Parse Settings For Mods
 /// </summary>
 void Settings::ReadModSettings() {
@@ -262,10 +201,9 @@ void Settings::ReadModSettings() {
 		return;
 	}
 
-	// Augments the modSettings that ReadKeyBinds already populated, so it adds keys rather
-	// than replacing the map wholesale.
 	std::unique_lock lock(g_settingsMutex);
 
+	modSettings.clear();
 	customSettings.clear();
 
 	modSettings[Setting::DiscoModeEnabled] = reader.GetValue("Toggle Switches", "DiscoMode", "off");
@@ -640,7 +578,6 @@ void Settings::SetNoteColors(int strIndex, RSColor c, bool CB) {
 /// Re-Parse INI
 /// </summary>
 void Settings::UpdateSettings() {
-	ReadKeyBinds();
 	ReadModSettings();
 	ReadStringColors();
 	ReadNotewayColors();

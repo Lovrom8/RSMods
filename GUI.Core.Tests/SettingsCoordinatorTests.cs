@@ -14,7 +14,8 @@ public sealed class SettingsCoordinatorTests
         var manifest = new ManifestService();
         var coordinator = new SettingsCoordinator(manifest);
 
-        Assert.Equal(manifest.AllSettings.Count, coordinator.AllFields.Count);
+        Assert.Equal(manifest.AllSettings.Count(d => d.Type != SettingType.Key), coordinator.AllFields.Count);
+        Assert.Null(coordinator.Find("ToggleLoftKey")); // Key binds belong to the keybindings page.
         Assert.NotEmpty(coordinator.Groups);
 
         var volumeControl = coordinator.Find<BoolSettingFieldViewModel>("VolumeControlEnabled");

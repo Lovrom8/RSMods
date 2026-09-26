@@ -1,0 +1,30 @@
+#!/bin/sh
+# LOCAL, UNTRACKED reminder hook (not committed — personal note for Lovro).
+# Fires when finalizing a MERGE commit on avalonia-consolidated, to flag that
+# PR #244's warning fixes must survive conflict resolution or /WX breaks.
+# Delete this file to remove the reminder: rm .githooks/prepare-commit-msg
+
+COMMIT_MSG_FILE="$1"
+COMMIT_SOURCE="$2"
+
+[ "$COMMIT_SOURCE" = "merge" ] || exit 0
+
+branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+[ "$branch" = "avalonia-consolidated" ] || exit 0
+
+reminder="# ────────────────────────────────────────────────────────────────
+# REMINDER (PR #244 / warnings-as-errors):
+#   Keep #244's warning fixes when resolving conflicts, or /WX will fail.
+#   Preserve on the conflicting side: AsMidiByte() wrapping, the added
+#   static_cast<...> conversions, and the WavyNotesEffect naked-fn
+#   restructure (pure-asm hook + extern-C ApplyWavyNotes).
+#   Conflict files to check: D3DOverlay.cpp/.hpp, D3D.cpp, D3DHooks.cpp,
+#   Menu.cpp, ShowSongTimerMod.cpp, SolidNotesEffect.cpp, DLL.vcxproj.filters
+# ────────────────────────────────────────────────────────────────"
+
+# Print to the terminal now...
+printf '%s\n' "$reminder" >&2
+# ...and drop it into the commit message so it's in front of you at finalize.
+printf '\n%s\n' "$reminder" >> "$COMMIT_MSG_FILE"
+
+exit 0

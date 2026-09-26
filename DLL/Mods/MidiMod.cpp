@@ -71,6 +71,7 @@ SettingDefs MidiMod::Settings() const {
 			"MIDI Setup",
 			"Open the custom MIDI and pedal setup editor",
 		}.WithEditor("Midi"),
+		Framework::KeyBind(Setting::Key::TuningOffset, "Change Tuning Offset", "O"),
 	};
 }
 

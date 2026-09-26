@@ -31,16 +31,12 @@ public sealed class SettingsKeyParityTests
     /// </summary>
     private static readonly Dictionary<(string Section, string Key), string> KnownUnexposed = new()
     {
-        [("Keybinds", "MenuToggleKey")] = "Read into the keybind map, but no framework command binds it.",
-        [("Keybinds", "CustomSongListTitles")] = "Read into the keybind map, but no framework command binds it.",
         [("Toggle Switches", "DiscoMode")] = "Its D3DHooks implementation is entirely commented out.",
     };
 
     /// <summary>Maps each nested store class onto the INI section its <c>IniSection</c> writes to.</summary>
     private static readonly Dictionary<string, string> SectionForStoreClass = new()
     {
-        ["Keybinds"] = "Keybinds",
-        ["AudioKeybindings"] = "Audio Keybindings",
         ["Toggles"] = "Toggle Switches",
         ["ModSettings"] = "Mod Settings",
         ["GuitarSpeak"] = "Guitar Speak",
@@ -134,6 +130,9 @@ public sealed class SettingsKeyParityTests
                 keys.Add((section, property.Name));
         }
 
+        // The settings screen and the keybindings page render every manifest entry.
+        keys.UnionWith(ReadManifestKeys(FindRepositoryRoot()));
+
         return keys;
     }
 
@@ -166,36 +165,47 @@ public sealed class SettingsKeyParityTests
                 keys.Add((match.Groups["section"].Value, key));
         }
 
-        // Declarative mod settings in mods.manifest.json
-        string manifestPath = Path.Combine(repositoryRoot, "mods.manifest.json");
-        if (File.Exists(manifestPath))
-        {
-            using var doc = System.Text.Json.JsonDocument.Parse(File.ReadAllText(manifestPath));
-            foreach (System.Text.Json.JsonElement element in doc.RootElement.EnumerateArray())
-            {
-                // Tier 3 pure custom editor launchers (not INI values)
-                if (element.TryGetProperty("editor", out var editor) &&
-                    editor.ValueKind == System.Text.Json.JsonValueKind.String &&
-                    !string.IsNullOrEmpty(editor.GetString()) &&
-                    element.TryGetProperty("type", out var type) &&
-                    type.GetString() == "String")
-                {
-                    continue;
-                }
-
-                if (element.TryGetProperty("ini", out System.Text.Json.JsonElement ini))
-                {
-                    string? section = ini.GetProperty("section").GetString();
-                    string? name = ini.GetProperty("name").GetString();
-                    if (!string.IsNullOrEmpty(section) && !string.IsNullOrEmpty(name))
-                        keys.Add((section, name));
-                }
-            }
-        }
+        keys.UnionWith(ReadManifestKeys(repositoryRoot));
 
         Assert.True(keys.Count > 50,
             $"Only found {keys.Count} DLL setting reads, so the scrape is probably broken rather than " +
             "the contract. Check whether DLL/Settings.cpp changed how it reads the INI.");
+
+        return keys;
+    }
+
+    /// <summary>
+    /// Every <c>(section, key)</c> declared in <c>mods.manifest.json</c>. Both sides count these: the DLL
+    /// reads them through the schema and the GUI renders them from the same file.
+    /// </summary>
+    private static HashSet<(string Section, string Key)> ReadManifestKeys(string repositoryRoot)
+    {
+        var keys = new HashSet<(string, string)>();
+        string manifestPath = Path.Combine(repositoryRoot, "mods.manifest.json");
+        if (!File.Exists(manifestPath))
+            return keys;
+
+        using var doc = System.Text.Json.JsonDocument.Parse(File.ReadAllText(manifestPath));
+        foreach (System.Text.Json.JsonElement element in doc.RootElement.EnumerateArray())
+        {
+            // Tier 3 pure custom editor launchers (not INI values)
+            if (element.TryGetProperty("editor", out var editor) &&
+                editor.ValueKind == System.Text.Json.JsonValueKind.String &&
+                !string.IsNullOrEmpty(editor.GetString()) &&
+                element.TryGetProperty("type", out var type) &&
+                type.GetString() == "String")
+            {
+                continue;
+            }
+
+            if (element.TryGetProperty("ini", out System.Text.Json.JsonElement ini))
+            {
+                string? section = ini.GetProperty("section").GetString();
+                string? name = ini.GetProperty("name").GetString();
+                if (!string.IsNullOrEmpty(section) && !string.IsNullOrEmpty(name))
+                    keys.Add((section, name));
+            }
+        }
 
         return keys;
     }

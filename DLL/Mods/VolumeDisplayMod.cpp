@@ -11,6 +11,12 @@ using Framework::Toggle;
 using Framework::Numeric;
 namespace Setting = Settings::Setting;
 
+namespace {
+	Framework::SettingDef AudioKey(std::string_view key, std::string_view label, std::string_view defaultKey) {
+		return Framework::KeyBind(key, label, defaultKey).Ini("Audio Keybindings", key).Category("Audio Keybindings");
+	}
+}
+
 SettingDefs VolumeDisplayMod::Settings() const {
 	return {
 		Toggle(Setting::VolumeControlEnabled, "VolumeControl", "Volume Control")
@@ -21,6 +27,17 @@ SettingDefs VolumeDisplayMod::Settings() const {
 			.Default("5")
 			.Range(1, 100)
 			.WithVisibleWhen(Setting::VolumeControlEnabled),
+		AudioKey(Setting::Key::MasterVolume, "Master Volume", "5"),
+		AudioKey(Setting::Key::SongVolume, "Song Volume", "6"),
+		AudioKey(Setting::Key::Player1Volume, "Player 1 Volume", "7"),
+		AudioKey(Setting::Key::Player2Volume, "Player 2 Volume", "8"),
+		AudioKey(Setting::Key::MicrophoneVolume, "Microphone Volume", "9"),
+		AudioKey(Setting::Key::VoiceOverVolume, "Voice-Over Volume", "0"),
+		AudioKey(Setting::Key::SFXVolume, "SFX Volume", "S"),
+		AudioKey(Setting::Key::DisplayMixer, "Display Mixer", "P"),
+		AudioKey(Setting::Key::MutePlayer1, "Mute / Unmute Player 1", "X"),
+		AudioKey(Setting::Key::MutePlayer2, "Mute / Unmute Player 2", "C"),
+		AudioKey(Setting::Key::ChangedSelectedVolume, "Change Selected Volume", "B"),
 	};
 }
 

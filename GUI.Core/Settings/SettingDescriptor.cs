@@ -10,7 +10,8 @@ public enum SettingType
     Int,
     Enum,
     String,
-    Color
+    Color,
+    Key
 }
 
 public sealed record IniLocation(

@@ -63,6 +63,8 @@ SettingDefs ExtendedRangeMod::Settings() const {
 			"String & Note Color Editor",
 			"Open the custom string and note color palette editor",
 		}.WithEditor("StringColors"),
+		Framework::KeyBind(Setting::Key::RainbowStrings, "Rainbow Strings", "V"),
+		Framework::KeyBind(Setting::Key::ToggleExtendedRange, "Toggle Extended Range", "E"),
 	};
 }
 

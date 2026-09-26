@@ -23,7 +23,8 @@ SettingDefs RemoveLyricsMod::Settings() const {
 		SettingDef::Enum(Setting::RemoveLyricsWhen, "Remove Lyrics Mode")
 			.Hint("How or when do you want the lyric display disabled: always, or toggled by a hotkey only?")
 			.Choices({ "manual", "startup" }, "manual")
-			.WithVisibleWhen(Setting::RemoveLyricsEnabled)
+			.WithVisibleWhen(Setting::RemoveLyricsEnabled),
+		Framework::KeyBind(Setting::Key::RemoveLyrics, "Remove Lyrics", "L"),
 	};
 }
 

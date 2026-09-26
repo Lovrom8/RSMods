@@ -167,9 +167,9 @@ namespace Settings {
 		}
 
 		// Keybind names. These live in the modSettings map (GetModSetting / GetKeyBind)
-		// alongside the feature-flag and numeric settings above.
+		// alongside the feature-flag and numeric settings above. Each is declared, with its
+		// default, by the mod that binds it (SettingDef::KeyBind).
 		namespace Key {
-			inline constexpr char CustomSongListTitles[] = "CustomSongListTitles";
 			inline constexpr char ToggleLoft[]           = "ToggleLoftKey";
 			inline constexpr char ShowSongTimer[]        = "ShowSongTimerKey";
 			inline constexpr char ForceReEnumeration[]   = "ForceReEnumerationKey";
@@ -177,7 +177,6 @@ namespace Settings {
 			inline constexpr char RainbowNotes[]         = "RainbowNotesKey";
 			inline constexpr char RemoveLyrics[]         = "RemoveLyricsKey";
 			inline constexpr char RRSpeed[]              = "RRSpeedKey";
-			inline constexpr char MenuToggle[]           = "MenuToggleKey";
 			inline constexpr char TuningOffset[]         = "TuningOffsetKey";
 			inline constexpr char ToggleExtendedRange[]  = "ToggleExtendedRangeKey";
 			inline constexpr char LoopStart[]            = "LoopStartKey";
@@ -213,7 +212,6 @@ namespace Settings {
 
 	// Read INI
 	std::vector<std::string> GetCustomSongTitles();
-	void ReadKeyBinds();
 	void ReadModSettings();
 	void ReadStringColors();
 	void ReadNotewayColors();

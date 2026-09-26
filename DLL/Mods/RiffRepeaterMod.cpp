@@ -51,6 +51,10 @@ SettingDefs RiffRepeaterMod::Settings() const {
 			.Default("2")
 			.Range(-50, 50)
 			.WithVisibleWhen(Setting::RRSpeedAboveOneHundred),
+		Framework::KeyBind(Setting::Key::RRSpeed, "RR Speed Change", "R"),
+		Framework::KeyBind(Setting::Key::LoopStart, "Start Loop", "Y"),
+		Framework::KeyBind(Setting::Key::LoopEnd, "End Loop", "U"),
+		Framework::KeyBind(Setting::Key::Rewind, "Rewind Song", "Z"),
 	};
 }
 

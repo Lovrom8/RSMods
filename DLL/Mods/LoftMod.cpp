@@ -19,7 +19,8 @@ SettingDefs LoftMod::Settings() const {
 		SettingDef::Enum(Setting::ToggleLoftWhen, "Toggle Loft Mode")
 			.Hint("Turn the loft off via hotkey, as soon as the game starts up, or only when in a song.")
 			.Choices({ "manual", "song", "startup" }, "manual")
-			.WithVisibleWhen(Setting::ToggleLoftEnabled)
+			.WithVisibleWhen(Setting::ToggleLoftEnabled),
+		Framework::KeyBind(Setting::Key::ToggleLoft, "Toggle Loft", "T"),
 	};
 }
 

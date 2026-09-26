@@ -34,6 +34,7 @@ internal enum KeyCapturePhase
 internal sealed partial class ModSettingsViewModel : ObservableObject
 {
     private readonly SettingsService _settingsService;
+    private readonly IManifestService _manifest;
     private readonly IDialogService _dialogs;
     private readonly INavigationService _navigation;
     private bool _loading;
@@ -109,11 +110,13 @@ internal sealed partial class ModSettingsViewModel : ObservableObject
 
     public ModSettingsViewModel(
         SettingsCoordinator coordinator,
+        IManifestService manifest,
         SettingsService settings,
         IDialogService dialogs,
         INavigationService navigation)
     {
         Coordinator = coordinator;
+        _manifest = manifest;
         _settingsService = settings;
         _dialogs = dialogs;
         _navigation = navigation;
@@ -210,8 +213,11 @@ internal sealed partial class ModSettingsViewModel : ObservableObject
 
             SelectedModKeybind = null;
             SelectedAudioKeybind = null;
-            LoadKeybindRows(ModKeybinds, Dictionaries.ModKeybinds);
-            LoadKeybindRows(AudioKeybinds, Dictionaries.AudioKeybinds);
+            if (RsModsSettings.Ini is { } keyIni)
+            {
+                LoadKeybindRows(ModKeybinds, ManifestKeybinds.Mod(_manifest, keyIni));
+                LoadKeybindRows(AudioKeybinds, ManifestKeybinds.Audio(_manifest, keyIni));
+            }
 
             RefreshAuxiliaryProperties();
         }

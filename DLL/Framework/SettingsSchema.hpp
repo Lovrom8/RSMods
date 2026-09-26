@@ -14,7 +14,8 @@ namespace Framework {
 		Int,
 		Enum,
 		String,
-		Color
+		Color,
+		Key     // Key name ("T", "VK_F7"); bound with CommandBinder::BindSetting, edited on the GUI's keybindings page
 	};
 
 	inline const char* SettingTypeName(SettingType t) {
@@ -24,6 +25,7 @@ namespace Framework {
 			case SettingType::Enum:   return "Enum";
 			case SettingType::String: return "String";
 			case SettingType::Color:  return "Color";
+			case SettingType::Key:    return "Key";
 		}
 		return "Bool";
 	}
@@ -264,6 +266,18 @@ namespace Framework {
 			};
 		}
 
+		// Key binding. Chain .Ini("Audio Keybindings", key).Category("Audio Keybindings") for the audio list.
+		static SettingDef KeyBind(std::string_view key, std::string_view label, std::string_view defaultKey) {
+			return SettingDef{
+				.key = std::string(key),
+				.ini = { "Keybinds", std::string(key) },
+				.type = SettingType::Key,
+				.def = std::string(defaultKey),
+				.label = std::string(label),
+				.category = "Keybinds"
+			};
+		}
+
 		// Positional factories for backward compatibility
 		static SettingDef Numeric(std::string_view key, std::string_view section, std::string_view iniName,
 			std::string_view label, std::string_view def, std::optional<int> min = std::nullopt,
@@ -320,6 +334,9 @@ namespace Framework {
 	}
 	inline SettingDef String(std::string_view key, std::string_view label) {
 		return SettingDef::String(key, label);
+	}
+	inline SettingDef KeyBind(std::string_view key, std::string_view label, std::string_view defaultKey) {
+		return SettingDef::KeyBind(key, label, defaultKey);
 	}
 
 	class IMod;

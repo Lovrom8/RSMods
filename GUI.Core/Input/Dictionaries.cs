@@ -6,37 +6,6 @@ namespace RSMods
 {
     public static class Dictionaries
     {
-        public static readonly List<KeybindItem> ModKeybinds =
-        [
-            new("Toggle Loft",          k => Keybinds.ToggleLoftKey = k, () => Keybinds.ToggleLoftKey),
-            new("Show Song Timer",      k => Keybinds.ShowSongTimerKey = k, () => Keybinds.ShowSongTimerKey),
-            new("Force Re-Enumeration", k => Keybinds.ForceReEnumerationKey = k, () => Keybinds.ForceReEnumerationKey),
-            new("Rainbow Strings",      k => Keybinds.RainbowStringsKey = k, () => Keybinds.RainbowStringsKey),
-            new("Rainbow Notes",        k => Keybinds.RainbowNotesKey = k, () => Keybinds.RainbowNotesKey),
-            new("Remove Lyrics",        k => Keybinds.RemoveLyricsKey = k, () => Keybinds.RemoveLyricsKey),
-            new("RR Speed Change",        k => Keybinds.RRSpeedKey = k, () => Keybinds.RRSpeedKey),
-            new("Change Tuning Offset",        k => Keybinds.TuningOffsetKey = k, () => Keybinds.TuningOffsetKey),
-            new("Toggle Extended Range",        k => Keybinds.ToggleExtendedRangeKey = k, () => Keybinds.ToggleExtendedRangeKey),
-            new("Start Loop",        k => Keybinds.LoopStartKey = k, () => Keybinds.LoopStartKey),
-            new("End Loop",        k => Keybinds.LoopEndKey = k, () => Keybinds.LoopEndKey),
-            new("Rewind Song",        k => Keybinds.RewindKey = k, () => Keybinds.RewindKey)
-        ];
-
-        public static readonly List<KeybindItem> AudioKeybinds =
-        [
-            new("Master Volume", k => AudioKeybindings.MasterVolumeKey = k, () => AudioKeybindings.MasterVolumeKey),
-            new("Song Volume", k => AudioKeybindings.SongVolumeKey = k, () => AudioKeybindings.SongVolumeKey),
-            new("Player 1 Volume", k => AudioKeybindings.Player1VolumeKey = k, () => AudioKeybindings.Player1VolumeKey),
-            new("Player 2 Volume", k => AudioKeybindings.Player2VolumeKey = k, () => AudioKeybindings.Player2VolumeKey),
-            new("Microphone Volume", k => AudioKeybindings.MicrophoneVolumeKey = k, () => AudioKeybindings.MicrophoneVolumeKey),
-            new("Voice-Over Volume", k => AudioKeybindings.VoiceOverVolumeKey = k, () => AudioKeybindings.VoiceOverVolumeKey),
-            new("SFX Volume", k => AudioKeybindings.SFXVolumeKey = k, () => AudioKeybindings.SFXVolumeKey),
-            new("Display Mixer", k => AudioKeybindings.DisplayMixerKey = k, () => AudioKeybindings.DisplayMixerKey),
-            new("Mute / Unmute Player 1", k => AudioKeybindings.MutePlayer1Key = k, () => AudioKeybindings.MutePlayer1Key),
-            new("Mute / Unmute Player 2", k => AudioKeybindings.MutePlayer2Key = k, () => AudioKeybindings.MutePlayer2Key),
-            new("Change Selected Volume", k => AudioKeybindings.ChangedSelectedVolumeKey = k, () => AudioKeybindings.ChangedSelectedVolumeKey)
-        ];
-
         public static readonly List<KeybindItem> GuitarSpeakKeybinds =
         [
             new("Delete", v => RsModsSettings.GuitarSpeak.GuitarSpeakDeleteWhen = v, () => RsModsSettings.GuitarSpeak.GuitarSpeakDeleteWhen),

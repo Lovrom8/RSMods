@@ -41,6 +41,215 @@
     "editor": null
   },
   {
+    "key": "MasterVolumeKey",
+    "ini": {
+      "section": "Audio Keybindings",
+      "name": "MasterVolumeKey"
+    },
+    "type": "Key",
+    "default": "5",
+    "label": "Master Volume",
+    "hint": "",
+    "category": "Audio Keybindings",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null
+  },
+  {
+    "key": "SongVolumeKey",
+    "ini": {
+      "section": "Audio Keybindings",
+      "name": "SongVolumeKey"
+    },
+    "type": "Key",
+    "default": "6",
+    "label": "Song Volume",
+    "hint": "",
+    "category": "Audio Keybindings",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null
+  },
+  {
+    "key": "Player1VolumeKey",
+    "ini": {
+      "section": "Audio Keybindings",
+      "name": "Player1VolumeKey"
+    },
+    "type": "Key",
+    "default": "7",
+    "label": "Player 1 Volume",
+    "hint": "",
+    "category": "Audio Keybindings",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null
+  },
+  {
+    "key": "Player2VolumeKey",
+    "ini": {
+      "section": "Audio Keybindings",
+      "name": "Player2VolumeKey"
+    },
+    "type": "Key",
+    "default": "8",
+    "label": "Player 2 Volume",
+    "hint": "",
+    "category": "Audio Keybindings",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null
+  },
+  {
+    "key": "MicrophoneVolumeKey",
+    "ini": {
+      "section": "Audio Keybindings",
+      "name": "MicrophoneVolumeKey"
+    },
+    "type": "Key",
+    "default": "9",
+    "label": "Microphone Volume",
+    "hint": "",
+    "category": "Audio Keybindings",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null
+  },
+  {
+    "key": "VoiceOverVolumeKey",
+    "ini": {
+      "section": "Audio Keybindings",
+      "name": "VoiceOverVolumeKey"
+    },
+    "type": "Key",
+    "default": "0",
+    "label": "Voice-Over Volume",
+    "hint": "",
+    "category": "Audio Keybindings",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null
+  },
+  {
+    "key": "SFXVolumeKey",
+    "ini": {
+      "section": "Audio Keybindings",
+      "name": "SFXVolumeKey"
+    },
+    "type": "Key",
+    "default": "S",
+    "label": "SFX Volume",
+    "hint": "",
+    "category": "Audio Keybindings",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null
+  },
+  {
+    "key": "DisplayMixerKey",
+    "ini": {
+      "section": "Audio Keybindings",
+      "name": "DisplayMixerKey"
+    },
+    "type": "Key",
+    "default": "P",
+    "label": "Display Mixer",
+    "hint": "",
+    "category": "Audio Keybindings",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null
+  },
+  {
+    "key": "MutePlayer1Key",
+    "ini": {
+      "section": "Audio Keybindings",
+      "name": "MutePlayer1Key"
+    },
+    "type": "Key",
+    "default": "X",
+    "label": "Mute / Unmute Player 1",
+    "hint": "",
+    "category": "Audio Keybindings",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null
+  },
+  {
+    "key": "MutePlayer2Key",
+    "ini": {
+      "section": "Audio Keybindings",
+      "name": "MutePlayer2Key"
+    },
+    "type": "Key",
+    "default": "C",
+    "label": "Mute / Unmute Player 2",
+    "hint": "",
+    "category": "Audio Keybindings",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null
+  },
+  {
+    "key": "ChangedSelectedVolumeKey",
+    "ini": {
+      "section": "Audio Keybindings",
+      "name": "ChangedSelectedVolumeKey"
+    },
+    "type": "Key",
+    "default": "B",
+    "label": "Change Selected Volume",
+    "hint": "",
+    "category": "Audio Keybindings",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null
+  },
+  {
     "key": "BypassTwoRTCMessageBox",
     "ini": {
       "section": "Toggle Switches",
@@ -158,6 +367,25 @@
       "key": "ShowSongTimerEnabled",
       "equals": "on"
     },
+    "editor": null
+  },
+  {
+    "key": "ShowSongTimerKey",
+    "ini": {
+      "section": "Keybinds",
+      "name": "ShowSongTimerKey"
+    },
+    "type": "Key",
+    "default": "N",
+    "label": "Show Song Timer",
+    "hint": "",
+    "category": "Keybinds",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
     "editor": null
   },
   {
@@ -407,6 +635,82 @@
     "editor": null
   },
   {
+    "key": "RRSpeedKey",
+    "ini": {
+      "section": "Keybinds",
+      "name": "RRSpeedKey"
+    },
+    "type": "Key",
+    "default": "R",
+    "label": "RR Speed Change",
+    "hint": "",
+    "category": "Keybinds",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null
+  },
+  {
+    "key": "LoopStartKey",
+    "ini": {
+      "section": "Keybinds",
+      "name": "LoopStartKey"
+    },
+    "type": "Key",
+    "default": "Y",
+    "label": "Start Loop",
+    "hint": "",
+    "category": "Keybinds",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null
+  },
+  {
+    "key": "LoopEndKey",
+    "ini": {
+      "section": "Keybinds",
+      "name": "LoopEndKey"
+    },
+    "type": "Key",
+    "default": "U",
+    "label": "End Loop",
+    "hint": "",
+    "category": "Keybinds",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null
+  },
+  {
+    "key": "RewindKey",
+    "ini": {
+      "section": "Keybinds",
+      "name": "RewindKey"
+    },
+    "type": "Key",
+    "default": "Z",
+    "label": "Rewind Song",
+    "hint": "",
+    "category": "Keybinds",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null
+  },
+  {
     "key": "RemoveSkylineEnabled",
     "ini": {
       "section": "Toggle Switches",
@@ -492,6 +796,25 @@
       "key": "RemoveLyrics",
       "equals": "on"
     },
+    "editor": null
+  },
+  {
+    "key": "RemoveLyricsKey",
+    "ini": {
+      "section": "Keybinds",
+      "name": "RemoveLyricsKey"
+    },
+    "type": "Key",
+    "default": "L",
+    "label": "Remove Lyrics",
+    "hint": "",
+    "category": "Keybinds",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
     "editor": null
   },
   {
@@ -606,6 +929,25 @@
     "label": "Rainbow Notes",
     "hint": "Experimental.\nHow Pro are you? This makes all the notes constantly cycle through colors.",
     "category": "Toggle Switches",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null
+  },
+  {
+    "key": "RainbowNotesKey",
+    "ini": {
+      "section": "Keybinds",
+      "name": "RainbowNotesKey"
+    },
+    "type": "Key",
+    "default": "N",
+    "label": "Rainbow Notes",
+    "hint": "",
+    "category": "Keybinds",
     "min": null,
     "max": null,
     "scale": null,
@@ -908,6 +1250,25 @@
     "editor": "Midi"
   },
   {
+    "key": "TuningOffsetKey",
+    "ini": {
+      "section": "Keybinds",
+      "name": "TuningOffsetKey"
+    },
+    "type": "Key",
+    "default": "O",
+    "label": "Change Tuning Offset",
+    "hint": "",
+    "category": "Keybinds",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null
+  },
+  {
     "key": "OverrideInputVolumeEnabled",
     "ini": {
       "section": "Toggle Switches",
@@ -1013,6 +1374,25 @@
       "key": "ToggleLoftEnabled",
       "equals": "on"
     },
+    "editor": null
+  },
+  {
+    "key": "ToggleLoftKey",
+    "ini": {
+      "section": "Keybinds",
+      "name": "ToggleLoftKey"
+    },
+    "type": "Key",
+    "default": "T",
+    "label": "Toggle Loft",
+    "hint": "",
+    "category": "Keybinds",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
     "editor": null
   },
   {
@@ -1693,6 +2073,44 @@
     "editor": "StringColors"
   },
   {
+    "key": "RainbowStringsKey",
+    "ini": {
+      "section": "Keybinds",
+      "name": "RainbowStringsKey"
+    },
+    "type": "Key",
+    "default": "V",
+    "label": "Rainbow Strings",
+    "hint": "",
+    "category": "Keybinds",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null
+  },
+  {
+    "key": "ToggleExtendedRangeKey",
+    "ini": {
+      "section": "Keybinds",
+      "name": "ToggleExtendedRangeKey"
+    },
+    "type": "Key",
+    "default": "E",
+    "label": "Toggle Extended Range",
+    "hint": "",
+    "category": "Keybinds",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null
+  },
+  {
     "key": "ForceReEnumerationEnabled",
     "ini": {
       "section": "Toggle Switches",
@@ -1735,6 +2153,25 @@
       "key": "ForceReEnumerationEnabled",
       "equals": "automatic"
     },
+    "editor": null
+  },
+  {
+    "key": "ForceReEnumerationKey",
+    "ini": {
+      "section": "Keybinds",
+      "name": "ForceReEnumerationKey"
+    },
+    "type": "Key",
+    "default": "F",
+    "label": "Force Re-Enumeration",
+    "hint": "",
+    "category": "Keybinds",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
     "editor": null
   },
   {

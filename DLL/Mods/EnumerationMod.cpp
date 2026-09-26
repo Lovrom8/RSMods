@@ -24,6 +24,7 @@ SettingDefs EnumerationMod::Settings() const {
 			.Range(100, 100000000)
 			.Scale(0.001)
 			.WithVisibleWhen(Setting::ForceReEnumerationEnabled, "automatic"),
+		Framework::KeyBind(Setting::Key::ForceReEnumeration, "Force Re-Enumeration", "F"),
 	};
 }
 

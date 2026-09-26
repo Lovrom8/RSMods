@@ -35,7 +35,7 @@ framework and "one file, zero core edits."
 
 ```cpp
 namespace Framework {
-    enum class SettingType { Bool, Int, Enum, String, Color };
+    enum class SettingType { Bool, Int, Enum, String, Color, Key };
 
     struct SettingDecl {
         std::string_view key;              // in-code key; matches a Settings::Setting constant
@@ -53,6 +53,12 @@ namespace Framework {
 disk vs `ToggleLoftEnabled` in code — see the note at `Settings.hpp:15`); the schema does not get to
 paper over that. `def` is the INI *string* form so one field feeds both the typed default and the GUI's
 initial value without a second conversion table.
+
+**Key bindings** are `Key` settings, declared with `KeyBind(key, label, defaultKey)` (section and category
+`Keybinds`; the volume keys chain `.Ini("Audio Keybindings", key).Category("Audio Keybindings")`). The
+mod binds its action to the same key with `c.Commands().BindSetting(key, ...)`. The GUI shows `Key`
+entries on the keybindings page, not the settings screen, so the page can capture key presses; the
+`Audio Keybindings` category goes to the audio list. No core file lists key bindings any more.
 
 ## IMod integration
 
@@ -168,7 +174,7 @@ First-cut fields:
 {
   "key":        "AllowRewind",              // in-code key; matches a Settings::Setting constant
   "ini":        { "section": "Riff Repeater", "name": "AllowRewind" },
-  "type":       "Bool",                     // Bool | Int | Enum | String | Color
+  "type":       "Bool",                     // Bool | Int | Enum | String | Color | Key
   "default":    "0",                        // INI string form; feeds typed default AND GUI initial value
   "label":      "Allow rewind",
   "hint":       "",                         // optional tooltip

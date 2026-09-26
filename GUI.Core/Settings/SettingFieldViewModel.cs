@@ -37,5 +37,5 @@ public abstract partial class SettingFieldViewModel(SettingDescriptor descriptor
 
     protected void NotifyValueChanged() => ValueChanged?.Invoke(this, EventArgs.Empty);
 
-    protected static string NormalizeSection(string section) => section.StartsWith('[') && section.EndsWith(']') ? section : $"[{section}]";
+    protected internal static string NormalizeSection(string section) => section.StartsWith('[') && section.EndsWith(']') ? section : $"[{section}]";
 }
