@@ -24,7 +24,20 @@ struct ThiccMesh;
 namespace Framework {
 	class IMod;
 
-	enum class DrawPath { Indexed, Primitive, Both };
+	// Bit flags: register on any combination, a draw reports exactly one. The user-pointer (UP)
+	// variants are opt-in so existing mesh-matching interceptors never see those draws.
+	enum class DrawPath : unsigned {
+		Indexed     = 1u << 0, // DrawIndexedPrimitive
+		Primitive   = 1u << 1, // DrawPrimitive
+		Both        = Indexed | Primitive,
+		IndexedUP   = 1u << 2, // DrawIndexedPrimitiveUP
+		PrimitiveUP = 1u << 3, // DrawPrimitiveUP
+		All         = Both | IndexedUP | PrimitiveUP,
+	};
+
+	constexpr bool Includes(DrawPath registered, DrawPath single) {
+		return (static_cast<unsigned>(registered) & static_cast<unsigned>(single)) != 0;
+	}
 	enum class DrawOutcome { Pass, Show, Hide, ReplaceTexture };
 
 	struct DrawResult {
@@ -59,9 +72,19 @@ namespace Framework {
 		// Set by the host/D3D hook layer during startup.
 		static void SetDefaultCrcProvider(CrcSource provider);
 
+		// Undo a device-state change once this draw is over, whether it was drawn, shown early or hidden.
+		// Runs newest-first when the hook's DrawContext goes out of scope, i.e. after the original draw.
+		// Use for per-draw state such as viewport or scissor.
+		void AfterDraw(std::function<void()> restore);
+
+		~DrawContext();
+		DrawContext(const DrawContext&) = delete;
+		DrawContext& operator=(const DrawContext&) = delete;
+
 	private:
 		CrcSource crcSource;
 		mutable std::vector<std::pair<DWORD, std::optional<DWORD>>> crcCache;
+		std::vector<std::function<void()>> restores;
 	};
 
 	// Render-thread interceptor callback. MUST NOT query Settings by string.
@@ -124,7 +147,8 @@ namespace Framework {
 		// MainThread: rebuild the active snapshot from currently-enabled owners.
 		void RebuildActive(std::function<bool(const IMod*)> isOwnerEnabled);
 
-		// Render thread: lock-free load of the immutable, priority-sorted active list for a path.
+		// Render thread: lock-free load of the immutable, priority-sorted active list for one path
+		// (Indexed, Primitive, IndexedUP or PrimitiveUP; a combined value returns an empty list).
 		[[nodiscard]] std::shared_ptr<const std::vector<ActiveEntry>> ActiveSnapshot(DrawPath path) const;
 
 		// Render thread (EndScene): run enabled mods' frame callbacks, lock-free.

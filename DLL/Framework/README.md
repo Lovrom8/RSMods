@@ -121,7 +121,7 @@ every mod's effective state (`Active` / `Disabled` / `Suppressed` / `Faulted`), 
 disabled-vs-suppressed distinction that `ModState` collapses and the log line otherwise owns alone. The
 in-game `RS Mods` window renders it behind an opt-in `Mod status` toggle. See [`docs/mod-status.md`](docs/mod-status.md).
 
-- **Draw interception and render-thread callbacks (`ctx.Draw()`):** per-draw interceptors, plus per-frame and device-reset callbacks for mods with render-side state. See [`docs/draw-registry.md`](docs/draw-registry.md).
+- **Draw interception and render-thread callbacks (`ctx.Draw()`):** per-draw interceptors (optionally changing device state for one draw via `ctx.AfterDraw`), plus per-frame and device-reset callbacks for mods with render-side state. See [`docs/draw-registry.md`](docs/draw-registry.md).
 
 > For the history of the retired render-hook subsystem, and why the frame/reset callbacks don't need its
 > machinery, see [`docs/render-hooks.md`](docs/render-hooks.md).

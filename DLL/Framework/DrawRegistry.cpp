@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <atomic>
+#include <iterator>
 #include <mutex>
 #include <utility>
 
@@ -41,6 +42,16 @@ namespace Framework {
 		return computed;
 	}
 
+	void DrawContext::AfterDraw(std::function<void()> restore) {
+		if (restore) restores.push_back(std::move(restore));
+	}
+
+	DrawContext::~DrawContext() {
+		for (auto it = restores.rbegin(); it != restores.rend(); ++it) {
+			(*it)();
+		}
+	}
+
 	struct RegisteredInterceptor {
 		const IMod* owner = nullptr;
 		std::string id;
@@ -50,6 +61,17 @@ namespace Framework {
 	};
 
 	namespace {
+		// One active list per single draw path, in DrawPath bit order.
+		constexpr DrawPath singlePaths[] = { DrawPath::Indexed, DrawPath::Primitive, DrawPath::IndexedUP, DrawPath::PrimitiveUP };
+		constexpr size_t pathCount = std::size(singlePaths);
+
+		int PathSlot(DrawPath path) {
+			for (size_t i = 0; i < pathCount; ++i) {
+				if (singlePaths[i] == path) return static_cast<int>(i);
+			}
+			return -1;
+		}
+
 		template <typename Fn>
 		struct OwnedCallback {
 			const IMod* owner = nullptr;
@@ -85,14 +107,12 @@ namespace Framework {
 		std::vector<RegisteredRelease> releaseCallbacks;
 		std::vector<const IMod*> pendingReleases;  // owners waiting for deferred release
 
-		std::atomic<std::shared_ptr<const std::vector<ActiveEntry>>> activeIndexed;
-		std::atomic<std::shared_ptr<const std::vector<ActiveEntry>>> activePrimitive;
+		std::atomic<std::shared_ptr<const std::vector<ActiveEntry>>> active[pathCount];
 		std::atomic<std::shared_ptr<const std::vector<FrameCallback>>> activeFrame;
 
 		Impl() {
 			auto empty = std::make_shared<const std::vector<ActiveEntry>>();
-			activeIndexed.store(empty, std::memory_order_relaxed);
-			activePrimitive.store(empty, std::memory_order_relaxed);
+			for (auto& list : active) list.store(empty, std::memory_order_relaxed);
 			activeFrame.store(std::make_shared<const std::vector<FrameCallback>>(), std::memory_order_relaxed);
 		}
 	};
@@ -195,8 +215,8 @@ namespace Framework {
 	void DrawRegistry::RebuildActive(std::function<bool(const IMod*)> isOwnerEnabled) {
 		std::lock_guard<std::mutex> lock(impl->mutex);
 
-		auto newIndexed = std::make_shared<std::vector<ActiveEntry>>();
-		auto newPrimitive = std::make_shared<std::vector<ActiveEntry>>();
+		std::shared_ptr<std::vector<ActiveEntry>> lists[pathCount];
+		for (auto& list : lists) list = std::make_shared<std::vector<ActiveEntry>>();
 
 		for (const auto& reg : impl->interceptors) {
 			if (!reg.owner || !isOwnerEnabled(reg.owner)) continue;
@@ -207,11 +227,8 @@ namespace Framework {
 				reg.fn
 			};
 
-			if (reg.path == DrawPath::Indexed || reg.path == DrawPath::Both) {
-				newIndexed->push_back(entry);
-			}
-			if (reg.path == DrawPath::Primitive || reg.path == DrawPath::Both) {
-				newPrimitive->push_back(entry);
+			for (size_t i = 0; i < pathCount; ++i) {
+				if (Includes(reg.path, singlePaths[i])) lists[i]->push_back(entry);
 			}
 		}
 
@@ -220,11 +237,10 @@ namespace Framework {
 			return a.ownerId < b.ownerId;
 		};
 
-		std::stable_sort(newIndexed->begin(), newIndexed->end(), entryComparator);
-		std::stable_sort(newPrimitive->begin(), newPrimitive->end(), entryComparator);
-
-		impl->activeIndexed.store(newIndexed, std::memory_order_release);
-		impl->activePrimitive.store(newPrimitive, std::memory_order_release);
+		for (size_t i = 0; i < pathCount; ++i) {
+			std::stable_sort(lists[i]->begin(), lists[i]->end(), entryComparator);
+			impl->active[i].store(lists[i], std::memory_order_release);
+		}
 
 		// Frame callbacks in owner-Id order, so the run order doesn't depend on registration order.
 		std::vector<const OwnedCallback<FrameCallback>*> enabledFrames;
@@ -241,10 +257,12 @@ namespace Framework {
 	}
 
 	std::shared_ptr<const std::vector<ActiveEntry>> DrawRegistry::ActiveSnapshot(DrawPath path) const {
-		if (path == DrawPath::Primitive) {
-			return impl->activePrimitive.load(std::memory_order_acquire);
+		const int slot = PathSlot(path);
+		if (slot < 0) {
+			static const auto empty = std::make_shared<const std::vector<ActiveEntry>>();
+			return empty;
 		}
-		return impl->activeIndexed.load(std::memory_order_acquire);
+		return impl->active[slot].load(std::memory_order_acquire);
 	}
 
 	void DrawRegistry::RunFrame(IDirect3DDevice9* pDevice) {

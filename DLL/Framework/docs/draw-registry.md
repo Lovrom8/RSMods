@@ -44,7 +44,12 @@ New header `DLL/Framework/DrawRegistry.hpp`. Keep it free of `Settings.hpp` and 
 includes, exactly as `HudRegistry.hpp` is (opaque `IMod` forward declaration only).
 
 ```cpp
-enum class DrawPath   { Indexed, Primitive, Both };     // DIP, DP, or register for both
+// Bit flags. Register on any combination; a draw reports exactly one. UP paths are opt-in.
+enum class DrawPath : unsigned {
+    Indexed = 1, Primitive = 2, Both = Indexed | Primitive,   // DIP, DP
+    IndexedUP = 4, PrimitiveUP = 8,                           // DrawIndexedPrimitiveUP, DrawPrimitiveUP
+    All = Both | IndexedUP | PrimitiveUP,
+};
 enum class DrawOutcome { Pass, Show, Hide, ReplaceTexture };
 
 struct DrawResult {
@@ -180,9 +185,9 @@ immutable snapshot:
 2. Whenever the enabled-mod set or settings change — the same trigger points that already
    drive `OnSettingsChanged` and mod enable/disable in `ModRegistry` — call
    `DrawRegistry::RebuildActive(...)`. It filters to interceptors whose owner is currently
-   enabled, sorts by `(priority, ownerId)`, and publishes **two** immutable vectors (one for
-   `Indexed`, one for `Primitive`; a `Both` registration lands in both). It also publishes the
-   enabled mods' frame callbacks (§8.7).
+   enabled, sorts by `(priority, ownerId)`, and publishes one immutable vector **per single
+   path** (`Indexed`, `Primitive`, `IndexedUP`, `PrimitiveUP`; a registration lands in every
+   path its flags include). It also publishes the enabled mods' frame callbacks (§8.7).
 3. Publish via `std::atomic<std::shared_ptr<const vector>>` (C++20 atomic shared_ptr). The
    render thread does one relaxed load per hook call and walks the copy. No lock, no
    per-call `IsOwnerAvailable`.
@@ -470,6 +475,29 @@ void MyMod::OnInitialize(ModContext& c) {
   removed render hooks had (`render-hooks.md`).
 - Neither is caught if it throws, same as interceptors.
 - One of each per mod; registering again replaces it. `RemoveMod` (shutdown, fault) drops both.
+
+### 8.8 Per-draw state changes and the `…UP` draws
+
+An interceptor may change device state for **one draw** and have it put back afterwards:
+
+```cpp
+D3DVIEWPORT9 saved{};
+ctx.device->GetViewport(&saved);
+ctx.device->SetViewport(&narrowed);
+ctx.AfterDraw([device = ctx.device, saved] { device->SetViewport(&saved); });
+return DrawResult{ DrawOutcome::Pass };
+```
+
+Restores run newest-first when the hook's `DrawContext` goes out of scope. That happens after the
+original draw call, and on the `Hide`/`Show` early returns too, so a terminal outcome from a later
+interceptor can't leak the state. Only draws that reach the walk are covered: `Hook_DIP` has a few
+early returns above it.
+
+`DrawPath::IndexedUP` / `PrimitiveUP` are registered and published, but **nothing dispatches them yet**:
+the `DrawPrimitiveUP` / `DrawIndexedPrimitiveUP` hooks arrive with the Ultrawide PR
+(`ultrawide-merge.md`). They get the same walk as `Hook_DP`, with the matching path and
+`VertexStreamZeroStride` as the stride. `Both` deliberately does not include them, so the existing
+mesh-signature interceptors never see user-pointer draws. Opt in with `All` or the UP flags.
 
 ---
 

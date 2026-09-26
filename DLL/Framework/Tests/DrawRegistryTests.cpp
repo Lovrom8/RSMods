@@ -288,6 +288,37 @@ int main() {
 		Check("RemoveMod cancels pending releases and unregisters release callback", modAReleaseCount == 1);
 	}
 
+	// Path flags: UP draws are opt-in, All covers every path, a combined query has no list of its own.
+	{
+		DrawRegistry reg;
+		reg.Register(&modA, "both", 0, DrawPath::Both, [](DrawContext&) { return DrawResult{}; });
+		reg.Register(&modB, "up", 0, DrawPath::PrimitiveUP, [](DrawContext&) { return DrawResult{}; });
+		reg.Register(&modC, "all", 0, DrawPath::All, [](DrawContext&) { return DrawResult{}; });
+		reg.RebuildActive([](const IMod*) { return true; });
+
+		Check("Both reaches Indexed and Primitive", reg.ActiveSnapshot(DrawPath::Indexed)->size() == 2
+			&& reg.ActiveSnapshot(DrawPath::Primitive)->size() == 2);
+		const auto primitiveUp = reg.ActiveSnapshot(DrawPath::PrimitiveUP);
+		Check("PrimitiveUP holds only UP and All registrations", primitiveUp->size() == 2
+			&& (*primitiveUp)[0].ownerId == "ModB" && (*primitiveUp)[1].ownerId == "ModC");
+		const auto indexedUp = reg.ActiveSnapshot(DrawPath::IndexedUP);
+		Check("Both does not opt into UP draws", indexedUp->size() == 1 && (*indexedUp)[0].ownerId == "ModC");
+		Check("combined path query returns an empty list", reg.ActiveSnapshot(DrawPath::Both)->empty());
+	}
+
+	// AfterDraw restores run newest-first when the context ends.
+	{
+		std::vector<int> order;
+		{
+			DrawContext ctx(nullptr, dummyMesh, dummyThicc, DrawPath::Indexed, false);
+			ctx.AfterDraw([&] { order.push_back(1); });
+			ctx.AfterDraw([&] { order.push_back(2); });
+			ctx.AfterDraw(nullptr);
+			Check("restores wait for the context to end", order.empty());
+		}
+		Check("restores run in reverse order", order == std::vector<int>{ 2, 1 });
+	}
+
 	// Frame callbacks follow enabled state; reset callbacks reach every registered mod; RemoveMod drops both.
 	{
 		auto* device = reinterpret_cast<IDirect3DDevice9*>(static_cast<std::uintptr_t>(0x1000));
