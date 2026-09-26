@@ -14,6 +14,7 @@ void Offsets::Initialize() {
 	ptr_disableTrueTuningGate = { {0x004DCCBF, baseHandle + 0x00DD93F } };				// Code | 83 7d 08 00 53 57 74 ? db 45 08 (74 is the byte we want)
 	ptr_tuningText = { {0x00F5F62C, 0x00F6062C} };										// Memory | Copied from loft
 	ptr_guitarSpeak = { {0x00F5F57C, 0x00F6057C} };										// Memory | Copied from timer
+	ptr_noteDetectionFloor = { {0x004DBF79, baseHandle + 0x000DCBF9 } };				// Code | c7 83 f4 11 00 00 18 00 00 00 (we want the 18)
 	func_ForceEnumeration = { {0x008c9cb0, baseHandle + 0x004C9310 } };					// Code | c6 86 dc 00 00 00 01 38 5e 05 (we want addresss of the start of the function)
 	ptr_enumerateService = { { 0xF74E90 } };											// Memory |
 	hookAddr_ModifyLocalized = { {0x005511EB, baseHandle + 0x001524FB } };				// Code | 8b 45 e0 8b ? ? ? ? ? 50 6a 01 51 8d 4d 80 (8b ? near the MOV + DWORD is what we want)

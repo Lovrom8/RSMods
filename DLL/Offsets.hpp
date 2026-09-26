@@ -33,6 +33,9 @@ namespace Offsets {
 	inline VersioningStruct<uintptr_t> ptr_guitarSpeak;
 	extern std::vector<unsigned int> ptr_guitarSpeakOffets;
 
+	// Note Detection
+	inline VersioningStruct<uintptr_t> ptr_noteDetectionFloor;
+
 	// Removed do to access to Wwise calls.
 	//// Mixer Volumes
 	//extern uintptr_t ptr_songVolume;

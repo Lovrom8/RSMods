@@ -157,6 +157,7 @@ namespace ModManager {
 		Offsets::Initialize();
 		BugPrevention::FixModifyingFunctions();
 		ApplyAlwaysOnBugPrevention();
+		QualityOfLife::LowerNoteDetectionFloor(); // Before note detection starts
 		Settings::Initialize();
 		UpdateSettings();
 		ERMode::Initialize();
