@@ -13,7 +13,7 @@ void ScreenShotScoresMod::OnDisabled(ModContext&) {
 	ResetCapture();
 }
 
-void ScreenShotScoresMod::OnMenuTick(ModContext& c) {
+void ScreenShotScoresMod::OnMenuTick(ModContext&) {
 	if (!GameState::Menus::IsInScoreMenus()) {
 		if (!scoreMenu.empty()) {
 			ResetCapture();

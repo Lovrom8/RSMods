@@ -21,8 +21,12 @@ void Offsets::Initialize() {
 	ptr_disableTrueTuning_jmpBck = { {0x004DCCF8, baseHandle + 0x00DD978 } };			// Code | Bytes 33 c0 after the mask below (roughly 0x37 bytes away)
 	ptr_disableTrueTuning_forceTT = { {0x004DCCC1, baseHandle + 0x00DD941 } };			// Code | 83 7d 08 00 53 57 74 ? db 45 08 (db is the byte we want)
 	ptr_disableTrueTuningGate = { {0x004DCCBF, baseHandle + 0x00DD93F } };				// Code | 83 7d 08 00 53 57 74 ? db 45 08 (74 is the byte we want)
+	ptr_tunerTickSlot = { {0x011C2270, baseHandle + 0x00DC3AF0} };					// Static Memory | The tuner menu's vtable, slot 6 (per-frame tick): the only data reference to func_tunerTick
+	func_tunerTick = { {0x0073E210, baseHandle + 0x0033EC60} };						// Code | 55 8b ec 83 e4 c0 83 ec 74 a1 ? ? ? ? 33 c4 89 44 24 70 53 56 57 8b d9 53 e8 (start of function). thiscall, no stack args
+	func_resolveGuitarClass = { {0x00594190, baseHandle + 0x00195620} };				// Code | 55 8b ec 83 e4 f8 83 ec 24 a1 ? ? ? ? 33 c4 89 44 24 20 8b 45 08 8b 0c 85 (start of function, Sept 2022). The player's instrument: 1 guitar, 2 bass. Player index on the stack (Sept 2022), in ECX (Dec 2024)
 	ptr_tuningText = { {0x00F5F62C, 0x00F6062C} };										// Memory | Copied from loft
 	ptr_guitarSpeak = { {0x00F5F57C, 0x00F6057C} };										// Memory | Copied from timer
+	ptr_noteDetectionFloor = { {0x004DBF79, baseHandle + 0x000DCBF9 } };				// Code | c7 83 f4 11 00 00 18 00 00 00 (we want the 18)
 	func_ForceEnumeration = { {0x008c9cb0, baseHandle + 0x004C9310 } };					// Code | c6 86 dc 00 00 00 01 38 5e 05 (we want addresss of the start of the function)
 	ptr_enumerateService = { { 0xF74E90 } };											// Memory |
 	hookAddr_ModifyLocalized = { {0x005511EB, baseHandle + 0x001524FB } };				// Code | 8b 45 e0 8b ? ? ? ? ? 50 6a 01 51 8d 4d 80 (8b ? near the MOV + DWORD is what we want)
@@ -60,11 +64,17 @@ void Offsets::Initialize() {
 	ptr_PnpJmp_2 = { {0x00E7D220, baseHandle + 0x00A7C280 } };							// Code | 89 85 dc fd ff ff 3b 83 34 04 00 00 (opcode after this)
 	ptr_Password_LimitCharacters_Clipboard = { {0x005CF24E, baseHandle + 0x001D03CE} };	// Code | 8d 55 b4 52 8d 45 c8 50 8b ce (opcode before this)
 	ptr_Password_LimitCharacters = { {0x005CF318, baseHandle + 0x001D0498} };			// Code | 8b 43 10 8d 7b 10 8b cb 39 7b 14 (opcode before this)
+	ptr_SaveFilePlatformIdCheck = { {0x007CE5C1, baseHandle + 0x003CF151} };	// Code | 74 2f JZ skips service-ID comparison; patch opcode to EB
 	ptr_AdvancedDisplayCrash = { {0x0091FB73, baseHandle + 0x0051E343} };				// Code | 8a 51 04 57 8b 7e 0c 88 10 2b 01 33 d2 (first opcode)
 	ptr_AdvancedDisplayCrashJmpBck = { {0x0091FB7A, baseHandle + 0x0051E34A} };			// Code | 8a 51 04 57 8b 7e 0c 88 10 2b 01 33 d2 (fourth opcode)
 	ptr_PortAudioInCrash = { {0x00C43AF5, baseHandle + 0x00842C25} };		// Code | 8b 85 c8 fe ff ff 80 b8 df 1b 00 00 00 (two opcodes before this - cmp)
 	ptr_AdditionalAudioDevicesCrash = { { 0x00E7CF70, baseHandle + 0x00A7BFD0 } };   // Code 8b 8d c4 fd ff ff 8b 1c 81
 	ptr_ModdedPtrCrashFix = { {0x0001C640, 0x0001C8A0} };		// Code | 89 46 1c 89 46 2c 89 7e 28 (MOV for ForceSuccess)
+	ptr_ControllerAxisBounds = { {0x005E2080, baseHandle + 0x001E3070} };
+	ptr_ControllerAxisBoundsJmpBck = { {0x005E2086, baseHandle + 0x001E3076} };
+	ptr_InvalidInputTreeRootCheck = { {0x0092DB50, baseHandle + 0x00570130} };
+	ptr_InvalidInputTreeRootJmpBck = { {0x0092DB58, baseHandle + 0x00570138} };
+	ptr_InvalidInputTreeRootEmptyJmpBck = { {0x0092DBF0, baseHandle + 0x005701D0} };
 	ptr_IsWindowInFocus = { {0x1251A78, baseHandle + 0x00E52A78} };						// Static Memory | 00 00 00 80 01 00 00 00 04 00 00 00 01 00 00 00 (second variable)
 	ptr_WindowNotInFocusValue = { {0xEC5D46, baseHandle + 0x00AC5496} };    // Code | c6 05 78 2a 02 01 00 (we want to change that 00 to an 01).
 
@@ -115,6 +125,35 @@ void Offsets::Initialize() {
 	// buffer to the current framerate, even though the buffer is a fixed 100 floats per player.
 	ptr_calibrationSampleCountClamp = { {0x005EA378, baseHandle + 0x001EADF1} };		// Code | d9 81 c0 00 00 00 d9 e8 de f1 (0x4D bytes after the first byte in the mask - the 10 byte load + store pair 8b 54 24 10 89 93 88 07 00 00)
 	ptr_calibrationSampleCountClampJmpBck = { {0x005EA382, baseHandle + 0x001EADFB} };	// Code | ptr_calibrationSampleCountClamp + 0xA, the first byte after the 10 stolen ones (d9 6c 24 0e)
+
+	// Large profile save / load. All of these sit in the profile JSON writer, the PRFLDB writer (the function that
+	// compresses, encrypts and writes the file) and the profile load.
+	ptr_profileSaveCloneSection = { {0x0089709F, baseHandle + 0x00496C50} };			// Code | 8b 13 8b 52 10 8d 45 cc 50 8b cb ff d2 (first opcode - the section->Clone() vcall)
+	ptr_profileSaveCloneSectionJmpBck = { {0x008970E0, baseHandle + 0x00496C91} };		// Code | 8b 13 8b 42 04 8b cb ff d0 8b 7d c8 (first opcode - section->Release())
+	ptr_profileSavePrintRoot = { {0x00897162, baseHandle + 0x00496D13} };				// Code | 8b 45 c4 8b 13 8b 52 68 6a 00 50 68 (first opcode - root->Print())
+	ptr_profileSavePrintRootJmpBck = { {0x0089717B, baseHandle + 0x00496D2C} };		// Code | 8b 03 8b 50 04 8b cb ff d2 8b 4d d4 (first opcode - root->Release())
+	ptr_profileSaveCompressBoundCall = { {0x007CE0F7, baseHandle + 0x003CEC87} };		// Code | 8b 4d 0c 51 e8 ? ? ? ? 83 c4 04 89 45 d4 83 c0 24 (the e8)
+	ptr_profileSaveCompress2Call = { {0x007CE147, baseHandle + 0x003CECD7} };			// Code | 8b 4d d8 51 8d 55 d4 8d 46 14 52 50 e8 ? ? ? ? 83 c4 14 (the e8)
+	func_profileJsonWriter = { {0x007CDCD0, baseHandle + 0x00496B10} };				// Code | Pushed as the first callback to root->Print() in the profile JSON writer (push imm32 right after push 0 / push eax)
+	func_zlibDeflateInit = { {0x00E351D0, baseHandle + 0x00A34250} };					// Code | zlib 1.2.7 deflateInit_, first call in compress2
+	func_zlibDeflate = { {0x00E34720, baseHandle + 0x00A337A0} };						// Code | zlib 1.2.7 deflate, second call in compress2
+	func_zlibDeflateEnd = { {0x00E33500, baseHandle + 0x00A32580} };					// Code | zlib 1.2.7 deflateEnd, third call in compress2
+	ptr_profileLoadClearDocument = { {0x007CDABE, baseHandle + 0x003CE6BE} };			// Code | 8b 56 14 8d 4e 10 88 45 0f (first opcode, right after the profile parse)
+	ptr_profileLoadClearDocumentJmpBck = { {0x007CDAE7, baseHandle + 0x003CE6E7} };	// Code | 80 7d 0f 00 75 0e c7 47 08 04 00 00 00 (first opcode)
+	func_engineStringDestroy = { {0x0085C810, baseHandle + 0x00555910} };				// Code | 8b 41 14 8d 51 10 3b c2 74 3e 56 8b 31 85 f6 74 36 (start of function)
+	ptr_profileLoadTick = { {0x008CB326, baseHandle + 0x004CA986} };					// Code | 80 7b 68 00 0f 84 ? ? ? ? 83 3d (the 83 3d - the profile tick's start / wait / finish block)
+	ptr_profileLoadTickJmpBck = { {0x008CB418, baseHandle + 0x004CAA78} };			// Code | Target of the 0f 84 above (8b 8c 24 10 01 00 00, the epilogue)
+	ptr_profileAdapter = { {0x01374E94, baseHandle + 0x00F75E94} };			// Static Memory | The dword compared by the 83 3d above
+	ptr_gameServices = { {0x0135FBFC, baseHandle + 0x00F60BFC} };						// Static Memory | Same global as func_ecxAddress (game services, save manager at +0x30)
+	ptr_profileParseCall = { {0x00896CDC, baseHandle + 0x0049681C} };				// Code | 8d 54 24 10 52 8d 44 24 2c 6a 00 50 e8 (the e8 - the JSON parse in the profile parse)
+	ptr_profileSaveCall = { {0x007CD730, baseHandle + 0x003CE330} };		// Code | 8b ce c7 46 08 00 00 00 00 c7 46 0c 00 00 00 00 c7 46 10 00 00 00 00 e8 (the e8 - the profile save call)
+	func_jsonNumberHash = { {0x0087FEF0, baseHandle + 0x00480650} };				// Code | 55 8b ec 83 ec 10 dd 00 68 1d f3 01 00 d9 7d fe (start of function - hashes a double in EAX)
+	func_jsonNumberTableRehash = { {0x008800E0, baseHandle + 0x00480880} };		// Code | 55 8b ec 8b 47 08 d9 47 28 db 47 08 (start of function - the one the number table's insert calls; table in EDI)
+	ptr_jsonNumberTable = { {0x013604C8, baseHandle + 0x00F614C8} };				// Static Memory | a1 ? ? ? ? after the EnterCriticalSection in the number intern function
+	ptr_jsonNumberTableLock = { {0x01358154, baseHandle + 0x00F59154} };			// Static Memory | 8b 35 ? ? ? ? at the start of the number intern function
+	func_getAllocatorOwner = { {0x0091FFA0, baseHandle + 0x0051E770} };				// Code | 80 3d ? ? ? ? 00 74 06 a1 ? ? ? ? c3 f6 05 (start of function - returns the allocator owner in EAX)
+	func_playnextTrim = { {0x0056DF00, baseHandle + 0x0016F690} };	// Code | 55 8b ec 83 ec 18 53 56 8d 45 f8 57 50 8b 45 08 e8 (start of function - the PlaynextStats trim)
+	func_profileSongs = { {0x0056D9D0, baseHandle + 0x0016F170} };			// Code | The e8 at the end of the pattern above (finds the profile's songs - profile id in EAX, out pointer on the stack)
 }
 
 namespace Offsets { // Addresses for pre-2021 patch are in the comments
@@ -136,7 +175,8 @@ namespace Offsets { // Addresses for pre-2021 patch are in the comments
 	std::vector<unsigned int> ptr_tuningTextOffsets{ 0x28, 0x44, 0x0 };
 
 	// Current Note (Midi value: https://djip.co/w/wp-content/uploads/drupal/blog/logic-midi-note-numbers.png | 0 - 96 are used in Rocksmith).
-	std::vector<unsigned int> ptr_guitarSpeakOffets{ 0x10, 0x4, 0x5FC };
+	// Which offset from here holds the note depends on guitar or bass; see GuitarSpeak::GetCurrentNote.
+	std::vector<unsigned int> ptr_guitarSpeakOffets{ 0x10, 0x4, 0x0 };
 
 	// Removed do to access to Wwise calls.
 	//// Mixer Volumes - the game uses 0x08 as the last offset for those mixer related things, so that could help with reducing pointerscan results - but I forgot about that, so only one of those uses 0x08 :P 

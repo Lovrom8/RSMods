@@ -1,10 +1,10 @@
-﻿#include "../../stdafx.h"
+#include "../../stdafx.h"
 #include "ZoomEffect.hpp"
 
 using namespace CrowdControl::Enums;
 
 namespace CrowdControl::Effects {
-	Enums::EffectStatus ZoomEffect::Test(const Structs::Request& request)
+	Enums::EffectStatus ZoomEffect::Test(const Structs::Request&)
 	{
 		LOG_INFO("ZoomEffect::Test()" << std::endl);
 

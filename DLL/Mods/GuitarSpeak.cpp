@@ -13,14 +13,17 @@ Open source here: https://github.com/uklooney/G2RS
 /// </summary>
 /// <returns>Current Note (MIDI Number)</returns>
 byte GuitarSpeak::GetCurrentNote() {
-	uintptr_t noteAdr = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_guitarSpeak, Offsets::ptr_guitarSpeakOffets);
+	uintptr_t noteBase = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_guitarSpeak, Offsets::ptr_guitarSpeakOffets);
 
-	if (!noteAdr) { //TODO: check the address 
+	if (!noteBase) { //TODO: check the address 
 		//LOG_ERROR("(GS) Note Address can't be found!" << std::endl);
 		return (BYTE)noNote;
 	}
 
-	return *(byte*)noteAdr;
+	// The game keeps the note for bass at a different spot than for guitar. +0x11EC is 2 when it's listening for a bass.
+	// Reading the guitar note while playing bass gave wrong notes.
+	const bool bass = *(int*)(noteBase + 0x11EC) == 2;
+	return *(byte*)(noteBase + (bass ? 0x5F4 : 0x5FC));
 }
 
 /// <summary>
@@ -108,7 +111,7 @@ bool GuitarSpeak::RunGuitarSpeak() {
 
 		newNote = false;
 
-		if (buttonToPress.c_str() != "") {
+		if (!buttonToPress.empty()) {
 
 			// We should send a keystroke, and the key being pressed isn't null.
 			if (sendKeystrokesToRS2014) { 

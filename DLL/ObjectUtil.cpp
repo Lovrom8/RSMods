@@ -27,8 +27,9 @@ namespace ObjectUtil {
 
 			for (size_t i = 0; i < parent->childCount; i++)
 			{
-				if (childrenArray[i] != nullptr) {
-					children.push_back(parent->children[i]);
+				Object* child = childrenArray[i];
+				if (child != nullptr) {
+					children.push_back(child);
 				}
 			}
 		}
@@ -54,7 +55,7 @@ namespace ObjectUtil {
 
 		for (auto child : children)
 		{
-			if (!child->className || MemUtil::IsBadReadPtr(child->className))
+			if (!child || !child->className || MemUtil::IsBadReadPtr(child->className))
 			{
 				continue;
 			}

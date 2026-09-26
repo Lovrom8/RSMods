@@ -31,11 +31,19 @@ namespace Offsets {
 
 	// Tuning - Textual Form
 	inline VersioningStruct<uintptr_t> ptr_tuningText;
+
+	// Tuner menu: its per-frame tick, hooked to find the open tuner and read the arrangement's tuning from it
+	inline VersioningStruct<uintptr_t> ptr_tunerTickSlot;
+	inline VersioningStruct<uintptr_t> func_tunerTick;
+	inline VersioningStruct<uintptr_t> func_resolveGuitarClass;
 	extern std::vector<unsigned int> ptr_tuningTextOffsets;
 
 	// Current Note (Midi value: https://djip.co/w/wp-content/uploads/drupal/blog/logic-midi-note-numbers.png | 0 - 96 are used in Rocksmith).
 	inline VersioningStruct<uintptr_t> ptr_guitarSpeak;
 	extern std::vector<unsigned int> ptr_guitarSpeakOffets;
+
+	// Note Detection
+	inline VersioningStruct<uintptr_t> ptr_noteDetectionFloor;
 
 	// Removed do to access to Wwise calls.
 	//// Mixer Volumes
@@ -154,11 +162,17 @@ namespace Offsets {
 	inline VersioningStruct<uintptr_t> ptr_PnpJmp_2;
 	inline VersioningStruct<uintptr_t> ptr_Password_LimitCharacters_Clipboard;
 	inline VersioningStruct<uintptr_t> ptr_Password_LimitCharacters;
+	inline VersioningStruct<uintptr_t> ptr_SaveFilePlatformIdCheck;
 	inline VersioningStruct<uintptr_t> ptr_AdvancedDisplayCrash;
 	inline VersioningStruct<uintptr_t> ptr_AdvancedDisplayCrashJmpBck;
 	inline VersioningStruct<uintptr_t> ptr_PortAudioInCrash; 
 	inline VersioningStruct<uintptr_t> ptr_AdditionalAudioDevicesCrash;
 	inline VersioningStruct<uintptr_t> ptr_ModdedPtrCrashFix;
+	inline VersioningStruct<uintptr_t> ptr_ControllerAxisBounds;
+	inline VersioningStruct<uintptr_t> ptr_ControllerAxisBoundsJmpBck;
+	inline VersioningStruct<uintptr_t> ptr_InvalidInputTreeRootCheck;
+	inline VersioningStruct<uintptr_t> ptr_InvalidInputTreeRootJmpBck;
+	inline VersioningStruct<uintptr_t> ptr_InvalidInputTreeRootEmptyJmpBck;
 
 	// Audio In Background
 	inline VersioningStruct<uintptr_t> ptr_IsWindowInFocus;
@@ -212,6 +226,34 @@ namespace Offsets {
 	// Calibration meter volume sample count
 	inline VersioningStruct<uintptr_t> ptr_calibrationSampleCountClamp;
 	inline VersioningStruct<uintptr_t> ptr_calibrationSampleCountClampJmpBck;
+
+	// Large profile save / load
+	inline VersioningStruct<uintptr_t> ptr_profileSaveCloneSection;
+	inline VersioningStruct<uintptr_t> ptr_profileSaveCloneSectionJmpBck;
+	inline VersioningStruct<uintptr_t> ptr_profileSavePrintRoot;
+	inline VersioningStruct<uintptr_t> ptr_profileSavePrintRootJmpBck;
+	inline VersioningStruct<uintptr_t> ptr_profileSaveCompressBoundCall;
+	inline VersioningStruct<uintptr_t> ptr_profileSaveCompress2Call;
+	inline VersioningStruct<uintptr_t> func_profileJsonWriter;
+	inline VersioningStruct<uintptr_t> func_zlibDeflateInit;
+	inline VersioningStruct<uintptr_t> func_zlibDeflate;
+	inline VersioningStruct<uintptr_t> func_zlibDeflateEnd;
+	inline VersioningStruct<uintptr_t> ptr_profileLoadClearDocument;
+	inline VersioningStruct<uintptr_t> ptr_profileLoadClearDocumentJmpBck;
+	inline VersioningStruct<uintptr_t> func_engineStringDestroy;
+	inline VersioningStruct<uintptr_t> ptr_profileLoadTick;
+	inline VersioningStruct<uintptr_t> ptr_profileLoadTickJmpBck;
+	inline VersioningStruct<uintptr_t> ptr_profileAdapter;
+	inline VersioningStruct<uintptr_t> ptr_gameServices;
+	inline VersioningStruct<uintptr_t> ptr_profileParseCall;
+	inline VersioningStruct<uintptr_t> ptr_profileSaveCall;
+	inline VersioningStruct<uintptr_t> func_jsonNumberHash;
+	inline VersioningStruct<uintptr_t> func_jsonNumberTableRehash;
+	inline VersioningStruct<uintptr_t> ptr_jsonNumberTable;
+	inline VersioningStruct<uintptr_t> ptr_jsonNumberTableLock;
+	inline VersioningStruct<uintptr_t> func_getAllocatorOwner;
+	inline VersioningStruct<uintptr_t> func_playnextTrim;
+	inline VersioningStruct<uintptr_t> func_profileSongs;
 
 	// Runtime data.
 	inline uintptr_t runtimeVersionStructValue;

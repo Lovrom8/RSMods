@@ -1,4 +1,4 @@
-﻿#include "../../stdafx.h"
+#include "../../stdafx.h"
 #include "ShuffleTonesEffect.hpp"
 #include "../../Keyboard.hpp"
 
@@ -9,7 +9,7 @@ namespace CrowdControl::Effects { // Scales notes in a song to unusually small s
 	/// </summary>
 	/// <param name="request"> - JSON Request</param>
 	/// <returns>Enums::EffectStatus::Success if test completed without any issues. Enums::EffectStatus::Retry if we have to retry.</returns>
-	Enums::EffectStatus ShuffleTonesEffect::Test(const Structs::Request& request)
+	Enums::EffectStatus ShuffleTonesEffect::Test(const Structs::Request&)
 	{
 		LOG_INFO("ShuffleTonesEffect::Test()" << std::endl);
 
@@ -38,12 +38,12 @@ namespace CrowdControl::Effects { // Scales notes in a song to unusually small s
 	/// Change the tone to a random (int) value 1-4
 	/// </summary>
 	void SwitchToneRand() {
-		static std::random_device rd;
-		static std::mt19937 rng(rd());
+		static std::random_device toneRd;
+		static std::mt19937 toneRng(toneRd());
 
 		std::uniform_int_distribution<> distrib(1, 4);
 
-		Keyboard::SendKey(Settings::GetVKCodeForString(std::to_string(distrib(rng))));
+		Keyboard::SendKey(Settings::GetVKCodeForString(std::to_string(distrib(toneRng))));
 	}
 
 	/// <summary>

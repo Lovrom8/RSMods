@@ -1,0 +1,36 @@
+#include <winver.h>
+#include "Version.h"
+#include "GitVersion.h"
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION RSMODS_VERSION_COMMA
+ PRODUCTVERSION RSMODS_VERSION_COMMA
+ FILEFLAGSMASK VS_FFI_FILEFLAGSMASK
+#ifdef _DEBUG
+ FILEFLAGS VS_FF_DEBUG
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS VOS_NT_WINDOWS32
+ FILETYPE VFT_DLL
+ FILESUBTYPE VFT2_UNKNOWN
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904B0"
+        BEGIN
+            VALUE "CompanyName", "RSMods\0"
+            VALUE "Comments", "Git commit " RSMODS_GIT_HASH "\0"
+            VALUE "FileDescription", "RSMods for Rocksmith 2014\0"
+            VALUE "FileVersion", RSMODS_BUILD_VERSION_STRING "\0"
+            VALUE "InternalName", "RSMods\0"
+            VALUE "OriginalFilename", "xinput1_3.dll\0"
+            VALUE "ProductName", "RSMods\0"
+            VALUE "ProductVersion", RSMODS_BUILD_VERSION_STRING "\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x0409, 1200
+    END
+END

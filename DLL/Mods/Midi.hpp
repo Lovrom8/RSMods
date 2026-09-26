@@ -5,6 +5,8 @@
 #include <mmeapi.h>
 
 namespace Midi {
+	constexpr char kUnusedMidiSelector = static_cast<char>(-1);
+
 	void InitMidi();
 	void AutomateTuning();
 	void AttemptTuningInTuner();
@@ -12,8 +14,8 @@ namespace Midi {
 	void SendDataToThread_PC(char program, bool shouldWeSendPC = true);
 	void SendDataToThread_CC(char toePosition, bool shouldWeSendCC = true);
 	void ReadMidiSettingsFromINI(const std::string& ChordsMode, int PedalToUse, const std::string& MidiOutDevice, const std::string& MidiInDevice);
-	bool SendProgramChange(char programChange = '\000', char alternativeChannel = 255);
-	bool SendControlChange(char toePosition = '\000', char alternativeBank = 255, char alternativeChannel = 255);
+	bool SendProgramChange(char programChange = '\000', char alternativeChannel = kUnusedMidiSelector);
+	bool SendControlChange(char toePosition = '\000', char alternativeBank = kUnusedMidiSelector, char alternativeChannel = kUnusedMidiSelector);
 	std::string GetTuningOffsetName(int offset);
 	bool IsValidMidiMessage(std::vector<unsigned char>* message);
 	unsigned WINAPI ListenToMidiInThread();
@@ -32,6 +34,7 @@ namespace Midi {
 	inline int dataToSendPC = 0, dataToSendCC = 0, lastCC = 0, lastPC = 666;
 	inline int lastPC_TUNING = 0; // Only use if the song requires a tuning change AND a true tuning. (Hendrix Eb Standard)
 	inline bool alreadyAttemptedTuningInTuner = false, alreadyAutomatedTuningInThisSong = false, alreadyAutomatedTrueTuningInThisSong = false, userWantsToUseAutoTuning = false;
+	inline bool tunerAutoTuneFailed = false; // The tuner was shown but couldn't be read, so the player tuned by hand. Cleared when the song ends or the next tuner opens.
 	// Latches once we auto-tune in the pre-song tuner and is never reset for the process lifetime.
 	inline bool appliedTunerAutoTune = false;
 	inline int sleepFor = 33; // Sleep for 33ms or ~ 1/33rd of a second.
@@ -49,59 +52,63 @@ namespace Midi {
 		// System commands start at 0xF0
 	};
 
+	constexpr char AsMidiByte(int value) noexcept {
+		return static_cast<char>(value);
+	};
+
 	namespace Digitech {
 		namespace WhammyDT {
 			inline std::map<char, char> activeBypassMap = {
 
 				// Whammy
-				{0, 21}, // +2 OCT
-				{1, 22}, // +1 OCT
-				{2, 23}, // +5th
-				{3, 24}, // +4th
-				{4, 25}, // -2nd
-				{5, 26}, // -4th
-				{6, 27}, // -5th
-				{7, 28}, // -1 OCT
-				{8, 29}, // -2 OCT
-				{9, 30}, // Dive Bomb
+				{AsMidiByte(0), AsMidiByte(21)}, // +2 OCT
+				{AsMidiByte(1), AsMidiByte(22)}, // +1 OCT
+				{AsMidiByte(2), AsMidiByte(23)}, // +5th
+				{AsMidiByte(3), AsMidiByte(24)}, // +4th
+				{AsMidiByte(4), AsMidiByte(25)}, // -2nd
+				{AsMidiByte(5), AsMidiByte(26)}, // -4th
+				{AsMidiByte(6), AsMidiByte(27)}, // -5th
+				{AsMidiByte(7), AsMidiByte(28)}, // -1 OCT
+				{AsMidiByte(8), AsMidiByte(29)}, // -2 OCT
+				{AsMidiByte(9), AsMidiByte(30)}, // Dive Bomb
 
 				// Detune
-				{10, 31}, // Deep
-				{11, 32}, // Shallow
+				{AsMidiByte(10), AsMidiByte(31)}, // Deep
+				{AsMidiByte(11), AsMidiByte(32)}, // Shallow
 
 				// Harmony (Up Pos || Down Pos)
-				{12, 33}, // +2nd || +3rd
-				{13, 34}, // +b 3rd || +3rd
-				{14, 35}, // +3rd || +4th
-				{15, 36}, // +4th || +5th
-				{16, 37}, // +5th || +6th
-				{17, 38}, // +5th || +7th
-				{18, 39}, // -4th || -3rd
-				{19, 40}, // -5th || -4th
-				{20, 41}, // -1 OCT || +1 OCT
+				{AsMidiByte(12), AsMidiByte(33)}, // +2nd || +3rd
+				{AsMidiByte(13), AsMidiByte(34)}, // +b 3rd || +3rd
+				{AsMidiByte(14), AsMidiByte(35)}, // +3rd || +4th
+				{AsMidiByte(15), AsMidiByte(36)}, // +4th || +5th
+				{AsMidiByte(16), AsMidiByte(37)}, // +5th || +6th
+				{AsMidiByte(17), AsMidiByte(38)}, // +5th || +7th
+				{AsMidiByte(18), AsMidiByte(39)}, // -4th || -3rd
+				{AsMidiByte(19), AsMidiByte(40)}, // -5th || -4th
+				{AsMidiByte(20), AsMidiByte(41)}, // -1 OCT || +1 OCT
 
 				// Drop Tune Effect
-				{42, 60}, // +1
-				{43, 61}, // +2
-				{44, 62}, // +3
-				{45, 63}, // +4
-				{46, 64}, // +5
-				{47, 65}, // +6
-				{48, 66}, // +7
-				{49, 67}, // +OCT
-				{50, 68}, // +OCT + Dry
+				{AsMidiByte(42), AsMidiByte(60)}, // +1
+				{AsMidiByte(43), AsMidiByte(61)}, // +2
+				{AsMidiByte(44), AsMidiByte(62)}, // +3
+				{AsMidiByte(45), AsMidiByte(63)}, // +4
+				{AsMidiByte(46), AsMidiByte(64)}, // +5
+				{AsMidiByte(47), AsMidiByte(65)}, // +6
+				{AsMidiByte(48), AsMidiByte(66)}, // +7
+				{AsMidiByte(49), AsMidiByte(67)}, // +OCT
+				{AsMidiByte(50), AsMidiByte(68)}, // +OCT + Dry
 
-				{51, 69}, // -OCT + Dry || Nice :eyes:
-				{52, 70}, // -OCT
-				{53, 71}, // -7
-				{54, 72}, // -6
-				{55, 73}, // -5
-				{56, 74}, // -4
-				{57, 75}, // -3
-				{58, 76}, // -2
-				{59, 77}, // -1
+				{AsMidiByte(51), AsMidiByte(69)}, // -OCT + Dry || Nice :eyes:
+				{AsMidiByte(52), AsMidiByte(70)}, // -OCT
+				{AsMidiByte(53), AsMidiByte(71)}, // -7
+				{AsMidiByte(54), AsMidiByte(72)}, // -6
+				{AsMidiByte(55), AsMidiByte(73)}, // -5
+				{AsMidiByte(56), AsMidiByte(74)}, // -4
+				{AsMidiByte(57), AsMidiByte(75)}, // -3
+				{AsMidiByte(58), AsMidiByte(76)}, // -2
+				{AsMidiByte(59), AsMidiByte(77)}, // -1
 
-				{78, 78} // NULL (Use for E Standard / other tunings that can't be used on the pedal)
+				{AsMidiByte(78), AsMidiByte(78)} // NULL (Use for E Standard / other tunings that can't be used on the pedal)
 			};
 
 			inline std::vector<float> semiTones = {
@@ -120,60 +127,60 @@ namespace Midi {
 				// Classic Mode
 
 				// Whammy
-				{1, 22}, // +2 OCT
-				{2, 23}, // +1 OCT
-				{3, 24}, // +5th
-				{4, 25}, // +4th
-				{5, 26}, // +2nd
-				{6, 27}, // -2nd
-				{7, 28}, // -4th
-				{8, 29}, // -5th
-				{9, 30}, // -1 OCT
-				{10, 31}, // Dive Bomb
+				{AsMidiByte(1), AsMidiByte(22)}, // +2 OCT
+				{AsMidiByte(2), AsMidiByte(23)}, // +1 OCT
+				{AsMidiByte(3), AsMidiByte(24)}, // +5th
+				{AsMidiByte(4), AsMidiByte(25)}, // +4th
+				{AsMidiByte(5), AsMidiByte(26)}, // +2nd
+				{AsMidiByte(6), AsMidiByte(27)}, // -2nd
+				{AsMidiByte(7), AsMidiByte(28)}, // -4th
+				{AsMidiByte(8), AsMidiByte(29)}, // -5th
+				{AsMidiByte(9), AsMidiByte(30)}, // -1 OCT
+				{AsMidiByte(10), AsMidiByte(31)}, // Dive Bomb
 
 				// Detune
-				{11, 32}, // Deep
-				{12, 33}, // Shallow
+				{AsMidiByte(11), AsMidiByte(32)}, // Deep
+				{AsMidiByte(12), AsMidiByte(33)}, // Shallow
 
 				// Harmony (Up Pos || Down Pos)
-				{13, 34}, // -4th || +3rd
-				{14, 35}, // -4th || +5th
-				{15, 36}, // -5th || +5th
-				{16, 37}, // +5th || +6th
-				{17, 38}, // +5th || +OCT
-				{18, 39}, // -OCT || -4th
-				{19, 40}, // -OCT || +OCT
-				{20, 41}, // +OCT || +10th
-				{21, 42}, // +1 OCT || +2 OCT
+				{AsMidiByte(13), AsMidiByte(34)}, // -4th || +3rd
+				{AsMidiByte(14), AsMidiByte(35)}, // -4th || +5th
+				{AsMidiByte(15), AsMidiByte(36)}, // -5th || +5th
+				{AsMidiByte(16), AsMidiByte(37)}, // +5th || +6th
+				{AsMidiByte(17), AsMidiByte(38)}, // +5th || +OCT
+				{AsMidiByte(18), AsMidiByte(39)}, // -OCT || -4th
+				{AsMidiByte(19), AsMidiByte(40)}, // -OCT || +OCT
+				{AsMidiByte(20), AsMidiByte(41)}, // +OCT || +10th
+				{AsMidiByte(21), AsMidiByte(42)}, // +1 OCT || +2 OCT
 
 				// Chords Mode
 
 				// Whammy
-				{43, 64}, // +2 OCT
-				{44, 65}, // +1 OCT
-				{45, 66}, // +5th
-				{46, 67}, // +4th
-				{47, 68}, // +2nd
-				{48, 69}, // -2nd
-				{49, 70}, // -4th
-				{50, 71}, // -5th
-				{51, 72}, // -1 OCT
-				{52, 73}, // Dive Bomb
+				{AsMidiByte(43), AsMidiByte(64)}, // +2 OCT
+				{AsMidiByte(44), AsMidiByte(65)}, // +1 OCT
+				{AsMidiByte(45), AsMidiByte(66)}, // +5th
+				{AsMidiByte(46), AsMidiByte(67)}, // +4th
+				{AsMidiByte(47), AsMidiByte(68)}, // +2nd
+				{AsMidiByte(48), AsMidiByte(69)}, // -2nd
+				{AsMidiByte(49), AsMidiByte(70)}, // -4th
+				{AsMidiByte(50), AsMidiByte(71)}, // -5th
+				{AsMidiByte(51), AsMidiByte(72)}, // -1 OCT
+				{AsMidiByte(52), AsMidiByte(73)}, // Dive Bomb
 
 				// Detune
-				{53, 74}, // Deep
-				{54, 75}, // Shallow
+				{AsMidiByte(53), AsMidiByte(74)}, // Deep
+				{AsMidiByte(54), AsMidiByte(75)}, // Shallow
 
 				// Harmony (Up Pos || Down Pos)
-				{55, 76}, // -4th || +3rd
-				{56, 77}, // -4th || +5th
-				{57, 78}, // -5th || +5th
-				{58, 79}, // +5th || +6th
-				{59, 80}, // +5th || +OCT
-				{60, 81}, // -OCT || -4th
-				{61, 82}, // -OCT || +OCT
-				{62, 83}, // +OCT || +10th
-				{63, 84}, // +1 OCT || +2 OCT
+				{AsMidiByte(55), AsMidiByte(76)}, // -4th || +3rd
+				{AsMidiByte(56), AsMidiByte(77)}, // -4th || +5th
+				{AsMidiByte(57), AsMidiByte(78)}, // -5th || +5th
+				{AsMidiByte(58), AsMidiByte(79)}, // +5th || +6th
+				{AsMidiByte(59), AsMidiByte(80)}, // +5th || +OCT
+				{AsMidiByte(60), AsMidiByte(81)}, // -OCT || -4th
+				{AsMidiByte(61), AsMidiByte(82)}, // -OCT || +OCT
+				{AsMidiByte(62), AsMidiByte(83)}, // +OCT || +10th
+				{AsMidiByte(63), AsMidiByte(84)}, // +1 OCT || +2 OCT
 			};
 
 			inline std::vector<float> semiTones = {
@@ -192,26 +199,26 @@ namespace Midi {
 				// Classic Mode
 
 				// Detune
-				{1, 18}, // Shallow
-				{2, 19}, // Deep
+				{AsMidiByte(1), AsMidiByte(18)}, // Shallow
+				{AsMidiByte(2), AsMidiByte(19)}, // Deep
 
-				{3, 20}, // +2 OCT
-				{4, 21}, // +1 OCT
-				{5, 22}, // -1 OCT
-				{6, 23}, // -2 OCT
-				{7, 24}, // Dive Bomb  (-3 OCT)
-				{8, 25}, // Drop Tune (- 2 semitones || OPPOSITE)
+				{AsMidiByte(3), AsMidiByte(20)}, // +2 OCT
+				{AsMidiByte(4), AsMidiByte(21)}, // +1 OCT
+				{AsMidiByte(5), AsMidiByte(22)}, // -1 OCT
+				{AsMidiByte(6), AsMidiByte(23)}, // -2 OCT
+				{AsMidiByte(7), AsMidiByte(24)}, // Dive Bomb  (-3 OCT)
+				{AsMidiByte(8), AsMidiByte(25)}, // Drop Tune (- 2 semitones || OPPOSITE)
 
 				// Harmony (Up Pos || Down Pos)
-				{9, 26}, // -OCT || +OCT
-				{10, 27}, // -5th || -4th
-				{11, 28}, // -4th || -3rd
-				{12, 29}, // +5th || +7th
-				{13, 30}, // +5th || +6th
-				{14, 31}, // +4th || +5th
-				{15, 32}, // +3rd || +4th
-				{16, 33}, // +b3rd || +3rd
-				{17, 34}, // +2nd || +3rd
+				{AsMidiByte(9), AsMidiByte(26)}, // -OCT || +OCT
+				{AsMidiByte(10), AsMidiByte(27)}, // -5th || -4th
+				{AsMidiByte(11), AsMidiByte(28)}, // -4th || -3rd
+				{AsMidiByte(12), AsMidiByte(29)}, // +5th || +7th
+				{AsMidiByte(13), AsMidiByte(30)}, // +5th || +6th
+				{AsMidiByte(14), AsMidiByte(31)}, // +4th || +5th
+				{AsMidiByte(15), AsMidiByte(32)}, // +3rd || +4th
+				{AsMidiByte(16), AsMidiByte(33)}, // +b3rd || +3rd
+				{AsMidiByte(17), AsMidiByte(34)}, // +2nd || +3rd
 			};
 			inline std::vector<float> semiTones = {
 				24.0f, 12.0f, -12.0f, -24.0f, -36.0f
@@ -225,60 +232,60 @@ namespace Midi {
 				// Classic Mode
 
 				// Whammy
-				{1, 22}, // +2 OCT
-				{2, 23}, // +1 OCT
-				{3, 24}, // +5th
-				{4, 25}, // +4th
-				{5, 26}, // -2nd
-				{6, 27}, // -4th
-				{7, 28}, // -5th
-				{8, 29}, // -1 OCT
-				{9, 30}, // -2 OCT
-				{10, 31}, // Dive Bomb
+				{AsMidiByte(1), AsMidiByte(22)}, // +2 OCT
+				{AsMidiByte(2), AsMidiByte(23)}, // +1 OCT
+				{AsMidiByte(3), AsMidiByte(24)}, // +5th
+				{AsMidiByte(4), AsMidiByte(25)}, // +4th
+				{AsMidiByte(5), AsMidiByte(26)}, // -2nd
+				{AsMidiByte(6), AsMidiByte(27)}, // -4th
+				{AsMidiByte(7), AsMidiByte(28)}, // -5th
+				{AsMidiByte(8), AsMidiByte(29)}, // -1 OCT
+				{AsMidiByte(9), AsMidiByte(30)}, // -2 OCT
+				{AsMidiByte(10), AsMidiByte(31)}, // Dive Bomb
 
 				// Detune
-				{11, 32}, // Deep
-				{12, 33}, // Shallow
+				{AsMidiByte(11), AsMidiByte(32)}, // Deep
+				{AsMidiByte(12), AsMidiByte(33)}, // Shallow
 
 				// Harmony (Up Pos || Down Pos)
-				{13, 34}, // -4th || +3rd
-				{14, 35}, // -4th || +5th
-				{15, 36}, // -5th || +5th
-				{16, 37}, // +5th || +6th
-				{17, 38}, // +5th || +OCT
-				{18, 39}, // -OCT || -4th
-				{19, 40}, // -OCT || +OCT
-				{20, 41}, // +OCT || +10th
-				{21, 42}, // +1 OCT || +2 OCT
+				{AsMidiByte(13), AsMidiByte(34)}, // -4th || +3rd
+				{AsMidiByte(14), AsMidiByte(35)}, // -4th || +5th
+				{AsMidiByte(15), AsMidiByte(36)}, // -5th || +5th
+				{AsMidiByte(16), AsMidiByte(37)}, // +5th || +6th
+				{AsMidiByte(17), AsMidiByte(38)}, // +5th || +OCT
+				{AsMidiByte(18), AsMidiByte(39)}, // -OCT || -4th
+				{AsMidiByte(19), AsMidiByte(40)}, // -OCT || +OCT
+				{AsMidiByte(20), AsMidiByte(41)}, // +OCT || +10th
+				{AsMidiByte(21), AsMidiByte(42)}, // +1 OCT || +2 OCT
 
 				// Chords Mode
 
 				// Whammy
-				{43, 64}, // +2 OCT
-				{44, 65}, // +1 OCT
-				{45, 66}, // +5th
-				{46, 67}, // +4th
-				{47, 68}, // +2nd
-				{48, 69}, // -2nd
-				{49, 70}, // -4th
-				{50, 71}, // -5th
-				{51, 72}, // -1 OCT
-				{52, 73}, // Dive Bomb
+				{AsMidiByte(43), AsMidiByte(64)}, // +2 OCT
+				{AsMidiByte(44), AsMidiByte(65)}, // +1 OCT
+				{AsMidiByte(45), AsMidiByte(66)}, // +5th
+				{AsMidiByte(46), AsMidiByte(67)}, // +4th
+				{AsMidiByte(47), AsMidiByte(68)}, // +2nd
+				{AsMidiByte(48), AsMidiByte(69)}, // -2nd
+				{AsMidiByte(49), AsMidiByte(70)}, // -4th
+				{AsMidiByte(50), AsMidiByte(71)}, // -5th
+				{AsMidiByte(51), AsMidiByte(72)}, // -1 OCT
+				{AsMidiByte(52), AsMidiByte(73)}, // Dive Bomb
 
 				// Detune
-				{53, 74}, // Deep
-				{54, 75}, // Shallow
+				{AsMidiByte(53), AsMidiByte(74)}, // Deep
+				{AsMidiByte(54), AsMidiByte(75)}, // Shallow
 
 				// Harmony (Up Pos || Down Pos)
-				{55, 76}, // -4th || +3rd
-				{56, 77}, // -4th || +5th
-				{57, 78}, // -5th || +5th
-				{58, 79}, // +5th || +6th
-				{59, 80}, // +5th || +OCT
-				{60, 81}, // -OCT || -4th
-				{61, 82}, // -OCT || +OCT
-				{62, 83}, // +OCT || +10th
-				{63, 84}, // +1 OCT || +2 OCT
+				{AsMidiByte(55), AsMidiByte(76)}, // -4th || +3rd
+				{AsMidiByte(56), AsMidiByte(77)}, // -4th || +5th
+				{AsMidiByte(57), AsMidiByte(78)}, // -5th || +5th
+				{AsMidiByte(58), AsMidiByte(79)}, // +5th || +6th
+				{AsMidiByte(59), AsMidiByte(80)}, // +5th || +OCT
+				{AsMidiByte(60), AsMidiByte(81)}, // -OCT || -4th
+				{AsMidiByte(61), AsMidiByte(82)}, // -OCT || +OCT
+				{AsMidiByte(62), AsMidiByte(83)}, // +OCT || +10th
+				{AsMidiByte(63), AsMidiByte(84)}, // +1 OCT || +2 OCT
 			};
 			inline std::vector<float> semiTones = {
 				24.0f, 12.0f, 7.0f, 5.0f, -2.0f, -5.0f, -7.0f, -12.0f, -24.0f, -36.0f

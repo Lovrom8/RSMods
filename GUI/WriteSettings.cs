@@ -149,6 +149,7 @@ namespace RSMods
                     { ReadSettings.PreventMidSongPauseIdentifier, CreateDefaultOnOldINI(ReadSettings.PreventMidSongPauseIdentifier, "off") },
                     { ReadSettings.UltrawideIdentifier, CreateDefaultOnOldINI(ReadSettings.UltrawideIdentifier, "off") }, // Fills 21:9 / 32:9 displays: the 3D scene gains horizontal FOV (Hor+) while the HUD and menus stay 16:9. No-op on 16:9.
                     { ReadSettings.RemoveFingerprintsIdentifier, CreateDefaultOnOldINI(ReadSettings.RemoveFingerprintsIdentifier, "off") },
+                    { ReadSettings.FastProfileLoadAndSaveIdentifier, CreateDefaultOnOldINI(ReadSettings.FastProfileLoadAndSaveIdentifier, "off") }, // Streams profile saves and loads so big profiles don't freeze or crash the game. Needs BackupProfile on.
                 }
             );
             saveSettingsOrDefaults.Add(
@@ -243,7 +244,7 @@ namespace RSMods
                     { ReadSettings.CustomGUIBackgroundColorIdentifier, CreateDefaultOnOldINI(ReadSettings.CustomGUIBackgroundColorIdentifier, "F0FFFF") }, // Custom Theme Background Color
                     { ReadSettings.CustomGUITextColorIdentifier, CreateDefaultOnOldINI(ReadSettings.CustomGUITextColorIdentifier, "000000") }, // Custom Theme Text Color
                     { ReadSettings.CustomGUIButtonColorIdentifier, CreateDefaultOnOldINI(ReadSettings.CustomGUIButtonColorIdentifier, "E3E3E3") }, // Custom Button Background Color
-                    { ReadSettings.BackupProfileIdentifier, CreateDefaultOnOldINI(ReadSettings.BackupProfileIdentifier, "on") }, // Should we backup profiles
+                    { ReadSettings.BackupProfileIdentifier, CreateDefaultOnOldINI(ReadSettings.BackupProfileIdentifier, "on") }, // Back up the profiles when the GUI opens, and every 10 minutes while the game runs (when they changed). Fast profile load/save needs this on.
                     { ReadSettings.NumberOfBackupsIdentifier, CreateDefaultOnOldINI(ReadSettings.NumberOfBackupsIdentifier, "50") }, // How many backups should we store before we start deleting them.
                 }
             );

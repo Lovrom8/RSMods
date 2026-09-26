@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "SongTuning.hpp"
+#include <atomic>
 
 namespace Setting = Settings::Setting;
 
@@ -38,81 +39,131 @@ std::array<byte, 6> SongTuning::GetCurrentTuning(bool verbose) {
 	return allTunings;
 }
 
-/// <summary>
-/// Gets Current Tuning in the tuner (based on the tuning name)
-/// </summary>
-/// <returns>Guess of Current Tuning</returns>
-Tuning SongTuning::GetTuningAtTuner() {
-	std::string pathToTuningList = "RSMods/CustomMods/tuning.database.json";
+namespace {
+	// The tuner menu builds the arrangement's tuning when it opens: six ints, low string first, in semitones from E standard
+	// (the same values the song's tuning definition uses). The tuner's name text ("C STANDARD", "CUSTOM TUNING") is computed
+	// from these, so reading them directly works for every tuning, named or not.
+	//
+	// The tuner's per-frame tick is hooked with a vtable slot swap to learn which tuner object is live, and, once per tuner, to ask
+	// the game which instrument the player is on. Nothing in the game is changed; the six ints are read from the object.
+	constexpr uintptr_t off_tunerStringOffsets = 0x1B8;
+	constexpr uintptr_t off_tunerPlayer = 0x1F8;		// The tuner's player index, what the game passes to its own instrument lookups.
+	constexpr uintptr_t off_tunerHasTuning = 0x1FC;		// The tuner only names the tuning from the ints above while this is nonzero.
+	constexpr uintptr_t tunerTickSlotIndex = 6;			// The tick's slot in the tuner menu's vtable.
+	constexpr ULONGLONG tunerTickFreshMs = 500;			// A tuner that hasn't ticked this recently isn't the open menu.
+	constexpr int maxStringOffset = 24;					// RSMods treats anything beyond two octaves as invalid.
+	constexpr int guitarClassBass = 2;					// The game's player guitar class: 1 Standard (guitar), 2 Bass, 0xFF unknown.
 
-	// If we can't find the list of tunings, just return a default value
-	if (!std::filesystem::exists(pathToTuningList)) {
-		LOG_ERROR("Invalid File: GetTuningAtTuner - Path To Tuning File Doesn't Exist." << std::endl);
-		return Tuning();
-	}
+	using TunerTickFn = int(__fastcall*)(void* self, void* edx);
+	TunerTickFn originalTunerTick = nullptr;
+	uintptr_t tunerVtable = 0;
+	std::atomic<uintptr_t> liveTuner = 0;
+	std::atomic<ULONGLONG> liveTunerTickMs = 0;
+	std::atomic<bool> tunerPlayerOnBass = false;
 
-	uintptr_t addrTuningText = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_tuningText, Offsets::ptr_tuningTextOffsets);
-
-	if (!addrTuningText) {
-		LOG_ERROR("Invalid Pointer: GetTuningAtTuner" << std::endl);
-		return Tuning();
-	}
-
-	auto unsanitizedTuningText = std::string((const char*)addrTuningText);
-
-	// Rocksmith converts all ASCII "#" to the unicode version. Since we have to use std::string (and can't use std::wstring) with nlohmann, we convert the corrupt character combination to an ASCII "#".
-	while (unsanitizedTuningText.find("\xe2\x99\xaf") != std::string::npos) { // Unicode # (sharp)
-		size_t badHash = unsanitizedTuningText.find("\xe2\x99\xaf");
-		std::string partOne = unsanitizedTuningText.substr(0, badHash);
-		std::string partTwo = unsanitizedTuningText.substr(badHash + 2, unsanitizedTuningText.length() - 1);
-		unsanitizedTuningText = partOne + partTwo;
-		unsanitizedTuningText.at(badHash) = '#';
-	}
-
-	// Rocksmith converts all ASCII "b" to the unicode version. Since we have to use std::string (and can't use std::wstring) with nlohmann, we convert the corrupt character combination to an ASCII "b".
-	// Note "b" is capitalized at the end because we later assume all tunings are capital since Rocksmith will parse tuning names as uppercase. Since we use the non-UTF value we have to convert the "b" to a "B" for our later comparison to work.
-	while (unsanitizedTuningText.find('\xe2\x99\xad') != std::string::npos) { // Unicode b (flat)
-		size_t badFlat = unsanitizedTuningText.find("\xe2\x99\xad");
-		std::string partOne = unsanitizedTuningText.substr(0, badFlat);
-		std::string partTwo = unsanitizedTuningText.substr(badFlat + 2, unsanitizedTuningText.length() - 1);
-		unsanitizedTuningText = partOne + partTwo;
-		unsanitizedTuningText.at(badFlat) = 'B';
-	}
-
-	std::string tuningText = unsanitizedTuningText;
-
-	// If it's a custom tuning we don't know the tuning, so we might as well stop here.
-	if (tuningText == (std::string)"CUSTOM TUNING") {
-		LOG_WARNING("Invalid Tuning: CUSTOM TUNING" << std::endl);
-		return Tuning();
-	}
-
-	// In the JSON, tunings have no whitespaces, so get rid of them
-	std::erase_if(tuningText, [](unsigned char ch) {
-		return std::isspace(ch) != 0;
-	});
-
-	// Parse RSMods unpacked tuning definition file.
-	std::ifstream jsonFile(pathToTuningList);
-	nlohmann::json tuningJson;
-	jsonFile >> tuningJson;
-	jsonFile.close();
-	tuningJson = tuningJson["Static"]["TuningDefinitions"]; // Skip directly to the part we are interested in
-
-	// Unfortunately we can't use json.contains due to difference in formatting
-	for (auto const& tuning : tuningJson.items()) {
-		std::string jsonKeyUpper = tuning.key();
-		std::string jsonKeyOriginal = tuning.key(); // Also you can't just make a separate copy of the uppercase string, so we keep both 
-		std::transform(jsonKeyUpper.begin(), jsonKeyUpper.end(), jsonKeyUpper.begin(), ::toupper);
-
-		if (jsonKeyOriginal == tuningText || jsonKeyUpper == tuningText) { // If the tuning is all uppercase or if standard-case matches
-			tuningJson = tuningJson[jsonKeyOriginal]["Strings"];
-			return Tuning(tuningJson["string0"], tuningJson["string1"], tuningJson["string2"], tuningJson["string3"], tuningJson["string4"], tuningJson["string5"]);
+	// The game's player guitar class lookup takes the player index on the stack in one version and in ECX in the other, and
+	// leaves the stack to the caller in both. Passing it both ways works for either.
+	__declspec(naked) int __cdecl CallResolveGuitarClass(uintptr_t /*function*/, int /*player*/) {
+		__asm {
+			mov ecx, [esp + 8]			// player
+			push ecx
+			call dword ptr [esp + 8]	// function (shifted by the push)
+			add esp, 4
+			ret
 		}
 	}
 
-	LOG_WARNING("Invalid Tuning: Tuning doesn't exist in RSMods tuning list" << std::endl);
-	return Tuning();
+	// thiscall with no stack arguments; the original returns a value in EAX, which is passed through.
+	int __fastcall Hook_TunerTick(void* self, void* edx) {
+		const uintptr_t tuner = reinterpret_cast<uintptr_t>(self);
+		const ULONGLONG now = GetTickCount64();
+
+		// A new tuner was opened: look up the instrument once. This is the game thread, and the tick itself makes the same call.
+		if (tuner != liveTuner.load(std::memory_order_relaxed) || now - liveTunerTickMs.load(std::memory_order_relaxed) > tunerTickFreshMs) {
+			const uintptr_t resolveGuitarClass = Offsets::func_resolveGuitarClass;
+			const int player = *reinterpret_cast<const int*>(tuner + off_tunerPlayer);
+			tunerPlayerOnBass.store(resolveGuitarClass && CallResolveGuitarClass(resolveGuitarClass, player) == guitarClassBass, std::memory_order_relaxed);
+		}
+
+		liveTuner.store(tuner, std::memory_order_relaxed);
+		liveTunerTickMs.store(now, std::memory_order_relaxed);
+		return originalTunerTick(self, edx);
+	}
+}
+
+/// <returns>Was the player on bass when the tuner last opened? False if no tuner has opened yet.</returns>
+bool SongTuning::IsPlayerOnBass() {
+	return tunerPlayerOnBass.load(std::memory_order_relaxed);
+}
+
+/// <summary>
+/// Hooks the single-player tuner menu's per-frame tick so GetTuningAtTuner can find the open tuner.
+/// </summary>
+void SongTuning::InstallTunerHook() {
+	if (originalTunerTick)
+		return;
+
+	const uintptr_t slot = Offsets::ptr_tunerTickSlot;
+	const uintptr_t tick = Offsets::func_tunerTick;
+	if (!slot || !tick) {
+		LOG_WARNING("(TUNING) Tuner tuning reads aren't supported on this game version" << std::endl);
+		return;
+	}
+	if (MemUtil::IsBadReadPtr(reinterpret_cast<void*>(slot)) || *reinterpret_cast<const uintptr_t*>(slot) != tick) {
+		LOG_WARNING("(TUNING) Tuner tick slot doesn't hold the expected function, tuner tuning reads are off" << std::endl);
+		return;
+	}
+
+	originalTunerTick = reinterpret_cast<TunerTickFn>(tick);
+	tunerVtable = slot - tunerTickSlotIndex * sizeof(uintptr_t);
+	const uintptr_t hook = reinterpret_cast<uintptr_t>(&Hook_TunerTick);
+	if (!MemUtil::PatchAdr(reinterpret_cast<LPVOID>(slot), &hook, sizeof(hook))) {
+		originalTunerTick = nullptr;
+		LOG_ERROR("(TUNING) Couldn't hook the tuner tick, tuner tuning reads are off" << std::endl);
+		return;
+	}
+	LOG_INFO("(TUNING) Hooked the tuner tick" << std::endl);
+}
+
+/// <summary>
+/// Gets the tuning of the arrangement the open (single-player) tuner is asking for.
+/// </summary>
+/// <returns>The tuning, or a default Tuning() (every string 69) when no tuner is open or it can't be read.</returns>
+Tuning SongTuning::GetTuningAtTuner(bool logFailures) {
+	const uintptr_t tuner = liveTuner.load(std::memory_order_relaxed);
+	if (!originalTunerTick || !tuner || GetTickCount64() - liveTunerTickMs.load(std::memory_order_relaxed) > tunerTickFreshMs) {
+		if (logFailures)
+			LOG_WARNING("Invalid Tuning: GetTuningAtTuner - no single-player tuner is open" << std::endl);
+		return Tuning();
+	}
+
+	const auto stringOffsets = reinterpret_cast<const int*>(tuner + off_tunerStringOffsets);
+	if (MemUtil::IsBadReadPtr(reinterpret_cast<void*>(tuner)) || *reinterpret_cast<const uintptr_t*>(tuner) != tunerVtable ||
+		MemUtil::IsBadReadPtr(const_cast<int*>(stringOffsets)) || MemUtil::IsBadReadPtr(const_cast<int*>(stringOffsets + 5))) {
+		if (logFailures)
+			LOG_WARNING("Invalid Pointer: GetTuningAtTuner - the tuner object isn't readable" << std::endl);
+		return Tuning();
+	}
+
+	if (*reinterpret_cast<const int*>(tuner + off_tunerHasTuning) == 0) {
+		if (logFailures)
+			LOG_WARNING("Invalid Tuning: GetTuningAtTuner - the open tuner has no tuning to show" << std::endl);
+		return Tuning();
+	}
+
+	int offsets[6]{};
+	for (int i = 0; i < 6; i++) {
+		offsets[i] = stringOffsets[i];
+		if (offsets[i] < -maxStringOffset || offsets[i] > maxStringOffset) {
+			if (logFailures)
+				LOG_WARNING("Invalid Tuning: GetTuningAtTuner - string " << i << " offset " << offsets[i] << " is out of range" << std::endl);
+			return Tuning();
+		}
+	}
+
+	// Same byte encoding as the in-song tuning (-5 is 251), so the rest of SongTuning handles both alike.
+	return Tuning(static_cast<byte>(offsets[0]), static_cast<byte>(offsets[1]), static_cast<byte>(offsets[2]),
+		static_cast<byte>(offsets[3]), static_cast<byte>(offsets[4]), static_cast<byte>(offsets[5]));
 }
 
 /// <returns>Should we Display The Extended Range Colors?</returns>
@@ -225,7 +276,7 @@ bool SongTuning::IsExtendedRangeTuner() {
 /// Gets the highest tuned string, and the lowest tuned string.
 /// </summary>
 /// <returns>[0] - Highest, [1] - Lowest</returns>
-std::array<int, 2> SongTuning::GetHighestLowestString() {
+std::array<int, 2> SongTuning::GetHighestLowestString(bool bass) {
 	int highestTuning = 0;
 	int lowestTuning = 256;
 	int currentStringTuning = 0;
@@ -235,7 +286,7 @@ std::array<int, 2> SongTuning::GetHighestLowestString() {
 		return { 666, 666 };
 	}
 
-	int numberOfStrings = (Settings::IsOn(Setting::ExtendedRangeFixBassTuning) && (songTuning[4] == 0 || songTuning[4] == 12) && (songTuning[5] == 0 || songTuning[5] == 12)) ? 4 : 6; // When a charter makes a bad bass tuning, and leaves the last two strings blank, let's fix that.
+	int numberOfStrings = (bass || (Settings::IsOn(Setting::ExtendedRangeFixBassTuning) && (songTuning[4] == 0 || songTuning[4] == 12) && (songTuning[5] == 0 || songTuning[5] == 12))) ? 4 : 6; // When a charter makes a bad bass tuning, and leaves the last two strings blank, let's fix that.
 
 	bool bassOctaveEffect = GetTrueTuning() == 220;
 
@@ -279,7 +330,7 @@ std::array<int, 2> SongTuning::GetHighestLowestString() {
 /// Gets the highest tuned string, and the lowest tuned string.
 /// </summary>
 /// <returns>[0] - Highest, [1] - Lowest</returns>
-std::array<int, 2> SongTuning::GetHighestLowestString(Tuning tuningOverride) {
+std::array<int, 2> SongTuning::GetHighestLowestString(Tuning tuningOverride, bool bass) {
 	int highestTuning = 0;
 	int lowestTuning = 256;
 
@@ -287,7 +338,7 @@ std::array<int, 2> SongTuning::GetHighestLowestString(Tuning tuningOverride) {
 		return { 666, 666 };
 	}
 
-	int numberOfStrings = (Settings::IsOn(Setting::ExtendedRangeFixBassTuning) && (tuningOverride.strB == 0 || tuningOverride.strB == 12) && (tuningOverride.highE == 0 || tuningOverride.highE == 12)) ? 4 : 6; // When a charter makes a bad bass tuning, and leaves the last two strings blank, let's fix that.
+	int numberOfStrings = (bass || (Settings::IsOn(Setting::ExtendedRangeFixBassTuning) && (tuningOverride.strB == 0 || tuningOverride.strB == 12) && (tuningOverride.highE == 0 || tuningOverride.highE == 12))) ? 4 : 6; // When a charter makes a bad bass tuning, and leaves the last two strings blank, let's fix that.
 
 	bool bassOctaveEffect = GetTrueTuning() == 220;
 

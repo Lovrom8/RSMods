@@ -44,14 +44,8 @@ void __declspec(naked) hook_fakeTitles() {
 	ExitHookFakeTitle:
 		popad									// Return EAX, ECX, and EDX from the stack.
 
-		pushad
-
-		lea ecx, Offsets::hookBackAddr_FakeTitles
-		call VersioningStruct<uintptr_t>::GetValue
-		mov Offsets::runtimeVersionStructValue, eax
-
-		popad
-		jmp[Offsets::runtimeVersionStructValue]	// Return to the original code.
+		push offset Offsets::hookBackAddr_FakeTitles	// Return to the original code.
+		jmp MemUtil::JumpToVersioned
 	}
 }
 
@@ -61,13 +55,13 @@ void __declspec(naked) hook_fakeTitles() {
 /// <param name="number"> - MainGame.csv string ID number [EAX]</param>
 /// <param name="text"> - Song List Name [ESP + 0x10] **DISCARDED**</param>
 /// <returns>New songlist name</returns>
-const char* __stdcall missingLocalization(int localizationNumber, char* text) {
+const char* __stdcall missingLocalization(int localizationNumber, char*) {
 	constexpr int SONG_LIST_START = 90000;
 	constexpr int SONG_LIST_COUNT = 20;
 
 	int index = localizationNumber - SONG_LIST_START;
 
-	if (index >= 0 && index < SONG_LIST_COUNT && index < songTitles.size()) {
+	if (index >= 0 && index < SONG_LIST_COUNT && index < static_cast<int>(songTitles.size())) {
 		return songTitles[index].c_str();
 	}
 
@@ -95,15 +89,8 @@ void __declspec(naked) missingLocalizationHookFunc() {
 		add esp, 0x8									// Replace original instruction we were replacing
 		push eax										// Replace original instruction we were replacing
 
-		pushad
-
-		lea ecx, Offsets::hookBackAddr_missingLocalization
-		call VersioningStruct<uintptr_t>::GetValue
-		mov Offsets::runtimeVersionStructValue, eax
-
-		popad
-
-		jmp[Offsets::runtimeVersionStructValue]	// Jump back to the original instructions.
+		push offset Offsets::hookBackAddr_missingLocalization	// Jump back to the original instructions.
+		jmp MemUtil::JumpToVersioned
 	}
 }
 

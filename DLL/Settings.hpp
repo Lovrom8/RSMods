@@ -135,6 +135,8 @@ namespace Settings {
 		inline constexpr char FixBrokenTones[]      = "FixBrokenTones";
 		inline constexpr char FixOculusCrash[]      = "FixOculusCrash";
 		inline constexpr char PreventMidSongPause[] = "PreventMidSongPause";
+		inline constexpr char BackupProfile[]           = "BackupProfile"; // Shared with the GUI, which also backs up when it opens.
+		inline constexpr char FastProfileLoadAndSave[]  = "FastProfileLoadAndSave";
 
 		// Standalone toggles
 		inline constexpr char AllowAudioInBackground[]  = "AllowAudioInBackground";

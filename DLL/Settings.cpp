@@ -128,6 +128,8 @@ void Settings::Initialize()
 		{Setting::PreventMidSongPause, "off"},
 		{Setting::RemoveFingerprints, "off"},
 		{Setting::Ultrawide, "off"},
+		{Setting::BackupProfile, "on"},
+		{Setting::FastProfileLoadAndSave, "off"},
 	};
 
 	customSettings = {
@@ -347,6 +349,8 @@ void Settings::ReadModSettings() {
 	modSettings[Setting::DisplayCurrentAccuracy] = reader.GetValue("Toggle Switches", "DisplayCurrentAccuracy", "off");
 	modSettings[Setting::PreventMidSongPause] = reader.GetValue("Toggle Switches", "PreventMidSongPause", "off");
 	modSettings[Setting::RemoveFingerprints] = reader.GetValue("Toggle Switches", "RemoveFingerprints", "off");
+	modSettings[Setting::BackupProfile] = reader.GetValue("GUI Settings", "BackupProfile", "on"); // Same default as the GUI.
+	modSettings[Setting::FastProfileLoadAndSave] = reader.GetValue("Toggle Switches", "FastProfileLoadAndSave", "off");
 }
 
 /// <summary>

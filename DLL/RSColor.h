@@ -5,7 +5,7 @@
 #include <map>
 #include <string>
 
-const double M_PI = 3.14159265359;
+const float M_PI = 3.14159265359f;
 struct RSColor {
 	float r = 1.0f;
 	float g = 0.0f;

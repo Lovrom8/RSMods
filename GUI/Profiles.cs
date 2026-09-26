@@ -10,6 +10,7 @@ using System.Text;
 using Microsoft.Win32;
 using RSMods.Util;
 using System.Linq;
+using System.Globalization;
 using RSMods.Data;
 
 namespace RSMods
@@ -173,30 +174,144 @@ namespace RSMods
         #endregion
         #region Backup Profile
 
+        // Backups live in "Profile_AutoBackups\<Steam account>\<folder>\<UTC time>", shared with the DLL.
+        // The DLL fills the tier folders while the game runs; the GUI backs up into "Before GUI" when it opens,
+        // so profile edits made here while the game is closed always have a backup too.
+        public const string BeforeGuiBackups = "Before GUI";
+        private static readonly string[] BackupFolders = { BeforeGuiBackups, "Every 10 Minutes", "Hourly", "Quarter Daily", "Daily" };
+        private const string BackupNameFormat = "yyyy-MM-dd_HH-mm-ss"; // UTC. The DLL names its backups the same way.
+        private const string PartialBackupPrefix = ".partial_";
+
+        // Where the GUI used to put its backups. Nothing is written here anymore, but they can still be restored.
+        private const string OldBackupsFolder = "Profile_Backups";
+        private const string OldBackupNameFormat = "MM-dd-yyyy_HH-mm-ss"; // Local time.
+
+        public class ProfileBackup
+        {
+            public string Folder;
+            public DateTime Utc;
+            public List<string> Sources = new List<string>();
+
+            public override string ToString() => Utc.ToLocalTime().ToString("MMM d yyyy @ HH:mm:ss", CultureInfo.CurrentCulture) + " (" + string.Join(", ", Sources) + ")";
+        }
+
+        /// <summary>
+        /// The backups folder for the Steam account the save folder belongs to: the save folder is "<Steam>\userdata\<account>\221680\remote".
+        /// </summary>
+        public static string AccountBackupsFolder()
+        {
+            string saveFolder = GetSaveDirectory();
+            if (saveFolder == String.Empty)
+                return String.Empty;
+
+            string account = new DirectoryInfo(saveFolder.TrimEnd('\\', '/')).Parent?.Parent?.Name;
+            if (account == null || !uint.TryParse(account, out _))
+                return String.Empty;
+
+            return Path.Combine(Constants.RSFolder, "Profile_AutoBackups", account);
+        }
+
         public static void SaveProfile()
         {
             string profileFolder = GetSaveDirectory();
+            string backupsFolder = AccountBackupsFolder();
 
-            if (profileFolder == String.Empty)
+            if (profileFolder == String.Empty || backupsFolder == String.Empty)
                 return;
 
-            string profileBackupsFolder = Path.Combine(RSMods.Data.Constants.RSFolder, "Profile_Backups");
-            DateTime now = DateTime.Now;
-            string timedBackupFolder = Path.Combine(profileBackupsFolder, now.ToString("MM-dd-yyyy_HH-mm-ss"));
-            string howToRestoreBackupTxt = Path.Combine(profileBackupsFolder, "howto.txt");
+            string beforeGui = Path.Combine(backupsFolder, BeforeGuiBackups);
+            string name = DateTime.UtcNow.ToString(BackupNameFormat, CultureInfo.InvariantCulture);
+            string made = Path.Combine(beforeGui, name);
+            string partial = Path.Combine(beforeGui, PartialBackupPrefix + name);
 
-            Directory.CreateDirectory(profileBackupsFolder);
-            Directory.CreateDirectory(timedBackupFolder);
+            if (Directory.Exists(made)) // Already backed up this second.
+                return;
 
-            using (StreamWriter sw = File.CreateText(howToRestoreBackupTxt))
+            // Copy into a ".partial_" folder and rename it when it's complete, so a copy cut short never looks like a backup.
+            try
             {
-                sw.WriteLine("If your save gets corrupted, take all the files in one of these folders and put them in this folder: " + profileFolder);
+                Directory.CreateDirectory(partial);
+                foreach (string file in Directory.GetFiles(profileFolder))
+                    File.Copy(file, Path.Combine(partial, Path.GetFileName(file)), true);
+                Directory.Move(partial, made);
+            }
+            catch
+            {
+                try { Directory.Delete(partial, true); } catch { }
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Deletes the oldest "Before GUI" backups past maxAmountOfBackups (0 keeps them all), and copies a previous run didn't finish.
+        /// The DLL's folders prune themselves, and anything that isn't a backup we named is left alone.
+        /// </summary>
+        public static void DeleteOldBackups(int maxAmountOfBackups)
+        {
+            string backupsFolder = AccountBackupsFolder();
+            string beforeGui = backupsFolder == String.Empty ? String.Empty : Path.Combine(backupsFolder, BeforeGuiBackups);
+            if (beforeGui == String.Empty || !Directory.Exists(beforeGui))
+                return;
+
+            List<string> backups = new List<string>();
+            foreach (string folder in Directory.GetDirectories(beforeGui))
+            {
+                string name = Path.GetFileName(folder);
+                if (name.StartsWith(PartialBackupPrefix))
+                    Directory.Delete(folder, true);
+                else if (DateTime.TryParseExact(name, BackupNameFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out _))
+                    backups.Add(folder);
             }
 
-            foreach (string file in Directory.GetFiles(profileFolder))
+            if (maxAmountOfBackups == 0) // User says they want all the backups.
+                return;
+
+            backups.Sort(StringComparer.Ordinal); // The names sort by time.
+            for (int i = 0; i < backups.Count - maxAmountOfBackups; i++)
+                Directory.Delete(backups[i], true);
+        }
+
+        /// <summary>
+        /// Every backup that can be restored, newest first. A backup the DLL put in several folders is listed once, with each folder it's in.
+        /// </summary>
+        public static List<ProfileBackup> ListBackups()
+        {
+            Dictionary<string, ProfileBackup> backups = new Dictionary<string, ProfileBackup>();
+
+            string backupsFolder = AccountBackupsFolder();
+            if (backupsFolder != String.Empty)
             {
-                File.Copy(file, Path.Combine(timedBackupFolder, Path.GetFileName(file)), true);
+                foreach (string source in BackupFolders)
+                {
+                    string sourceFolder = Path.Combine(backupsFolder, source);
+                    if (!Directory.Exists(sourceFolder))
+                        continue;
+
+                    foreach (string folder in Directory.GetDirectories(sourceFolder))
+                    {
+                        string name = Path.GetFileName(folder);
+                        if (!DateTime.TryParseExact(name, BackupNameFormat, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal, out DateTime utc))
+                            continue;
+
+                        string key = source == BeforeGuiBackups ? source + name : name; // The GUI's backups are never linked into the DLL's folders.
+                        if (!backups.TryGetValue(key, out ProfileBackup backup))
+                            backups[key] = backup = new ProfileBackup { Folder = folder, Utc = utc };
+                        backup.Sources.Add(source);
+                    }
+                }
             }
+
+            string oldFolder = Path.Combine(Constants.RSFolder, OldBackupsFolder);
+            if (Directory.Exists(oldFolder))
+            {
+                foreach (string folder in Directory.GetDirectories(oldFolder))
+                {
+                    if (DateTime.TryParseExact(Path.GetFileName(folder), OldBackupNameFormat, CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal | DateTimeStyles.AdjustToUniversal, out DateTime utc))
+                        backups["old" + folder] = new ProfileBackup { Folder = folder, Utc = utc, Sources = { "Old GUI Backup" } };
+                }
+            }
+
+            return backups.Values.OrderByDescending(b => b.Utc).ToList();
         }
 
         #endregion

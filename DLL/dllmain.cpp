@@ -4,6 +4,8 @@
 #include "Framework/Framework.hpp"
 #include "Mods/Midi.hpp"
 #include "D3DOverlay.hpp"
+#include "Version.h"
+#include "GitVersion.h"
 
 namespace Setting = Settings::Setting;
 
@@ -20,7 +22,7 @@ bool wwiseLogging = false;
 #endif
 
 #ifndef _RSMODS_VERSION
-#define _RSMODS_VERSION "RSMODS Version: 1.2.8.4 SRC. DEBUG: " << std::boolalpha << debug << ". Wwise Logs: " << std::boolalpha << wwiseLogging << "."
+#define _RSMODS_VERSION "RSMODS Version: " RSMODS_BUILD_VERSION_STRING ". DEBUG: " << std::boolalpha << debug << ". Wwise Logs: " << std::boolalpha << wwiseLogging << "."
 #endif
 
 /// <summary>
@@ -42,10 +44,10 @@ unsigned WINAPI MidiThread() {
 
 		// If we have sent a Midi PC/CC value to this thread, send the Midi value.
 		if (Midi::sendPC)
-			Midi::SendProgramChange(Midi::dataToSendPC);
+			Midi::SendProgramChange(Midi::AsMidiByte(Midi::dataToSendPC));
 
 		if (Midi::sendCC)
-			Midi::SendControlChange(Midi::dataToSendCC);
+			Midi::SendControlChange(Midi::AsMidiByte(Midi::dataToSendCC));
 
 		Sleep(Midi::sleepFor);
 		currentCount++;
@@ -136,8 +138,8 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 			POINT mPos;
 			GetCursorPos(&mPos);
 			ScreenToClient(hWnd, &mPos);
-			ImGui::GetIO().MousePos.x = mPos.x;
-			ImGui::GetIO().MousePos.y = mPos.y;
+			ImGui::GetIO().MousePos.x = static_cast<float>(mPos.x);
+			ImGui::GetIO().MousePos.y = static_cast<float>(mPos.y);
 			break;
 	}
 
@@ -314,11 +316,19 @@ void SetupLogging() {
 /// <param name="dwReason"></param>
 /// <param name="lpReserved"></param>
 /// <returns>Always returns TRUE</returns>
-BOOL APIENTRY DllMain(HMODULE hModule, uint32_t dwReason, LPVOID lpReserved) {
+BOOL APIENTRY DllMain(HMODULE hModule, uint32_t dwReason, LPVOID) {
 	switch (dwReason) {
 		case DLL_PROCESS_ATTACH:
 			SetupLogging();
 			DisableThreadLibraryCalls(hModule); // Disables the DLL_THREAD_ATTACH and DLL_THREAD_DETACH notifications. | https://docs.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-disablethreadlibrarycalls
+
+			// The game FreeLibrary's xinput1_3 while shutting down its input service, but our hooks and threads stay live until it exits.
+			// Unloading then would jump into freed code, and our std::jthread globals would join under the loader lock (hangs on close).
+			// Pinning keeps us loaded until process exit, when the other threads are already gone.
+			{
+				HMODULE self = nullptr;
+				GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_PIN | GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, reinterpret_cast<LPCWSTR>(&DllMain), &self);
+			}
 			Proxy::Init(); // Proxy all real XInput commands to the actual xinput1_3.dll.
 			Initialize(); // Inject our mod code.
 			return TRUE;

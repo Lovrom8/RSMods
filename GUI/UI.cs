@@ -411,38 +411,7 @@ namespace RSMods
             }
         }
 
-        private void Startup_DeleteOldBackups(int maxAmountOfBackups)
-        {
-
-            if (maxAmountOfBackups == 0) // User says they want all the backups.
-                return;
-
-            string backupFolder = Path.Combine(RSMods.Data.Constants.RSFolder, "Profile_Backups");
-
-            if (!Directory.Exists(backupFolder))
-                return;
-
-            DirectoryInfo[] backups = new DirectoryInfo(backupFolder).GetDirectories().OrderBy(f => f.LastWriteTime).ToArray();
-
-            int foldersLeftToRemove = backups.Length - maxAmountOfBackups;
-
-            foreach (DirectoryInfo backup in backups)
-            {
-                if (foldersLeftToRemove == 0)
-                    break;
-
-                if (Array.IndexOf(backups, backup.Name) < backups.Length - maxAmountOfBackups)
-                {
-                    foreach (string file in Directory.GetFiles(backup.FullName))
-                    {
-                        File.Delete(file);
-                    }
-                    Directory.Delete(backup.FullName);
-                    foldersLeftToRemove--;
-                }
-
-            }
-        }
+        private void Startup_DeleteOldBackups(int maxAmountOfBackups) => Profiles.DeleteOldBackups(maxAmountOfBackups);
 
         private void Startup_BackupProfiles()
         {
@@ -467,29 +436,8 @@ namespace RSMods
 
         private void Startup_ListAllBackups()
         {
-            try
-            {
-                List<string> backups = new List<string>();
-                foreach (string backup in Directory.GetDirectories(Path.Combine(GenUtil.GetRSDirectory(), "Profile_Backups")))
-                {
-                    string folderName = Path.GetFileNameWithoutExtension(backup);
-                    string date = folderName.Split('_')[0];
-                    string time = folderName.Split('_')[1];
-
-                    int month = Convert.ToInt32(date.Split('-')[0]);
-                    int day = Convert.ToInt32(date.Split('-')[1]);
-                    int year = Convert.ToInt32(date.Split('-')[2]);
-
-                    string userFriendlyName = CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(month) + " " + day + " " + year + " @ " + time.Replace('-', ':');
-
-                    backups.Add(userFriendlyName);
-                }
-                backups.Reverse();
-                backups.ForEach(b => listBox_Profiles_ListBackups.Items.Add(b));
-            }
-            catch // Folder doesn't exist
-            {
-            }
+            foreach (Profiles.ProfileBackup backup in Profiles.ListBackups())
+                listBox_Profiles_ListBackups.Items.Add(backup); // Shown with ProfileBackup.ToString()
         }
 
         private void Startup_ShowUpdateButton() => button_UpdateRSMods.Visible = CheckForUpdates_IsUpdateAvailable();
@@ -866,6 +814,8 @@ namespace RSMods
             checkBox_PreventMidSongPause.Checked = ReadSettings.ProcessSettings(ReadSettings.PreventMidSongPauseIdentifier) == "on";
             checkBox_Ultrawide.Checked = ReadSettings.ProcessSettings(ReadSettings.UltrawideIdentifier) == "on";
             checkBox_RemoveFingerprints.Checked = ReadSettings.ProcessSettings(ReadSettings.RemoveFingerprintsIdentifier) == "on";
+            checkBox_FastProfileLoadAndSave.Checked = ReadSettings.ProcessSettings(ReadSettings.FastProfileLoadAndSaveIdentifier) == "on";
+            ProfileBackups_RequireForFastLoadAndSave();
             groupBox_NSPTimer.Visible = checkBox_CustomNSPTimer.Checked;
             {
                 string rawNsp = ReadSettings.ProcessSettings(ReadSettings.CustomNSPTimeLimitIdentifier);
@@ -2824,6 +2774,23 @@ namespace RSMods
 
         private void Save_FixBrokenTones(object sender, EventArgs e) => SaveSettings_Save(ReadSettings.FixBrokenTonesIdentifier, checkBox_FixBrokenTones.Checked.ToString().ToLower());
 
+        private void Save_FastProfileLoadAndSave(object sender, EventArgs e)
+        {
+            SaveSettings_Save(ReadSettings.FastProfileLoadAndSaveIdentifier, checkBox_FastProfileLoadAndSave.Checked.ToString().ToLower());
+            ProfileBackups_RequireForFastLoadAndSave();
+        }
+
+        /// <summary>
+        /// Fast profile load/save changes how the game writes the profile, so Backup Profile is always on with it.
+        /// The game won't turn on fast load/save unless backups are on too.
+        /// </summary>
+        private void ProfileBackups_RequireForFastLoadAndSave()
+        {
+            if (checkBox_FastProfileLoadAndSave.Checked)
+                checkBox_BackupProfile.Checked = true;
+            checkBox_BackupProfile.Enabled = !checkBox_FastProfileLoadAndSave.Checked;
+        }
+
         private void Save_UseCustomNSPTimer(object sender, EventArgs e)
         {
             SaveSettings_Save(ReadSettings.UseCustomNSPTimerIdentifier, checkBox_CustomNSPTimer.Checked.ToString().ToLower());
@@ -4151,31 +4118,14 @@ namespace RSMods
 
         private void Profiles_RevertToBackup(object sender, EventArgs e)
         {
-            if (listBox_Profiles_ListBackups.SelectedIndex < 0)
+            if (!(listBox_Profiles_ListBackups.SelectedItem is Profiles.ProfileBackup backup))
                 return;
 
-            string localizedName = listBox_Profiles_ListBackups.SelectedItem.ToString();
-
-            int monthNumber = DateTime.ParseExact(localizedName.Split(' ')[0], "MMM", CultureInfo.CurrentCulture).Month;
-
-            string[] localizedSplit = localizedName.Split(' ');
-
-            string time = localizedSplit[4];
-
-            time = time.Replace(':', '-');
-
-            string month = monthNumber.ToString();
-
-            if (monthNumber < 10)
-                month = "0" + monthNumber.ToString();
-
-            string backupName = month + '-' + localizedSplit[1] + '-' + localizedSplit[2] + '_' + time;
-
-            foreach (string profile in Directory.GetFiles(Path.Combine(GenUtil.GetRSDirectory(), "Profile_Backups", backupName)))
+            // File.Copy writes new files into the save folder, so the backup's files (which other backups may share) are never changed.
+            foreach (string profile in Directory.GetFiles(backup.Folder))
                 File.Copy(profile, Path.Combine(Profiles.GetSaveDirectory(), Path.GetFileName(profile)), true);
 
-
-            MessageBox.Show($"Reverted to the backup: {localizedName}");
+            MessageBox.Show($"Reverted to the backup: {backup}");
         }
 
         private void Profiles_ImportToneManifest(object sender, EventArgs e)

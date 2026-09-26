@@ -29,18 +29,12 @@ HRESULT APIENTRY D3DHooks::Hook_DP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE P
 	if (ERMode::AttemptedERInThisSong && ERMode::UseEROrColorsInThisSong && NOTE_TAILS) {
 		GameState::ToggleCB(ERMode::UseERExclusivelyInThisSong);
 
-		switch (Settings::GetModSetting(Setting::SeparateNoteColors)) {
-			case 0: // Use same color scheme on notes as we do on strings
-				pDevice->SetTexture(1, customStringColorTexture);
-				break;
-			case 1: // Default Colors, so don't do anything.
-				break;
-			case 2: // Use Custom Note Color Scheme
-				pDevice->SetTexture(1, customNoteColorTexture);
-				break;
-			default:
-				break;
-		}
+		// Same rule as the note heads in Hook_DIP. SeparateNoteColors is an on/off toggle, so it can't be read as the mode.
+		if (Settings::GetNoteColorMode() == NoteColorMode::SameAsStrings)
+			pDevice->SetTexture(1, customStringColorTexture);
+		else if (Settings::IsOn(Setting::SeparateNoteColors) && Settings::GetNoteColorMode() == NoteColorMode::Custom)
+			pDevice->SetTexture(1, customNoteColorTexture);
+		// NoteColorMode::Default: leave the game's texture alone.
 	}
 
 	// Note-tails for Twitch mod - Remove Notes.
@@ -424,12 +418,14 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 
 		if (GetAsyncKeyState(VK_F8) & 1) { // Save logged meshes to file
 			for (const auto& mesh : allMeshes) {
+				(void)mesh;
 				//Log(mesh.ToString().c_str());
 			}
 		}
 
 		if (GetAsyncKeyState(VK_F7) & 1) { // Save only removed 
 			for (const auto& mesh : removedMeshes) {
+				(void)mesh;
 				//Log(mesh.ToString().c_str());
 			}
 		}
@@ -884,7 +880,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 						AddToTextureList(headstockTexturePointers, pCurrTextures[1]);
 				}
 
-				int headstockCRCLimit = 3;
+				size_t headstockCRCLimit = 3;
 
 				// If the user is in multiplayer, we have to make sure our CRC limit is double or some bugs appear.
 				if (GameState::Menus::IsInMultiplayerTunerMenus())

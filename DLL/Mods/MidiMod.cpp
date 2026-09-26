@@ -130,12 +130,15 @@ void MidiMod::RevertTuning() {
 
 void MidiMod::OnSongExit(ModContext&) {
 	RevertTuning();
+	Midi::tunerAutoTuneFailed = false;
 }
 
 void MidiMod::AutoTuneInSong(ModContext& c) {
+	// When::Tuner falls back to tuning here when the song started without a tuner (same tuning as the last song). If the tuner
+	// was shown and couldn't be read, the player tuned by hand, so don't stack the pedal on top of that.
 	if (c.IsOn(Setting::AutoTuneForSong) &&
 		!Midi::alreadyAutomatedTuningInThisSong &&
-		(c.When(Setting::AutoTuneForSongWhen) == When::Tuner ||
+		((c.When(Setting::AutoTuneForSongWhen) == When::Tuner && !Midi::tunerAutoTuneFailed) ||
 			(c.When(Setting::AutoTuneForSongWhen) == When::Manual && Midi::userWantsToUseAutoTuning))) {
 		Midi::AutomateTuning();
 	}

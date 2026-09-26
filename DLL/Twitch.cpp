@@ -92,7 +92,7 @@ namespace Twitch {
 			std::erase(enabledEffects, effectName);
 	}
 
-	static bool IsCurrentEffectAlreadyAppliedOrNotInSong(const std::string& effectName)
+	bool IsCurrentEffectAlreadyAppliedOrNotInSong(const std::string& effectName)
 	{
 		return Contains(effectName, enabledEffects) || !GameState::IsInSong();
 	}

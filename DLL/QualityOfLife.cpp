@@ -8,7 +8,7 @@ namespace QualityOfLife {
 	void PatchTwoRTC()
 	{
 		char patch[25];
-		std::fill_n(patch, 25, 0x90);
+		std::fill_n(patch, 25, static_cast<char>(0x90));
 		MemUtil::PatchAdr(Offsets::ptr_twoRTCBypass, patch, sizeof(patch));
 	}
 
@@ -52,7 +52,10 @@ namespace QualityOfLife {
 				std::wstring processName(processNameBuffer.data());
 
 				if (processName == L"Rocksmith2014.exe") {
-					std::string narrowName(processName.begin(), processName.end());
+					std::string narrowName;
+					narrowName.resize(processName.size());
+					std::transform(processName.begin(), processName.end(), narrowName.begin(),
+						[](wchar_t ch) { return static_cast<char>(ch); });
 					LOG_INFO("Found parasitic process '" << narrowName << "'. Terminating." << std::endl);
 
 					if (!TerminateProcess(handle, 0)) {
@@ -60,12 +63,26 @@ namespace QualityOfLife {
 					}
 				}
 				else {
-					std::string narrowName(processName.begin(), processName.end());
+					std::string narrowName;
+					narrowName.resize(processName.size());
+					std::transform(processName.begin(), processName.end(), narrowName.begin(),
+						[](wchar_t ch) { return static_cast<char>(ch); });
 					LOG_INFO("Found dialog box, but process '" << narrowName << "' is not the target. Not terminating." << std::endl);
 				}
 			}
 		}
 
 		CloseHandle(handle);
+	}
+
+	/// <summary>
+	/// Rocksmith ignores any note below MIDI 24 (C1, 32.7 Hz), so a bass low E tuned more than 4 semitones down at A440
+	/// can never be detected. This lowers that floor to 18, about as low as the game can pick up a pitch at 48 kHz (~23.4 Hz).
+	/// The game reads the floor when note detection starts, so this has to be patched early.
+	/// </summary>
+	void LowerNoteDetectionFloor() {
+		MemUtil::PatchAdr(Offsets::ptr_noteDetectionFloor, "\x12", 1);
+
+		LOG_INFO("Lowered note detection floor" << std::endl);
 	}
 }

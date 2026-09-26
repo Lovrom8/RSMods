@@ -23,8 +23,8 @@ namespace CollectColors {
 	float Min(float fR, float fG, float fB);
 	float Max(float fR, float fG, float fB);
 	void SetColors(RSColor);
-	void RGB2HSL(float R, float G, float B, int& H, float& S, float& L);
-	void HSL2RGB(float H, float S, float L, float& R, float& G, float& B);
+	void RGB2HSL(float inR, float inG, float inB, int& outH, float& outS, float& outL);
+	void HSL2RGB(float inH, float inS, float inL, float& outR, float& outG, float& outB);
 
 	RSColor GetColor();
 	inline int H;

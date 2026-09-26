@@ -19,15 +19,8 @@ void _declspec(naked) hook_DirectInput() {
 		mov DirectInputPointer, esi
 		push 0x800
 
-		pushad
-
-		lea ecx, Offsets::hookBackAddr_DirectInput8
-		call VersioningStruct<uintptr_t>::GetValue
-		mov Offsets::runtimeVersionStructValue, eax
-
-		popad
-
-		jmp[Offsets::runtimeVersionStructValue]
+		push offset Offsets::hookBackAddr_DirectInput8
+		jmp MemUtil::JumpToVersioned
 	}
 }
 

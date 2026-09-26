@@ -22,7 +22,15 @@
         if($match.Success) {
             $version = $match.groups[3].value
         }
-        
+
+        $gitCommitHashFull = $env:APPVEYOR_REPO_COMMIT
+
+        $gitCommitHash = $gitCommitHashFull.Substring(0, 8)
+
+        Set-AppveyorBuildVariable -Name GitCommitHash -Value $gitCommitHash
+
+        Set-AppveyorBuildVariable -Name GitCommitHashFull -Value $gitCommitHashFull
+
         $env:releaseVersion=$version
   build:
       parallel: true

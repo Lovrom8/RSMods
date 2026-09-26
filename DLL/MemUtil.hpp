@@ -22,6 +22,7 @@ namespace MemUtil {
 	bool PatchAdr(uintptr_t address, std::string_view data, bool addBaseHandle);
 	bool PlaceHook(VersioningStruct<uintptr_t>& hookSpot, void* ourFunct, int len, bool addBaseHandle = false);
 	bool PlaceHook(void* hookSpot, void* ourFunct, int len);
+	void JumpToVersioned();
 	PBYTE TrampHook(PBYTE src, PBYTE dst, unsigned int len);
 	bool IsBadReadPtr(void* pointer);
 	template <typename T>

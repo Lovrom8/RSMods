@@ -1,4 +1,4 @@
-﻿#include "../../stdafx.h"
+#include "../../stdafx.h"
 #include "DrunkModeEffect.hpp"
 #include "../../Framework/Framework.hpp"
 
@@ -13,7 +13,7 @@ namespace CrowdControl::Effects { // Makes some of game's object very woobly (ly
 	/// </summary>
 	/// <param name="request"> - JSON Request</param>
 	/// <returns>Enums::EffectStatus::Success if test completed without any issues. Enums::EffectStatus::Retry if we have to retry.</returns>
-	Enums::EffectStatus DrunkModeEffect::Test(const Structs::Request& request)
+	Enums::EffectStatus DrunkModeEffect::Test(const Structs::Request&)
 	{
 		LOG_INFO("DrunkModeEffect::Test()" << std::endl);
 

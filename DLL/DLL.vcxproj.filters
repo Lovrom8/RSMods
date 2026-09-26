@@ -81,9 +81,7 @@
     <ClCompile Include="Offsets.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Scrapped.hpp">
-      <Filter>Main Headers</Filter>
-    </ClCompile>
+
     <ClCompile Include="Mods\Enumeration.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
@@ -100,6 +98,9 @@
       <Filter>Mods</Filter>
     </ClCompile>
     <ClCompile Include="MemUtil.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SamplingProfiler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Lib\ImGUI\imgui.cpp">
@@ -180,12 +181,7 @@
     <ClCompile Include="CC\Effects\TurboSpeedEffect.cpp">
       <Filter>CrowdControl\Effects</Filter>
     </ClCompile>
-    <ClCompile Include="CC\CCEnums.hpp">
-      <Filter>CrowdControl\Headers</Filter>
-    </ClCompile>
-    <ClCompile Include="CC\CCStructs.hpp">
-      <Filter>CrowdControl\Headers</Filter>
-    </ClCompile>
+
     <ClCompile Include="Mods\Midi.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
@@ -238,6 +234,12 @@
       <Filter>Wwise</Filter>
     </ClCompile>
     <ClCompile Include="Mods\BugPrevention.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mods\ProfileBackups.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mods\ProfileSaveStreaming.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
     <ClCompile Include="Tests.cpp">
@@ -387,6 +389,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MemUtil.hpp">
+      <Filter>Main Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="SamplingProfiler.hpp">
       <Filter>Main Headers</Filter>
     </ClInclude>
     <ClInclude Include="Offsets.hpp">
@@ -545,6 +550,12 @@
     <ClInclude Include="CC\ControlServer.hpp">
       <Filter>CrowdControl\Headers</Filter>
     </ClInclude>
+    <ClInclude Include="CC\CCEnums.hpp">
+      <Filter>CrowdControl\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="CC\CCStructs.hpp">
+      <Filter>CrowdControl\Headers</Filter>
+    </ClInclude>
     <ClInclude Include="Mods\Midi.hpp">
       <Filter>Mods\Headers</Filter>
     </ClInclude>
@@ -609,6 +620,12 @@
       <Filter>Wwise\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Mods\BugPrevention.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\ProfileBackups.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\ProfileSaveStreaming.hpp">
       <Filter>Mods\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Tests.hpp">
@@ -817,6 +834,16 @@
     <None Include="CC\rocksmithcrowdcontrol2.cs">
       <Filter>CrowdControl</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Version.h">
+      <Filter>Main Headers</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Version.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
     <Library Include="Lib\Detours\detours.lib">

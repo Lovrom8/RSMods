@@ -31,7 +31,7 @@ namespace RSMods
                              ToggleSkylineWhen, RemoveLaneMarkersEnabled, RemoveLyricsEnabled, RemoveLyricsWhen, GuitarSpeakEnabled, RemoveHeadstockWhen, ScreenShotScores,
                              MidiAutoTuning, MidiAutoTuningDevice, MidiInDevice, MidiAutoTuningWhen, MidiSoftwareSemitoneTriggers, MidiSoftwareSemitoneSettings, MidiSoftwareTrueTuningTriggers, MidiSoftwareTrueTuningSettings, ChordsMode,
                              RiffRepeaterAboveHundred, ShowCurrentNoteOnScreen, OnScreenFont, OnScreenFontSize, ProfileToLoad, ShowSongTimerWhen, SecondaryMonitor, RemoveSongPreviews, OverrideInputVolumeEnabled, OverrideInputVolumeDevice,
-                             AllowAudioInBackground, BypassTwoRTCMessageBox, LinearRiffRepeater, UseAlternativeOutputSampleRate, AllowLooping, AllowRewind, FixOculusCrash, FixBrokenTones, UseCustomNSPTimer, DisplayCurrentAccuracy, PreventMidSongPause, Ultrawide, RemoveFingerprints,
+                             AllowAudioInBackground, BypassTwoRTCMessageBox, LinearRiffRepeater, UseAlternativeOutputSampleRate, AllowLooping, AllowRewind, FixOculusCrash, FixBrokenTones, UseCustomNSPTimer, DisplayCurrentAccuracy, PreventMidSongPause, RemoveFingerprints, Ultrawide, FastProfileLoadAndSave,
 
 
                              // String Colors
@@ -167,6 +167,7 @@ namespace RSMods
             DisplayCurrentAccuracyIdentifier            = "DisplayCurrentAccuracy = ",
             PreventMidSongPauseIdentifier               = "PreventMidSongPause = ",
             UltrawideIdentifier                         = "Ultrawide = ",
+            FastProfileLoadAndSaveIdentifier            = "FastProfileLoadAndSave = ",
 
                 // String Colors (Normal {N} & Colorblind {CB})
                 // Normal String Colors
@@ -513,6 +514,8 @@ namespace RSMods
                     return FillSettingVariable(PreventMidSongPauseIdentifier, SettingType.ON_OFF, currentLine, out PreventMidSongPause);
                 if (IdentifierIsFound(currentLine, UltrawideIdentifier, identifierToGrab))
                     return FillSettingVariable(UltrawideIdentifier, SettingType.ON_OFF, currentLine, out Ultrawide);
+                if (IdentifierIsFound(currentLine, FastProfileLoadAndSaveIdentifier, identifierToGrab))
+                    return FillSettingVariable(FastProfileLoadAndSaveIdentifier, SettingType.ON_OFF, currentLine, out FastProfileLoadAndSave);
                 if (IdentifierIsFound(currentLine, RemoveFingerprintsIdentifier, identifierToGrab))
                     return FillSettingVariable(RemoveFingerprintsIdentifier, SettingType.ON_OFF, currentLine, out RemoveFingerprints);
 

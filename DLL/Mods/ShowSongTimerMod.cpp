@@ -28,11 +28,11 @@ void ShowSongTimerMod::OnInitialize(ModContext& c) {
 		"Show Song Timer");
 }
 
-void ShowSongTimerMod::OnSongEnter(ModContext& c) {
+void ShowSongTimerMod::OnSongEnter(ModContext&) {
 	D3DHooks::showSongTimerOnScreen = true;
 }
 
-void ShowSongTimerMod::OnSongExit(ModContext& c) {
+void ShowSongTimerMod::OnSongExit(ModContext&) {
 	D3DHooks::showSongTimerOnScreen = false;
 }
 
