@@ -163,6 +163,7 @@ namespace ModManager {
 		ERMode::Initialize();
 		GUI();
 		Midi::InitMidi();
+		SongTuning::InstallTunerHook();
 		Enumeration::HookEnumerationService();
 
 		CrowdControl::StartServer();
