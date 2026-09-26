@@ -150,6 +150,7 @@ namespace RSMods
                     { ReadSettings.UltrawideIdentifier, CreateDefaultOnOldINI(ReadSettings.UltrawideIdentifier, "off") }, // Fills 21:9 / 32:9 displays: the 3D scene gains horizontal FOV (Hor+) while the HUD and menus stay 16:9. No-op on 16:9.
                     { ReadSettings.RemoveFingerprintsIdentifier, CreateDefaultOnOldINI(ReadSettings.RemoveFingerprintsIdentifier, "off") },
                     { ReadSettings.FastProfileLoadAndSaveIdentifier, CreateDefaultOnOldINI(ReadSettings.FastProfileLoadAndSaveIdentifier, "off") }, // Streams profile saves and loads so big profiles don't freeze or crash the game. Needs BackupProfile on.
+                    { ReadSettings.FastEnumerationIdentifier, CreateDefaultOnOldINI(ReadSettings.FastEnumerationIdentifier, "off") }, // Scans the dlc folder several packages per frame instead of one.
                 }
             );
             saveSettingsOrDefaults.Add(
@@ -246,6 +247,27 @@ namespace RSMods
                     { ReadSettings.CustomGUIButtonColorIdentifier, CreateDefaultOnOldINI(ReadSettings.CustomGUIButtonColorIdentifier, "E3E3E3") }, // Custom Button Background Color
                     { ReadSettings.BackupProfileIdentifier, CreateDefaultOnOldINI(ReadSettings.BackupProfileIdentifier, "on") }, // Back up the profiles when the GUI opens, and every 10 minutes while the game runs (when they changed). Fast profile load/save needs this on.
                     { ReadSettings.NumberOfBackupsIdentifier, CreateDefaultOnOldINI(ReadSettings.NumberOfBackupsIdentifier, "50") }, // How many backups should we store before we start deleting them.
+                }
+            );
+            saveSettingsOrDefaults.Add(
+                "[Fast Enumeration]", new Dictionary<string, string>
+                {
+                    // Tuning for Fast Song Scan (FastEnumeration). Not shown in the GUI; kept here so saving from the GUI doesn't drop them.
+                    { ReadSettings.FastEnumerationInstallsPerTickIdentifier, CreateDefaultOnOldINI(ReadSettings.FastEnumerationInstallsPerTickIdentifier, "16") }, // Extra DLC installs per frame. 0 turns the install drain off.
+                    { ReadSettings.FastEnumerationLoadsPerTickIdentifier, CreateDefaultOnOldINI(ReadSettings.FastEnumerationLoadsPerTickIdentifier, "32") }, // Extra load-stage steps per frame.
+                    { ReadSettings.FastEnumerationBudgetMsIdentifier, CreateDefaultOnOldINI(ReadSettings.FastEnumerationBudgetMsIdentifier, "24") }, // Time the scan may take per frame, in ms.
+                    { ReadSettings.FastEnumerationMenuBudgetMsIdentifier, CreateDefaultOnOldINI(ReadSettings.FastEnumerationMenuBudgetMsIdentifier, "6") }, // Time per frame once the main menu is up (the loft streams on the same thread).
+                    { ReadSettings.FastEnumerationSkipUnchangedIdentifier, CreateDefaultOnOldINI(ReadSettings.FastEnumerationSkipUnchangedIdentifier, "on") }, // Rescans skip packages that registered last scan and haven't changed.
+                    { ReadSettings.FastEnumerationSkipShaderScanIdentifier, CreateDefaultOnOldINI(ReadSettings.FastEnumerationSkipShaderScanIdentifier, "on") }, // Skip the per-package shader cache scan for packages the DLC scan installs.
+                    { ReadSettings.FastEnumerationStreamLimitIdentifier, CreateDefaultOnOldINI(ReadSettings.FastEnumerationStreamLimitIdentifier, "2048") }, // msvcr100 open stream cap (512 - 2048).
+                    { ReadSettings.FastEnumerationFileCeilingIdentifier, CreateDefaultOnOldINI(ReadSettings.FastEnumerationFileCeilingIdentifier, "1792") }, // Open CRT handles at which the scan pauses.
+                    { ReadSettings.FastEnumerationPrefetchKBIdentifier, CreateDefaultOnOldINI(ReadSettings.FastEnumerationPrefetchKBIdentifier, "128") }, // Read-ahead per package on a background thread, in KB. 0 turns it off.
+                    { ReadSettings.FastEnumerationPrefetchHddOnlyIdentifier, CreateDefaultOnOldINI(ReadSettings.FastEnumerationPrefetchHddOnlyIdentifier, "off") }, // Only read ahead when a DLC volume is a spinning disk (or won't say).
+                    { ReadSettings.FastEnumerationEarlyScanIdentifier, CreateDefaultOnOldINI(ReadSettings.FastEnumerationEarlyScanIdentifier, "off") }, // Scan at the title screen instead of after the profile screens.
+                    { ReadSettings.FastEnumerationEarlyScanMaxIdentifier, CreateDefaultOnOldINI(ReadSettings.FastEnumerationEarlyScanMaxIdentifier, "1500") }, // Largest library the early scan runs for.
+                    { ReadSettings.FastEnumerationBootBudgetMsIdentifier, CreateDefaultOnOldINI(ReadSettings.FastEnumerationBootBudgetMsIdentifier, "30") }, // Time per frame for the early scan, in ms.
+                    { ReadSettings.FastEnumerationBootInstallsPerTickIdentifier, CreateDefaultOnOldINI(ReadSettings.FastEnumerationBootInstallsPerTickIdentifier, "32") }, // Extra installs per frame for the early scan.
+                    { ReadSettings.FastEnumerationAssetLoadsPerTickIdentifier, CreateDefaultOnOldINI(ReadSettings.FastEnumerationAssetLoadsPerTickIdentifier, "64") }, // Background asset loads per loader tick while the scan runs. 1 = stock.
                 }
             );
         }

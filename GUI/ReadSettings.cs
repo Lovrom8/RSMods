@@ -31,7 +31,10 @@ namespace RSMods
                              ToggleSkylineWhen, RemoveLaneMarkersEnabled, RemoveLyricsEnabled, RemoveLyricsWhen, GuitarSpeakEnabled, RemoveHeadstockWhen, ScreenShotScores,
                              MidiAutoTuning, MidiAutoTuningDevice, MidiInDevice, MidiAutoTuningWhen, MidiSoftwareSemitoneTriggers, MidiSoftwareSemitoneSettings, MidiSoftwareTrueTuningTriggers, MidiSoftwareTrueTuningSettings, ChordsMode,
                              RiffRepeaterAboveHundred, ShowCurrentNoteOnScreen, OnScreenFont, OnScreenFontSize, ProfileToLoad, ShowSongTimerWhen, SecondaryMonitor, RemoveSongPreviews, OverrideInputVolumeEnabled, OverrideInputVolumeDevice,
-                             AllowAudioInBackground, BypassTwoRTCMessageBox, LinearRiffRepeater, UseAlternativeOutputSampleRate, AllowLooping, AllowRewind, FixOculusCrash, FixBrokenTones, UseCustomNSPTimer, DisplayCurrentAccuracy, PreventMidSongPause, RemoveFingerprints, Ultrawide, FastProfileLoadAndSave,
+                             AllowAudioInBackground, BypassTwoRTCMessageBox, LinearRiffRepeater, UseAlternativeOutputSampleRate, AllowLooping, AllowRewind, FixOculusCrash, FixBrokenTones, UseCustomNSPTimer, DisplayCurrentAccuracy, PreventMidSongPause, RemoveFingerprints, Ultrawide, FastProfileLoadAndSave, FastEnumeration,
+
+                             // Fast Enumeration tuning (hidden, INI only)
+                             FastEnumerationInstallsPerTick, FastEnumerationLoadsPerTick, FastEnumerationBudgetMs, FastEnumerationMenuBudgetMs, FastEnumerationSkipUnchanged, FastEnumerationSkipShaderScan, FastEnumerationStreamLimit, FastEnumerationFileCeiling, FastEnumerationPrefetchKB, FastEnumerationPrefetchHddOnly, FastEnumerationEarlyScan, FastEnumerationEarlyScanMax, FastEnumerationBootBudgetMs, FastEnumerationBootInstallsPerTick, FastEnumerationAssetLoadsPerTick,
 
 
                              // String Colors
@@ -168,6 +171,24 @@ namespace RSMods
             PreventMidSongPauseIdentifier               = "PreventMidSongPause = ",
             UltrawideIdentifier                         = "Ultrawide = ",
             FastProfileLoadAndSaveIdentifier            = "FastProfileLoadAndSave = ",
+            FastEnumerationIdentifier                   = "FastEnumeration = ",
+
+            // Fast Enumeration tuning (hidden, INI only)
+            FastEnumerationInstallsPerTickIdentifier     = "FastEnumerationInstallsPerTick = ",
+            FastEnumerationLoadsPerTickIdentifier        = "FastEnumerationLoadsPerTick = ",
+            FastEnumerationBudgetMsIdentifier            = "FastEnumerationBudgetMs = ",
+            FastEnumerationMenuBudgetMsIdentifier        = "FastEnumerationMenuBudgetMs = ",
+            FastEnumerationSkipUnchangedIdentifier       = "FastEnumerationSkipUnchanged = ",
+            FastEnumerationSkipShaderScanIdentifier      = "FastEnumerationSkipShaderScan = ",
+            FastEnumerationStreamLimitIdentifier         = "FastEnumerationStreamLimit = ",
+            FastEnumerationFileCeilingIdentifier         = "FastEnumerationFileCeiling = ",
+            FastEnumerationPrefetchKBIdentifier          = "FastEnumerationPrefetchKB = ",
+            FastEnumerationPrefetchHddOnlyIdentifier     = "FastEnumerationPrefetchHddOnly = ",
+            FastEnumerationEarlyScanIdentifier           = "FastEnumerationEarlyScan = ",
+            FastEnumerationEarlyScanMaxIdentifier        = "FastEnumerationEarlyScanMax = ",
+            FastEnumerationBootBudgetMsIdentifier        = "FastEnumerationBootBudgetMs = ",
+            FastEnumerationBootInstallsPerTickIdentifier = "FastEnumerationBootInstallsPerTick = ",
+            FastEnumerationAssetLoadsPerTickIdentifier   = "FastEnumerationAssetLoadsPerTick = ",
 
                 // String Colors (Normal {N} & Colorblind {CB})
                 // Normal String Colors
@@ -516,6 +537,38 @@ namespace RSMods
                     return FillSettingVariable(UltrawideIdentifier, SettingType.ON_OFF, currentLine, out Ultrawide);
                 if (IdentifierIsFound(currentLine, FastProfileLoadAndSaveIdentifier, identifierToGrab))
                     return FillSettingVariable(FastProfileLoadAndSaveIdentifier, SettingType.ON_OFF, currentLine, out FastProfileLoadAndSave);
+                if (IdentifierIsFound(currentLine, FastEnumerationIdentifier, identifierToGrab))
+                    return FillSettingVariable(FastEnumerationIdentifier, SettingType.ON_OFF, currentLine, out FastEnumeration);
+                if (IdentifierIsFound(currentLine, FastEnumerationInstallsPerTickIdentifier, identifierToGrab))
+                    return FillSettingVariable(FastEnumerationInstallsPerTickIdentifier, SettingType.STRING, currentLine, out FastEnumerationInstallsPerTick);
+                if (IdentifierIsFound(currentLine, FastEnumerationLoadsPerTickIdentifier, identifierToGrab))
+                    return FillSettingVariable(FastEnumerationLoadsPerTickIdentifier, SettingType.STRING, currentLine, out FastEnumerationLoadsPerTick);
+                if (IdentifierIsFound(currentLine, FastEnumerationBudgetMsIdentifier, identifierToGrab))
+                    return FillSettingVariable(FastEnumerationBudgetMsIdentifier, SettingType.STRING, currentLine, out FastEnumerationBudgetMs);
+                if (IdentifierIsFound(currentLine, FastEnumerationMenuBudgetMsIdentifier, identifierToGrab))
+                    return FillSettingVariable(FastEnumerationMenuBudgetMsIdentifier, SettingType.STRING, currentLine, out FastEnumerationMenuBudgetMs);
+                if (IdentifierIsFound(currentLine, FastEnumerationSkipUnchangedIdentifier, identifierToGrab))
+                    return FillSettingVariable(FastEnumerationSkipUnchangedIdentifier, SettingType.ON_OFF, currentLine, out FastEnumerationSkipUnchanged);
+                if (IdentifierIsFound(currentLine, FastEnumerationSkipShaderScanIdentifier, identifierToGrab))
+                    return FillSettingVariable(FastEnumerationSkipShaderScanIdentifier, SettingType.ON_OFF, currentLine, out FastEnumerationSkipShaderScan);
+                if (IdentifierIsFound(currentLine, FastEnumerationStreamLimitIdentifier, identifierToGrab))
+                    return FillSettingVariable(FastEnumerationStreamLimitIdentifier, SettingType.STRING, currentLine, out FastEnumerationStreamLimit);
+                if (IdentifierIsFound(currentLine, FastEnumerationFileCeilingIdentifier, identifierToGrab))
+                    return FillSettingVariable(FastEnumerationFileCeilingIdentifier, SettingType.STRING, currentLine, out FastEnumerationFileCeiling);
+                if (IdentifierIsFound(currentLine, FastEnumerationPrefetchKBIdentifier, identifierToGrab))
+                    return FillSettingVariable(FastEnumerationPrefetchKBIdentifier, SettingType.STRING, currentLine, out FastEnumerationPrefetchKB);
+                if (IdentifierIsFound(currentLine, FastEnumerationPrefetchHddOnlyIdentifier, identifierToGrab))
+                    return FillSettingVariable(FastEnumerationPrefetchHddOnlyIdentifier, SettingType.ON_OFF, currentLine, out FastEnumerationPrefetchHddOnly);
+                if (IdentifierIsFound(currentLine, FastEnumerationEarlyScanIdentifier, identifierToGrab))
+                    return FillSettingVariable(FastEnumerationEarlyScanIdentifier, SettingType.ON_OFF, currentLine, out FastEnumerationEarlyScan);
+                if (IdentifierIsFound(currentLine, FastEnumerationEarlyScanMaxIdentifier, identifierToGrab))
+                    return FillSettingVariable(FastEnumerationEarlyScanMaxIdentifier, SettingType.STRING, currentLine, out FastEnumerationEarlyScanMax);
+                if (IdentifierIsFound(currentLine, FastEnumerationBootBudgetMsIdentifier, identifierToGrab))
+                    return FillSettingVariable(FastEnumerationBootBudgetMsIdentifier, SettingType.STRING, currentLine, out FastEnumerationBootBudgetMs);
+                if (IdentifierIsFound(currentLine, FastEnumerationBootInstallsPerTickIdentifier, identifierToGrab))
+                    return FillSettingVariable(FastEnumerationBootInstallsPerTickIdentifier, SettingType.STRING, currentLine, out FastEnumerationBootInstallsPerTick);
+                if (IdentifierIsFound(currentLine, FastEnumerationAssetLoadsPerTickIdentifier, identifierToGrab))
+                    return FillSettingVariable(FastEnumerationAssetLoadsPerTickIdentifier, SettingType.STRING, currentLine, out FastEnumerationAssetLoadsPerTick);
                 if (IdentifierIsFound(currentLine, RemoveFingerprintsIdentifier, identifierToGrab))
                     return FillSettingVariable(RemoveFingerprintsIdentifier, SettingType.ON_OFF, currentLine, out RemoveFingerprints);
 

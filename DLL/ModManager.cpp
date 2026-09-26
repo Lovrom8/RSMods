@@ -171,6 +171,17 @@ namespace ModManager {
 		SongTuning::InstallTunerHook();
 		Enumeration::HookEnumerationService();
 
+		// Before the game's first DLC scan. Read once, like the other hooks that must be in place at startup.
+		if (Settings::IsOn(Setting::FastEnumeration)) {
+			JsonNumberHash::Install(); // The manifest database built after the scan parses faster with it
+			EnumerationDrain::Install();
+			if (EnumerationDrain::IsInstalled())
+				AssetLoadDrain::Install();
+		}
+		else {
+			LOG_INFO("(ENUMERATION) Fast enumeration is off" << std::endl);
+		}
+
 		CrowdControl::StartServer();
 	}
 
@@ -181,7 +192,7 @@ namespace ModManager {
 	{
 		AudioDevices::SetupMicrophones();
 		QualityOfLife::StopTwoRSInstances(); // Looks for the second instance's error dialog once, so it keeps its old timing
-    ProfileSaveStreaming::Initialize();
+		ProfileSaveStreaming::Initialize();
 
 		#ifdef _WWISE_LOGS
 				Wwise::Logging::Init();

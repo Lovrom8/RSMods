@@ -1,5 +1,6 @@
 #include "../stdafx.h"
 #include "EnumerationMod.hpp"
+#include "EnumerationDrain.hpp"
 
 using Framework::ModContext;
 using Framework::KeyEdge;
@@ -32,6 +33,8 @@ void EnumerationMod::OnSettingsChanged(ModContext& c) {
 // Runs on the main thread. ForceEnumeration() writes game memory, so it must never be
 // called from the monitor thread; the monitor only flags that the DLC count changed.
 void EnumerationMod::OnTick(ModContext&) {
+	EnumerationDrain::NoteMenu(GameState::currentMenu);
+
 	if (enumerationRequested.exchange(false))
 		Enumeration::ForceEnumeration();
 }

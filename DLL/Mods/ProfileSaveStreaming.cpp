@@ -1,6 +1,7 @@
 #include "../stdafx.h"
 #include "ProfileSaveStreaming.hpp"
 #include "ProfileBackups.hpp"
+#include "JsonNumberHash.hpp"
 #include "../MemUtil.hpp"
 #include "../SamplingProfiler.hpp"
 #include <atomic>
@@ -704,7 +705,7 @@ namespace ProfileSaveStreaming {
 			if (loadState == LoadState::Parsing) {
 				if (WaitForSingleObject(parseThread, 0) != WAIT_OBJECT_0)
 					return;
-				SamplingProfiler::Stop();
+				SamplingProfiler::Stop("profile_parse");
 				CloseHandle(parseThread);
 				parseThread = nullptr;
 			}
@@ -769,7 +770,7 @@ namespace ProfileSaveStreaming {
 				const ProfileBackups::SaveGuard backupGuard;
 				origSave(profileSave, nullptr);
 			}
-			SamplingProfiler::Stop();
+			SamplingProfiler::Stop("profile_save");
 
 			// The commit step can return before the writer runs (no Steam account, etc.), so whatever is left is dropped here.
 			for (Section& section : save.sections)
@@ -790,86 +791,6 @@ namespace ProfileSaveStreaming {
 				push offset Offsets::ptr_profileLoadTickJmpBck // End of the tick
 				jmp MemUtil::JumpToVersioned
 			}
-		}
-
-		// ---- Number interning ----
-
-		/// <summary>
-		/// The game interns every JSON number in a hash set keyed by value. The game's hash truncates the double to an integer first,
-		/// so every value in [n, n+1) shares a bucket, and that bucket is a sorted list walked one entry at a time.
-		/// A big profile has ~39,000 distinct numbers in [0, 1) (accuracies and such), which makes parsing it billions of comparisons.
-		/// Equal doubles still hash equal: -0.0 is folded into 0.0 because they compare equal.
-		/// </summary>
-		uint32_t __cdecl HashNumber(const double* value) {
-			double number = *value;
-			if (number == 0.0)
-				number = 0.0;
-
-			uint64_t bits;
-			memcpy(&bits, &number, sizeof(bits));
-			bits ^= bits >> 33; // MurmurHash3 finalizer
-			bits *= 0xFF51AFD7ED558CCDull;
-			bits ^= bits >> 33;
-			bits *= 0xC4CEB9FE1A85EC53ull;
-			bits ^= bits >> 33;
-			return static_cast<uint32_t>(bits);
-		}
-
-		void __declspec(naked) numberHashHook() {
-			__asm {
-				push ecx
-				push edx
-				push eax						// const double*
-				call HashNumber
-				add esp, 4
-				pop edx
-				pop ecx
-				ret								// Hash in EAX, same as the game's
-			}
-		}
-
-		void RehashNumberTable(void* table) {
-			const uintptr_t rehash = Offsets::func_jsonNumberTableRehash.Get();
-			__asm {
-				push edi
-				mov edi, table
-				call rehash
-				pop edi
-			}
-		}
-
-		void InitializeNumberHash() {
-			CRITICAL_SECTION* lock = *reinterpret_cast<CRITICAL_SECTION**>(Offsets::ptr_jsonNumberTableLock.Get());
-			uint8_t* table = *reinterpret_cast<uint8_t**>(Offsets::ptr_jsonNumberTable.Get());
-
-			// Numbers already in the table sit in the buckets of the old hash. Swap the hash and rebuild the table without letting anyone in between.
-			if (lock)
-				EnterCriticalSection(lock);
-
-			const bool hooked = MemUtil::PlaceHook(Offsets::func_jsonNumberHash, numberHashHook, 6);
-			if (hooked) {
-				FlushInstructionCache(GetCurrentProcess(), (void*)Offsets::func_jsonNumberHash.Get(), 6);
-
-				const uint32_t size = table ? *reinterpret_cast<uint32_t*>(table + 0x8) : 0;
-				const uint32_t buckets = table ? *reinterpret_cast<uint32_t*>(table + 0x24) : 0;
-				if (size != 0 && buckets != 0) {
-					// The rehash grows the buckets 8x and reinserts every number with the current hash, once the load factor is over the max.
-					// Force exactly one: half the current load triggers it, and the reinserts (which check again) see 1/8 of it.
-					float& maxLoadFactor = *reinterpret_cast<float*>(table + 0x28);
-					const float savedMaxLoadFactor = maxLoadFactor;
-					maxLoadFactor = 0.5f * static_cast<float>(size) / static_cast<float>(buckets);
-					RehashNumberTable(table);
-					maxLoadFactor = savedMaxLoadFactor;
-				}
-			}
-
-			if (lock)
-				LeaveCriticalSection(lock);
-
-			if (hooked)
-				LOG_INFO("(PROFILE SAVE) Replaced the JSON number hash" << std::endl);
-			else
-				LOG_ERROR("(PROFILE SAVE) Failed to replace the JSON number hash" << std::endl);
 		}
 
 		// ---- Playnext stats trim ----
@@ -1143,7 +1064,7 @@ namespace ProfileSaveStreaming {
 		// Without this, Windows swaps the window for a "Not Responding" ghost (and offers to close the game) while they run.
 		DisableProcessWindowsGhosting();
 
-		InitializeNumberHash();
+		JsonNumberHash::Install();
 		InitializePlaynextTrim();
 		InitializeClearDocument();
 		if (InitializeSaveWrapper()) {
