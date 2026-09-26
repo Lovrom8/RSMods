@@ -133,7 +133,8 @@ namespace Offsets { // Addresses for pre-2021 patch are in the comments
 	std::vector<unsigned int> ptr_tuningTextOffsets{ 0x28, 0x44, 0x0 };
 
 	// Current Note (Midi value: https://djip.co/w/wp-content/uploads/drupal/blog/logic-midi-note-numbers.png | 0 - 96 are used in Rocksmith).
-	std::vector<unsigned int> ptr_guitarSpeakOffets{ 0x10, 0x4, 0x5FC };
+	// Which offset from here holds the note depends on guitar or bass; see GuitarSpeak::GetCurrentNote.
+	std::vector<unsigned int> ptr_guitarSpeakOffets{ 0x10, 0x4, 0x0 };
 
 	// Removed do to access to Wwise calls.
 	//// Mixer Volumes - the game uses 0x08 as the last offset for those mixer related things, so that could help with reducing pointerscan results - but I forgot about that, so only one of those uses 0x08 :P 
