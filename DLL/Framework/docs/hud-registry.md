@@ -115,6 +115,25 @@ before.
 The first line of any group starts at exactly the old `AnchorRect` inset, so single-occupant stacks are
 pixel-for-pixel identical and the mixer reproduces its old `offset += h/54` spacing.
 
+### Layout area
+
+Anchors lay out inside a **layout area** (`HudArea`), not necessarily the whole display. The maths is
+the framework's pure `AnchorBand(anchor, area)` (unit-tested in `HudRegistryTests`), and the overlay
+only draws what it returns. By default the area is the whole display, and the bands match the old
+`AnchorStart` exactly (same truncation), so nothing moves.
+
+A mod that confines the game's own interface narrows it:
+
+```cpp
+Framework::Hud().SetLayoutAspect(16.0f / 9.0f); // HUD in the centred 16:9 band
+Framework::Hud().SetLayoutAspect(0.0f);          // whole display again
+```
+
+`CenteredArea` ignores an aspect the display isn't wider than, so the call is safe at any resolution.
+It is an atomic and may be set from any thread; a frame callback (`draw-registry.md` §8.7) sets it
+before the HUD is drawn that frame. The first user is Ultrawide (`ultrawide-merge.md`), whose game UI
+stays in a centred 16:9 band.
+
 ### Decisions taken
 
 - **Tie-break:** the sort key is `(anchor, order, id, owner-pointer)`. `id` is deterministic; the owner

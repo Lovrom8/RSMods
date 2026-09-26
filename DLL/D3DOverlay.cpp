@@ -6,48 +6,13 @@
 
 #include <algorithm>
 #include <cfloat>
+#include <cmath>
 #include <string>
 #include <vector>
 
 namespace Setting = Settings::Setting;
 
 namespace {
-	// Pixel band per anchor, derived from the live window size. Insets deliberately match the old
-	// hand-written overlays so single-occupant stacks land pixel-for-pixel where they always did.
-	struct AnchorLayout {
-		LONG left;
-		LONG right;
-		LONG top;
-		DWORD format;
-	};
-
-	AnchorLayout AnchorStart(Framework::HudAnchor anchor, const Resolution& window) {
-		const float w = static_cast<float>(window.width);
-		const float h = static_cast<float>(window.height);
-
-		switch (anchor) {
-		case Framework::HudAnchor::TopRight:
-			return { static_cast<LONG>(w - w / 16.0f), static_cast<LONG>(w - w / 96.0f),
-					 static_cast<LONG>(h / 54.0f), DT_RIGHT | DT_NOCLIP };
-		case Framework::HudAnchor::TopCenter:
-			return { static_cast<LONG>(w / 2.0f - w / 38.4f), static_cast<LONG>(w / 2.0f + w / 38.4f),
-					 static_cast<LONG>(h / 54.0f), DT_CENTER | DT_NOCLIP };
-		case Framework::HudAnchor::TopTuning:
-			return { static_cast<LONG>(w / 5.5f), static_cast<LONG>(w / 5.65f),
-					 static_cast<LONG>(h / 30.85f), DT_LEFT | DT_NOCLIP };
-		case Framework::HudAnchor::HighwayLeft:
-			return { static_cast<LONG>(w / 5.5f), static_cast<LONG>(w / 5.75f),
-					 static_cast<LONG>(h / 1.75f), DT_LEFT | DT_NOCLIP };
-		case Framework::HudAnchor::MenuBanner:
-			return { static_cast<LONG>(w / 3.87f), static_cast<LONG>(w / 4.0f),
-					 static_cast<LONG>(h / 30.85f), DT_LEFT | DT_NOCLIP };
-		case Framework::HudAnchor::TopLeft:
-		default:
-			return { static_cast<LONG>(w / 96.0f), static_cast<LONG>(w / 19.2f),
-					 static_cast<LONG>(h / 54.0f), DT_LEFT | DT_NOCLIP };
-		}
-	}
-
 	struct PreparedLine {
 		std::string text;
 		Framework::HudAnchor anchor{};
@@ -65,15 +30,6 @@ namespace {
 		unsigned b = argb & 0xFF;
 		if (a == 0) a = 255; // HUD text is opaque; guard a color with no alpha
 		return IM_COL32(r, g, b, a);
-	}
-
-	enum class Align { Left, Center, Right };
-
-	// Alignment lives in the anchor band's DT_* flags; recover it for ImGui.
-	Align AlignFromFormat(DWORD format) {
-		if (format & DT_RIGHT)  return Align::Right;
-		if (format & DT_CENTER) return Align::Center;
-		return Align::Left;
 	}
 }
 
@@ -118,23 +74,21 @@ void GameOverlay::DrawImGuiHud() {
 
 	const ImVec2 display = ImGui::GetIO().DisplaySize;
 	if (display.x <= 0 || display.y <= 0) return;
-	const Resolution windowSize{ static_cast<unsigned>(display.x), static_cast<unsigned>(display.y) };
+	const Framework::HudArea area = Framework::Hud().LayoutArea(std::floor(display.x), std::floor(display.y));
 
 	ImDrawList* dl = ImGui::GetBackgroundDrawList();
 	ImFont* defaultFont = ImGui::GetFont();
-	const float defaultStep = windowSize.height / 54.0f; // legacy per-line spacing when no custom height
+	const float defaultStep = area.height / 54.0f; // legacy per-line spacing when no custom height
 
 	bool haveAnchor = false;
 	Framework::HudAnchor anchor{};
-	AnchorLayout layout{};
-	Align align = Align::Left;
+	Framework::HudBand band{};
 	float cursorY = 0.0f;
 
 	for (const PreparedLine& line : g_prepared) {
 		if (!haveAnchor || line.anchor != anchor) {
-			layout = AnchorStart(line.anchor, windowSize);
-			align = AlignFromFormat(layout.format);
-			cursorY = static_cast<float>(layout.top);
+			band = Framework::AnchorBand(line.anchor, area);
+			cursorY = band.top;
 			anchor = line.anchor;
 			haveAnchor = true;
 		}
@@ -146,11 +100,11 @@ void GameOverlay::DrawImGuiHud() {
 
 		const ImVec2 extent = font->CalcTextSizeA(sizePx, FLT_MAX, 0.0f, line.text.c_str());
 
-		float x = static_cast<float>(layout.left);
-		if (align == Align::Right)
-			x = static_cast<float>(layout.right) - extent.x;
-		else if (align == Align::Center)
-			x = (static_cast<float>(layout.left) + static_cast<float>(layout.right)) * 0.5f - extent.x * 0.5f;
+		float x = band.left;
+		if (band.align == Framework::HudAlign::Right)
+			x = band.right - extent.x;
+		else if (band.align == Framework::HudAlign::Center)
+			x = (band.left + band.right) * 0.5f - extent.x * 0.5f;
 
 		// Legacy per-line advance: custom height when set, else measured height plus a quarter-line gap.
 		float step = defaultStep;

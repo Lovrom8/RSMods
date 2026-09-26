@@ -112,7 +112,7 @@ regardless of the mod's priority, and a mod already holding one makes the CC eff
 ## On-screen display & in-game menus
 
 The framework manages two decoupled UI interaction surfaces for mods:
-- **HUD on-screen display (`ctx.Hud()`):** Snapshot-based text rendering anchored to semantic screen locations (`TopLeft`, `TopCenter`, `TopRight`, `TopTuning`, `HighwayLeft`, `MenuBanner`). The renderer copies snapshots on the D3D thread while mods publish on `MainThread`. See [`docs/hud-registry.md`](docs/hud-registry.md).
+- **HUD on-screen display (`ctx.Hud()`):** Snapshot-based text rendering anchored to semantic screen locations (`TopLeft`, `TopCenter`, `TopRight`, `TopTuning`, `HighwayLeft`, `MenuBanner`). The renderer copies snapshots on the D3D thread while mods publish on `MainThread`. Anchors lay out in the whole display, or in a narrower band a mod sets with `Hud().SetLayoutAspect()`. See [`docs/hud-registry.md`](docs/hud-registry.md).
 - **In-game settings menu (`ctx.Menu()`):** Host-agnostic registry for ImGui settings drawers (`MidiMod`, `CalibrationMod`, `MicrophoneVolumeOverrideMod`, `VoiceOverControlMod`). Dispatched safely during `Hook_EndScene` with per-mod exception isolation. See [`docs/menu-registry.md`](docs/menu-registry.md).
 - **Procedural texture generation (`D3D::`):** Decoupled graphics utility layer for procedural texture generation (solid, gradient, CRC hashing). Mod-specific textures are owned by their respective mods (`ExtendedRangeMode`, `CustomHighwayColorsMod`) and regenerated at the `Hook_EndScene` frame boundary. See [`docs/texture-utilities.md`](docs/texture-utilities.md).
 
