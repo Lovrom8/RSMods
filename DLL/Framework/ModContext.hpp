@@ -101,6 +101,26 @@ namespace Framework {
 		void RegisterDeviceReset(DeviceResetCallback fn) const {
 			draw.RegisterDeviceReset(mod, std::move(fn));
 		}
+
+		// Device-state events (DeviceEvents.hpp), render thread. One handler per mod per event.
+		void OnTextureBound(std::function<void(DeviceEvent::TextureBound&)> fn, Observe when = Observe::WhileEnabled) const {
+			draw.Device().textureBound.Register(mod, when, std::move(fn));
+		}
+		void OnRenderTargetBound(std::function<void(DeviceEvent::RenderTargetBound&)> fn, Observe when = Observe::WhileEnabled) const {
+			draw.Device().renderTargetBound.Register(mod, when, std::move(fn));
+		}
+		void OnVertexShaderBound(std::function<void(DeviceEvent::VertexShaderBound&)> fn, Observe when = Observe::WhileEnabled) const {
+			draw.Device().vertexShaderBound.Register(mod, when, std::move(fn));
+		}
+		void OnPixelShaderBound(std::function<void(DeviceEvent::PixelShaderBound&)> fn, Observe when = Observe::WhileEnabled) const {
+			draw.Device().pixelShaderBound.Register(mod, when, std::move(fn));
+		}
+		void OnVertexShaderConstants(std::function<void(DeviceEvent::VertexShaderConstants&)> fn, Observe when = Observe::WhileEnabled) const {
+			draw.Device().vertexShaderConstants.Register(mod, when, std::move(fn));
+		}
+		void OnStretchRect(std::function<void(DeviceEvent::StretchRect&)> fn, Observe when = Observe::WhileEnabled) const {
+			draw.Device().stretchRect.Register(mod, when, std::move(fn));
+		}
 	};
 
 	// Internal per-hook context

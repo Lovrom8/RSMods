@@ -14,7 +14,7 @@
 //
 // The centre keeps its normal Riff Repeater look and the side extensions stay lit. At 16:9,
 // or with the Ultrawide setting off, nothing changes because the gate follows
-// D3DHooks::ultrawideActive.
+// UltrawideState::active.
 //
 // Install() validates the CALL at the site, the callee's prologue and its return, and
 // refuses on any mismatch, so an unknown build is never patched.

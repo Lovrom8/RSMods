@@ -8,6 +8,8 @@
 #include <string_view>
 #include <vector>
 
+#include "DeviceEvents.hpp"
+
 #if !defined(_WINDEF_) && !defined(_WINDOWS_)
 using DWORD = unsigned long;
 #endif
@@ -39,6 +41,12 @@ namespace Framework {
 		return (static_cast<unsigned>(registered) & static_cast<unsigned>(single)) != 0;
 	}
 	enum class DrawOutcome { Pass, Show, Hide, ReplaceTexture };
+
+	namespace DrawPriority {
+		// Interceptors that change device state for the whole draw (viewport, scissor, constants) run
+		// first, so everything above sees the adjusted state and their AfterDraw restores run last.
+		inline constexpr int DeviceState = -1000;
+	}
 
 	struct DrawResult {
 		DrawOutcome outcome = DrawOutcome::Pass;
@@ -141,11 +149,14 @@ namespace Framework {
 		// MainThread: register this mod's device-reset callback (replaces any earlier one).
 		void RegisterDeviceReset(const IMod* owner, DeviceResetCallback fn);
 
-		// MainThread: drop every interceptor, regen, release, frame, and reset callback owned by this mod.
+		// MainThread: drop every interceptor, regen, release, frame, reset and device-event handler owned by this mod.
 		void RemoveMod(const IMod* owner);
 
-		// MainThread: rebuild the active snapshot from currently-enabled owners.
+		// MainThread: rebuild the active snapshots from currently-enabled owners.
 		void RebuildActive(std::function<bool(const IMod*)> isOwnerEnabled);
+
+		// Mods register through ModContext::Draw(); only the hooks use this directly.
+		DeviceChannels& Device();
 
 		// Render thread: lock-free load of the immutable, priority-sorted active list for one path
 		// (Indexed, Primitive, IndexedUP or PrimitiveUP; a combined value returns an empty list).

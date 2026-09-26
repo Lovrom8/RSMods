@@ -1,10 +1,7 @@
 #include "../stdafx.h"
 #include "D3DHooks.hpp"
 #include "../Framework/Framework.hpp"
-#include "../AspectRatio.hpp"
-#include "UltrawideShaders.hpp"
-#include "UltrawideFullStage.hpp"
-#include "../Mods/UltrawideMod.hpp"
+namespace DeviceEvent = Framework::DeviceEvent;
 using Framework::DrawContext;
 using Framework::DrawResult;
 using Framework::DrawOutcome;
@@ -34,10 +31,6 @@ HRESULT APIENTRY D3DHooks::Hook_DP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE P
 	if (pDevice->GetStreamSource(0, &Stream_Data, &Offset, &Stride) == D3D_OK)
 		Stream_Data->Release();
 
-	// Declared before the DrawContext so its viewport restore runs after the interceptors' AfterDraw restores.
-	UltrawideShaders::DrawScope ultrawideScope(pDevice, PrimCount);
-	ultrawideScope.Apply();
-
 	Mesh currentMesh(Stride, PrimCount, 0);
 	ThiccMesh currentThicc(Stride, PrimCount, 0, StartIndex, StartRegister, PrimType, decl->Type, VectorCount, NumElements);
 	DrawContext ctx{ pDevice, currentMesh, currentThicc, DrawPath::Primitive, GameState::IsInSong() };
@@ -57,13 +50,9 @@ HRESULT APIENTRY D3DHooks::Hook_DP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE P
 }
 
 /// <summary>
-/// IDirect3DDevice9::DrawPrimitiveUP Middleware. Exists so the ultrawide correction covers every
-/// draw entry point; the game's own behaviour passes through untouched.
+/// IDirect3DDevice9::DrawPrimitiveUP Middleware.
 /// </summary>
 HRESULT APIENTRY D3DHooks::Hook_DrawPrimitiveUP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE PrimType, UINT PrimCount, const void* pVertexStreamZeroData, UINT VertexStreamZeroStride) {
-	UltrawideShaders::DrawScope ultrawideScope(pDevice, PrimCount);
-	ultrawideScope.Apply();
-
 	if (auto active = Framework::Draw().ActiveSnapshot(DrawPath::PrimitiveUP); !active->empty()) {
 		Mesh currentMesh(VertexStreamZeroStride, PrimCount, 0);
 		ThiccMesh currentThicc(VertexStreamZeroStride, PrimCount, 0, 0, StartRegister, PrimType, decl->Type, VectorCount, NumElements);
@@ -87,9 +76,6 @@ HRESULT APIENTRY D3DHooks::Hook_DrawPrimitiveUP(IDirect3DDevice9* pDevice, D3DPR
 /// IDirect3DDevice9::DrawIndexedPrimitiveUP Middleware. See Hook_DrawPrimitiveUP.
 /// </summary>
 HRESULT APIENTRY D3DHooks::Hook_DrawIndexedPrimitiveUP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE PrimType, UINT MinVertexIndex, UINT NumVertices, UINT PrimCount, const void* pIndexData, D3DFORMAT IndexDataFormat, const void* pVertexStreamZeroData, UINT VertexStreamZeroStride) {
-	UltrawideShaders::DrawScope ultrawideScope(pDevice, PrimCount);
-	ultrawideScope.Apply();
-
 	if (auto active = Framework::Draw().ActiveSnapshot(DrawPath::IndexedUP); !active->empty()) {
 		Mesh currentMesh(VertexStreamZeroStride, PrimCount, NumVertices);
 		ThiccMesh currentThicc(VertexStreamZeroStride, PrimCount, NumVertices, 0, StartRegister, PrimType, decl->Type, VectorCount, NumElements);
@@ -132,150 +118,57 @@ HRESULT APIENTRY D3DHooks::Hook_SetVertexDeclaration(LPDIRECT3DDEVICE9 pDevice, 
 /// <param name="Vector4fCount"> - Number of four float vectors in the array of constants.</param>
 /// <returns>If the method succeeds, the return value is D3D_OK. If the method fails, the return value can be D3DERR_INVALIDCALL.</returns>
 HRESULT APIENTRY D3DHooks::Hook_SetVertexShaderConstantF(LPDIRECT3DDEVICE9 pDevice, UINT i_StartRegister, const float* pConstantData, UINT Vector4fCount) {
+	// The game's own values: mesh signatures were recorded against these, not a mod's rewrite.
 	if (pConstantData != NULL) {
 		StartRegister = i_StartRegister;
 		VectorCount = Vector4fCount;
 	}
 
+	DeviceEvent::VertexShaderConstants e{ pDevice, i_StartRegister, pConstantData, Vector4fCount };
+	Framework::Draw().Device().vertexShaderConstants.Dispatch(e);
+	if (e.suppress)
+		return D3D_OK;
+
 	// Call the original SetVertexShaderConstantF
-	return oSetVertexShaderConstantF(pDevice, i_StartRegister, pConstantData, Vector4fCount);
-}
-
-/// <summary>
-/// Refresh the ultrawide correction state. Called once per frame from Hook_EndScene, so the
-/// per-constant-upload path never has to touch Settings or query the swap chain.
-/// </summary>
-void D3DHooks::UpdateUltrawideState(IDirect3DDevice9* pDevice) {
-	// Only widen. A narrower-than-16:9 display gives a scale above 1.0, which would push the
-	// camera frustum and the remapped viewport outside the backbuffer, so the mod stays inert.
-	const bool active = ultrawideSettingOn.load(std::memory_order_relaxed)
-		&& ultrawideBackBufferValid && AspectRatio::IsWiderThanReference(ultrawideClipXScale);
-
-	ultrawideActive.store(active, std::memory_order_relaxed);
-
-	// Once per frame: the query compares strings, and the draw path reads the
-	// result per draw.
-	ultrawideInGuitarcade.store(GameState::Menus::IsInGuitarcadeGame(), std::memory_order_relaxed);
-	ultrawideInVideoPlayer.store(GameState::currentMenu == "VideoPlayer", std::memory_order_relaxed);
-	// Full-stage bitmaps: the title backdrop is widened on the title screens (the "connecting"
-	// SelectionListDialog included, the loft is not up yet there) and dropped under the
-	// sign-in dialogs.
-	UltrawideFullStage::onTitle.store(GameState::currentMenu.empty() || GameState::currentMenu == "pre_enter_prompt"
-		|| GameState::currentMenu == "TitleScreen" || GameState::currentMenu == "SelectionListDialog", std::memory_order_relaxed);
-
-	// Publish the backbuffer aspect only while the correction applies. Otherwise the game must
-	// keep building its stock 16:9 frustum: the viewport and HUD paths are inert on a display
-	// the gate rejected, and a camera that follows the display alone would drift from them.
-	const double displayAspect = active && ultrawideBackBufferHeight
-		? static_cast<double>(ultrawideBackBufferWidth) / ultrawideBackBufferHeight
-		: AspectRatio::referenceAspect;
-	UltrawideMod::SetDisplayAspect(displayAspect);
-
-	if (ultrawideBackBufferValid || !pDevice)
-		return;
-
-	IDirect3DSwapChain9* swapChain = nullptr;
-	if (FAILED(pDevice->GetSwapChain(0, &swapChain)) || !swapChain)
-		return;
-
-	D3DPRESENT_PARAMETERS presentParameters{};
-	if (SUCCEEDED(swapChain->GetPresentParameters(&presentParameters))
-		&& presentParameters.BackBufferWidth && presentParameters.BackBufferHeight) {
-
-		ultrawideClipXScale = AspectRatio::ClipXScale(presentParameters.BackBufferWidth, presentParameters.BackBufferHeight);
-		ultrawideBackBufferWidth = presentParameters.BackBufferWidth;
-		ultrawideBackBufferHeight = presentParameters.BackBufferHeight;
-		ultrawideBackBufferValid = true;
-
-		// Stage verdicts compare a target's size against the backbuffer aspect, so any cached
-		// before this point was known was decided on the wrong comparison.
-		UltrawideShaders::TextureStages::Invalidate();
-	}
-
-	swapChain->Release();
+	return oSetVertexShaderConstantF(pDevice, e.startRegister, e.data, e.vector4fCount);
 }
 
 /// <summary>
 /// IDirect3DDevice9::StretchRect Middleware.
 /// </summary>
 HRESULT APIENTRY D3DHooks::Hook_StretchRect(LPDIRECT3DDEVICE9 pDevice, IDirect3DSurface9* pSourceSurface, const RECT* pSourceRect, IDirect3DSurface9* pDestSurface, const RECT* pDestRect, D3DTEXTUREFILTERTYPE Filter) {
-	// The video player composites its frame through the same path at its own aspect; leave it.
-	if (ultrawideActive.load(std::memory_order_relaxed) && !ultrawideInVideoPlayer.load(std::memory_order_relaxed)
-		&& pDestRect && pDestSurface) {
-		D3DSURFACE_DESC destinationDescription{};
+	DeviceEvent::StretchRect e{ pDevice, pSourceSurface, pSourceRect, pDestSurface, pDestRect };
+	Framework::Draw().Device().stretchRect.Dispatch(e);
+	if (e.suppress)
+		return D3D_OK;
 
-		if (SUCCEEDED(pDestSurface->GetDesc(&destinationDescription))) {
-			const AspectRatio::Rect destination{ pDestRect->left, pDestRect->top, pDestRect->right, pDestRect->bottom };
-			AspectRatio::Rect widened{};
-
-			if (AspectRatio::WidenLetterbox(destination, destinationDescription.Width, destinationDescription.Height, widened)) {
-				const RECT widenedRect{ widened.left, widened.top, widened.right, widened.bottom };
-
-				return oStretchRect(pDevice, pSourceSurface, pSourceRect, pDestSurface, &widenedRect, Filter);
-			}
-		}
-	}
-
-	return oStretchRect(pDevice, pSourceSurface, pSourceRect, pDestSurface, pDestRect, Filter);
+	return oStretchRect(pDevice, e.source, e.sourceRect, e.dest, e.destRect, Filter);
 }
 
-// IDirect3DDevice9::SetTexture Middleware. Records the binding for the ultrawide texture-stage
-// mirror; classification happens lazily on the draw path.
+// Bind hooks below: bind first, dispatch after, so a rejected bind leaves observers on what is
+// still bound.
+
+/// <summary>
+/// IDirect3DDevice9::SetTexture Middleware.
+/// </summary>
 HRESULT APIENTRY D3DHooks::Hook_SetTexture(LPDIRECT3DDEVICE9 pDevice, DWORD Stage, IDirect3DBaseTexture9* pTexture) {
-	// Bind first, mirror after: a rejected bind leaves the device on its previous texture.
 	const HRESULT result = oSetTexture(pDevice, Stage, pTexture);
-	if (SUCCEEDED(result))
-		UltrawideShaders::TextureStages::OnTextureBound(Stage, pTexture);
+	if (SUCCEEDED(result)) {
+		DeviceEvent::TextureBound e{ pDevice, Stage, pTexture };
+		Framework::Draw().Device().textureBound.Dispatch(e);
+	}
 
 	return result;
 }
 
 /// <summary>
-/// IDirect3DDevice9::SetRenderTarget Middleware. Tracks whether the scene target is bound, so the
-/// aspect correction can confine itself to draws that actually reach the screen.
+/// IDirect3DDevice9::SetRenderTarget Middleware.
 /// </summary>
 HRESULT APIENTRY D3DHooks::Hook_SetRenderTarget(LPDIRECT3DDEVICE9 pDevice, DWORD RenderTargetIndex, IDirect3DSurface9* pRenderTarget) {
-	// Bind first, classify after: a rejected target keeps the previous one bound, and the draw
-	// path must keep reading that one's classification.
 	const HRESULT result = oSetRenderTarget(pDevice, RenderTargetIndex, pRenderTarget);
-
-	if (RenderTargetIndex == 0 && SUCCEEDED(result)) {
-
-		// One GetDesc serves both the render-target registry below and the scene test after it.
-		D3DSURFACE_DESC targetDescription{};
-		const bool haveDescription = pRenderTarget && SUCCEEDED(pRenderTarget->GetDesc(&targetDescription));
-
-		if (haveDescription) {
-			IDirect3DTexture9* container = nullptr;
-			if (SUCCEEDED(pRenderTarget->GetContainer(__uuidof(IDirect3DTexture9), reinterpret_cast<void**>(&container))) && container) {
-				const auto existing = ultrawideRenderTargetTextures.find(container);
-				const std::pair<UINT, UINT> size{ targetDescription.Width, targetDescription.Height };
-
-				// A texture only just discovered to be a render target may already be sitting in a
-				// texture stage classified as an ordinary texture, so retire the cached verdicts.
-				if (existing == ultrawideRenderTargetTextures.end() || existing->second != size) {
-					ultrawideRenderTargetTextures[container] = size;
-					UltrawideShaders::TextureStages::Invalidate();
-				}
-
-				container->Release();
-			}
-		}
-
-		bool isScene = false;
-		UINT width = 0;
-		UINT height = 0;
-
-		if (haveDescription && ultrawideBackBufferValid) {
-			width = targetDescription.Width;
-			height = targetDescription.Height;
-
-			isScene = AspectRatio::SameAspect(width, height, ultrawideBackBufferWidth, ultrawideBackBufferHeight);
-		}
-
-		ultrawideRenderTargetIsScene = isScene;
-		ultrawideRenderTargetWidth = width;
-		ultrawideRenderTargetHeight = height;
+	if (SUCCEEDED(result)) {
+		DeviceEvent::RenderTargetBound e{ pDevice, RenderTargetIndex, pRenderTarget };
+		Framework::Draw().Device().renderTargetBound.Dispatch(e);
 	}
 
 	return result;
@@ -291,10 +184,11 @@ HRESULT APIENTRY D3DHooks::Hook_SetVertexShader(LPDIRECT3DDEVICE9 pDevice, IDire
 	if (veShader != NULL)
 		vShader = veShader;
 
-	// Bind first, publish after: a rejected bind leaves the previous shader current.
 	const HRESULT result = oSetVertexShader(pDevice, veShader);
-	if (SUCCEEDED(result))
-		UltrawideShaders::OnVertexShaderBound(veShader);
+	if (SUCCEEDED(result)) {
+		DeviceEvent::VertexShaderBound e{ pDevice, veShader };
+		Framework::Draw().Device().vertexShaderBound.Dispatch(e);
+	}
 
 	return result;
 }
@@ -309,8 +203,13 @@ HRESULT APIENTRY D3DHooks::Hook_SetPixelShader(LPDIRECT3DDEVICE9 pDevice, IDirec
 	if (piShader != NULL)
 		pShader = piShader;
 
-	// Call the original SetPixelShader.
-	return oSetPixelShader(pDevice, piShader);
+	const HRESULT result = oSetPixelShader(pDevice, piShader);
+	if (SUCCEEDED(result)) {
+		DeviceEvent::PixelShaderBound e{ pDevice, piShader };
+		Framework::Draw().Device().pixelShaderBound.Dispatch(e);
+	}
+
+	return result;
 }
 
 /// <summary>
@@ -366,30 +265,6 @@ HRESULT APIENTRY D3DHooks::Hook_Reset(IDirect3DDevice9* pDevice, D3DPRESENT_PARA
 HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE PrimType, INT BaseVertexIndex, UINT MinVertexIndex, UINT NumVertices, UINT StartIndex, UINT PrimCount) { // Draw things on screen
 	if (pDevice->GetStreamSource(0, &Stream_Data, &Offset, &Stride) == D3D_OK)
 		Stream_Data->Release();
-
-	UltrawideShaders::DrawScope ultrawideScope(pDevice, PrimCount);
-	ultrawideScope.Apply();
-
-	// Full-stage bitmaps: the dim plate and the title backdrop are widened over the whole
-	// backbuffer, the backdrops dropped under the sign-in dialogs. Confined draws only, so
-	// inert at 16:9.
-	{
-		const auto decision = UltrawideFullStage::Decide(pDevice, PrimCount, ultrawideScope.Confined());
-		switch (decision) {
-		case UltrawideFullStage::Decision::Skip:
-			return D3D_OK;
-		case UltrawideFullStage::Decision::Stretch:
-		case UltrawideFullStage::Decision::StretchWide: {
-			UltrawideFullStage::StretchViewport(pDevice, ultrawideBackBufferWidth,
-				decision == UltrawideFullStage::Decision::Stretch);
-			const HRESULT stretched = oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, StartIndex, PrimCount);
-			UltrawideFullStage::Restore(pDevice);
-			return stretched;
-		}
-		default:
-			break;
-		}
-	}
 
 	// This could potentially lead to game locking up (because DIP is called multiple times per frame) if that value is not filled, but generally it should work 
 	if (Settings::ReturnSettingValue(Settings::Setting::ExtendedRangeEnabled).length() < 2) { // Due to some weird reasons, sometimes settings decide to go missing - this may solve the problem

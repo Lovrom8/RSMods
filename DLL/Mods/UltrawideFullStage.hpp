@@ -92,7 +92,7 @@ namespace UltrawideFullStage {
 		return hash;
 	}
 
-	// Called inside the DrawScope after Apply, for confined draws only.
+	// Called after DrawScope::Apply, for confined draws only.
 	inline Decision Decide(IDirect3DDevice9* device, unsigned int primCount, bool confined) {
 		if (!confined || (primCount != 10 && primCount != 2))
 			return Decision::None;
@@ -132,8 +132,8 @@ namespace UltrawideFullStage {
 	// Widens the confined viewport and scissor back to the whole backbuffer for this one draw,
 	// which scales x by backbuffer / band; with `uniform` the y row of the ortho in c1 is
 	// scaled by the same factor so the image grows about the centre and overflows top and
-	// bottom instead of being pulled wide. The DrawScope destructor restores the viewport,
-	// Restore() the scissor and the row.
+	// bottom instead of being pulled wide. The DrawScope's restore puts the viewport back,
+	// Restore() the scissor and the row; Restore() must run first.
 	inline void StretchViewport(IDirect3DDevice9* device, unsigned int backBufferWidth, bool uniform) {
 		D3DVIEWPORT9 viewport{};
 		if (FAILED(device->GetViewport(&viewport)) || viewport.Width == 0)

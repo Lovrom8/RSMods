@@ -499,6 +499,40 @@ early returns above it.
 building the context entirely. `Both` deliberately does not include them, so the existing
 mesh-signature interceptors never see user-pointer draws. Opt in with `All` or the UP flags.
 
+An interceptor that changes state for the whole draw (e.g. confining the viewport) registers at
+`DrawPriority::DeviceState`. It then runs before everything else, and because restores run
+newest-first, its restores run last. `UltrawideMod::ConfineDraw` is the reference.
+
+### 8.9 Device-state events
+
+For the calls *around* the draws, handle a device event instead of editing `D3DHooks`
+(`Framework/DeviceEvents.hpp`):
+
+```cpp
+// Bind events fire after the original call succeeded.
+c.Draw().OnTextureBound([](DeviceEvent::TextureBound& e) { /* e.stage, e.texture */ });
+c.Draw().OnRenderTargetBound(...);  OnVertexShaderBound(...);  OnPixelShaderBound(...);
+
+// Pre-call and mutable: rewrite the arguments, or set e.suppress to drop the call.
+c.Draw().OnVertexShaderConstants([](DeviceEvent::VertexShaderConstants& e) { /* e.data = ... */ });
+c.Draw().OnStretchRect([](DeviceEvent::StretchRect& e) { /* e.destRect = ... */ });
+```
+
+- **Observe::WhileEnabled** (default) or **Observe::Always**. Use `Always` for mirrors of bound state
+  that would be stale on enable if they missed binds while disabled (Ultrawide's texture-stage and
+  render-target maps). `Always` handlers still stop when the mod faults or shuts down.
+- One handler per mod per event. They run in owner-Id order, like frame callbacks. If two mods
+  rewrite the same call, that is a `ClaimsExclusive` conflict, not an ordering question.
+- A replaced pointer (`data`, `destRect`) only has to live until the handler chain returns.
+- The framework's own device calls (e.g. an interceptor's `SetTexture`, or a restore writing
+  constants) go through the same hooks, so handlers see them too.
+- Same rules as interceptors: render thread, no Settings lookups, exceptions are not caught.
+
+**Adding an event** for a call that is already hooked takes three changes: a struct in `DeviceEvent`,
+a channel in `DeviceChannels` (member plus its `ForEach` line), and one `Dispatch` in the hook.
+A D3D9 method that isn't hooked yet also needs the trampoline in `ModManager.cpp`. That is a
+one-time change to the host, not per mod.
+
 ---
 
 ## 9. Known Risks

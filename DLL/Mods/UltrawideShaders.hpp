@@ -5,8 +5,9 @@
 #include <unordered_map>
 #include <vector>
 
-#include "D3DHooks.hpp"
+#include "UltrawideState.hpp"
 #include "../AspectRatio.hpp"
+#include "../Framework/DrawRegistry.hpp"
 
 /// <summary>
 /// The 2D half of the ultrawide correction.
@@ -45,7 +46,7 @@ namespace UltrawideShaders {
 	// orthographic projection that passes IsAffine, so they were confined to 16:9 like an
 	// interface element while the 3D ones filled the display. Scaleform draws are untouched.
 	inline bool SkipSceneViewportClamp() {
-		return D3DHooks::ultrawideInGuitarcade.load(std::memory_order_relaxed);
+		return UltrawideState::inGuitarcade.load(std::memory_order_relaxed);
 	}
 
 	inline AspectRatio::ShaderLayout ParseLayout(IDirect3DVertexShader9* shader) {
@@ -111,7 +112,7 @@ namespace UltrawideShaders {
 	// off-aspect target (a 16:9 text strip), plain textures, or nothing.
 	enum class Sampled { Nothing, Textures, StripTarget, SceneTarget };
 
-	// Mirror of the device's texture stages, kept by Hook_SetTexture so the draw path does not
+	// Mirror of the device's texture stages, kept from the TextureBound event so the draw path does not
 	// poll all 8 stages with GetTexture per draw. A bound texture can change meaning later (it
 	// becomes a render target, or the backbuffer is resized); both bump classGeneration so the
 	// cached verdicts are recomputed. Pointers are compared and used as keys, never dereferenced,
@@ -144,12 +145,12 @@ namespace UltrawideShaders {
 			if (!texture)
 				return Sampled::Nothing;
 
-			const auto target = D3DHooks::ultrawideRenderTargetTextures.find(texture);
-			if (target == D3DHooks::ultrawideRenderTargetTextures.end())
+			const auto target = UltrawideState::renderTargetTextures.find(texture);
+			if (target == UltrawideState::renderTargetTextures.end())
 				return Sampled::Textures;
 
 			return AspectRatio::SameAspect(target->second.first, target->second.second,
-				D3DHooks::ultrawideBackBufferWidth, D3DHooks::ultrawideBackBufferHeight)
+				UltrawideState::backBufferWidth, UltrawideState::backBufferHeight)
 				? Sampled::SceneTarget
 				: Sampled::StripTarget;
 		}
@@ -203,25 +204,25 @@ namespace UltrawideShaders {
 	}
 
 	/// <summary>
-	/// Confines one draw to the 16:9 region if it belongs to the interface, and puts the device
-	/// state back afterwards.
+	/// Confines one draw to the 16:9 region if it belongs to the interface. RestoreAfter hands the
+	/// saved state to the draw, which puts it back after the original call.
 	/// </summary>
 	class DrawScope {
 	public:
 		DrawScope(IDirect3DDevice9* device, unsigned int primitiveCount) : device(device), primitiveCount(primitiveCount) {}
 
 		void Apply() {
-			if (!D3DHooks::ultrawideActive.load(std::memory_order_relaxed))
+			if (!UltrawideState::active.load(std::memory_order_relaxed))
 				return;
 
 			Entry* entry = currentEntry.load(std::memory_order_relaxed);
 			if (!entry)
 				return;
 
-			if (!D3DHooks::ultrawideRenderTargetIsScene)
+			if (!UltrawideState::renderTargetIsScene)
 				return;
 
-			const float scale = D3DHooks::ultrawideClipXScale;
+			const float scale = UltrawideState::clipXScale;
 
 			switch (entry->layout.kind) {
 			case AspectRatio::LayoutKind::Matrix:
@@ -248,12 +249,12 @@ namespace UltrawideShaders {
 
 		bool Confined() const { return viewportChanged || scissorChanged; }
 
-		~DrawScope() {
+		void RestoreAfter(Framework::DrawContext& ctx) const {
 			if (viewportChanged)
-				device->SetViewport(&savedViewport);
+				ctx.AfterDraw([device = device, viewport = savedViewport] { device->SetViewport(&viewport); });
 
 			if (scissorChanged)
-				device->SetScissorRect(&savedScissor);
+				ctx.AfterDraw([device = device, scissor = savedScissor] { device->SetScissorRect(&scissor); });
 		}
 
 		DrawScope(const DrawScope&) = delete;
@@ -292,7 +293,7 @@ namespace UltrawideShaders {
 				return;
 			}
 
-			const unsigned int surfaceWidth = D3DHooks::ultrawideBackBufferWidth;
+			const unsigned int surfaceWidth = UltrawideState::backBufferWidth;
 
 			D3DVIEWPORT9 remapped = savedViewport;
 			int left = static_cast<int>(savedViewport.X);
@@ -302,7 +303,7 @@ namespace UltrawideShaders {
 			remapped.Width = static_cast<DWORD>(right - left);
 
 			// A remap that lands on the values already set is not worth two D3D
-			// calls (the Set here plus the restore in ~DrawScope) on every draw
+			// calls (the Set here plus the restore after the draw) on every draw
 			// that hits this path. Leaving viewportChanged false skips both.
 			if (remapped.X != savedViewport.X || remapped.Width != savedViewport.Width) {
 				device->SetViewport(&remapped);

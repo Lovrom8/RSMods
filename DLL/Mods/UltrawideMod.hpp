@@ -17,8 +17,6 @@ public:
 	void OnTick(Framework::ModContext& c) override;
 	void OnShutdown(Framework::ModContext& c) override;
 
-	static void SetDisplayAspect(double aspect);
-
 private:
 	void SetPatched(bool enable);
 

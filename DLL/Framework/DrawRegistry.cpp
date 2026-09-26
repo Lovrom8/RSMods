@@ -110,6 +110,8 @@ namespace Framework {
 		std::atomic<std::shared_ptr<const std::vector<ActiveEntry>>> active[pathCount];
 		std::atomic<std::shared_ptr<const std::vector<FrameCallback>>> activeFrame;
 
+		DeviceChannels device; // Locks on its own; never touched under `mutex`.
+
 		Impl() {
 			auto empty = std::make_shared<const std::vector<ActiveEntry>>();
 			for (auto& list : active) list.store(empty, std::memory_order_relaxed);
@@ -201,6 +203,8 @@ namespace Framework {
 	}
 
 	void DrawRegistry::RemoveMod(const IMod* owner) {
+		impl->device.RemoveMod(owner);
+
 		std::lock_guard<std::mutex> lock(impl->mutex);
 
 		std::erase_if(impl->frameCallbacks, [owner](const OwnedCallback<FrameCallback>& r) { return r.owner == owner; });
@@ -211,8 +215,13 @@ namespace Framework {
 		std::erase_if(impl->pendingReleases, [owner](const IMod* p) { return p == owner; });
 	}
 
+	DeviceChannels& DrawRegistry::Device() {
+		return impl->device;
+	}
 
 	void DrawRegistry::RebuildActive(std::function<bool(const IMod*)> isOwnerEnabled) {
+		impl->device.Rebuild(isOwnerEnabled);
+
 		std::lock_guard<std::mutex> lock(impl->mutex);
 
 		std::shared_ptr<std::vector<ActiveEntry>> lists[pathCount];

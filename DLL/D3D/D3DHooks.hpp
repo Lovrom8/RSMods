@@ -33,26 +33,6 @@ namespace D3DHooks {
 
 	inline bool cachedIsInSong = false;
 
-	// Ultrawide aspect correction.
-	inline std::atomic<bool> ultrawideActive = false;   // The setting is on and the backbuffer is wider than 16:9: corrections apply.
-
-	// True while a Guitarcade minigame is being played or paused. Evaluated once
-	// per frame in UpdateUltrawideState because the underlying GameState query is
-	// a string comparison and the draw path reads this per draw.
-	inline std::atomic<bool> ultrawideInGuitarcade = false;
-	inline std::atomic<bool> ultrawideInVideoPlayer = false; // The video player composites at its own aspect.
-	inline std::atomic<bool> ultrawideSettingOn = false; // Published by UltrawideMod (mod thread) from the Ultrawide setting. The source of the flag above.
-	inline float ultrawideClipXScale = 1.0f; // (16/9) / the display aspect: how far the interface has to be squeezed back in.
-	inline std::unordered_map<void*, std::pair<UINT, UINT>> ultrawideRenderTargetTextures; // Render thread only: every texture that has been a render target, with its size. Scene-aspect ones mark post-processing draws; off-aspect ones (text strips) mark 16:9 UI.
-	inline bool ultrawideBackBufferValid = false;
-	inline UINT ultrawideBackBufferWidth = 0;
-	inline UINT ultrawideBackBufferHeight = 0;
-	inline bool ultrawideRenderTargetIsScene = false;
-	inline UINT ultrawideRenderTargetWidth = 0;
-	inline UINT ultrawideRenderTargetHeight = 0;
-
-	void UpdateUltrawideState(IDirect3DDevice9* pDevice);
-
 	HRESULT APIENTRY Hook_SetVertexDeclaration(LPDIRECT3DDEVICE9 pDevice, IDirect3DVertexDeclaration9* pdecl);
 	HRESULT APIENTRY Hook_DP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE PrimType, UINT StartIndex, UINT PrimCount);
 	HRESULT APIENTRY Hook_SetVertexShaderConstantF(LPDIRECT3DDEVICE9 pDevice, UINT StartRegister, const float* pConstantData, UINT Vector4fCount);

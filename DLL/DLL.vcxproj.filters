@@ -461,11 +461,17 @@
     <ClInclude Include="Mods\ProfileBackups.hpp">
       <Filter>Mods\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="D3D/UltrawideShaders.hpp">
-      <Filter>D3D</Filter>
+    <ClInclude Include="Mods\UltrawideState.hpp">
+      <Filter>Mods\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="D3D/UltrawideFullStage.hpp">
-      <Filter>D3D</Filter>
+    <ClInclude Include="Mods\UltrawideShaders.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\UltrawideFullStage.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\DeviceEvents.hpp">
+      <Filter>Framework</Filter>
     </ClInclude>
     <ClInclude Include="MemUtil.hpp">
       <Filter>Main Headers</Filter>

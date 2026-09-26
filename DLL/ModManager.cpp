@@ -135,10 +135,10 @@ namespace ModManager {
 		oDrawIndexedPrimitive = (tDrawIndexedPrimitive)MemUtil::TrampHook((byte*)vTable[D3DInfo::DrawIndexedPrimitive_Index], (byte*)D3DHooks::Hook_DIP, 5); // https://docs.microsoft.com/en-us/windows/win32/api/d3d9helper/nf-d3d9helper-idirect3ddevice9-drawindexedprimitive
 		oDrawPrimitive = (tDrawPrimitive)MemUtil::TrampHook((byte*)vTable[D3DInfo::DrawPrimitive_Index], (byte*)D3DHooks::Hook_DP, 5); // https://docs.microsoft.com/en-us/windows/win32/api/d3d9helper/nf-d3d9helper-idirect3ddevice9-drawprimitive
 
-		oStretchRect = (tStretchRect)MemUtil::TrampHook((byte*)vTable[D3DInfo::StretchRect_Index], (byte*)D3DHooks::Hook_StretchRect, 5); // Widens the game's 16:9 letterbox composite for the ultrawide mod.
-		oSetRenderTarget = (tSetRenderTarget)MemUtil::TrampHook((byte*)vTable[D3DInfo::SetRenderTarget_Index], (byte*)D3DHooks::Hook_SetRenderTarget, 5); // Tracks whether the scene target is bound for the ultrawide mod.
-		oSetTexture = (tSetTexture)MemUtil::TrampHook((byte*)vTable[D3DInfo::SetTexture_Index], (byte*)D3DHooks::Hook_SetTexture, 5); // Mirrors texture stages so the ultrawide draw path does not poll all 8 with GetTexture.
-		oDrawPrimitiveUP = (tDrawPrimitiveUP)MemUtil::TrampHook((byte*)vTable[D3DInfo::DrawPrimitiveUP_Index], (byte*)D3DHooks::Hook_DrawPrimitiveUP, 5); // Ultrawide correction covers every draw entry point.
+		oStretchRect = (tStretchRect)MemUtil::TrampHook((byte*)vTable[D3DInfo::StretchRect_Index], (byte*)D3DHooks::Hook_StretchRect, 5);
+		oSetRenderTarget = (tSetRenderTarget)MemUtil::TrampHook((byte*)vTable[D3DInfo::SetRenderTarget_Index], (byte*)D3DHooks::Hook_SetRenderTarget, 5);
+		oSetTexture = (tSetTexture)MemUtil::TrampHook((byte*)vTable[D3DInfo::SetTexture_Index], (byte*)D3DHooks::Hook_SetTexture, 5);
+		oDrawPrimitiveUP = (tDrawPrimitiveUP)MemUtil::TrampHook((byte*)vTable[D3DInfo::DrawPrimitiveUP_Index], (byte*)D3DHooks::Hook_DrawPrimitiveUP, 5);
 		oDrawIndexedPrimitiveUP = (tDrawIndexedPrimitiveUP)MemUtil::TrampHook((byte*)vTable[D3DInfo::DrawIndexedPrimitiveUP_Index], (byte*)D3DHooks::Hook_DrawIndexedPrimitiveUP, 5);
 
 		D3DHooks::InitializeCrcProvider();

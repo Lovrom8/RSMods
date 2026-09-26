@@ -363,6 +363,39 @@ int main() {
 		Check("RemoveMod drops frame and reset callbacks", frames.empty() && resetsA == 11 && resetsB == 2);
 	}
 
+	// Device channels: Always ignores enablement, handlers run in owner-Id order and can rewrite
+	// the event, and RemoveMod unpublishes without waiting for a rebuild.
+	{
+		using Framework::Observe;
+		using Framework::DeviceEvent::VertexShaderConstants;
+		DrawRegistry reg;
+		auto& channel = reg.Device().vertexShaderConstants;
+		std::vector<std::string> calls;
+		static const float replacement[4] = {};
+
+		channel.Register(&modB, Observe::WhileEnabled, [&](VertexShaderConstants& e) { calls.push_back("B"); e.data = replacement; });
+		channel.Register(&modA, Observe::Always, [&](VertexShaderConstants& e) { calls.push_back("A"); e.suppress = true; });
+
+		VertexShaderConstants e{ nullptr, 0, nullptr, 1 };
+		channel.Dispatch(e);
+		Check("device handlers wait for RebuildActive", calls.empty());
+
+		reg.RebuildActive([](const IMod*) { return true; });
+		channel.Dispatch(e);
+		Check("device handlers run in owner-Id order", calls == std::vector<std::string>{ "A", "B" });
+		Check("device handlers can rewrite the call", e.suppress && e.data == replacement);
+
+		calls.clear();
+		reg.RebuildActive([](const IMod*) { return false; });
+		channel.Dispatch(e);
+		Check("Always handler runs while its mod is disabled", calls == std::vector<std::string>{ "A" });
+
+		calls.clear();
+		reg.RemoveMod(&modA);
+		channel.Dispatch(e);
+		Check("RemoveMod unpublishes device handlers at once", calls.empty());
+	}
+
 	std::cout << (g_failures == 0 ? "ALL DRAWREGISTRY TESTS PASSED\n" : "DRAWREGISTRY TESTS FAILED\n");
 	return g_failures == 0 ? 0 : 1;
 }

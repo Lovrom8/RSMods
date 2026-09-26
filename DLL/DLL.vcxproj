@@ -352,6 +352,9 @@
     </ClCompile>
     <ClInclude Include="Mods\UltrawideRRDim.hpp" />
     <ClInclude Include="Mods\UltrawideMod.hpp" />
+    <ClInclude Include="Mods\UltrawideState.hpp" />
+    <ClInclude Include="Mods\UltrawideShaders.hpp" />
+    <ClInclude Include="Mods\UltrawideFullStage.hpp" />
     <ClInclude Include="Mods\ProfileSaveStreaming.hpp" />
     <ClInclude Include="Mods\ProfileBackups.hpp" />
     <ClInclude Include="CC\CCEffectList.hpp" />
@@ -389,8 +392,6 @@
     </ClCompile>
     <ClInclude Include="D3D/D3DHelper.hpp" />
     <ClInclude Include="D3D/D3DHooks.hpp" />
-    <ClInclude Include="D3D/UltrawideShaders.hpp" />
-    <ClInclude Include="D3D/UltrawideFullStage.hpp" />
     <ClInclude Include="D3D/D3D.hpp" />
     <ClInclude Include="CC\Effects\DrunkModeEffect.hpp" />
     <ClInclude Include="CC\Effects\FYourFCEffect.hpp" />
@@ -478,6 +479,7 @@
     <ClInclude Include="Framework\HookWatchdog.hpp" />
     <ClInclude Include="Framework\Framework.hpp" />
     <ClInclude Include="Framework\DrawRegistry.hpp" />
+    <ClInclude Include="Framework\DeviceEvents.hpp" />
     <ClInclude Include="Framework\SettingsSchema.hpp" />
     <ClInclude Include="NoteData.h" />
     <ClInclude Include="ObjectUtil.hpp" />
