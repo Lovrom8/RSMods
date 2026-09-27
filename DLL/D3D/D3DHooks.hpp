@@ -24,8 +24,6 @@ namespace D3DHooks {
 	inline D3DSURFACE_DESC sDesc;
 	inline D3DLOCKED_RECT pLockedRect;
 
-	inline LPDIRECT3DVERTEXBUFFER9 Stream_Data;
-	inline UINT Offset = 0;
 	inline UINT vertexBufferSize;
 
 	inline bool debug = true;
@@ -35,7 +33,9 @@ namespace D3DHooks {
 	inline HWND hThisWnd = NULL;
 	inline WNDPROC oWndProc = NULL;
 
-	inline bool cachedIsInSong = false;
+	// GameState::IsInSong(), refreshed once per frame in Hook_EndScene. Read per draw by Hook_DIP
+	// and by WndProc, which can run on another thread.
+	inline std::atomic<bool> cachedIsInSong = false;
 
 	// Ultrawide aspect correction.
 	inline std::atomic<bool> ultrawideActive = false;   // The setting is on and the backbuffer is wider than 16:9: corrections apply.
@@ -56,6 +56,7 @@ namespace D3DHooks {
 	inline UINT ultrawideRenderTargetHeight = 0;
 
 	void UpdateUltrawideState(IDirect3DDevice9* pDevice);
+	void SyncStreamSourceMirror(IDirect3DDevice9* pDevice);
 
 	HRESULT APIENTRY Hook_SetVertexDeclaration(LPDIRECT3DDEVICE9 pDevice, IDirect3DVertexDeclaration9* pdecl);
 	HRESULT APIENTRY Hook_DP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE PrimType, UINT StartIndex, UINT PrimCount);

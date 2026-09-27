@@ -148,9 +148,11 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 }
 
 void UpdateGameWindowStacking() {
-	if (Settings::IsOn(Setting::PreventMidSongPause)) {
-		bool actuallyInSong = GameState::IsInSong();
+	// Published every frame, not only for PreventMidSongPause: Hook_DIP reads it per draw.
+	const bool actuallyInSong = GameState::IsInSong();
+	D3DHooks::cachedIsInSong.store(actuallyInSong, std::memory_order_relaxed);
 
+	if (Settings::IsOn(Setting::PreventMidSongPause)) {
 		if (ensureForcedTopMode) {
 			static bool lastState = false;
 			if (actuallyInSong != lastState) {
@@ -161,8 +163,6 @@ void UpdateGameWindowStacking() {
 				lastState = actuallyInSong;
 			}
 		}
-	
-		D3DHooks::cachedIsInSong = actuallyInSong;
 	}
 }
 
@@ -191,6 +191,10 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 	D3DHooks::UpdateUltrawideState(pDevice);
 	GameOverlay::RenderOverlay(pDevice);
 	D3DHooks::RegenerateTwitchNoteColors(pDevice);
+
+	// Last: ImGui and the overlay font restore the game's state through state blocks, which
+	// the stream-source mirror can't see.
+	D3DHooks::SyncStreamSourceMirror(pDevice);
 
 	return originalReturn;
 }

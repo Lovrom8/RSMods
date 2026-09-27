@@ -220,17 +220,20 @@ namespace Settings {
 
 	void ToggleExtendedRangeMode();
 
-	// Return INI Settings
-	unsigned int GetKeyBind(const std::string& name);
-	int GetModSetting(const std::string& name);
-	std::string ReturnSettingValue(const std::string& name);
-	bool IsOn(const std::string& name);
-	bool IsOff(const std::string& name);
-	std::string ReturnNotewayColor(const std::string& name);
+	// Changes after every settings write. Lets hot paths cache values and re-read only when it moves.
+	unsigned int Generation();
+
+	// Return INI Settings. Names are string_views so the constexpr keys don't build a std::string per read.
+	unsigned int GetKeyBind(std::string_view name);
+	int GetModSetting(std::string_view name);
+	std::string ReturnSettingValue(std::string_view name);
+	bool IsOn(std::string_view name);
+	bool IsOff(std::string_view name);
+	std::string ReturnNotewayColor(std::string_view name);
 
 	enum class When { Unknown, Manual, Startup, Song, Tuner, Automatic };
 	When ParseWhen(std::string_view value);
-	When GetWhen(const std::string& name);
+	When GetWhen(std::string_view name);
 
 	enum class StringColorMode { Default = 0, Zag = 1, Custom = 2, Test = 3 };
 	StringColorMode GetStringColorMode();
@@ -238,7 +241,7 @@ namespace Settings {
 	enum class NoteColorMode { SameAsStrings = 0, Default = 1, Custom = 2 };
 	NoteColorMode GetNoteColorMode();
 
-	int GetVKCodeForString(const std::string& vkString);
+	int GetVKCodeForString(std::string_view vkString);
 	std::vector<RSColor> GetStringColors(bool CB);
 	std::vector<RSColor> GetNoteColors(bool CB);
 	void SetStringColors(int strIndex, RSColor c, bool CB);
@@ -250,7 +253,7 @@ namespace Settings {
 	void ParseSettingUpdate(const std::string& updateMessage);
 	void ParseTwitchToggle(const std::string& twitchMsg, const std::string_view& toggleType);
 	void ParseSolidColorsMessage(const std::string& twitchMsg);
-	bool IsTwitchSettingEnabled(const std::string& name);
+	bool IsTwitchSettingEnabled(std::string_view name);
 	std::vector<std::string> SplitByWhitespace(const std::string& input);
 
 	inline std::map<std::string, std::string, std::less<>> keyBinds;

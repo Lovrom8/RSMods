@@ -32,18 +32,22 @@ namespace Menu {
 	/// Renders the ImGui frame, including the main mod menu.
 	/// </summary>
 	void RenderImGuiMenu() {
+		// The menu is the only ImGui window. With it closed, skip the frame entirely: an empty
+		// ImGui frame still captures and restores the whole device state and locks its buffers.
+		// Input only reaches ImGui while the menu is open (see WndProc), so nothing queues up.
+		if (!Menu::menuEnabled)
+			return;
+
 		ImGui_ImplDX9_NewFrame();
 		ImGui_ImplWin32_NewFrame();
 		ImGui::NewFrame();
 
-		if (Menu::menuEnabled) {
-			ImGui::Begin("RS Mods");
-			Menu::AddMidiMenu();
-			Menu::AddCalibrationMenu();
-			Menu::AddMicrophonesMenu();
-			Menu::AddVoicelinesMenu();
-			ImGui::End();
-		}
+		ImGui::Begin("RS Mods");
+		Menu::AddMidiMenu();
+		Menu::AddCalibrationMenu();
+		Menu::AddMicrophonesMenu();
+		Menu::AddVoicelinesMenu();
+		ImGui::End();
 
 		ImGui::EndFrame();
 		ImGui::Render();
