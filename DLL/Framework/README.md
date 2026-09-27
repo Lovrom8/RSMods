@@ -29,14 +29,17 @@ instead of `ModManager` doing it, and adding a mod is adding one `.cpp` rather t
 
 ## Host wiring (`dllmain.cpp`)
 
-- `MainThread` - `InstantiatePending()` → `ApplyStartupMods` → `DispatchInitialize()`, then
-  `Registry().Tick(phase)` each loop, and `Registry().Shutdown()` after the loop.
+- `MainThread` - `InstantiatePending()` → `ModManager::InitializeMods` → `ApplyStartupMods` →
+  `DispatchInitialize()`, then each loop `DispatchCommands` on every wake and `Registry().Tick(phase)`
+  on the maintenance tick, and `Registry().Shutdown()` after the loop. `InstantiatePending` comes first
+  because `InitializeMods` loads settings from the schemas it registers.
 - `WndProc` `WM_COPYDATA` - `Keybindings::UpdateSettingsOnGUIChange` posts the settings mutation
   as a closure onto the `MainThreadInbox` instead of applying it on the message thread.
 - `WndProc` key messages - snapshot modifiers/repeat state and post a `KeyEvent` to the same
   `MainThreadInbox`, the single main-thread work queue (see below). Commands are delivered promptly
-  on `MainThread`; the 250 ms maintenance tick is not accelerated and missed deadlines are not
-  replayed as catch-up bursts.
+  on `MainThread`; key input doesn't bring the maintenance tick forward (it runs every 250 ms, or
+  33 ms while a mod calls `ctx.RequestFastTick()`) and missed deadlines are not replayed as
+  catch-up bursts.
 
 ## Adding a mod
 
@@ -114,12 +117,15 @@ Registered ──OnInitialize──▶ Inactive ──OnEnabled──▶ Active
      │                          ▲                       │
      │ OnInitialize throws      └───────OnDisabled──────┘
      ▼
-  Faulted ◀──── OnEnabled / tick hook / OnSettingsChanged throws
+  Faulted ◀──── OnEnabled / tick hook / OnSettingsChanged / command throws
+     │
+     └── Retry faulted (mod status view) ──▶ Registered, OnInitialize again
 ```
 
 - **Inactive** means initialized but not effectively active. It covers a mod that never activated,
   one the user disabled, and one **suppressed** by losing a resource conflict; their next valid
-  transition is identical (the suppressed-vs-disabled distinction survives only in the log line).
+  transition is identical (the suppressed-vs-disabled distinction lives in the log line and the
+  mod status snapshot, not in the state).
 - **Effective activation** = `IsEnabled()` **and** winning every resource it contends for. Only
   `Active` mods get tick hooks. A mod leaving `Active` reverts **synchronously** (there are no
   in-flight callbacks to wait for): its `OnDisabled` runs in the same `Tick` that deselects it.
@@ -129,19 +135,23 @@ Registered ──OnInitialize──▶ Inactive ──OnEnabled──▶ Active
   - Enable mid-song fires `OnSongEnter`; disable mid-song fires `OnSongExit`; nothing is missed
     (per-mod `inSong` tracked relative to *its own* activation).
 - **Failure policy**:
-  - `OnInitialize`/`OnEnabled` throw → **Faulted** (never runs again). `OnEnabled` must be
+  - `OnInitialize`/`OnEnabled` throw → **Faulted**: it stops running until the user presses *Retry
+    faulted* in the mod status view ([`docs/mod-status.md`](docs/mod-status.md)). `OnEnabled` must be
     strongly exception-safe, as `OnDisabled` is *not* called on a failed enable.
+  - A command binding throws → the mod's remaining key events are dropped and it faults like a hook.
   - A tick hook (`OnTick`/`OnMenuTick`/`OnSongTick`/`OnSongEnter`/`OnSongExit`) or
     `OnSettingsChanged` throws → the mod is faulted immediately; an `Active` one receives a best-effort
     `OnDisabled` revert first. Only the `OnSongExit`/`OnDisabled` calls made while tearing a mod down
     are best-effort, since the mod is leaving anyway.
 - **Shutdown**: `OnSongExit`(if in song) → `OnDisabled`(if active) → `OnShutdown`, then the
-  registry destroys the mod objects.
+  registry drops every registration but keeps the mod objects alive until it is destroyed itself
+  (process exit): the game keeps rendering while it closes, and a frame already in flight may still
+  call a mod's menu or draw callback.
 
 ## Conflicts & resources
 
-Some mods can't run together (e.g. **DropPedal** and **MIDI auto-tune**) both drive tuning. They
-express that by claiming the same named exclusive resource:
+Some mods can't run together (e.g. MIDI auto-tune and any other mod that drives the tuning pedal).
+They express that by claiming the same named exclusive resource:
 
 ```cpp
 std::vector<std::string_view> ClaimsExclusive() const override { return { "tuning-controller" }; }
@@ -194,7 +204,7 @@ unfrozen; make the source surface zero-core-edit first, freeze a C ABI only once
 `MainThreadInbox` (`Inbox()`) is the single main-thread work queue. Foreign threads post to it -
 `WndProc` key input, GUI/`WM_COPYDATA`/Twitch/CrowdControl/render-thread settings writes, and the
 window-close wake - and `MainThread` blocks in `WaitUntil`, then drains the two queues at their own
-cadences: key events every command-dispatch pass, settings closures on the 250 ms maintenance tick.
+cadences: key events every command-dispatch pass, settings closures on the maintenance tick.
 
 The wake semantics mirror those cadences. Key events wake on a non-empty queue, because they are
 drained every pass and the predicate self-clears. Settings and the close signal set a **one-shot**

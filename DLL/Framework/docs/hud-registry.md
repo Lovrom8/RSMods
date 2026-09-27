@@ -18,15 +18,16 @@ The renderer runs on the D3D render thread (`Hook_EndScene`); mod ticks run on M
 code off the render thread entirely, publishing is a **push snapshot**, not a pull callback:
 
 - MainThread: `ctx.Hud().Set(id, { anchor, order }, HudText{visible, text, colorHex, fontHeight})` each tick.
-- Render thread: `GameOverlay::DrawModHud` calls `Hud().SnapshotVisible()`, which copies the visible
-  elements out under the lock, then draws from the copy. The lock is never held across a DX9 draw, and
+- Render thread: `GameOverlay::PrepareImGuiHud` calls `Hud().SnapshotVisible()`, which copies the visible
+  elements out under the lock, and `GameOverlay::DrawImGuiHud` draws from the copy into ImGui's background
+  draw list, inside the same ImGui frame as the mod menu. The lock is never held across an ImGui call, and
   `HudElement::owner` is an opaque key that is **never dereferenced** on the render thread — so there is
   no lifetime coupling to the mod object.
 
-Anchors (`TopLeft` / `TopCenter` / `TopRight`) resolve to a stack position from the live window size on
-the render side, so mods stay out of pixel math and text lands in the same spot at every resolution. The
-insets match the hand-written overlays (TopLeft = volume popup + mixer, TopRight = song timer, TopCenter
-= RR speed), so ports are pixel-for-pixel. Multiple elements at one anchor stack in `order` — see *Stacked
+Anchors (`TopLeft`, `TopCenter`, `TopRight`, `TopTuning`, `HighwayLeft`, `MenuBanner`) resolve to a
+stack position from the live display size on the render side, so mods stay out of pixel math and text
+lands in the same spot at every resolution. The insets match the old hand-written overlays (TopLeft =
+volume popup + mixer, TopRight = song timer, TopCenter = RR speed, and so on). Multiple elements at one anchor stack in `order` — see *Stacked
 anchors* below.
 
 ## Lifecycle
@@ -41,14 +42,14 @@ once the mod stops ticking, and the mod simply re-publishes on its next active t
 `VolumeDisplayMod` owns the entire volume overlay — both the transient "current volume" popup **and** the
 held-key full mixer. It was the clean first consumer because the mod is always Active (so it ticks every
 frame and can re-publish), and it now demonstrates the full surface: a single anchored line (popup) and a
-multi-line stack (mixer). `GameOverlay::DisplayMixer` is gone; the render side is just `DrawModHud`. The
+multi-line stack (mixer). `GameOverlay::DisplayMixer` is gone; the render side is just the generic HUD pass. The
 popup is suppressed while the mixer is held (the mixer already lists every channel), matching the old
 `if mixer … else if popup` draw order.
 
 ## Consumer: the song timer (second mod, second anchor)
 
 `ShowSongTimerMod` publishes the top-right song timer as a single `TopRight` element, so two different
-mods now share `DrawModHud` and the registry is the only writer of both the `TopLeft` and `TopRight`
+mods now share the HUD pass and the registry is the only writer of both the `TopLeft` and `TopRight`
 bands. `GameOverlay::DisplaySongTimer` and the `D3DHooks::showSongTimerOnScreen` global are gone; the
 show flag is a private member. The port surfaced one lifecycle wrinkle worth knowing for future ports:
 
@@ -102,25 +103,25 @@ before.
 
 ### Layout (render side)
 
-`AnchorRect` (one fixed rect) became `AnchorStart` (where a stack begins + how it aligns), and
-`DrawModHud` walks the elements:
+`AnchorBand(anchor, area)` gives where a stack begins and how it aligns. The overlay works in two phases
+around the ImGui frame, because the font atlas can't be rebuilt between `NewFrame` and `Render`:
 
-1. `SnapshotVisible()` → the visible elements.
-2. Sort by `(anchor, order, id, owner)` so groups are contiguous and deterministically ordered.
-3. Walk each anchor group from its start inset, advancing a vertical cursor by each line's height
-   (`fontHeight` if set, else the legacy line unit `WindowSize.height / 54.0f`). Top anchors grow
-   **downward**; direction is a property of the anchor, so future `Bottom*` anchors grow up without
-   touching callers.
+1. `PrepareImGuiHud` (before `NewFrame`): `SnapshotVisible()`, sort by `(anchor, order, id, owner)` so
+   groups are contiguous and deterministically ordered, and bake any newly needed font sizes.
+2. `DrawImGuiHud` (inside the frame): walk each anchor group from its band's top, advancing a vertical
+   cursor per line (`fontHeight` if set, else the legacy line unit `area.height / 54`, widened when the
+   measured text is taller). Top anchors grow **downward**; direction is a property of the anchor, so
+   future `Bottom*` anchors grow up without touching callers.
 
-The first line of any group starts at exactly the old `AnchorRect` inset, so single-occupant stacks are
-pixel-for-pixel identical and the mixer reproduces its old `offset += h/54` spacing.
+The first line of any group starts at the old hand-written inset, and the mixer keeps its old
+`h/54` line spacing.
 
 ### Layout area
 
 Anchors lay out inside a **layout area** (`HudArea`), not necessarily the whole display. The maths is
 the framework's pure `AnchorBand(anchor, area)` (unit-tested in `HudRegistryTests`), and the overlay
-only draws what it returns. By default the area is the whole display, and the bands match the old
-`AnchorStart` exactly (same truncation), so nothing moves.
+only draws what it returns. By default the area is the whole display, and the bands keep the old
+overlays' truncation, so nothing moves.
 
 A mod that confines the game's own interface narrows it:
 
@@ -166,9 +167,10 @@ overlay:
   inside `DisplayMixer`; it is now `VolumeControl::CurrentVolume(channel)`, called on MainThread where the
   other volume ops live. The mod no longer touches Wwise directly.
 
-The result: `GameOverlay` is back to being purely the DX9 render backend for `Framework::Hud()`
-that encapsulates font caching and text layout. All bespoke `Display*` functions have been retired,
-making `GameOverlay::RenderOverlay` the single overlay draw path in the entire codebase.
+The result: `GameOverlay` is purely the render backend for `Framework::Hud()`, encapsulating font
+caching and text layout. All bespoke `Display*` functions have been retired, and the legacy DX9 text
+drawing with them: `PrepareImGuiHud`/`DrawImGuiHud` inside the mod menu's ImGui frame is the single
+overlay draw path in the codebase.
 
 ## Completed ports & consumers
 
@@ -185,7 +187,7 @@ making `GameOverlay::RenderOverlay` the single overlay draw path in the entire c
 | In-menu current note | `ShowCurrentNoteMod` | `MenuBanner` | 0 |
 
 In addition, `HandleLooping` audio seeking (`Wwise::SoundEngine::SeekOnEvent`) and grey note timer manipulation
-(`SongTimer::SetGreyNoteTimer`) were evicted from `RenderOverlay` on the D3D render thread to `RiffRepeaterMod::OnSongTick`
+(`SongTimer::SetGreyNoteTimer`) were evicted from the old render-thread overlay to `RiffRepeaterMod::OnSongTick`
 on the MainThread.
 
 ## Natural next steps
@@ -194,9 +196,7 @@ on the MainThread.
    contributor ask (a bar/meter, a coloured selection highlight in the mixer) is a new `HudText`-sibling
    variant drawn from shared resources — still push-snapshot, still off the render thread. Add it when a
    real consumer needs it, not before.
-2. **`MenuBinder`** — the menu-registration sibling of `HudBinder`/`CommandBinder`. Deliberately deferred
-   until a real menu consumer (likely DropPedal) exists; do not build it speculatively.
-3. **Owner-scoped D3D callbacks** came back in a narrow form: per-frame and device-reset callbacks on
+2. **Owner-scoped D3D callbacks** came back in a narrow form: per-frame and device-reset callbacks on
    `DrawRegistry` (`draw-registry.md` §8.7), for in-tree mods with render-side state (Ultrawide). They are
    still not a drawing API. A raw device handle stays out of the external mod API, and the declarative
    surface above is the drawing API for everyone else. See `render-hooks.md`.

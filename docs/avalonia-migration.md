@@ -8,10 +8,10 @@ to Avalonia on branch `avalonia-consolidated`.
 ## Final Repository State
 
 1. **WinForms Retired**: The old `GUI/` WinForms project, its designers, .resx files, and Costura/Fody packaging have been completely removed.
-2. **`GUI.Core`**: Headless .NET 8 class library (`net8.0-windows`) owning all settings persistence (`IniManager`), models, manifest service, and domain logic with 100% test coverage in `GUI.Core.Tests`.
+2. **`GUI.Core`**: Headless .NET 8 class library (`net8.0-windows`) owning all settings persistence (`IniManager`), models, manifest service, and domain logic, covered by `GUI.Core.Tests`.
 3. **`GUI.Avalonia`**: Modern Avalonia 11 desktop application. "Mod Settings" is entirely data-driven by `mods.manifest.json` via `SettingsCoordinator` and typed `DataTemplate`s, with Tier-3 custom editors wired to `INavigationService`.
 4. **`Installer.Core` & `Installer`**: Headless installation logic extracted into `Installer.Core` (tested in `Installer.Core.Tests`), driven by an Avalonia single-file installer (`RS2014-Mod-Installer.exe`).
-5. **`DLL/`**: Native C++ mod framework updated to C++20, dynamic schema registration, and wildcard globbing (`Mods/*.cpp`).
+5. **`DLL/`**: Native C++20 mod framework with schema-registered settings. Mods are listed explicitly in `DLL.vcxproj` (`Build/New-Mod.ps1` adds them, and the `CheckAllSourcesListed` target fails the build on an unlisted `.cpp`).
 
 ## Build status
 
@@ -38,35 +38,31 @@ An SDK-style, UI-agnostic class library targeting `net8.0-windows`. Consumed by 
 
 It currently owns:
 
-- Application abstractions: `IDialogService`, `IAppEnvironment`, and `AppServices`.
+- Application abstractions: `IDialogService` and `IAppEnvironment`, implemented by the Avalonia app and
+  injected where needed.
 - INI infrastructure: `IniManager`, `IniSection`, validation warnings, enums, and constants.
 - Settings models: `RsModsSettings`, `RocksmithSettings`, and `AsioSettings`.
-- Explicit-path ASIO and Rocksmith settings instances, allowing each frontend to supply its own
-  installation path without relying on WinForms-oriented global path discovery.
+- Explicit-path ASIO and Rocksmith settings instances, built from the resolved installation path rather
+  than global path discovery.
 - Shared path and key logic: `GenUtil`, `RSLocationResolver`, `KeyConversion`, and
   `RocksmithKeys`.
-- Frontend-neutral numeric ranges and defaults in `RsModsLimits` and `RsAsioLimits`, so the WinForms
-  and Avalonia configurators clamp identically instead of each hardcoding limits.
-- Frontend-neutral ASIO device enumeration (`RSMods.ASIO.Devices`), moved out of the WinForms GUI so
-  both frontends share one registry-scanning source.
+- Numeric ranges and defaults in `RsModsLimits` and `RsAsioLimits`, so every screen clamps identically
+  instead of hardcoding limits.
+- ASIO device enumeration (`RSMods.ASIO.Devices`) over the registry.
 - Frontend-neutral audio capture-device enumeration (`RSMods.Audio.InputDevices`) over WASAPI, added
   for the override-input-volume feature. It references only `NAudio.Wasapi` (not the `NAudio`
-  meta-package, which pulls in WinForms and would force a `-windows` TFM), so `GUI.Core` stays
-  UI-framework-free while both frontends can share one capture-device source.
+  meta-package, which pulls in WinForms), so `GUI.Core` stays UI-framework-free.
 - Frontend-neutral MIDI out/in device enumeration (`RSMods.Audio.MidiDevices`) over winmm, added for the
-  auto-tune/tuning-pedal feature. It lives in the `RSMods.Audio` namespace (alongside `InputDevices`)
-  rather than a new `RSMods.Midi` namespace on purpose: the WinForms GUI still has a `RSMods.Midi` *type*
-  (its live-listen class), and a `RSMods.Midi` namespace would collide with it (CS0437). It covers only
-  device enumeration; the WinForms live MIDI-in listening path is a debug diagnostic and is intentionally
-  retired from the Avalonia migration scope.
+  auto-tune/tuning-pedal feature, in the `RSMods.Audio` namespace alongside `InputDevices`. It covers only
+  device enumeration; the WinForms live MIDI-in listening path was a debug diagnostic and was retired
+  with WinForms.
 - Shared profile services: `ProfileService`, `ProfileCodec`, `ProfileBackupService`, and
   `ProfileToneImportService`.
 - Shared song and tuning logic: `SongCatalogService`, `TuningService`, and `TuningDefinition`.
 - Shared SoundPack logic: the `Soundpacks` conversion/import/export/reset class and a `SoundPackService`
-  facade over `audio.psarc` unpack/repack (`Packer` + `GlobalProgress`), moved out of the WinForms GUI so
-  both frontends share one source. The stock `original.rs_soundpack` is embedded here (under
-  `RSMods.Core.Resources`) rather than in the WinForms assembly. This added two sub-package NAudio/native
-  dependencies (see below).
+  facade over `audio.psarc` unpack/repack (`Packer` + `GlobalProgress`). The stock `original.rs_soundpack`
+  is embedded here (under `RSMods.Core.Resources`). This added two sub-package NAudio/native dependencies
+  (see below).
 - Shared Set-and-Forget cache/tuning/tone logic lives in Core, with the required stock cache files embedded
   under `RSMods.Core.Resources`. The former `SetAndForgetMods` god-facade has been split into injected
   services (see below); the tuning-query facade exposes only `SongData`, strings, and `TuningStrings`, so the
@@ -76,9 +72,9 @@ It currently owns:
   23-effect catalog, normalized trigger model and matcher, atomic polymorphic XML repository, DPAPI-backed
   OAuth token store, and lifecycle-safe localhost Rocksmith effect server. The native bridge preserves the
   null-terminated JSON protocol on `127.0.0.1:45659`, uses unique request IDs, supports RGB/random Solid
-  Notes, bounds its queue/retries, and shuts down with the frontend. `FlatKeyValueSettingsStore` now updates
+  Notes, bounds its queue/retries, and shuts down with the frontend. `FlatKeyValueSettingsStore` updates
   the unsectioned `GUI_Settings.ini` without dropping unknown keys/comments; both base settings and Twitch
-  compatibility persistence use it. A new `GUI.Core.Tests` project covers these boundaries.
+  persistence use it. `GUI.Core.Tests` covers these boundaries.
 - Shared Twitch Step 1 runtime: Device Code Grant for a public client, protected one-use refresh-token
   rotation, startup/hourly token validation, authorized identity lookup, EventSub WebSockets, four Helix
   subscriptions, bounded notification-ID deduplication, keepalive/planned reconnect/unexpected reconnect
@@ -87,37 +83,12 @@ It currently owns:
   result voice-over.
 - Other shared models and helpers such as `Dictionaries`, `GuitarSpeak`, `ColorItem`, and `KeybindItem`.
 
-`GUI.Core` still references the existing libraries under `GUI/Lib`, including
-`RocksmithToolkitLib`, `Rocksmith2014PsarcLib`, and (for SoundPacks) `SevenZipSharp`. Those references
-build on both current target frameworks, but they are an important constraint for future portability and
-maintenance. SoundPack MP3 decoding also pulls in `NAudio.WinMM` (used via `Mp3FileReaderBase` +
-`AcmMp3FrameDecompressor`, not the convenience `Mp3FileReader`, which lives in the WinForms-dragging
-NAudio meta-package). Like the existing `NAudio.Wasapi`, this is a sub-package, so it does not force a
-`-windows` TFM. The native `7z64.dll` and the Wwise/ogg toolchain are not managed references; each
-frontend copies them next to its executable (the WinForms GUI via its post-build xcopy of `Lib\`, the
-Avalonia app via an equivalent `Copy` target).
-
-### `GUI/`
-
-The existing .NET Framework 4.8 WinForms configurator. It remains the complete production UI
-while features are migrated incrementally.
-
-It now acts primarily as a frontend and integration layer:
-
-- `UI.*.cs` partial classes and `UI.Designer.cs` contain WinForms presentation and event wiring.
-- `WinFormsDialogService` and `WinFormsAppEnvironment` adapt the shared abstractions.
-- `Program.cs` initializes `AppServices` before the form reads shared state.
-- WinForms-specific control wiring (`RsModsLimits.ApplyToUiControls`, `RsAsioLimits.ApplyToUiControls`)
-  and warning presentation remain in the GUI project; the numeric ranges they apply now come from the
-  shared `GUI.Core` `RsModsLimits`/`RsAsioLimits`, which the WinForms classes re-export so existing
-  callers stay unchanged. ASIO device enumeration moved to `GUI.Core`.
-- The retained WinForms Twitch tab runs entirely over the shared `TwitchService` through a small
-  `TwitchRuntime` adapter. The old PubSub/implicit-auth/chatbot implementations and TwitchLib dependencies
-  have been removed.
-- MIDI live-listen remains WinForms-only by design: it is a debug-output diagnostic, not a user-facing
-  migration gap.
-
-The old-style project references the `net48` leg of `GUI.Core` explicitly.
+`GUI.Core` references the prebuilt libraries under `RuntimeAssets/`, including `RocksmithToolkitLib`,
+`Rocksmith2014PsarcLib`, and (for SoundPacks) `SevenZipSharp`. They are an important constraint for future
+portability and maintenance. SoundPack MP3 decoding also pulls in `NAudio.WinMM` (used via
+`Mp3FileReaderBase` + `AcmMp3FrameDecompressor`, not the convenience `Mp3FileReader`, which lives in the
+WinForms-dragging NAudio meta-package). The native `7z64.dll` and the Wwise/ogg toolchain are not managed
+references; `GUI.Avalonia` copies the `RuntimeAssets/` tree next to its executable (see its `.csproj`).
 
 ### `GUI.Avalonia/`
 
@@ -129,7 +100,6 @@ The new Avalonia 11.3.12 application targeting `net8.0-windows` and x64. It curr
 - `AvaloniaDialogService`, including owned message dialogs and folder selection through the
   Avalonia storage provider.
 - `AvaloniaAppEnvironment`, including application shutdown and base-directory access.
-- `AppServices` initialization with the Avalonia adapters.
 - A typed `MainWindowViewModel` and status view.
 - A `StartupService` that runs the real startup resolution once the window is shown: it resolves
   the Rocksmith install and save folders through `RSLocationResolver`, persists them to the shared
@@ -165,13 +135,14 @@ The new Avalonia 11.3.12 application targeting `net8.0-windows` and x64. It curr
   cache slots.
 - All settings and tool navigation entries enable once startup resolution succeeds.
 
-The Avalonia frontend now covers the user-facing configurator screens over the `net8.0` leg of `GUI.Core`.
-Installer/publishing integration and the decision to make it the default frontend remain.
+The Avalonia frontend covers every configurator screen (Twitch, Profiles and Appearance too) and is the
+only frontend. `Build/Publish-Configurator.ps1` publishes it as `RSMods.exe`.
 
 ### `Installer/`
 
-The existing installer. It is not currently part of the Avalonia work and keeps its independent
-helper code where applicable.
+The Avalonia single-file installer (`RS2014-Mod-Installer.exe`) over the headless `Installer.Core`
+(tested in `Installer.Core.Tests`). It embeds the configurator payload built by
+`Build/New-ConfiguratorPayload.ps1`; `Build/Publish-Installer.ps1` publishes it.
 
 ## Completed migration work
 
@@ -648,8 +619,7 @@ framework's `MainThreadInbox`; the next registry tick drains the batch and notif
 saved setting sits inert until the next game launch.
 
 `SettingsService.SaveAsync` is the single place this happens, because `RsModsSettings.Save()` is the only
-path that writes the file — the `IniSection` setters mutate memory and raise `SettingChanged` without
-persisting. A new screen that saves mod settings should go through `SettingsService`, not the static store.
+path that writes the file — the `IniSection` setters only mutate memory. A new screen that saves mod settings should go through `SettingsService`, not the static store.
 
 ### Saving on change
 
@@ -668,16 +638,19 @@ save, as they did in WinForms.
 
 ### Adding or moving a setting
 
-- **The section is part of the contract, not just the key.** The DLL names both (`reader.GetValue("Mod
-  Settings", "OnScreenFontSize", 24)`), and this store is section-aware, so the same key under the wrong
+- **A mod setting belongs in the mod's `Settings()` schema.** The DLL loads it from there and the Mod
+  Settings screen and keybindings page render it from `mods.manifest.json`, so it needs no GUI code.
+  `RsModsSettings` keeps a hand-written property only where a bespoke screen (Colors, Guitar Speak,
+  Appearance) or a DLL-only key needs one.
+- **The section is part of the contract, not just the key.** The schema names both (`.Ini("Mod Settings",
+  "OnScreenFontSize")`), and this store is section-aware, so the same key under the wrong
   heading reads as absent and the DLL silently falls back to its default. The retired WinForms reader was
   a section-blind line scan, which is why this class of bug could not happen before and can now.
-- **Put a new property in the nested class matching the DLL's section**, not the one matching the screen
-  it appears on. `OnScreenFont` and `OnScreenFontSize` sit on the same slider pair but live in different
-  sections, because that is what the DLL reads.
-- **Keybinds seed empty, never the DLL's default.** The DLL's hardcoded defaults (`"T"`, `"5"`, …) apply
-  only when a key is absent from the file entirely; both GUIs have always written `""`, leaving a bind
-  unset until the user assigns one.
+- **A hand-written `RsModsSettings` property goes in the nested class matching the DLL's section**, not
+  the one matching the screen it appears on.
+- **A missing key bind shows its declared default.** The DLL falls back to the schema default (`"T"`,
+  `"5"`, …) when the entry is absent, so the keybindings page shows and seeds that same key; an empty
+  value means unbound.
 - **Fix a misplaced key before the build ships, not after.** Round-trip preservation means a key written
   to the wrong section survives in users' files indefinitely, so correcting it later costs a migration
   step and a way to delete keys — neither of which this store has, deliberately. While the Avalonia
@@ -692,8 +665,8 @@ a property only where a hand-built screen (Colors, Guitar Speak, Themes) or a DL
 declarative keys only — runtime-built names (`string{n}_N`, `SongListTitle_{i}`) drop out symmetrically —
 and `[GUI Settings]` is excluded as frontend-only.
 
-Its `KnownUnexposed` allowlist is the live inventory of settings the DLL reads that no GUI exposes. Every
-entry is dead on the DLL side too, so the list should only ever shrink.
+Its `KnownUnexposed` allowlist is the inventory of settings the DLL reads that no GUI exposes. It is empty
+now; keep it that way.
 
 ## Current migration boundary
 
@@ -703,8 +676,8 @@ The WinForms live MIDI-in checkbox is intentionally retired from migration scope
 diagnostic messages to the debugger. Twitch's code migration is complete; its real-account/game smoke test
 remains a release-acceptance check.
 
-The remaining migration work is installer/publishing support, choosing Avalonia as the default frontend,
-and the optional longer-term removal of Windows/native and legacy Rocksmith-library constraints.
+Installer/publishing support is done and Avalonia is the only frontend. What remains is the optional
+longer-term removal of Windows/native and legacy Rocksmith-library constraints.
 
 ### Known limitation: the Twitch effect port can be reserved
 
@@ -725,9 +698,8 @@ Crowd Control pack together. While the bridge is down, the Twitch screen's Rocks
 
 ## Recommended next work
 
-Integrate the Avalonia executable into installer/publishing, run release acceptance (including the live
-Twitch/Rocksmith checklist), and decide when Avalonia becomes the default frontend. The completed slices
-below remain as implementation history.
+Run release acceptance (a clean VM, and the live Twitch/Rocksmith checklist with a real account). The
+completed slices below remain as implementation history.
 
 ### 1. Complete Avalonia startup resolution — done
 
@@ -803,7 +775,6 @@ list below.
   When a shared API takes a toolkit type (e.g. `Func<Tone2014,bool>`), expose a distinct-named
   string/POCO-based variant in the facade for the frontend rather than an overload — an overload forces the
   call site to resolve against the toolkit type and drags in the reference (CS0012).
-- Keep the WinForms application buildable until the corresponding Avalonia feature is complete.
 - Treat `DLL/` as the mod core and `GUI.Core/` as the shared configurator core; their roles are
   intentionally different.
 
@@ -833,8 +804,9 @@ After the core settings screens are functional:
    `Build/New-ConfiguratorPayload.ps1` -> `Build/Publish-Installer.ps1` automate the end-to-end release pipeline.
 8. Schema-driven settings — done. All mod settings are defined declaratively in C++ `IMod` instances, exported
    to `mods.manifest.json`, and bound dynamically via `SettingsCoordinator` in `GUI.Avalonia`.
-9. Wildcard mod compilation in `DLL.vcxproj` — done. Globbing `Mods/*.cpp` and `Mods/*.hpp` ensures adding a new
-   mod requires editing zero core project files.
+9. Adding a mod without core edits — done, without wildcards: Visual Studio rewrites wildcard items, so
+   `Build/New-Mod.ps1` writes the explicit `DLL.vcxproj`/`.filters` entries and the `CheckAllSourcesListed`
+   target fails the build on any unlisted `.cpp`.
 
 ## Definition of completion (ALL FULFILLED)
 

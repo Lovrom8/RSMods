@@ -1,10 +1,10 @@
 # Menu Registry
 
-The framework-managed surface for in-game settings and debug menus, decoupling [Menu.cpp](file:///c:/Users/Lovro/Documents/Projekti/RSMods/DLL/Menu.cpp) from hardcoded mod implementations and global state.
+The framework-managed surface for in-game settings and debug menus, decoupling [Menu.cpp](../../Menu.cpp) from hardcoded mod implementations and global state.
 
 ## What it is (and isn't)
 
-- **Is:** an owner-scoped registry mirroring `HudRegistry` and `CommandRouter`. A mod registers a menu drawer delegate through `ctx.Menu()`; the registry holds the ordered list of entries; the ImGui backend iterates and renders them safely. Entries are automatically removed on mod teardown or fault.
+- **Is:** an owner-scoped registry mirroring `HudRegistry` and `CommandRouter`. A mod registers a menu drawer delegate through `ctx.Menu()`; the registry holds the ordered list of entries; the ImGui backend iterates and renders them safely. Entries are hidden while their mod is unavailable and removed when it faults or shuts down.
 - **Is host-agnostic:** `MenuRegistry.hpp` and `MenuRegistry.cpp` do **not** include DirectX or ImGui headers. The registry stores opaque `MenuDrawFn = std::function<void()>` callbacks. The actual ImGui rendering occurs in `Menu::RenderImGuiMenu()` in `Menu.cpp`.
 - **Isn't:** an invasive UI framework. Mods use standard Dear ImGui widget calls (`ImGui::SliderInt`, `ImGui::Button`, `ImGui::BeginCombo`, etc.) directly inside their registered draw functions.
 
@@ -48,9 +48,10 @@ c.Menu().Register(
 
 ## Mod Teardown & Lifecycle Cleanup
 
-When a mod is disabled, faulted, or torn down during shutdown:
-- `ModRegistry::Fault` and `ModRegistry::BeginTeardown` invoke `Framework::Menus().RemoveMod(record.mod.get())`.
-- All registered menu entries owned by that mod are immediately and safely unregistered.
+- **Disabled or suppressed:** entries stay registered; the next published availability snapshot hides
+  `Active`-gated ones, and `Initialized`-gated ones keep showing.
+- **Faulted or shut down:** `ModRegistry::Unregister` calls `Framework::Menus().RemoveMod(mod)`, dropping
+  every entry that mod owns. A retried mod registers them again from `OnInitialize`.
 
 ---
 
@@ -67,7 +68,7 @@ When a mod is disabled, faulted, or torn down during shutdown:
 
 ## Testing
 
-`MenuRegistry` is unit-tested in isolation in [DLL/Framework/Tests/MenuRegistryTests.cpp](file:///c:/Users/Lovro/Documents/Projekti/RSMods/DLL/Framework/Tests/MenuRegistryTests.cpp). It verifies:
+`MenuRegistry` is unit-tested in isolation in [DLL/Framework/Tests/MenuRegistryTests.cpp](../Tests/MenuRegistryTests.cpp). It verifies:
 - Registration, upserting, and retrieval of multiple entries.
 - Stable sort ordering (`order asc`, then `title asc`).
 - Safe drawer execution.

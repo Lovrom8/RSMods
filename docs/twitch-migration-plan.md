@@ -1,5 +1,9 @@
 # Twitch migration plan
 
+> **Status: complete.** All steps below have shipped and the WinForms GUI has been removed; only the live
+> Twitch/Rocksmith checklist with a real account remains, as a release-acceptance task. This document is
+> retained for historical context.
+
 A step-by-step plan for moving the WinForms Twitch Bot tab (`GUI/UI.Twitch.cs` and `GUI/Twitch/`)
 to Avalonia. This is written as a handoff that can be implemented one slice at a time while the
 WinForms frontend remains usable.

@@ -1,11 +1,12 @@
 # Settings schema
 
-> **Status: shipped, both sides.** DLL: all 32 mods declare `Settings()` schemas, INI loading in
+> **Status: shipped, both sides.** DLL: every mod declares its `Settings()` schema, INI loading in
 > `Settings.cpp` is data-driven, unit tests verify schema aggregation and JSON dumping, and
 > `mods.manifest.json` is exported. GUI: the manifest is embedded in `GUI.Core` and rendered by
 > `SettingsCoordinator` + typed `DataTemplate`s in `ModSettingsView.axaml` (see *GUI: rendering the
-> manifest* below), covered by `GUI.Core.Tests` and a CI manifest-currency check. The phased plan below
-> is kept as the historical record of how it landed.
+> manifest* below), covered by `GUI.Core.Tests` and a CI manifest-currency check. The design sketches and
+> phased plan below are kept as the historical record of how it landed; the shipped descriptor is
+> `SettingDef` with a builder API (`SettingsSchema.hpp`), and `IMod::Settings()` returns `SettingDefs`.
 
 ## The problem
 
@@ -107,7 +108,7 @@ with a recommendation:
 - **(Recommended) Generated manifest.** The DLL exposes an exported entry point that serializes the
   aggregate schema to JSON; a build step (or a committed, regenerated `mods.manifest.json`) produces the
   file the GUI reads. The mod stays the single source of truth; the manifest is a generated artifact,
-  never hand-edited. Keep the serializer in-box (`DataContractJsonSerializer` on the C# side), never a
+  never hand-edited. Keep the serializer in-box (`System.Text.Json` on the C# side), never a
   loose managed dep — the installer stays single-exe (`[[installer-single-exe-no-loose-deps]]`).
 - **Shared data file.** Both languages read one `settings.json`. Rejected: the mod no longer owns its
   config in its `.cpp`, which is the whole point.
@@ -119,12 +120,12 @@ input.
 
 ## GUI: rendering the manifest
 
-The Avalonia port made the GUI *nicer* to maintain but did not make it data-driven. `ModSettingsViewModel`
-is still a hand-written class with one `[ObservableProperty]` per setting, hand-coded `Show* => otherToggle`
+Before this landed, the Avalonia port made the GUI *nicer* to maintain but not data-driven. `ModSettingsViewModel`
+was a hand-written class with one `[ObservableProperty]` per setting, hand-coded `Show* => otherToggle`
 gating, per-setting `RsModsLimits` ranges, and a matching hand-placed control in `ModSettingsView.axaml`.
-So a mod is transcribed in *three* C# places (VM property, XAML control, load/save mapping) on top of the
+So a mod was transcribed in *three* C# places (VM property, XAML control, load/save mapping) on top of the
 three C++ places — the same fixed wall, rebuilt in cleaner bricks. Rendering the manifest is what removes
-it. But the existing VM proves a flat "loop and emit a checkbox" is too naive; the approach is **tiered**,
+it. But that VM proved a flat "loop and emit a checkbox" is too naive; the approach is **tiered**,
 mirroring the DLL side's declarative-default-plus-escape-hatch.
 
 - **Tier 1 — pure declarative fields.** `Bool` / static `Enum` / `Int` with `min`/`max` / plain `String`.
@@ -184,13 +185,15 @@ First-cut fields:
   "choices":    [],                         // Enum: static display list, index = underlying int
   "choicesSource": null,                    // Tier 2: "SystemFonts" | "MidiOutDevices" | "Profiles" | ...
   "visibleWhen": null,                      // Tier 2: { "key": "...", "equals": "..." }
-  "editor":     null                        // Tier 3: custom UserControl name; when set, other UI fields ignored
+  "editor":     null,                       // Tier 3: custom UserControl name; when set, other UI fields ignored
+  "editedBy":   null                        // a bespoke editor owns this value; the generic form skips it
 }
 ```
 
 The DLL authors this from each mod's `SettingDecl` (the C++ struct is the subset the DLL needs — `key`,
 `ini`, `type`, `default`; the GUI-only fields ride alongside in the manifest). Because the GUI runs without
-the DLL loaded, commit the manifest as a build artifact: a `--dump-manifest` DLL entrypoint regenerates it,
+the DLL loaded, commit the manifest as a build artifact: the DLL's `DumpManifest` export (run by
+`BuildAndRun.ps1 -DumpManifest`) regenerates it,
 it is embedded as a resource in `GUI.Core`, and CI checks it is current — exactly the pattern the framework
 tests already use so it can't rot out of sync.
 
@@ -232,7 +235,8 @@ proceed in parallel. Sequenced end-to-end:
 ## Why this is the last seam
 
 After this, the three things a contributor touches to ship a mod — a `.cpp` in `Mods/`, its project
-entry, and its settings — reduce to just the `.cpp`. The project-entry edit is a separate cheap win
-(glob `Mods/*.cpp` in `DLL.vcxproj`). With both done, adding a mod is adding one file, and the
+entry, and its settings — reduce to just the `.cpp`. The project entry stays explicit (Visual Studio
+rewrites wildcard items), so `Build/New-Mod.ps1` writes it and the `CheckAllSourcesListed` build target
+fails on any unlisted `.cpp`. With both done, adding a mod is writing one file, and the
 framework has delivered the contributor-facing surface it exists for — without ever shipping a binary
 ABI it decided it didn't want.

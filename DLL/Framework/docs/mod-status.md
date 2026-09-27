@@ -10,8 +10,7 @@ The registry knows a lot the user and a contributor can't see. A mod can be runn
 user, **suppressed** because it lost a resource conflict, or **faulted** because a hook threw — and
 until now the only trace of any of that was a log line scrolling past at the moment it happened. The
 `Suppressed`-vs-`Disabled` distinction in particular is thrown away: `ModState` collapses both into
-`Inactive`, and the README notes it "survives only in the log line." So "why did my mod do nothing?"
-had no answer you could look up.
+`Inactive`. "Why did my mod do nothing?" had no answer you could look up.
 
 ## What it shows
 

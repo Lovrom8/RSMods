@@ -12,8 +12,8 @@ The modern architecture separates concerns into two distinct layers:
 1. **Generic Graphics Layer (`D3D/D3D.hpp`, `D3D/D3D.cpp`):** A pure utility layer providing device texture management, GDI+ gradient rasterization, solid-color texture generation, and texture CRC verification. It contains **zero** mod includes, **zero** settings queries, and **zero** game-feature assumptions.
 2. **Feature Mod Ownership:** Each mod owns its textures, color mathematics, and generation triggers:
    - **`ExtendedRangeMode`** (`DLL/Mods/ExtendedRangeMode.{hpp,cpp}`): Owns string textures (`customStringColorTexture`), note textures (`customNoteColorTexture`), and animated rainbow textures (`rainbowTextures`), along with HSL color derivations (`GetCustomColors`, `SetCustomColors`).
-   - **`CustomHighwayColorsMod`** (`DLL/Mods/CustomHighwayColorsMod.{hpp,cpp}`): Implements `Framework::IMod` and owns the noteway highway lane texture (`s_notewayTexture`), gutter texture (`s_gutterTexture`), and fret number texture (`s_fretNumTexture`).
-   - **Twitch / CrowdControl Solid Notes** (`DLL/D3D/D3DHooks.{hpp,cpp}`, `DLL/Twitch.cpp`, `DLL/CC/Effects/SolidNotesEffect.cpp`): Owns random solid note textures (`randomTextures`) and the user-defined Twitch note texture (`twitchUserDefinedTexture`).
+   - **`CustomHighwayColorsMod`** (`DLL/Mods/CustomHighwayColorsMod.{hpp,cpp}`): Implements `Framework::IMod` and owns the noteway highway lane, gutter, and fret number textures (`GetNotewayTexture`, `GetGutterTexture`, `GetFretNumTexture`).
+   - **`TwitchMod`** (`DLL/Mods/TwitchMod.{hpp,cpp}`): Owns the Twitch / CrowdControl Solid Notes textures, random solid note textures (`randomTextures`) and the user-defined note texture (`twitchUserDefinedTexture`).
 
 ---
 
@@ -63,7 +63,7 @@ Locks the texture surface in read-only mode and computes a quick checksum over t
 In earlier implementations, textures were regenerated inside `Hook_DIP` in `D3DHooks.cpp`. Because `DrawIndexedPrimitive` executes hundreds or thousands of times per frame in the middle of scene rendering, locking devices and generating 190+ textures mid-draw caused noticeable frame drops and hitching. A secondary counter in `MidiThread` was used as a crude throttle.
 
 ### The Modern Frame Boundary Pipeline
-1. **Setting Changes:** When the user modifies settings (via INI reload, GUI, or ImGui menus), `Settings::UpdateSettings()` sets:
+1. **Requesting a rebuild:** A mod that needs its textures rebuilt (on enable, on a settings change, or when an effect changes a colour) sets:
    ```cpp
    D3DHooks::RecreateTextures = true;
    ```
@@ -71,18 +71,17 @@ In earlier implementations, textures were regenerated inside `Hook_DIP` in `D3DH
    ```cpp
    D3DHooks::CheckRecreateTextures(pDevice);
    ```
-3. **Execution:** Inside `D3DHooks::CheckRecreateTextures(pDevice)`:
+3. **Execution:** Inside `D3DHooks::CheckRecreateTextures(pDevice)`, which knows no mods:
    ```cpp
    void D3DHooks::CheckRecreateTextures(IDirect3DDevice9* pDevice) {
        if (!pDevice) return;
 
        if (RecreateTextures.exchange(false)) {
-           ExtendedRangeMod::RegenerateTextures(pDevice);
-           CustomHighwayColorsMod::RegenerateTextures(pDevice);
-           GenerateRandomTextures(pDevice);
+           Framework::Draw().RegenerateAllTextures(pDevice);
        }
    }
    ```
+   Each texture-owning mod registered its regen callback with `ctx.Draw()` (see Step 3 below).
    - Uses `atomic_bool::exchange(false)` for thread-safe consumption without locking.
    - Textures are created while no scene draw calls are in progress.
    - `MidiThread` has been stripped of all graphics flags and only processes MIDI.
@@ -108,6 +107,9 @@ public:
     MOD_ID(MyTextureMod);
 
     bool IsEnabled(const Framework::ModContext& c) const override;
+    void OnInitialize(Framework::ModContext& c) override;
+    void OnEnabled(Framework::ModContext& c) override;
+    void OnDisabled(Framework::ModContext& c) override;
     void OnShutdown(Framework::ModContext& c) override;
 
     static void RegenerateTextures(IDirect3DDevice9* pDevice);
@@ -157,29 +159,35 @@ void MyTextureMod::ReleaseTextures() {
 }
 ```
 
-### Step 3: Register in the EndScene Recreation Loop
-In `D3DHooks.cpp`, add your mod's recreation method into `D3DHooks::CheckRecreateTextures`:
+### Step 3: Register Regen and Release With the Draw Registry
+In `OnInitialize`, declare both callbacks; both run on the render thread at `Hook_EndScene`. In
+`OnDisabled`, queue the release instead of releasing on MainThread (`draw-registry.md` §8.4):
 
 ```cpp
-void D3DHooks::CheckRecreateTextures(IDirect3DDevice9* pDevice) {
-    if (!pDevice) return;
+void MyTextureMod::OnInitialize(Framework::ModContext& c) {
+    c.Draw().RegisterTextureLifecycle(&MyTextureMod::RegenerateTextures, &MyTextureMod::ReleaseTextures);
+}
 
-    if (RecreateTextures.exchange(false)) {
-        ExtendedRangeMod::RegenerateTextures(pDevice);
-        CustomHighwayColorsMod::RegenerateTextures(pDevice);
-        MyTextureMod::RegenerateTextures(pDevice);
-        GenerateRandomTextures(pDevice);
-    }
+void MyTextureMod::OnEnabled(Framework::ModContext& c) {
+    c.Draw().CancelTextureRelease();
+    D3DHooks::RecreateTextures = true;
+}
+
+void MyTextureMod::OnDisabled(Framework::ModContext& c) {
+    c.Draw().RequestTextureRelease();
 }
 ```
 
-### Step 4: Bind the Texture in `Hook_DIP`
-In `D3DHooks.cpp` inside `Hook_DIP`:
+### Step 4: Bind the Texture From a Draw Interceptor
+No `D3DHooks` edit: register an interceptor in `OnInitialize` that swaps the texture in
+(`draw-registry.md` §8 has the matching helpers and worked examples):
 
 ```cpp
-if (crc == myTargetCrc && MyTextureMod::GetTexture()) {
-    pDevice->SetTexture(1, MyTextureMod::GetTexture());
-}
+c.Draw().Register("MyTexture", 0, Framework::DrawPath::Indexed, [](Framework::DrawContext& ctx) -> Framework::DrawResult {
+    if (ctx.StageCRC(1) == myTargetCrc && MyTextureMod::GetTexture())
+        return { Framework::DrawOutcome::ReplaceTexture, 1, MyTextureMod::GetTexture() };
+    return { Framework::DrawOutcome::Pass };
+});
 ```
 
 ---
@@ -187,6 +195,6 @@ if (crc == myTargetCrc && MyTextureMod::GetTexture()) {
 ## 5. Summary of Key Guidelines for Future Code
 
 - **Never add mod-specific logic to `D3D.hpp` or `D3D.cpp`:** Keep `D3D` completely agnostic.
-- **Always release textures on teardown:** Use `D3D::ReleaseTexture(&ptr)` in your mod's `OnShutdown` or destructor.
+- **Always release textures on teardown:** queue a release in `OnDisabled` (`RequestTextureRelease`), and call `D3D::ReleaseTexture(&ptr)` directly only in `OnShutdown`.
 - **Never allocate or regenerate textures inside `Hook_DIP` or `Hook_DP`:** Mid-frame generation causes hitching. Always schedule regeneration through `D3DHooks::RecreateTextures = true;` to execute cleanly at `Hook_EndScene`.
 - **Target the correct texture pointer:** Verify that string and note color routines write to their distinct texture pointers (`customStringColorTexture` vs `customNoteColorTexture`).

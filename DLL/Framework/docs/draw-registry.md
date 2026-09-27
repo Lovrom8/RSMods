@@ -363,10 +363,12 @@ void MyMod::OnDisabled(ModContext& c) {
 }
 ```
 
-**`OnShutdown`**: synchronous `ReleaseTextures()` is fine — the render loop is ending:
+**`OnShutdown`**: synchronous `ReleaseTextures()` is accepted. The game still renders while it closes, but
+`Shutdown` empties the active interceptor lists before any `OnShutdown` runs, so only a draw already in
+flight could still hold the pointer:
 ```cpp
 void MyMod::OnShutdown(ModContext&) {
-    ReleaseTextures(); // safe: no render thread in flight
+    ReleaseTextures(); // interceptors already unpublished
 }
 ```
 

@@ -173,7 +173,7 @@ namespace Framework {
 		void RegenerateAllTextures(IDirect3DDevice9* pDevice);
 
 		// Render thread (EndScene): drain and invoke all pending release callbacks.
-		// Must be called after RegenerateAllTextures so regen always wins over a same-frame release.
+		// Must be called after RegenerateAllTextures, so a release requested this frame frees what a same-frame regen built.
 		void RunPendingReleases();
 
 	private:

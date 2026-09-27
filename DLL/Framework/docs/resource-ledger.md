@@ -5,9 +5,9 @@ silently clobber the other's game-state mutations.
 
 ## How it works
 
-- The **registry** calls `Ledger().HeldExcluding(kRegistryOwner)` each tick to seed the conflict
-  resolver with CC's live claims, then `Ledger().Publish(kRegistryOwner, winnerResources)` to
-  advertise its own winners.
+- The **registry** calls `Ledger().HeldExcluding(&registryOwner)` each tick to seed the conflict
+  resolver with CC's live claims, then `Ledger().Publish(&registryOwner, winnerResources)` to
+  advertise its own winners (`registryOwner` is a static whose address is the owner key).
 - **CC effects** call `Ledger().TryClaim(this, ClaimsExclusive())` on `Start` (via the non-virtual
   `CCEffect::Start` wrapper) and `Ledger().Release(this)` on `Stop` (via `CCEffect::Stop`).
 - Cross-boundary: a mod holding `string-colors` blocks a CC effect that wants it; a running CC
@@ -26,6 +26,8 @@ silently clobber the other's game-state mutations.
 | `player-volume` | -                               | killguitarvolume, killmusicvolume     |
 | `song-speed`    | RiffRepeaterMod                 | turbospeed                            |
 | `instrument`    | -                               | removeinstrument                      |
+| `tuning-controller` | MidiMod                     | -                                     |
+| `loft-post-effects-state` | UltrawideMod          | -                                     |
 
 `removeinstrument` claims both `instrument` and `string-colors`.
 
@@ -42,6 +44,6 @@ glitch, not a crash.
 ## Key files
 
 - `Framework/ResourceLedger.hpp` / `.cpp` - the ledger class and `Ledger()` singleton
-- `Framework/Tests/ResourceLedgerTests.cpp` - 14 unit tests (standalone, no `windows.h`)
+- `Framework/Tests/ResourceLedgerTests.cpp` - unit tests (standalone, no `windows.h`)
 - `CC/CCEffect.hpp` / `.cpp` - non-virtual `Start`/`Stop` wrappers that own claim/release
 - `Framework/ModRegistry.cpp` - `Tick` seeds from ledger; `Shutdown` releases

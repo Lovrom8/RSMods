@@ -162,7 +162,7 @@ WINEDLLOVERRIDES="xinput1_3=n,b" %command%
 
 ## Settings (`RSMods.ini`)
 
-The DLL (`DLL/Settings.cpp`) and GUI both read/write the same `RSMods.ini` in the Rocksmith install folder. Prefer the GUI, but you can edit by hand. Keys and defaults below match the DLL parser (`Settings::ReadKeyBinds` / `ReadModSettings` / `ReadStringColors` / `ReadNotewayColors`) and the GUI first-run writer (`WriteSettings.LoadSettingsFromINI`).
+The DLL (`DLL/Settings.cpp`) and GUI both read/write the same `RSMods.ini` in the Rocksmith install folder. Prefer the GUI, but you can edit by hand. Each mod declares its own keys and defaults in its `Settings()` schema (exported to `mods.manifest.json`); the DLL loads them in `Settings::ReadModSettings`, and the GUI writes any missing default on first run.
 
 Format is standard INI: `[Section]` then `Key = Value` (spaces around `=` are fine).
 
@@ -206,6 +206,7 @@ Same VKey format. Require `VolumeControl = on`. Use Control with the key to decr
 | `DisplayMixerKey` | `P` | Show selected volume / mixer display. |
 | `MutePlayer1Key` | `X` | Mute / unmute player 1. |
 | `MutePlayer2Key` | `C` | Mute / unmute player 2. |
+| `ChangedSelectedVolumeKey` | `B` | Cycle which volume the volume keys adjust. |
 
 ### `[Toggle Switches]`
 | Key | Default | Values | Info |
@@ -228,6 +229,7 @@ Same VKey format. Require `VolumeControl = on`. Use Control with the key to decr
 | `Fretless` | `off` | on/off | Remove fret wire. |
 | `Inlays` | `off` | on/off | Remove inlays (stock dots only). |
 | `RemoveFingerprints` | `off` | on/off | Remove fingerprint / hand indicators. |
+| `FastProfileLoadAndSave` | `off` | on/off | Load and save big profiles in pieces, so the game doesn't freeze or crash on them. |
 | `ToggleLoftWhen` | `manual` | `startup` / `song` / `manual` | When loft toggles. |
 | `ToggleSkylineWhen` | `song` | `startup` / `song` | When skyline is removed. |
 | `LaneMarkers` | `off` | on/off | Remove unused lane markers. |
@@ -250,7 +252,6 @@ Same VKey format. Require `VolumeControl = on`. Use Control with the key to decr
 | `OnScreenFont` | `Arial` | font name | Font for on-screen text. |
 | `ProfileToLoad` | _(empty)_ | profile name | Profile for ForceProfileLoad. |
 | `ShowSongTimerWhen` | `manual` | `automatic` / `manual` | When song timer is shown. |
-| `ShowSelectedVolumeWhen` | `manual` | `automatic` / `manual` | When selected volume is shown. |
 | `SecondaryMonitor` | `off` | on/off | Launch Rocksmith on secondary monitor. |
 | `SongPreviews` | `off` | on/off | Disable song previews in the song list. |
 | `OverrideInputVolumeEnabled` | `off` | on/off | Override RealTone / input volume. |
@@ -336,15 +337,13 @@ MIDI note numbers `0`–`96` (C-1 … C7). Example: low E 12th fret (E3) ≈ `52
 | `CustomFretNubmers` | _(empty)_ | hex | Fret number text (**spelling is intentional** - matches DLL key). |
 
 ### `[GUI Settings]`
-Used by the RSMods GUI only (not read by the game DLL).
+Mostly GUI-only; the game DLL reads only `BackupProfile`.
 
 | Key | Default | Values | Info |
 | --- | ------- | ------ | ---- |
-| `CustomTheme` | `off` | on/off | Custom GUI colors. |
-| `ThemeBackgroundColor` | `F0FFFF` | hex | Background. |
-| `ThemeTextColor` | `000000` | hex | Text. |
-| `ThemeButtonColor` | `E3E3E3` | hex | Buttons. |
-| `BackupProfile` | `on` | on/off | Profile backups. |
+| `AppThemeVariant` | `System` | `System` / `Light` / `Dark` | GUI theme. |
+| `AppAccentColor` | _(empty)_ | hex | GUI accent colour; empty uses the theme's default. |
+| `BackupProfile` | `on` | on/off | Profile backups (the GUI's on launch, the DLL's in game). |
 | `NumberOfBackups` | `50` | int | Max backups to keep. |
 
 ### Notes
