@@ -30,7 +30,7 @@ float RiffRepeater::GetSpeed(bool realSpeed) {
 /// <param name="isRealSpeed"> - Are we using a real song speed? 400% = 4x</param>
 void RiffRepeater::SetSpeed(float newSpeed, bool isRealSpeed) {
 	if (isRealSpeed)
-		newSpeed = ConvertSpeed(newSpeed);
+		newSpeed = ConvertSpeed(std::clamp(newSpeed, MinRealSpeed, MaxRealSpeed));
 
 	// Set Time_Stretch to newSpeed.
 	Wwise::SoundEngine::SetRTPCValue("Time_Stretch", newSpeed, 0x1234, 0, AkCurveInterpolation_Linear);
