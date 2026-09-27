@@ -242,7 +242,7 @@ namespace Framework {
 	}
 
 	void CommandRouter::DispatchPending(ModContext& context, const std::deque<KeyEvent>& events, bool gameLoaded, const OwnerAvailabilityFn& ownerAvailable) {
-		if (!gameLoaded) return; // Input received during startup is deliberately discarded (drained by the caller, not replayed).
+		if (!gameLoaded || events.empty()) return; // Input received during startup is deliberately discarded (drained by the caller, not replayed).
 
 		const auto routing = impl->SnapshotRouting();
 		for (const KeyEvent& event : events) {
