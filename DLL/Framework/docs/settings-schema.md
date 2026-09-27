@@ -149,13 +149,9 @@ This tiering is the same boundary as `plugin-distribution.md`: third-party / out
 1–2 (pure manifest, no C# needed), while tier-3 editors stay in-tree (an out-of-tree binary plugin can't
 ship a C# editor anyway).
 
-> [!NOTE]
-> **Tier-3 Dirty Tracking & Lifecycle**: To prevent bespoke editors from needing ad-hoc dirty state in the
-> outer VM, `CustomEditorFieldViewModel` provides generic dirty tracking:
-> - `SetDirty(bool)` marks the field dirty and raises `SettingsCoordinator.IsDirty`.
-> - `SaveHandler(IniManager)` and `LoadHandler(IniManager)` can be registered so sub-editors participate
->   directly in the coordinator's atomic save/load passes. Sub-editors can also manage independent persistence
->   if needed.
+A tier-3 entry renders as a `CustomEditorFieldViewModel`: a button that raises `EditorRequested` and holds
+no value. The bespoke editor it opens reads and saves its own settings, and a value it owns is marked
+`editedBy` so the generic form doesn't render a second, competing field for it.
 
 **Avalonia mechanics.** An `ObservableCollection<SettingFieldViewModel>` in `GUI.Core` with a base VM and
 `Bool`/`Enum`/`Numeric`/`Choice` derivations, each holding the descriptor + live value + an `IsVisible`

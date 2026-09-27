@@ -258,56 +258,19 @@ public sealed class SettingsCoordinatorTests
     }
 
     [Fact]
-    public void CustomEditorGenericDirtyTrackingAndLifecycle()
+    public void CustomEditorLauncherRequestsItsEditorAndStaysClean()
     {
-        string tempFile = Path.Combine(Path.GetTempPath(), $"rsmods_test_custom_{Guid.NewGuid():N}.ini");
-        try
-        {
-            var desc = new SettingDescriptor(
-                "GuitarSpeak", new IniLocation("Guitar Speak", "GuitarSpeak"),
-                SettingType.String, "", "Guitar Speak", null, "Guitar Speak",
-                null, null, null, null, null, null, "GuitarSpeak");
+        var coordinator = new SettingsCoordinator(new ManifestService());
+        var customEditor = coordinator.Find<CustomEditorFieldViewModel>("GuitarSpeakCustomEditor");
+        Assert.NotNull(customEditor);
 
-            var manifest = new ManifestService();
-            var coordinator = new SettingsCoordinator(manifest);
+        string? requestedEditor = null;
+        customEditor.EditorRequested += ed => requestedEditor = ed;
+        customEditor.OpenEditorCommand.Execute(null);
 
-            var customEditor = coordinator.Find<CustomEditorFieldViewModel>("GuitarSpeakCustomEditor");
-            Assert.NotNull(customEditor);
-            Assert.False(customEditor.IsDirty);
-            Assert.False(coordinator.IsDirty);
-
-            // OpenEditorCommand triggers EditorRequested
-            string? requestedEditor = null;
-            customEditor.EditorRequested += ed => requestedEditor = ed;
-            customEditor.OpenEditorCommand.Execute(null);
-            Assert.Equal("GuitarSpeak", requestedEditor);
-
-            // Marking dirty propagates to Coordinator.IsDirty
-            customEditor.SetDirty(true);
-            Assert.True(customEditor.IsDirty);
-            Assert.True(coordinator.IsDirty);
-
-            // Hook up a custom save handler
-            bool saveHandlerCalled = false;
-            customEditor.SaveHandler = ini =>
-            {
-                saveHandlerCalled = true;
-                ini.SetString("[Guitar Speak]", "TestKey", "SavedValue");
-            };
-
-            var ini = new IniManager(tempFile);
-            coordinator.Save(ini);
-
-            Assert.True(saveHandlerCalled);
-            Assert.False(customEditor.IsDirty);
-            Assert.False(coordinator.IsDirty);
-            Assert.Equal("SavedValue", ini.GetString("[Guitar Speak]", "TestKey"));
-        }
-        finally
-        {
-            if (File.Exists(tempFile))
-                File.Delete(tempFile);
-        }
+        Assert.Equal("GuitarSpeak", requestedEditor);
+        Assert.False(customEditor.IsDirty);
+        Assert.False(coordinator.IsDirty);
     }
 
     [Fact]
