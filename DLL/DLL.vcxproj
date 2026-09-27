@@ -142,6 +142,9 @@
     <ClCompile Include="Framework\HookWatchdog.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Framework\StallMonitor.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="Framework\DrawRegistry.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
@@ -474,6 +477,7 @@
     <ClInclude Include="Framework\ModRegistry.hpp" />
     <ClInclude Include="Framework\ResourceLedger.hpp" />
     <ClInclude Include="Framework\HookWatchdog.hpp" />
+    <ClInclude Include="Framework\StallMonitor.hpp" />
     <ClInclude Include="Framework\InputCapture.hpp" />
     <ClInclude Include="DirectInputCapture.hpp" />
     <ClInclude Include="Framework\Framework.hpp" />

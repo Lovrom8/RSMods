@@ -14,6 +14,7 @@
 #include "../Log.hpp"
 #include "CommandCollisionDiagnostics.hpp"
 #include "ModContext.hpp"
+#include "StallMonitor.hpp"
 
 namespace Framework {
 	struct CommandRouter::Impl {
@@ -135,6 +136,7 @@ namespace Framework {
 
 		void InvokeBinding(const Binding& binding, ModContext& context, const KeyEvent& event) {
 			context.currentMod = binding.mod;
+			const StallMonitor::Scope stall(Stalls(), binding.mod ? binding.mod->Id() : "host", binding.commandName);
 
 			try {
 				if (binding.predicate && !binding.predicate(context, event)) return;

@@ -23,6 +23,7 @@
 #include "ModContext.hpp"
 #include "ResourceLedger.hpp"
 #include "SettingsSchema.hpp"
+#include "StallMonitor.hpp"
 
 namespace Framework {
 	PendingRegistration* g_modPendingHead = nullptr;
@@ -93,6 +94,7 @@ namespace Framework {
 
 		bool Invoke(Record& record, Hook hook, const char* where) {
 			ctx.currentMod = record.mod.get();
+			const StallMonitor::Scope stall(Stalls(), record.mod->Id(), where);
 
 			const auto start = std::chrono::steady_clock::now();
 			try {

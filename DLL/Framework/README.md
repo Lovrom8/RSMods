@@ -21,7 +21,8 @@ instead of `ModManager` doing it, and adding a mod is adding one `.cpp` rather t
   hold a `steady_clock` deadline and return early until a later tick passes it (see
   `ExtendedRangeMod`); to do real work, own a thread and join it in `OnShutdown`. The framework times
   every hook and logs a throttled warning when one runs over budget on `MainThread`, so a slow hook is
-  surfaced instead of shipping silently (see [`docs/hook-watchdog.md`](docs/hook-watchdog.md)).
+  surfaced instead of shipping silently, and a monitor thread names any hook or command that has been
+  running for 5 s (see [`docs/hook-watchdog.md`](docs/hook-watchdog.md)).
 - **No raw input/WndProc surface.** `Keybindings` remains the Win32 adapter and never exposes
   consumable window messages to mods. It snapshots key events into non-consumable `KeyEvent`s;
   mods register named commands through `ModContext`.

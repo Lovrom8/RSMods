@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <mutex>
+#include <optional>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -76,6 +77,9 @@ namespace {
 		Framework::Availability availability = Framework::Availability::Active;
 		int commandCalls = 0;
 		bool lastCommandControl = false;
+		bool probeStall = false;   // Poll the stall monitor from inside OnTick and the command.
+		std::optional<Framework::StallMonitor::Report> stallInTick;
+		std::optional<Framework::StallMonitor::Report> stallInCommand;
 
 		explicit TestMod(std::string i) : id(std::move(i)), tag(id) {}
 		~TestMod() override {
@@ -101,6 +105,7 @@ namespace {
 					[this](Framework::ModContext&, const Framework::KeyEvent& event) {
 						++commandCalls;
 						lastCommandControl = event.control;
+						if (probeStall) stallInCommand = ProbeStall();
 					});
 			}
 		}
@@ -108,13 +113,21 @@ namespace {
 		void OnSettingsChanged(Framework::ModContext&) override { Rec("OnSettingsChanged"); }
 		void OnEnabled(Framework::ModContext&) override { Rec("OnEnabled"); }
 		void OnDisabled(Framework::ModContext&) override { Rec("OnDisabled"); }
-		void OnTick(Framework::ModContext&) override { Rec("OnTick"); }
+		void OnTick(Framework::ModContext&) override {
+			Rec("OnTick");
+			if (probeStall) stallInTick = ProbeStall();
+		}
 		void OnMenuTick(Framework::ModContext&) override { Rec("OnMenuTick"); }
 		void OnSongEnter(Framework::ModContext&) override { Rec("OnSongEnter"); }
 		void OnSongTick(Framework::ModContext&) override { Rec("OnSongTick"); }
 		void OnSongExit(Framework::ModContext&) override { Rec("OnSongExit"); }
 
 	private:
+		// An hour on, whatever call is in flight is past the threshold.
+		static std::optional<Framework::StallMonitor::Report> ProbeStall() {
+			return Framework::Stalls().Poll(std::chrono::steady_clock::now() + std::chrono::hours(1));
+		}
+
 		void Rec(const char* hook) {
 			RecordEvent(tag + ":" + hook);
 			if (throwOn == hook) throw std::runtime_error("injected failure in " + std::string(hook));
@@ -353,6 +366,45 @@ static void Test_ConflictSuppressionGatesEffectiveCommand() {
 	reg.Shutdown();
 }
 
+static void DrainStalls() {
+	while (Framework::Stalls().Poll(std::chrono::steady_clock::now())) {}
+}
+
+static void Test_StallMonitorSeesHooksAndCommands() {
+	Framework::Commands().SetKeyResolver([](std::string_view setting) {
+		return setting == "StallProbeCommand" ? 83u : 0u;
+	});
+	DrainStalls();
+
+	ModRegistry reg;
+	TestMod* mod = Add(reg, "StallProbe");
+	mod->commandSetting = "StallProbeCommand";
+	reg.DispatchInitialize();
+	reg.Tick(GamePhase::Menu); // Activate first, so the probe sees only OnTick below.
+
+	mod->probeStall = true;
+	reg.Tick(GamePhase::Menu);
+	const auto& tick = mod->stallInTick;
+	Expect(tick && tick->kind == Framework::StallMonitor::ReportKind::Stuck
+		&& tick->owner == "StallProbe" && tick->where == "OnTick",
+		"stall monitor names the mod and hook MainThread is in");
+
+	const auto recovered = Framework::Stalls().Poll(std::chrono::steady_clock::now());
+	Expect(recovered && recovered->kind == Framework::StallMonitor::ReportKind::Recovered
+		&& recovered->where == "OnTick", "stall monitor sees the hook return");
+	DrainStalls();
+
+	Framework::Inbox().PostKeyEvent(TestKeyEvent(83));
+	reg.DispatchCommands(GamePhase::Menu, true);
+	const auto& command = mod->stallInCommand;
+	Expect(command && command->owner == "StallProbe" && command->where == "StallProbeCommand",
+		"stall monitor names the mod and command MainThread is in");
+
+	mod->probeStall = false;
+	DrainStalls();
+	reg.Shutdown();
+}
+
 static void Test_DuplicateIdRejected() {
 	ClearEvents();
 	ModRegistry reg;
@@ -498,6 +550,7 @@ int main() {
 	Test_SettingsAppliedThenNotifiedOnTick();
 	Test_KeyAvailabilityTracksRegistryLifecycle();
 	Test_ConflictSuppressionGatesEffectiveCommand();
+	Test_StallMonitorSeesHooksAndCommands();
 	Test_DuplicateIdRejected();
 	Test_StartupOrderHarvestsSettingsBeforeDispatchInitialize();
 	Test_ShutdownRevertsAndDestroysInOrder();

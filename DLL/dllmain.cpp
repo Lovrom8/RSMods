@@ -231,6 +231,29 @@ unsigned WINAPI HandleEffectQueueThread() {
 }
 
 /// <summary>
+/// Reports a mod hook or command that has stopped returning. It can't unstick MainThread, only name the culprit in the log.
+/// </summary>
+/// <returns>NULL. Loops while game is open.</returns>
+unsigned WINAPI StallMonitorThread() {
+	while (!GameState::GameClosing) {
+		Sleep(1000);
+
+		const auto report = Framework::Stalls().Poll(std::chrono::steady_clock::now());
+		if (!report) continue;
+
+		if (report->kind == Framework::StallMonitor::ReportKind::Stuck) {
+			LOG_ERROR("[Framework] " << report->owner << "::" << report->where << " has been running for "
+				<< report->elapsedMs / 1000 << " s; MainThread is stuck - keybinds and every other mod are frozen until it returns" << std::endl);
+		}
+		else {
+			LOG_WARNING("[Framework] " << report->owner << "::" << report->where << " returned after "
+				<< report->elapsedMs << " ms; MainThread is running again" << std::endl);
+		}
+	}
+	return 0;
+}
+
+/// <summary>
 /// Main Thread where we trigger the mods to startup.
 /// </summary>
 /// <returns>NULL. Loops while game is open.</returns>
@@ -291,6 +314,7 @@ void Initialize() {
 	Wwise::Exports::Initialize();
 
 	std::thread(MainThread).detach(); // Mod Toggle based on menus
+	std::thread(StallMonitorThread).detach(); // Logs a MainThread hook that never returns
 	std::thread(HandleEffectQueueThread).detach(); // Twitch Effects
 	std::thread(MidiThread).detach(); // MIDI Auto Tuning / True Tuning
 	std::thread(RiffRepeaterThread).detach(); // RR Speed Above 100% Log
