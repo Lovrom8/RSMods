@@ -12,7 +12,8 @@ namespace RSMods.ASIO
 
     /// <summary>
     /// Reads and writes one RS_ASIO.ini file. The host supplies the path so this settings model has no
-    /// dependency on install-location discovery or a particular UI framework.
+    /// dependency on install-location discovery or a particular UI framework. Booleans are written as 1/0,
+    /// the format RS_ASIO's own default file uses and the WinForms configurator always wrote.
     /// </summary>
     public sealed class AsioSettings
     {
@@ -67,11 +68,14 @@ namespace RSMods.ASIO
 
         public void Save() => _ini.Save();
 
+        /// <summary>Coalesces the setters' per-property saves into one write when the scope is disposed.</summary>
+        public IDisposable SuspendSave() => _ini.SuspendSave();
+
         public sealed class ConfigSettings
         {
             private readonly IniSection _section;
 
-            internal ConfigSettings(IniManager ini) => _section = new IniSection(ini, "[Config]");
+            internal ConfigSettings(IniManager ini) => _section = new IniSection(ini, "[Config]", numericBools: true);
 
             public WasapiOutputMode WasapiOutputs { get => _section.GetEnumInt(WasapiOutputMode.Off); set { _section.SetEnumInt(value); _section.Save(); } }
             public bool EnableWasapiInputs { get => _section.GetBool(); set { _section.SetBool(value); _section.Save(); } }
@@ -82,7 +86,7 @@ namespace RSMods.ASIO
         {
             private readonly IniSection _section;
 
-            internal AsioSectionSettings(IniManager ini) => _section = new IniSection(ini, "[Asio]");
+            internal AsioSectionSettings(IniManager ini) => _section = new IniSection(ini, "[Asio]", numericBools: true);
 
             public string BufferSizeMode { get => _section.GetString("driver"); set { _section.SetString(value); _section.Save(); } }
             public int CustomBufferSize { get => _section.GetInt(48); set { _section.SetInt(value); _section.Save(); } }
@@ -92,7 +96,7 @@ namespace RSMods.ASIO
         {
             private readonly IniSection _section;
 
-            internal OutputSettings(IniManager ini) => _section = new IniSection(ini, "[Asio.Output]");
+            internal OutputSettings(IniManager ini) => _section = new IniSection(ini, "[Asio.Output]", numericBools: true);
 
             // Driver= blank when Disabled; not commented.
             public bool Disabled { get => Driver == ""; set { Driver = value ? "" : Driver; } }
@@ -112,7 +116,7 @@ namespace RSMods.ASIO
 
             internal InputSettings(IniManager ini, string sectionName, int channelDefault)
             {
-                _section = new IniSection(ini, sectionName);
+                _section = new IniSection(ini, sectionName, numericBools: true);
                 _channelDefault = channelDefault;
             }
 
@@ -134,7 +138,7 @@ namespace RSMods.ASIO
             internal Input1Settings(IniManager ini)
             {
                 _ini = ini;
-                _section = new IniSection(ini, SectionName);
+                _section = new IniSection(ini, SectionName, numericBools: true);
             }
 
             // Input1 disabled = ;Driver=value (commented out, value preserved).

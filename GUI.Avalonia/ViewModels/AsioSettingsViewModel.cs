@@ -194,9 +194,11 @@ internal sealed partial class AsioSettingsViewModel : ObservableObject
     {
         var s = _service.Get();
 
-        // The store's setters persist to disk; run the write off the UI thread.
+        // The store's setters persist to disk; run the write off the UI thread, as one write rather than one per setter.
         await Task.Run(() =>
         {
+            using var _ = s.SuspendSave();
+
             s.Config.WasapiOutputs = WasapiOutputs;
             s.Config.EnableWasapiInputs = EnableWasapiInputs;
             s.Config.EnableAsio = EnableAsio;
