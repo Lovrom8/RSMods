@@ -199,19 +199,10 @@ internal sealed partial class ColorsViewModel : ObservableObject
         if (_loading)
             return;
 
-        // Only the four data toggles are saved. The computed visibility flags are presentation state, and the
-        // status line is not persisted.
-        switch (e.PropertyName)
-        {
-            case nameof(StatusMessage):
-            case nameof(ShowStringColors):
-            case nameof(ShowNoteColors):
-            case nameof(ShowNoteSwatches):
-            case nameof(ShowHighwayColors):
-                return;
-        }
-
-        _saver.Request();
+        // Listing what's saved, not what isn't, so a display-only property added later can't start saving.
+        if (e.PropertyName is nameof(UseCustomStringColors) or nameof(UseSeparateNoteColors)
+            or nameof(UseRocksmithNoteColors) or nameof(UseCustomHighwayColors))
+            _saver.Request();
     }
 
     /// <summary>Stores colours as the store expects: 6 upper-case hex digits with no leading #.</summary>

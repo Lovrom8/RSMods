@@ -276,9 +276,17 @@ internal sealed partial class AsioSettingsViewModel : ObservableObject
     {
         base.OnPropertyChanged(e);
 
-        if (_loading || e.PropertyName is nameof(StatusMessage) or nameof(IsCustomBufferSize))
-            return;
-
-        _saver.Request();
+        if (!_loading && e.PropertyName is not null && SavedProperties.Contains(e.PropertyName))
+            _saver.Request();
     }
+
+    // Listing what's saved, not what isn't, so a display-only property added later can't start saving.
+    private static readonly HashSet<string> SavedProperties =
+    [
+        nameof(WasapiOutputs), nameof(EnableWasapiInputs), nameof(EnableAsio),
+        nameof(BufferSizeMode), nameof(CustomBufferSize),
+        nameof(OutputEnabled), nameof(OutputDriver), nameof(OutputBaseChannel), nameof(OutputAltBaseChannel),
+        nameof(OutputEnableEndpointVolume), nameof(OutputEnableMasterVolume), nameof(OutputMasterVolumePercent),
+        nameof(OutputRefCountHack),
+    ];
 }
