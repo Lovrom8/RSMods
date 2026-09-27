@@ -98,6 +98,24 @@ void Offsets::Initialize() {
 	ptr_lyricsGlyphCountIndices = { {0x0082C152, baseHandle + 0x0042C4C2} };		// Code | 0f b7 83 9c 00 00 00 (index count)
 	ptr_lyricsGlyphCountIndexLoopStart = { {0x0082C1BC, baseHandle + 0x0042C52C} };	// Code | 66 3b 8b 9c 00 00 00
 	ptr_lyricsGlyphCountIndexLoop = { {0x0082C224, baseHandle + 0x0042C594} };		// Code | 0f b7 bb 9c 00 00 00
+	// Per difficulty level anchor pass on song load (function at 0x0055DDC0, rva 0x0015F170 on Dec 2024; same code on both builds)
+	ptr_anchorPassPhraseScan = { {0x0055DF0C, baseHandle + 0x0015F2BC} };			// Code | c6 85 ac fe ff ff 00 (before the phrase iteration note loop)
+	ptr_anchorPassPhraseScanJmpBck = { {0x0055DF13, baseHandle + 0x0015F2C3} };
+	ptr_anchorPassPhraseScanDone = { {0x0055DF17, baseHandle + 0x0015F2C7} };		// Code | 8b b5 98 fe ff ff (after the loop)
+	ptr_anchorPassPhraseScanDoneJmpBck = { {0x0055DF1D, baseHandle + 0x0015F2CD} };
+	ptr_anchorPassNoteScan = { {0x0055E212, baseHandle + 0x0015F5C2} };				// Code | 8b 85 08 ff ff ff (before the anchor note loop)
+	ptr_anchorPassNoteScanJmpBck = { {0x0055E218, baseHandle + 0x0015F5C8} };
+	ptr_anchorPassNoteScanDone = { {0x0055E3F3, baseHandle + 0x0015F7A3} };			// Code | 80 bd 1e ff ff ff 00 (after the loop)
+	ptr_anchorPassNoteScanDoneJmpBck = { {0x0055E3FA, baseHandle + 0x0015F7AA} };
+	ptr_anchorPassLookahead = { {0x0055E400, baseHandle + 0x0015F7B0} };			// Code | 8b 85 98 fe ff ff (empty anchor lookahead)
+	ptr_anchorPassLookaheadJmpBck = { {0x0055E406, baseHandle + 0x0015F7B6} };
+	ptr_anchorPassRemoveAnchor = { {0x0055E5B1, baseHandle + 0x0015F961} };			// Code | c6 85 1d ff ff ff 01 (lookahead says remove)
+	ptr_anchorPassLookaheadDone = { {0x0055E5B8, baseHandle + 0x0015F968} };		// Code | 80 bd 1f ff ff ff 00 (lookahead says keep, or after it)
+	ptr_anchorPassLookaheadDoneJmpBck = { {0x0055E5BF, baseHandle + 0x0015F96F} };
+	ptr_anchorPassSkipBeforePhrase = { {0x0055E192, baseHandle + 0x0015F542} };		// Code | 0f 8a ec 11 00 00 eb 04 (anchor starts before the phrase iteration: jp 0x0055F384)
+	ptr_anchorPassSkipAfterPhrase = { {0x0055E1B1, baseHandle + 0x0015F561} };		// Code | 0f 85 c9 11 00 00 de e1 (starts at or after its end: jnz 0x0055F380)
+	ptr_anchorPassSkipAtPhraseEnd = { {0x0055E1C4, baseHandle + 0x0015F574} };		// Code | 0f 85 ba 11 00 00 8b 4e (starts within 0.002 of its end: jnz 0x0055F384)
+	ptr_anchorPassAnchorLoopNext = { {0x0055F384, baseHandle + 0x00160734} };		// Code | 8b 4e 04 2b 0e 8b 9d b8 (next step of the anchor loop)
 	ptr_IsWindowInFocus = { {0x1251A78, baseHandle + 0x00E52A78} };						// Static Memory | 00 00 00 80 01 00 00 00 04 00 00 00 01 00 00 00 (second variable)
 	ptr_WindowNotInFocusValue = { {0xEC5D46, baseHandle + 0x00AC5496} };    // Code | c6 05 78 2a 02 01 00 (we want to change that 00 to an 01).
 

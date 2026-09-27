@@ -94,6 +94,7 @@ namespace ModManager {
 		BugPrevention::FixIndexKeyTableOverflow();
 		BugPrevention::FixLyricsGlyphCountOverflow();
 		BugPrevention::FixPhraseDifficultyCacheOverflow();
+		AnchorPassSpeedup::Install();
 	}
 
 	/// <summary>

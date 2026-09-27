@@ -198,6 +198,24 @@ namespace Offsets {
 	inline VersioningStruct<uintptr_t> ptr_lyricsGlyphCountIndexLoopStart;
 	inline VersioningStruct<uintptr_t> ptr_lyricsGlyphCountIndexLoop;
 
+	// Anchor pass on song load
+	inline VersioningStruct<uintptr_t> ptr_anchorPassPhraseScan;
+	inline VersioningStruct<uintptr_t> ptr_anchorPassPhraseScanJmpBck;
+	inline VersioningStruct<uintptr_t> ptr_anchorPassPhraseScanDone;
+	inline VersioningStruct<uintptr_t> ptr_anchorPassPhraseScanDoneJmpBck;
+	inline VersioningStruct<uintptr_t> ptr_anchorPassNoteScan;
+	inline VersioningStruct<uintptr_t> ptr_anchorPassNoteScanJmpBck;
+	inline VersioningStruct<uintptr_t> ptr_anchorPassNoteScanDone;
+	inline VersioningStruct<uintptr_t> ptr_anchorPassNoteScanDoneJmpBck;
+	inline VersioningStruct<uintptr_t> ptr_anchorPassLookahead;
+	inline VersioningStruct<uintptr_t> ptr_anchorPassLookaheadJmpBck;
+	inline VersioningStruct<uintptr_t> ptr_anchorPassRemoveAnchor;
+	inline VersioningStruct<uintptr_t> ptr_anchorPassLookaheadDone;
+	inline VersioningStruct<uintptr_t> ptr_anchorPassLookaheadDoneJmpBck;
+	inline VersioningStruct<uintptr_t> ptr_anchorPassSkipBeforePhrase;
+	inline VersioningStruct<uintptr_t> ptr_anchorPassSkipAfterPhrase;
+	inline VersioningStruct<uintptr_t> ptr_anchorPassSkipAtPhraseEnd;
+	inline VersioningStruct<uintptr_t> ptr_anchorPassAnchorLoopNext;
 	// Audio In Background
 	inline VersioningStruct<uintptr_t> ptr_IsWindowInFocus;
 	inline VersioningStruct<uintptr_t> ptr_WindowNotInFocusValue;
