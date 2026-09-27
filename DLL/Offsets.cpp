@@ -98,6 +98,10 @@ void Offsets::Initialize() {
 	ptr_lyricsGlyphCountIndices = { {0x0082C152, baseHandle + 0x0042C4C2} };		// Code | 0f b7 83 9c 00 00 00 (index count)
 	ptr_lyricsGlyphCountIndexLoopStart = { {0x0082C1BC, baseHandle + 0x0042C52C} };	// Code | 66 3b 8b 9c 00 00 00
 	ptr_lyricsGlyphCountIndexLoop = { {0x0082C224, baseHandle + 0x0042C594} };		// Code | 0f b7 bb 9c 00 00 00
+	// Per frame lyrics glyph walk in the lyrics renderer update (0x0082E2B0, same code on both builds)
+	ptr_lyricsGlyphWalk = { {0x0082E6E1, baseHandle + 0x0042EA51} };				// Code | dd 05 ?? ?? ?? ?? 89 7d f0 8b be b8 00 00 00 8b 8e bc 00 00 00
+	ptr_lyricsGlyphWalkJmpBck = { {0x0082E6E7, baseHandle + 0x0042EA57} };
+	ptr_lyricsGlyphWalkDone = { {0x0082E7F4, baseHandle + 0x0042EB64} };			// Code | f6 05 ?? ?? ?? ?? 01 (after the walk)
 	// Per difficulty level anchor pass on song load (function at 0x0055DDC0, rva 0x0015F170 on Dec 2024; same code on both builds)
 	ptr_anchorPassPhraseScan = { {0x0055DF0C, baseHandle + 0x0015F2BC} };			// Code | c6 85 ac fe ff ff 00 (before the phrase iteration note loop)
 	ptr_anchorPassPhraseScanJmpBck = { {0x0055DF13, baseHandle + 0x0015F2C3} };

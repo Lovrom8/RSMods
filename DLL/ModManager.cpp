@@ -96,6 +96,7 @@ namespace ModManager {
 		BugPrevention::FixPhraseDifficultyCacheOverflow();
 		AnchorPassSpeedup::Install();
 		ChartPrepSpeedup::Install();
+		LyricsRenderSpeedup::Install();
 	}
 
 	/// <summary>

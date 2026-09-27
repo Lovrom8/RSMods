@@ -6,6 +6,7 @@
 #include "Mods/BugPrevention.hpp"
 #include "Mods/AnchorPassSpeedup.hpp"
 #include "Mods/ChartPrepSpeedup.hpp"
+#include "Mods/LyricsRenderSpeedup.hpp"
 #include "Mods/ProfileSaveStreaming.hpp"
 #include "Keyboard.hpp"
 #include "Keybindings.hpp"

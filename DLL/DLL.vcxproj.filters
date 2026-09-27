@@ -242,6 +242,9 @@
     <ClCompile Include="Mods\ChartPrepSpeedup.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
+    <ClCompile Include="Mods\LyricsRenderSpeedup.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
     <ClCompile Include="Mods\BugPrevention.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
@@ -638,6 +641,9 @@
       <Filter>Mods\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Mods\ChartPrepSpeedup.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\LyricsRenderSpeedup.hpp">
       <Filter>Mods\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Mods\BugPrevention.hpp">

@@ -198,6 +198,10 @@ namespace Offsets {
 	inline VersioningStruct<uintptr_t> ptr_lyricsGlyphCountIndexLoopStart;
 	inline VersioningStruct<uintptr_t> ptr_lyricsGlyphCountIndexLoop;
 
+	// Per frame lyrics glyph walk
+	inline VersioningStruct<uintptr_t> ptr_lyricsGlyphWalk;
+	inline VersioningStruct<uintptr_t> ptr_lyricsGlyphWalkJmpBck;
+	inline VersioningStruct<uintptr_t> ptr_lyricsGlyphWalkDone;
 	// Anchor pass on song load
 	inline VersioningStruct<uintptr_t> ptr_anchorPassPhraseScan;
 	inline VersioningStruct<uintptr_t> ptr_anchorPassPhraseScanJmpBck;
