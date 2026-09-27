@@ -97,7 +97,7 @@
                                                             <Panel>
                                                                 <Path Classes="guide" IsVisible="{Binding IsNested}" />
                                                                 <Border Padding="0,0,0,6">
-                                                                    <Grid ColumnDefinitions="*,110"
+                                                                    <Grid ColumnDefinitions="*,130"
                                                                           Margin="{Binding IsNested, Converter={StaticResource BoolToIndent}}">
                                                                         <TextBlock
                                                                             VerticalAlignment="Center"

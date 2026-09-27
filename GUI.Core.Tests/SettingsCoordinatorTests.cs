@@ -309,5 +309,85 @@ public sealed class SettingsCoordinatorTests
                 File.Delete(tempFile);
         }
     }
-}
 
+    [Fact]
+    public void UnboundedNumericSettingAcceptsFullIntRange()
+    {
+        var coordinator = new SettingsCoordinator(new ManifestService());
+
+        var x = coordinator.Find<NumericSettingFieldViewModel>("SecondaryMonitorXPosition");
+        Assert.NotNull(x);
+        Assert.Null(x.Descriptor.Min);
+        Assert.Null(x.Descriptor.Max);
+        Assert.Equal(int.MinValue, x.Minimum);
+        Assert.Equal(int.MaxValue, x.Maximum);
+    }
+
+    [Fact]
+    public void ToggleSwitchWrittenAsOneIsSavedAsOnOff()
+    {
+        using var dir = new TemporaryDirectory();
+        string path = dir.File("RSMods.ini");
+        File.WriteAllText(path, """
+            [Toggle Switches]
+            VolumeControl=1
+            """);
+
+        var ini = new IniManager(path);
+        ini.Load();
+        var coordinator = new SettingsCoordinator(new ManifestService());
+        coordinator.Load(ini);
+
+        var toggle = coordinator.Find<BoolSettingFieldViewModel>("VolumeControlEnabled");
+        Assert.NotNull(toggle);
+        Assert.True(toggle.Value);
+
+        // The DLL only reads "on"/"off", so a toggle must never be written back as 1/0.
+        toggle.Value = false;
+        coordinator.Save(ini);
+        Assert.Equal("off", ini.GetString("[Toggle Switches]", "VolumeControl"));
+    }
+
+    [Fact]
+    public void ToggleStoredAsOneIsRewrittenOnTheNextSave()
+    {
+        using var dir = new TemporaryDirectory();
+        string path = dir.File("RSMods.ini");
+        File.WriteAllLines(path, ["[Toggle Switches]", "VolumeControl=1", "ShowSongTimer=ON", "SongPreviews=off"]);
+
+        var ini = new IniManager(path);
+        ini.Load();
+        var coordinator = new SettingsCoordinator(new ManifestService());
+        coordinator.Load(ini);
+
+        Assert.True(coordinator.Find<BoolSettingFieldViewModel>("VolumeControlEnabled")!.IsDirty);
+        Assert.False(coordinator.AllFields.Single(f => f.IniKey == "SongPreviews").IsDirty);
+
+        coordinator.Save(ini);
+        Assert.Equal("on", ini.GetString("[Toggle Switches]", "VolumeControl"));
+        Assert.Equal("on", ini.GetString("[Toggle Switches]", "ShowSongTimer"));
+        Assert.False(coordinator.IsDirty);
+    }
+
+    [Fact]
+    public void ChoiceStoredInOtherCaseIsRewrittenOnTheNextSave()
+    {
+        using var dir = new TemporaryDirectory();
+        string path = dir.File("RSMods.ini");
+        File.WriteAllLines(path, ["[Toggle Switches]", "ToggleSkylineWhen=Startup", "RemoveHeadstockWhen=song"]);
+
+        var ini = new IniManager(path);
+        ini.Load();
+        var coordinator = new SettingsCoordinator(new ManifestService());
+        coordinator.Load(ini);
+
+        var skyline = coordinator.Find<EnumSettingFieldViewModel>("ToggleSkylineWhen")!;
+        Assert.Equal("startup", skyline.SelectedValue);
+        Assert.True(skyline.IsDirty);
+        Assert.False(coordinator.Find("RemoveHeadstockWhen")!.IsDirty);
+
+        coordinator.Save(ini);
+        Assert.Equal("startup", ini.GetString("[Toggle Switches]", "ToggleSkylineWhen"));
+        Assert.False(coordinator.IsDirty);
+    }
+}

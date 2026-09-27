@@ -26,8 +26,10 @@ public sealed partial class NumericSettingFieldViewModel(SettingDescriptor descr
         ? (1.0 / Descriptor.Scale.Value)
         : (Descriptor.Scale ?? 1.0);
 
-    public decimal Minimum => Descriptor.Min.HasValue ? (decimal)(Descriptor.Min.Value * ScaleFactor) : 0m;
-    public decimal Maximum => Descriptor.Max.HasValue ? (decimal)(Descriptor.Max.Value * ScaleFactor) : 100m;
+    // Unbounded settings get the full int range the DLL stores; a narrower fallback would clamp real values
+    // (a secondary monitor at X=1920 or X=-1920) and write the clamped value back.
+    public decimal Minimum => (decimal)((Descriptor.Min ?? int.MinValue) * ScaleFactor);
+    public decimal Maximum => (decimal)((Descriptor.Max ?? int.MaxValue) * ScaleFactor);
     public double Scale => Descriptor.Scale ?? 1.0;
     public decimal Increment => HasScale ? 0.25m : 1m;
     public string FormatString => HasScale ? "0.###" : "0";

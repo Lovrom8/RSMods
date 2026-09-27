@@ -217,6 +217,10 @@ internal sealed partial class ModSettingsViewModel : ObservableObject
             _loading = false;
             StatusMessage = string.Empty;
         }
+
+        // A field that loaded a non-canonical value (e.g. a toggle stored as 1) is dirty; write the fix straight away.
+        if (Coordinator.IsDirty)
+            _saver.Request();
     }
 
     // Runs on the UI thread via the debounced saver; the file write and the game ping happen off it.

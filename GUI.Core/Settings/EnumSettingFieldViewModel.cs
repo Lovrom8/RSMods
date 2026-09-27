@@ -72,8 +72,10 @@ public sealed partial class EnumSettingFieldViewModel : SettingFieldViewModel
 
         SelectedValue = match ?? raw;
         _initialValue = SelectedValue;
-        
-        IsDirty = false;
+
+        // The DLL compares the exact text, so a hand-edited "Song" reads as unknown in the game while the GUI
+        // shows "song". Stay dirty so the next save writes the listed spelling.
+        IsDirty = !string.Equals(SelectedValue, raw, StringComparison.Ordinal);
     }
 
     public override void Save(IniManager ini)

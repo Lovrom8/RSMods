@@ -31,20 +31,23 @@ public sealed partial class BoolSettingFieldViewModel(SettingDescriptor descript
 
         Value = ini.GetBool(IniSection, IniKey, _defaultBool, _isNumeric);
         _initialValue = Value;
-        IsDirty = false;
+
+        // The DLL compares the exact text ("on", or "1" in numeric sections), so a hand-edited "1", "ON" or "true"
+        // reads as off in the game while the GUI shows it on. Stay dirty so the next save writes the canonical form.
+        IsDirty = !string.Equals(GetCurrentStringValue(), raw.Trim(), StringComparison.Ordinal);
     }
 
     private bool DetermineIsNumeric(string rawValue)
     {
         // 1. Mod toggles in [Toggle Switches] are strictly "on"/"off" per DLL Settings::IsOn convention
-        string section = NormalizeSection(Descriptor.Ini.Section);
-        if (section.Equals("Toggle Switches", StringComparison.OrdinalIgnoreCase))
+        // IniSection is normalized, so it carries the brackets.
+        if (IniSection.Equals("[Toggle Switches]", StringComparison.OrdinalIgnoreCase))
             return false;
 
         // 2. Rocksmith.ini native sections are strictly numeric 1/0
-        if (section.Equals("Audio", StringComparison.OrdinalIgnoreCase) ||
-            section.Equals("Renderer.Win32", StringComparison.OrdinalIgnoreCase) ||
-            section.Equals("Net", StringComparison.OrdinalIgnoreCase))
+        if (IniSection.Equals("[Audio]", StringComparison.OrdinalIgnoreCase) ||
+            IniSection.Equals("[Renderer.Win32]", StringComparison.OrdinalIgnoreCase) ||
+            IniSection.Equals("[Net]", StringComparison.OrdinalIgnoreCase))
             return true;
 
         // 3. If present on disk, preserve the existing written format
