@@ -74,12 +74,12 @@ namespace RSMods
 
         public static string GetSongListTitle(int index)
         {
-            return _songListTitles.GetString($"SongListTitle_{index}", $"Define Song List {index} Here");
+            return _songListTitles.GetString(defaultValue: $"Define Song List {index} Here", key: $"SongListTitle_{index}");
         }
 
         public static void SetSongListTitle(int index, string value)
         {
-            _songListTitles.SetString($"SongListTitle_{index}", value);
+            _songListTitles.SetString(value, key: $"SongListTitle_{index}");
         }
 
         private static void SeedDefaultsAndSave(IManifestService manifest)

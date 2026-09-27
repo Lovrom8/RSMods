@@ -27,8 +27,8 @@ internal enum KeyCapturePhase
 
 /// <summary>
 /// Settings screen driven by the declarative settings schema manifest (<see cref="SettingsCoordinator"/>).
-/// Holds editable field view models loaded from <see cref="RsModsSettings"/> and writes them back on save,
-/// preserving round-trip comments and unknown entries.
+/// Holds editable field view models loaded from <see cref="RsModsSettings"/> and saves each change a moment
+/// after it's made, as the WinForms configurator did, preserving round-trip comments and unknown entries.
 /// Bespoke table editors for Guitar Speak and Mod/Audio keybindings are retained alongside the schema-driven fields.
 /// </summary>
 internal sealed partial class ModSettingsViewModel : ObservableObject
@@ -37,14 +37,19 @@ internal sealed partial class ModSettingsViewModel : ObservableObject
     private readonly IManifestService _manifest;
     private readonly IDialogService _dialogs;
     private readonly INavigationService _navigation;
+    private readonly DebouncedSaver _saver;
     private bool _loading;
-    private bool _childRowsDirty;
+    private bool _saving;
 
     public SettingsCoordinator Coordinator { get; }
 
     public IReadOnlyList<SettingGroupViewModel> SettingGroups => Coordinator.Groups;
 
     // --- On-screen text font preview ---
+    // Shown alongside the font setting, which is only visible while the on-screen note is on.
+    public bool ShowOnScreenFontPreview =>
+        Coordinator.Find<BoolSettingFieldViewModel>("ShowCurrentNoteOnScreen")?.Value ?? false;
+
     public FontFamily OnScreenFontPreview
     {
         get
@@ -101,11 +106,6 @@ internal sealed partial class ModSettingsViewModel : ObservableObject
     [ObservableProperty] private KeybindRowViewModel? _selectedAudioKeybind;
 
     [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
-    [NotifyCanExecuteChangedFor(nameof(RevertCommand))]
-    private bool _isDirty;
-
-    [ObservableProperty]
     private string _statusMessage = string.Empty;
 
     public ModSettingsViewModel(
@@ -113,23 +113,28 @@ internal sealed partial class ModSettingsViewModel : ObservableObject
         IManifestService manifest,
         SettingsService settings,
         IDialogService dialogs,
-        INavigationService navigation)
+        INavigationService navigation,
+        AutoSaveService autoSave)
     {
         Coordinator = coordinator;
         _manifest = manifest;
         _settingsService = settings;
         _dialogs = dialogs;
         _navigation = navigation;
+        _saver = autoSave.Create(SaveAsync, ex => StatusMessage = $"Couldn't save: {ex.Message}");
 
         WireCustomEditors();
 
         Coordinator.StateChanged += (_, _) =>
         {
-            if (!_loading)
-            {
-                RefreshAuxiliaryProperties();
-                UpdateDirty();
-            }
+            if (_loading)
+                return;
+
+            RefreshAuxiliaryProperties();
+
+            // Saving clears each field's dirty flag, which raises this too; only a real edit should save.
+            if (!_saving && Coordinator.IsDirty)
+                _saver.Request();
         };
     }
 
@@ -141,15 +146,6 @@ internal sealed partial class ModSettingsViewModel : ObservableObject
             {
                 customEditor.EditorRequested += OnCustomEditorRequested;
             }
-        }
-
-        if (Coordinator.Find<CustomEditorFieldViewModel>("GuitarSpeakCustomEditor") is { } guitarSpeakEditor)
-        {
-            guitarSpeakEditor.SaveHandler = _ =>
-            {
-                foreach (GuitarSpeakRowViewModel row in GuitarSpeakMappings)
-                    row.WriteBack();
-            };
         }
     }
 
@@ -186,21 +182,16 @@ internal sealed partial class ModSettingsViewModel : ObservableObject
     private void RefreshAuxiliaryProperties()
     {
         OnPropertyChanged(nameof(OnScreenFontPreview));
+        OnPropertyChanged(nameof(ShowOnScreenFontPreview));
         OnPropertyChanged(nameof(ShowSecondaryMonitor));
         OnPropertyChanged(nameof(SecondaryMonitorPositionText));
         OnPropertyChanged(nameof(ShowGuitarSpeak));
-    }
-
-    private void UpdateDirty()
-    {
-        IsDirty = Coordinator.IsDirty || _childRowsDirty;
     }
 
     /// <summary>Loads the editable snapshot from the settings store. Call after settings are loaded.</summary>
     public void Load()
     {
         _loading = true;
-        _childRowsDirty = false;
         try
         {
             if (RsModsSettings.Ini is { } ini)
@@ -224,39 +215,34 @@ internal sealed partial class ModSettingsViewModel : ObservableObject
         finally
         {
             _loading = false;
-            IsDirty = false;
             StatusMessage = string.Empty;
         }
     }
 
-    private bool CanSaveOrRevert => IsDirty;
-
-    [RelayCommand(CanExecute = nameof(CanSaveOrRevert))]
+    // Runs on the UI thread via the debounced saver; the file write and the game ping happen off it.
     private async Task SaveAsync()
     {
-        if (RsModsSettings.Ini is { } ini)
-            Coordinator.Save(ini);
+        _saving = true;
+        try
+        {
+            if (RsModsSettings.Ini is { } ini)
+                Coordinator.Save(ini);
 
-        foreach (GuitarSpeakRowViewModel row in GuitarSpeakMappings)
-            row.WriteBack();
-
-        foreach (KeybindRowViewModel row in ModKeybinds)
-            row.WriteBack();
-        foreach (KeybindRowViewModel row in AudioKeybinds)
-            row.WriteBack();
+            // Rows write only when they changed, so they can't overwrite an edit made to the same key elsewhere.
+            foreach (GuitarSpeakRowViewModel row in GuitarSpeakMappings)
+                row.WriteBack();
+            foreach (KeybindRowViewModel row in ModKeybinds)
+                row.WriteBack();
+            foreach (KeybindRowViewModel row in AudioKeybinds)
+                row.WriteBack();
+        }
+        finally
+        {
+            _saving = false;
+        }
 
         await _settingsService.SaveAsync();
-
-        _childRowsDirty = false;
-        IsDirty = false;
-        StatusMessage = "Settings saved.";
-    }
-
-    [RelayCommand(CanExecute = nameof(CanSaveOrRevert))]
-    private void Revert()
-    {
-        Load();
-        StatusMessage = "Reverted to the last saved values.";
+        StatusMessage = $"Saved at {DateTime.Now:HH:mm:ss}";
     }
 
     [RelayCommand]
@@ -382,13 +368,6 @@ internal sealed partial class ModSettingsViewModel : ObservableObject
     private void OnChildRowChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (!_loading)
-        {
-            _childRowsDirty = true;
-            if (Coordinator.Find<CustomEditorFieldViewModel>("GuitarSpeakCustomEditor") is { } gsEditor)
-            {
-                gsEditor.SetDirty(true);
-            }
-            UpdateDirty();
-        }
+            _saver.Request();
     }
 }

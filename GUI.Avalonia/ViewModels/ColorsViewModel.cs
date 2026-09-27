@@ -5,17 +5,20 @@ using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using RSMods.Services;
+using RSMods.Util;
 
 namespace RSMods.ViewModels;
 
 /// <summary>
 /// The Custom Colors screen: the string, note, and highway colours that live in the shared
 /// <see cref="RsModsSettings"/> store. Each palette keeps both a normal and a colour-blind set (the game
-/// picks between them), so both are held in the snapshot and only the cells the user changes are written back.
+/// picks between them), so both are held in the snapshot and only the cells the user changes are written back,
+/// a moment after each change.
 /// </summary>
 internal sealed partial class ColorsViewModel : ObservableObject
 {
     private readonly SettingsService _settings;
+    private readonly DebouncedSaver _saver;
     private bool _loading;
     private bool _initialized;
 
@@ -63,15 +66,12 @@ internal sealed partial class ColorsViewModel : ObservableObject
     public bool ShowHighwayColors => UseCustomHighwayColors;
 
     [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(SaveCommand), nameof(RevertCommand))]
-    private bool _isDirty;
-
-    [ObservableProperty]
     private string _statusMessage = string.Empty;
 
-    public ColorsViewModel(SettingsService settings)
+    public ColorsViewModel(SettingsService settings, AutoSaveService autoSave)
     {
         _settings = settings;
+        _saver = autoSave.Create(SaveAsync, ex => StatusMessage = $"Couldn't save: {ex.Message}");
 
         StringColorsNormal = BuildRow();
         StringColorsColorblind = BuildRow();
@@ -136,14 +136,10 @@ internal sealed partial class ColorsViewModel : ObservableObject
         finally
         {
             _loading = false;
-            IsDirty = false;
             StatusMessage = string.Empty;
         }
     }
 
-    private bool CanSaveOrRevert => IsDirty;
-
-    [RelayCommand(CanExecute = nameof(CanSaveOrRevert))]
     private async Task SaveAsync()
     {
         RsModsSettings.Toggles.CustomStringColors =
@@ -155,42 +151,34 @@ internal sealed partial class ColorsViewModel : ObservableObject
             : UseRocksmithNoteColors ? NoteColorMode.RocksmithColors : NoteColorMode.Custom;
         RsModsSettings.HighwayColors.CustomHighwayColors = UseCustomHighwayColors;
 
-        // Write only the swatches the user changed so untouched defaults aren't baked into the INI.
+        // Write only complete colours the user changed, so untouched defaults aren't baked into the INI and a
+        // half-typed hex waits until it's finished. Each is re-baselined as it's written, before the await, so
+        // an edit made while the file is being saved still counts as a change next time.
         for (int i = 0; i < StringLabels.Length; i++)
         {
-            if (StringColorsNormal[i].Changed)
-                RsModsSettings.StringColors.SetStringColor(i, normal: true, Normalize(StringColorsNormal[i].Hex));
-            if (StringColorsColorblind[i].Changed)
-                RsModsSettings.StringColors.SetStringColor(i, normal: false, Normalize(StringColorsColorblind[i].Hex));
-            if (NoteColorsNormal[i].Changed)
-                RsModsSettings.StringColors.SetNoteColor(i, normal: true, Normalize(NoteColorsNormal[i].Hex));
-            if (NoteColorsColorblind[i].Changed)
-                RsModsSettings.StringColors.SetNoteColor(i, normal: false, Normalize(NoteColorsColorblind[i].Hex));
+            int index = i;
+            Write(StringColorsNormal[i], hex => RsModsSettings.StringColors.SetStringColor(index, normal: true, hex));
+            Write(StringColorsColorblind[i], hex => RsModsSettings.StringColors.SetStringColor(index, normal: false, hex));
+            Write(NoteColorsNormal[i], hex => RsModsSettings.StringColors.SetNoteColor(index, normal: true, hex));
+            Write(NoteColorsColorblind[i], hex => RsModsSettings.StringColors.SetNoteColor(index, normal: false, hex));
         }
 
-        if (HighwayNumbered.Changed)
-            RsModsSettings.HighwayColors.CustomHighwayNumbered = Normalize(HighwayNumbered.Hex);
-        if (HighwayUnNumbered.Changed)
-            RsModsSettings.HighwayColors.CustomHighwayUnNumbered = Normalize(HighwayUnNumbered.Hex);
-        if (HighwayGutter.Changed)
-            RsModsSettings.HighwayColors.CustomHighwayGutter = Normalize(HighwayGutter.Hex);
-        if (HighwayFretNumbers.Changed)
-            RsModsSettings.HighwayColors.CustomFretNubmers = Normalize(HighwayFretNumbers.Hex);
+        Write(HighwayNumbered, hex => RsModsSettings.HighwayColors.CustomHighwayNumbered = hex);
+        Write(HighwayUnNumbered, hex => RsModsSettings.HighwayColors.CustomHighwayUnNumbered = hex);
+        Write(HighwayGutter, hex => RsModsSettings.HighwayColors.CustomHighwayGutter = hex);
+        Write(HighwayFretNumbers, hex => RsModsSettings.HighwayColors.CustomFretNubmers = hex);
 
         await _settings.SaveAsync();
-
-        foreach (ColorSwatchViewModel swatch in AllSwatches())
-            swatch.Commit();
-
-        IsDirty = false;
-        StatusMessage = "Settings saved.";
+        StatusMessage = $"Saved at {DateTime.Now:HH:mm:ss}";
     }
 
-    [RelayCommand(CanExecute = nameof(CanSaveOrRevert))]
-    private void Revert()
+    private static void Write(ColorSwatchViewModel swatch, Action<string> store)
     {
-        Load();
-        StatusMessage = "Reverted to the last saved values.";
+        if (!swatch.Changed || !swatch.IsValid)
+            return;
+
+        store(Normalize(swatch.Hex));
+        swatch.Commit();
     }
 
     private void OnSwatchChanged(object? sender, PropertyChangedEventArgs e)
@@ -198,8 +186,8 @@ internal sealed partial class ColorsViewModel : ObservableObject
         if (_loading)
             return;
 
-        if (e.PropertyName == nameof(ColorSwatchViewModel.Hex))
-            IsDirty = true;
+        if (e.PropertyName == nameof(ColorSwatchViewModel.Hex) && sender is ColorSwatchViewModel { IsValid: true })
+            _saver.Request();
     }
 
     protected override void OnPropertyChanged(PropertyChangedEventArgs e)
@@ -209,11 +197,10 @@ internal sealed partial class ColorsViewModel : ObservableObject
         if (_loading)
             return;
 
-        // Only the four data toggles mark the page dirty. The palette pickers and computed visibility
-        // flags are presentation state, and the bookkeeping properties are not persisted.
+        // Only the four data toggles are saved. The palette pickers and computed visibility flags are
+        // presentation state, and the status line is not persisted.
         switch (e.PropertyName)
         {
-            case nameof(IsDirty):
             case nameof(StatusMessage):
             case nameof(StringColorblindPalette):
             case nameof(NoteColorblindPalette):
@@ -224,7 +211,7 @@ internal sealed partial class ColorsViewModel : ObservableObject
                 return;
         }
 
-        IsDirty = true;
+        _saver.Request();
     }
 
     /// <summary>Stores colours as the store expects: 6 upper-case hex digits with no leading #.</summary>

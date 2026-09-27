@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace RSMods.ViewModels;
@@ -25,6 +26,9 @@ internal sealed partial class ColorSwatchViewModel(string label) : ObservableObj
 
     /// <summary>Re-baselines after a successful save so later saves only write further edits.</summary>
     public void Commit() => _originalHex = Hex;
+
+    /// <summary>True for a complete colour, so a half-typed value is held back until it's finished.</summary>
+    public bool IsValid => Canonical(Hex) is { Length: 6 } hex && hex.All(Uri.IsHexDigit);
 
     /// <summary>True when the current value differs from the loaded/last-saved value (ignoring case and a leading #).</summary>
     public bool Changed => !string.Equals(Canonical(Hex), Canonical(_originalHex), StringComparison.OrdinalIgnoreCase);

@@ -651,6 +651,21 @@ saved setting sits inert until the next game launch.
 path that writes the file — the `IniSection` setters mutate memory and raise `SettingChanged` without
 persisting. A new screen that saves mod settings should go through `SettingsService`, not the static store.
 
+### Saving on change
+
+The settings screens (Mod Settings, Custom Colors, Rocksmith, RS_ASIO, Appearance) have no Save button: like
+the WinForms configurator, which saved every change as it was made, each screen saves shortly after an
+edit. Each gets a `DebouncedSaver` (`GUI.Core/Util`) from `AutoSaveService`: an edit calls `Request()`, and
+the screen's save runs once the edits have been quiet for 500 ms, so a held spinner or a typed value is one
+write and one `update all`, not one per step. Saves never overlap, a change made during a save gets one more
+run, and `MainWindow` holds the close until anything still pending is on disk.
+
+A new settings screen should do the same: request a save on each edit rather than add Save/Revert. Only
+request for a real edit. Mod Settings requests only while `Coordinator.IsDirty`, because saving clears the
+dirty flags and raises the same event, and Custom Colors holds back a hex value until it has six digits.
+Multi-step editors (Twitch reward rules, the Set-and-Forget tuning editor, song lists) keep an explicit
+save, as they did in WinForms.
+
 ### Adding or moving a setting
 
 - **The section is part of the contract, not just the key.** The DLL names both (`reader.GetValue("Mod

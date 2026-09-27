@@ -6,17 +6,20 @@ using CommunityToolkit.Mvvm.Input;
 using RSMods.Core;
 using RSMods.Rocksmith;
 using RSMods.Services;
+using RSMods.Util;
 
 namespace RSMods.ViewModels;
 
 /// <summary>
 /// Edits Rocksmith.ini (the game's own settings) through the path-based <see cref="RocksmithSettings"/>
-/// instance. Holds an editable snapshot loaded from the store and writes it back on save; the store's
-/// round-trip-safe backend preserves unknown sections, comments, and commented-out values.
+/// instance. Holds an editable snapshot loaded from the store and writes it back a moment after each change;
+/// the store's round-trip-safe backend preserves unknown sections, comments, and commented-out values.
 /// </summary>
-internal sealed partial class RocksmithSettingsViewModel(RocksmithSettingsService service, SettingsWarningPresenter warnings) : ObservableObject
+internal sealed partial class RocksmithSettingsViewModel : ObservableObject
 {
-    private readonly SettingsWarningPresenter _warnings = warnings;
+    private readonly RocksmithSettingsService service;
+    private readonly SettingsWarningPresenter _warnings;
+    private readonly DebouncedSaver _saver;
     private bool _loading;
     private bool _initialized;
 
@@ -61,11 +64,14 @@ internal sealed partial class RocksmithSettingsViewModel(RocksmithSettingsServic
     [ObservableProperty] private bool _useProxy;
 
     [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(SaveCommand), nameof(RevertCommand))]
-    private bool _isDirty;
-
-    [ObservableProperty]
     private string _statusMessage = string.Empty;
+
+    public RocksmithSettingsViewModel(RocksmithSettingsService service, SettingsWarningPresenter warnings, AutoSaveService autoSave)
+    {
+        this.service = service;
+        _warnings = warnings;
+        _saver = autoSave.Create(SaveAsync, ex => StatusMessage = $"Couldn't save: {ex.Message}");
+    }
 
     /// <summary>
     /// First-time load: captures validation warnings raised while reading the snapshot and presents
@@ -92,7 +98,7 @@ internal sealed partial class RocksmithSettingsViewModel(RocksmithSettingsServic
         }
 
         if (!settings.SettingsExist)
-            StatusMessage = "Rocksmith.ini was not found; showing defaults. Saving will create it.";
+            StatusMessage = "Rocksmith.ini was not found; showing defaults. Changing a setting will create it.";
 
         await _warnings.PresentAsync(warnings);
     }
@@ -134,14 +140,10 @@ internal sealed partial class RocksmithSettingsViewModel(RocksmithSettingsServic
         finally
         {
             _loading = false;
-            IsDirty = false;
             StatusMessage = string.Empty;
         }
     }
 
-    private bool CanSaveOrRevert => IsDirty;
-
-    [RelayCommand(CanExecute = nameof(CanSaveOrRevert))]
     private async Task SaveAsync()
     {
         var s = service.Get();
@@ -181,27 +183,16 @@ internal sealed partial class RocksmithSettingsViewModel(RocksmithSettingsServic
             s.Net.UseProxy = UseProxy;
         });
 
-        IsDirty = false;
-        StatusMessage = "Settings saved.";
-    }
-
-    [RelayCommand(CanExecute = nameof(CanSaveOrRevert))]
-    private void Revert()
-    {
-        Load();
-        StatusMessage = "Reverted to the last saved values.";
+        StatusMessage = $"Saved at {DateTime.Now:HH:mm:ss}";
     }
 
     protected override void OnPropertyChanged(PropertyChangedEventArgs e)
     {
         base.OnPropertyChanged(e);
 
-        if (_loading)
+        if (_loading || e.PropertyName is nameof(StatusMessage))
             return;
 
-        if (e.PropertyName is nameof(IsDirty) or nameof(StatusMessage))
-            return;
-
-        IsDirty = true;
+        _saver.Request();
     }
 }

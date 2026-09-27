@@ -7,18 +7,20 @@ using CommunityToolkit.Mvvm.Input;
 using RSMods.ASIO;
 using RSMods.Core;
 using RSMods.Services;
+using RSMods.Util;
 
 namespace RSMods.ViewModels;
 
 /// <summary>
 /// Edits RS_ASIO.ini through the path-based <see cref="AsioSettings"/> instance. Preserves the
 /// store's two disable conventions (blank driver for Output/Input.0/Input.Mic, commented driver for
-/// Input.1) and the tri-state WASAPI output mode.
+/// Input.1) and the tri-state WASAPI output mode. Each change is saved a moment after it's made.
 /// </summary>
 internal sealed partial class AsioSettingsViewModel : ObservableObject
 {
     private readonly AsioSettingsService _service;
     private readonly SettingsWarningPresenter _warnings;
+    private readonly DebouncedSaver _saver;
     private bool _loading;
     private bool _initialized;
 
@@ -29,10 +31,11 @@ internal sealed partial class AsioSettingsViewModel : ObservableObject
     public AsioInputViewModel InputMic { get; }
     public IReadOnlyList<AsioInputViewModel> Inputs { get; }
 
-    public AsioSettingsViewModel(AsioSettingsService service, SettingsWarningPresenter warnings)
+    public AsioSettingsViewModel(AsioSettingsService service, SettingsWarningPresenter warnings, AutoSaveService autoSave)
     {
         _service = service;
         _warnings = warnings;
+        _saver = autoSave.Create(SaveAsync, ex => StatusMessage = $"Couldn't save: {ex.Message}");
 
         Input0 = new AsioInputViewModel("Input 0 (instrument)", AvailableDrivers);
         Input1 = new AsioInputViewModel("Input 1 (second instrument)", AvailableDrivers);
@@ -75,10 +78,6 @@ internal sealed partial class AsioSettingsViewModel : ObservableObject
     public static decimal VolumePercentMax => RsAsioLimits.VolumePercentMax;
 
     [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(SaveCommand), nameof(RevertCommand))]
-    private bool _isDirty;
-
-    [ObservableProperty]
     private string _statusMessage = string.Empty;
 
     /// <summary>
@@ -108,7 +107,7 @@ internal sealed partial class AsioSettingsViewModel : ObservableObject
         }
 
         if (!settings.SettingsExist)
-            StatusMessage = "RS_ASIO.ini was not found; showing defaults. Saving will create it.";
+            StatusMessage = "RS_ASIO.ini was not found; showing defaults. Changing a setting will create it.";
 
         await _warnings.PresentAsync(warnings);
     }
@@ -168,7 +167,6 @@ internal sealed partial class AsioSettingsViewModel : ObservableObject
         finally
         {
             _loading = false;
-            IsDirty = false;
             StatusMessage = string.Empty;
         }
     }
@@ -188,9 +186,6 @@ internal sealed partial class AsioSettingsViewModel : ObservableObject
     private static string NormalizeBufferMode(string mode) =>
         RsAsioLimits.IsValidBufferMode(mode) ? mode.Trim().ToLowerInvariant() : RsAsioLimits.BufferModeDriver;
 
-    private bool CanSaveOrRevert => IsDirty;
-
-    [RelayCommand(CanExecute = nameof(CanSaveOrRevert))]
     private async Task SaveAsync()
     {
         var s = _service.Get();
@@ -238,8 +233,7 @@ internal sealed partial class AsioSettingsViewModel : ObservableObject
                 v => s.InputMic.SoftwareMasterVolumePercent = v, v => s.InputMic.EnableRefCountHack = v);
         });
 
-        IsDirty = false;
-        StatusMessage = "Settings saved.";
+        StatusMessage = $"Saved at {DateTime.Now:HH:mm:ss}";
     }
 
     private static void SaveInput(AsioInputViewModel vm, Action<bool> setDisabled, Action<string> setDriver,
@@ -264,29 +258,19 @@ internal sealed partial class AsioSettingsViewModel : ObservableObject
         setRefHack(vm.RefCountHack);
     }
 
-    [RelayCommand(CanExecute = nameof(CanSaveOrRevert))]
-    private void Revert()
-    {
-        Load();
-        StatusMessage = "Reverted to the last saved values.";
-    }
-
     private void OnChildChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (!_loading)
-            IsDirty = true;
+            _saver.Request();
     }
 
     protected override void OnPropertyChanged(PropertyChangedEventArgs e)
     {
         base.OnPropertyChanged(e);
 
-        if (_loading)
+        if (_loading || e.PropertyName is nameof(StatusMessage))
             return;
 
-        if (e.PropertyName is nameof(IsDirty) or nameof(StatusMessage))
-            return;
-
-        IsDirty = true;
+        _saver.Request();
     }
 }
