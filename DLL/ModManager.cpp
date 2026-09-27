@@ -91,6 +91,9 @@ namespace ModManager {
 		BugPrevention::PreventControllerAxisOverflow();
 		BugPrevention::PreventInvalidInputTreeRootCrash();
 		BugPrevention::FixCalibrationSampleCount();
+		BugPrevention::FixIndexKeyTableOverflow();
+		BugPrevention::FixLyricsGlyphCountOverflow();
+		BugPrevention::FixPhraseDifficultyCacheOverflow();
 	}
 
 	/// <summary>
@@ -182,11 +185,11 @@ namespace ModManager {
 	{
 		AudioDevices::SetupMicrophones();
 		QualityOfLife::StopTwoRSInstances(); // Looks for the second instance's error dialog once, so it keeps its old timing
-    ProfileSaveStreaming::Initialize();
+		ProfileSaveStreaming::Initialize();
 
-		#ifdef _WWISE_LOGS
-				Wwise::Logging::Init();
-		#endif
+#ifdef _WWISE_LOGS
+		Wwise::Logging::Init();
+#endif
 	}
 
 	/// <summary>

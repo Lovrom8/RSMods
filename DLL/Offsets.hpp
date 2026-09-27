@@ -181,6 +181,22 @@ namespace Offsets {
 	inline VersioningStruct<uintptr_t> ptr_InvalidInputTreeRootCheck;
 	inline VersioningStruct<uintptr_t> ptr_InvalidInputTreeRootJmpBck;
 	inline VersioningStruct<uintptr_t> ptr_InvalidInputTreeRootEmptyJmpBck;
+	inline VersioningStruct<uintptr_t> ptr_indexKeyStringTable;
+	inline VersioningStruct<uintptr_t> ptr_jsonFindByPath;
+	inline VersioningStruct<uintptr_t> ptr_jsonFindByPathJmpBck;
+	inline VersioningStruct<uintptr_t> ptr_jsonResolveByPath;
+	inline VersioningStruct<uintptr_t> ptr_jsonResolveByPathJmpBck;
+
+	// Lyrics glyph count
+	inline VersioningStruct<uintptr_t> ptr_lyricsGlyphCountConstructor;
+	inline VersioningStruct<uintptr_t> ptr_lyricsGlyphCountReset;
+	inline VersioningStruct<uintptr_t> ptr_lyricsGlyphCountAdd;
+	inline VersioningStruct<uintptr_t> ptr_lyricsGlyphCountPositions;
+	inline VersioningStruct<uintptr_t> ptr_lyricsGlyphCountTexCoords0;
+	inline VersioningStruct<uintptr_t> ptr_lyricsGlyphCountTexCoords1;
+	inline VersioningStruct<uintptr_t> ptr_lyricsGlyphCountIndices;
+	inline VersioningStruct<uintptr_t> ptr_lyricsGlyphCountIndexLoopStart;
+	inline VersioningStruct<uintptr_t> ptr_lyricsGlyphCountIndexLoop;
 
 	// Audio In Background
 	inline VersioningStruct<uintptr_t> ptr_IsWindowInFocus;

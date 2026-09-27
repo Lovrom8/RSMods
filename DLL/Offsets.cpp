@@ -82,6 +82,22 @@ void Offsets::Initialize() {
 	ptr_InvalidInputTreeRootCheck = { {0x0092DB50, baseHandle + 0x00570130} };
 	ptr_InvalidInputTreeRootJmpBck = { {0x0092DB58, baseHandle + 0x00570138} };
 	ptr_InvalidInputTreeRootEmptyJmpBck = { {0x0092DBF0, baseHandle + 0x005701D0} };
+	ptr_indexKeyStringTable = { {0x012E8BB8, baseHandle + 0x00EE9BB8} };				// Static Memory | 101 char* to "0".."100", used as JSON keys for phrase iterations, difficulties, etc. 82 code refs in .text on both builds
+	ptr_jsonFindByPath = { {0x00880A40, baseHandle + 0x004811B0} };				// Code | 55 8b ec 83 ec 14 a1 ? ? ? ? 33 c5 89 45 fc (JSON object path lookup)
+	ptr_jsonFindByPathJmpBck = { {0x00880A46, baseHandle + 0x004811B6} };			// Code | ptr_jsonFindByPath + 0x6, after the 6 stolen prologue bytes
+	ptr_jsonResolveByPath = { {0x00880B00, baseHandle + 0x00481270} };				// Code | Same prologue, directly after ptr_jsonFindByPath (JSON path lookup that resolves the value)
+	ptr_jsonResolveByPathJmpBck = { {0x00880B06, baseHandle + 0x00481276} };		// Code | ptr_jsonResolveByPath + 0x6
+
+	// Lyrics glyph count (lyrics renderer + 0x9C). Every instruction that reads or writes it as 16 bits.
+	ptr_lyricsGlyphCountConstructor = { {0x0082B98A, baseHandle + 0x0042BCFA} };	// Code | 66 89 90 9c 00 00 00 (renderer constructor)
+	ptr_lyricsGlyphCountReset = { {0x0082DE17, baseHandle + 0x0042E187} };			// Code | 66 89 87 9c 00 00 00 (lyrics setup, reset)
+	ptr_lyricsGlyphCountAdd = { {0x0082E26F, baseHandle + 0x0042E5DF} };			// Code | 66 01 90 9c 00 00 00 (lyrics setup, per line)
+	ptr_lyricsGlyphCountPositions = { {0x0082C001, baseHandle + 0x0042C371} };		// Code | 0f b7 8b 9c 00 00 00 (mesh setup, vertex count)
+	ptr_lyricsGlyphCountTexCoords0 = { {0x0082C02D, baseHandle + 0x0042C39D} };		// Code | 0f b7 83 9c 00 00 00
+	ptr_lyricsGlyphCountTexCoords1 = { {0x0082C05C, baseHandle + 0x0042C3CC} };		// Code | 0f b7 83 9c 00 00 00
+	ptr_lyricsGlyphCountIndices = { {0x0082C152, baseHandle + 0x0042C4C2} };		// Code | 0f b7 83 9c 00 00 00 (index count)
+	ptr_lyricsGlyphCountIndexLoopStart = { {0x0082C1BC, baseHandle + 0x0042C52C} };	// Code | 66 3b 8b 9c 00 00 00
+	ptr_lyricsGlyphCountIndexLoop = { {0x0082C224, baseHandle + 0x0042C594} };		// Code | 0f b7 bb 9c 00 00 00
 	ptr_IsWindowInFocus = { {0x1251A78, baseHandle + 0x00E52A78} };						// Static Memory | 00 00 00 80 01 00 00 00 04 00 00 00 01 00 00 00 (second variable)
 	ptr_WindowNotInFocusValue = { {0xEC5D46, baseHandle + 0x00AC5496} };    // Code | c6 05 78 2a 02 01 00 (we want to change that 00 to an 01).
 

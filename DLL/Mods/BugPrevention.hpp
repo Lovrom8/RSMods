@@ -11,6 +11,9 @@ namespace BugPrevention {
 	void PreventExtraAudioDevicesCrash();
 	void PreventControllerAxisOverflow();
 	void PreventInvalidInputTreeRootCrash();
+	void FixIndexKeyTableOverflow();
+	void FixLyricsGlyphCountOverflow();
+	void FixPhraseDifficultyCacheOverflow();
 	void FixCalibrationSampleCount();
 	void FixModifyingFunctions();
 }
