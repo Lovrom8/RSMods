@@ -47,6 +47,39 @@ public sealed class ProfileBackupServiceTests
     }
 
     [Fact]
+    public void CreateBackup_SkipsProfilesTheNewestBackupAlreadyHolds()
+    {
+        using var temporary = new TemporaryDirectory();
+        var (rsFolder, saveFolder, accountFolder) = Layout(temporary);
+        string beforeGui = Path.Combine(accountFolder, ProfileBackupService.BeforeGuiBackups);
+        string older = MakeBackup(accountFolder, ProfileBackupService.BeforeGuiBackups, "2020-01-01_00-00-00");
+        File.WriteAllText(Path.Combine(older, "profile_PRFLDB"), "save");
+
+        ProfileBackupService.CreateBackup(saveFolder, rsFolder);
+        Assert.Single(Directory.GetDirectories(beforeGui));
+
+        // Once the profile differs from the newest backup, it's backed up again.
+        File.WriteAllText(Path.Combine(saveFolder, "profile_PRFLDB"), "played since");
+        ProfileBackupService.CreateBackup(saveFolder, rsFolder);
+        Assert.Equal(2, Directory.GetDirectories(beforeGui).Length);
+    }
+
+    [Fact]
+    public void CreateBackup_BacksUpWhenAFileWasAddedOrRemoved()
+    {
+        using var temporary = new TemporaryDirectory();
+        var (rsFolder, saveFolder, accountFolder) = Layout(temporary);
+        string beforeGui = Path.Combine(accountFolder, ProfileBackupService.BeforeGuiBackups);
+        string older = MakeBackup(accountFolder, ProfileBackupService.BeforeGuiBackups, "2020-01-01_00-00-00");
+        File.WriteAllText(Path.Combine(older, "profile_PRFLDB"), "save");
+        File.WriteAllText(Path.Combine(saveFolder, "second_PRFLDB"), "new profile");
+
+        ProfileBackupService.CreateBackup(saveFolder, rsFolder);
+
+        Assert.Equal(2, Directory.GetDirectories(beforeGui).Length);
+    }
+
+    [Fact]
     public void ListBackups_MergesLinkedTiersAndKeepsOldGuiBackups()
     {
         using var temporary = new TemporaryDirectory();

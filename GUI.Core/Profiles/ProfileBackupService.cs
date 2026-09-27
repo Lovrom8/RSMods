@@ -65,6 +65,11 @@ namespace RSMods
             if (Directory.Exists(made)) // Already backed up this second.
                 return;
 
+            // Reopening the GUI with unchanged profiles would otherwise fill the kept backups with identical copies
+            // and push out the older ones worth restoring. The newest backup already restores this state.
+            if (NewestBackup(beforeGui) is string newest && HoldsSameFiles(newest, saveFolder))
+                return;
+
             try
             {
                 Directory.CreateDirectory(partial);
@@ -77,6 +82,35 @@ namespace RSMods
                 try { Directory.Delete(partial, true); } catch { }
                 throw;
             }
+        }
+
+        private static string NewestBackup(string beforeGui)
+        {
+            if (!Directory.Exists(beforeGui))
+                return null;
+
+            return Directory.GetDirectories(beforeGui)
+                .Where(folder => DateTime.TryParseExact(Path.GetFileName(folder), BackupNameFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out _))
+                .OrderBy(folder => folder, StringComparer.Ordinal) // The names sort by time.
+                .LastOrDefault();
+        }
+
+        private static bool HoldsSameFiles(string backupFolder, string saveFolder)
+        {
+            string[] saved = Directory.GetFiles(saveFolder);
+            if (saved.Length != Directory.GetFiles(backupFolder).Length)
+                return false;
+
+            foreach (string file in saved)
+            {
+                string copy = Path.Combine(backupFolder, Path.GetFileName(file));
+                if (!File.Exists(copy) || new FileInfo(file).Length != new FileInfo(copy).Length)
+                    return false;
+                if (!File.ReadAllBytes(file).AsSpan().SequenceEqual(File.ReadAllBytes(copy)))
+                    return false;
+            }
+
+            return true;
         }
 
         /// <summary>
