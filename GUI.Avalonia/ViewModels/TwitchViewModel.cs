@@ -453,8 +453,13 @@ internal sealed partial class TwitchViewModel : ObservableObject, IDisposable
             while (LogEntries.Count > 500)
                 LogEntries.RemoveAt(0);
             SelectedLogEntry = e.Entry;
-            RocksmithStatus = _service.IsRocksmithConnected ? "Connected" : "Waiting for Rocksmith";
+            RocksmithStatus = DescribeRocksmith();
         });
+
+    private string DescribeRocksmith() =>
+        _service.IsRocksmithConnected ? "Connected"
+        : _service.IsEffectBridgeUnavailable ? "Bridge unavailable" // The log says why.
+        : "Waiting for Rocksmith";
 
     private void ApplyCurrentState() => ApplyState(new TwitchStateChangedEventArgs(
         _service.AuthenticationState,
@@ -466,7 +471,7 @@ internal sealed partial class TwitchViewModel : ObservableObject, IDisposable
     {
         AuthenticationStatus = DescribeAuthentication(state.AuthenticationState);
         EventSubStatus = DescribeEventSub(state.EventSubState);
-        RocksmithStatus = _service.IsRocksmithConnected ? "Connected" : "Waiting for Rocksmith";
+        RocksmithStatus = DescribeRocksmith();
         StatusDetail = state.Detail;
         Username = state.Identity?.DisplayName ?? state.Identity?.Login ?? string.Empty;
         ChannelId = state.Identity?.UserId ?? string.Empty;

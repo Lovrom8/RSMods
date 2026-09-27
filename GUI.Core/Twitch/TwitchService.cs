@@ -23,6 +23,7 @@ namespace RSMods.Twitch
         private readonly TwitchApiClient _apiClient;
         private readonly ITwitchEventSubClient _eventSub;
         private readonly RocksmithEffectServer _effectServer;
+        private volatile bool _effectBridgeUnavailable;
         private readonly ITwitchClock _clock;
         private readonly SemaphoreSlim _lifecycleGate = new SemaphoreSlim(1, 1);
         private readonly SemaphoreSlim _sessionGate = new SemaphoreSlim(1, 1);
@@ -87,6 +88,9 @@ namespace RSMods.Twitch
         }
 
         public bool IsRocksmithConnected => _effectServer.IsConnected;
+
+        /// <summary>The effect bridge couldn't listen, so the game can't connect while the app runs.</summary>
+        public bool IsEffectBridgeUnavailable => _effectBridgeUnavailable;
         public bool HasStoredAuthorization => _tokenStore.Load() != null;
 
         public IReadOnlyList<TwitchLogEntry> GetLogSnapshot()
@@ -128,7 +132,10 @@ namespace RSMods.Twitch
                 }
                 catch (Exception ex) when (ex is System.IO.IOException || ex is System.Net.Sockets.SocketException)
                 {
-                    Log(TwitchLogLevel.Error, "Unable to start the Rocksmith effect bridge.");
+                    // Keep the reason: "address in use" with nothing listening usually means WSL's mirrored
+                    // networking or Hyper-V has reserved the block containing the game's fixed port.
+                    _effectBridgeUnavailable = true;
+                    Log(TwitchLogLevel.Error, $"Unable to start the Rocksmith effect bridge: {ex.Message}");
                 }
                 _tokens = _tokenStore.Load();
 

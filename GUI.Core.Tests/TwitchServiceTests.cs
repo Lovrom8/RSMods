@@ -101,4 +101,37 @@ public sealed class TwitchServiceTests
         Assert.Null(tokenStore.Load());
         Assert.Equal(0, eventSub.StartCount);
     }
+
+    [Fact]
+    public async Task Start_ReportsAnEffectBridgeThatCannotListen()
+    {
+        using var temporary = new TemporaryDirectory();
+        var blocker = new System.Net.Sockets.TcpListener(IPAddress.Loopback, 0);
+        blocker.Start();
+        try
+        {
+            int takenPort = ((IPEndPoint)blocker.LocalEndpoint).Port;
+            var handler = new QueueHttpMessageHandler();
+            var options = new TwitchOptions("public-client");
+            await using var service = new TwitchService(
+                options,
+                new TwitchTokenStore(temporary.File("TwitchAuth.dat")),
+                new TwitchRewardRepository(temporary.File("TwitchEnabledEffects.xml")),
+                new TwitchAuthService(new HttpClient(handler), options),
+                new TwitchApiClient(new HttpClient(handler), options),
+                new FakeEventSubClient(),
+                new RocksmithEffectServer(new RocksmithEffectServerOptions { Port = takenPort }));
+
+            await service.StartAsync();
+
+            Assert.True(service.IsEffectBridgeUnavailable);
+            Assert.False(service.IsRocksmithConnected);
+            Assert.Contains(service.GetLogSnapshot(), entry =>
+                entry.Message.StartsWith("Unable to start the Rocksmith effect bridge: ", StringComparison.Ordinal));
+        }
+        finally
+        {
+            blocker.Stop();
+        }
+    }
 }

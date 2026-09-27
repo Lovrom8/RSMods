@@ -706,6 +706,23 @@ remains a release-acceptance check.
 The remaining migration work is installer/publishing support, choosing Avalonia as the default frontend,
 and the optional longer-term removal of Windows/native and legacy Rocksmith-library constraints.
 
+### Known limitation: the Twitch effect port can be reserved
+
+The effect bridge listens on the fixed port `127.0.0.1:45659`, which the DLL (`DLL/CC/ControlServer.cpp`)
+connects to. The port dates from the first Crowd Control integration (`35992146`, 2020-09-25) and is shared
+with the external Crowd Control pack (`DLL/CC/rocksmithcrowdcontrol*.cs`).
+
+WSL 2 with `networkingMode=mirrored` reserves a block of loopback ports for Linux (44620-48715 on the
+machine where this was found, 2026-09-27). Nothing shows in `netstat`, in
+`netsh interface ipv4 show excludedportrange`, or inside the WSL distros, yet binding any port in that block fails with
+"Only one usage of each socket address". When it covers 45659, Twitch effects can't reach the game, and the
+runtime log shows "Unable to start the Rocksmith effect bridge: …" with that reason. The workaround is
+`wsl --shutdown` or WSL's default networking mode.
+
+Left as is on purpose: a real fix (a configurable or fallback port) has to change the GUI, the DLL and the
+Crowd Control pack together. While the bridge is down, the Twitch screen's Rocksmith status reads
+"Bridge unavailable".
+
 ## Recommended next work
 
 Integrate the Avalonia executable into installer/publishing, run release acceptance (including the live
