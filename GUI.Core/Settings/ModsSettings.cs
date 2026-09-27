@@ -2,6 +2,7 @@ using RSMods.Core.Settings;
 using RSMods.Util;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 
@@ -95,7 +96,16 @@ namespace RSMods
             }
 
             SeedManifestDefaults(_ini, manifest);
-            _ini.Save();
+
+            // Best effort, as before: a locked file mustn't stop the app starting; the next save retries.
+            try
+            {
+                _ini.Save();
+            }
+            catch (IOException ex)
+            {
+                Debug.WriteLine($"Failed to save INI file: {ex.Message}");
+            }
         }
 
         /// <summary>

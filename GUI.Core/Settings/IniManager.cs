@@ -24,10 +24,20 @@ namespace RSMods
         private readonly Dictionary<string, Dictionary<string, string>> _commentedData = new(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, string[]> _sectionComments = new(StringComparer.OrdinalIgnoreCase);
 
+        // Screens save from the thread pool while the UI thread reads and writes values (a read can seed a
+        // default), so every access goes through this. Events fire after it's released.
+        private readonly object _gate = new();
+
         private int _saveSuspendCount;
         private bool _saveDeferred;
 
         public void Load()
+        {
+            lock (_gate)
+                LoadLocked();
+        }
+
+        private void LoadLocked()
         {
             _data.Clear();
             _commentedData.Clear();
@@ -73,24 +83,35 @@ namespace RSMods
         /// </summary>
         public IDisposable SuspendSave()
         {
-            _saveSuspendCount++;
+            lock (_gate)
+                _saveSuspendCount++;
             return new SaveScope(this);
         }
 
         private void EndSuspendSave()
         {
-            if (_saveSuspendCount == 0)
-                return;
-
-            _saveSuspendCount--;
-            if (_saveSuspendCount == 0 && _saveDeferred)
+            lock (_gate)
             {
-                _saveDeferred = false;
-                Save();
+                if (_saveSuspendCount == 0)
+                    return;
+
+                _saveSuspendCount--;
+                if (_saveSuspendCount == 0 && _saveDeferred)
+                {
+                    _saveDeferred = false;
+                    SaveLocked();
+                }
             }
         }
 
+        /// <summary>Writes the file. Throws <see cref="IOException"/> when it can't, so the caller can report it.</summary>
         public void Save()
+        {
+            lock (_gate)
+                SaveLocked();
+        }
+
+        private void SaveLocked()
         {
             if (_saveSuspendCount > 0)
             {
@@ -98,54 +119,47 @@ namespace RSMods
                 return;
             }
 
-            try
+            using var sw = new StreamWriter(filePath);
+
+            // _data ordering first, then any section that exists only as commented lines.
+            var sectionNames = new List<string>(_data.Keys);
+            foreach (var section in _commentedData.Keys)
             {
-                using var sw = new StreamWriter(filePath);
-
-                // _data ordering first, then any section that exists only as commented lines.
-                var sectionNames = new List<string>(_data.Keys);
-                foreach (var section in _commentedData.Keys)
-                {
-                    if (!_data.ContainsKey(section))
-                        sectionNames.Add(section);
-                }
-
-                foreach (var sectionName in sectionNames)
-                {
-                    if (_sectionComments.TryGetValue(sectionName, out var headers))
-                    {
-                        foreach (var header in headers)
-                            sw.WriteLine(header);
-                    }
-
-                    sw.WriteLine(sectionName);
-
-                    _data.TryGetValue(sectionName, out var dataSection);
-                    _commentedData.TryGetValue(sectionName, out var commentedSection);
-
-                    if (dataSection != null)
-                    {
-                        foreach (var kvp in dataSection)
-                            WriteKeyValuePair(sw, sectionName, kvp.Key, kvp.Value);
-                    }
-
-                    // Preserve commented-only entries that were never mirrored into _data,
-                    // so a load/save round-trip doesn't silently drop them.
-                    if (commentedSection != null)
-                    {
-                        foreach (var kvp in commentedSection)
-                        {
-                            if (dataSection == null || !dataSection.ContainsKey(kvp.Key))
-                                sw.WriteLine($";{kvp.Key}={kvp.Value}");
-                        }
-                    }
-
-                    sw.WriteLine(); // Blank line for readability
-                }
+                if (!_data.ContainsKey(section))
+                    sectionNames.Add(section);
             }
-            catch (IOException ex)
+
+            foreach (var sectionName in sectionNames)
             {
-                Debug.WriteLine($"Failed to save INI file: {ex.Message}");
+                if (_sectionComments.TryGetValue(sectionName, out var headers))
+                {
+                    foreach (var header in headers)
+                        sw.WriteLine(header);
+                }
+
+                sw.WriteLine(sectionName);
+
+                _data.TryGetValue(sectionName, out var dataSection);
+                _commentedData.TryGetValue(sectionName, out var commentedSection);
+
+                if (dataSection != null)
+                {
+                    foreach (var kvp in dataSection)
+                        WriteKeyValuePair(sw, sectionName, kvp.Key, kvp.Value);
+                }
+
+                // Preserve commented-only entries that were never mirrored into _data,
+                // so a load/save round-trip doesn't silently drop them.
+                if (commentedSection != null)
+                {
+                    foreach (var kvp in commentedSection)
+                    {
+                        if (dataSection == null || !dataSection.ContainsKey(kvp.Key))
+                            sw.WriteLine($";{kvp.Key}={kvp.Value}");
+                    }
+                }
+
+                sw.WriteLine(); // Blank line for readability
             }
         }
 
@@ -199,21 +213,28 @@ namespace RSMods
 
         public string GetString(string section, string key, string defaultValue = "")
         {
-            if (_data.TryGetValue(section, out var sec) && sec.TryGetValue(key, out var val))
-                return val;
+            lock (_gate)
+            {
+                if (_data.TryGetValue(section, out var sec) && sec.TryGetValue(key, out var val))
+                    return val;
 
-            // Seed the default so Save() persists it, but a read must never count as a
-            // change (that would fire SettingChanged and trigger a spurious save/update).
-            GetOrCreateSection(_data, section)[key] = defaultValue;
-            return defaultValue;
+                // Seed the default so Save() persists it, but a read must never count as a
+                // change (that would fire SettingChanged and trigger a spurious save/update).
+                GetOrCreateSection(_data, section)[key] = defaultValue;
+                return defaultValue;
+            }
         }
 
         public void SetString(string section, string key, string value)
         {
-            var sectionDict = GetOrCreateSection(_data, section);
+            bool changed;
+            lock (_gate)
+            {
+                var sectionDict = GetOrCreateSection(_data, section);
 
-            bool changed = !sectionDict.TryGetValue(key, out var oldVal) || oldVal != value;
-            sectionDict[key] = value;
+                changed = !sectionDict.TryGetValue(key, out var oldVal) || oldVal != value;
+                sectionDict[key] = value;
+            }
 
             if (changed)
                 SettingChanged?.Invoke();
@@ -295,40 +316,54 @@ namespace RSMods
 
         public string GetCommentedString(string section, string key, string defaultValue = "")
         {
-            if (_commentedData.TryGetValue(section, out var sec) && sec.TryGetValue(key, out var val))
-                return val;
-            return defaultValue;
+            lock (_gate)
+            {
+                if (_commentedData.TryGetValue(section, out var sec) && sec.TryGetValue(key, out var val))
+                    return val;
+                return defaultValue;
+            }
         }
 
         public void SetCommentedString(string section, string key, string value, bool commented)
         {
             if (commented)
             {
-                GetOrCreateSection(_commentedData, section)[key] = value;
-                GetOrCreateSection(_data, section)[key] = value;
+                lock (_gate)
+                {
+                    GetOrCreateSection(_commentedData, section)[key] = value;
+                    GetOrCreateSection(_data, section)[key] = value;
+                }
             }
             else
             {
-                if (_commentedData.TryGetValue(section, out var sec))
-                    sec.Remove(key);
+                lock (_gate)
+                {
+                    if (_commentedData.TryGetValue(section, out var sec))
+                        sec.Remove(key);
+                }
 
                 SetString(section, key, value);
             }
         }
 
         public bool IsCommented(string section, string key)
-            => _commentedData.TryGetValue(section, out var sec) && sec.ContainsKey(key);
+        {
+            lock (_gate)
+                return _commentedData.TryGetValue(section, out var sec) && sec.ContainsKey(key);
+        }
 
         public void SetSectionComments(string section, string[] comments)
         {
-            _sectionComments[section] = comments;
+            lock (_gate)
+                _sectionComments[section] = comments;
         }
 
         private void ReportInvalid(string section, string key, string rawValue, string defaultValue, string reason)
         {
             // Self-heal: overwrite the invalid raw value with the default in memory so the next
             // Save() persists the correction.
-            GetOrCreateSection(_data, section)[key] = defaultValue;
+            lock (_gate)
+                GetOrCreateSection(_data, section)[key] = defaultValue;
 
             ValidationWarning?.Invoke(new IniValidationWarning(
                 filePath,
