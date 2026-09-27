@@ -16,8 +16,9 @@ float RiffRepeater::GetSpeed(bool realSpeed) {
 	// Get the current Time Stretch Value
 	Wwise::SoundEngine::Query::GetRTPCValue("Time_Stretch", 0x1234, &currentTimeStretch, &type);
 
-	// Rocksmith doesn't always set 100% speed to 100. This causes us to read 100 as 99.
-	if (floorf(currentTimeStretch) == 100) 
+	// Rocksmith doesn't always set 100% speed to exactly 100 (can land slightly above or below).
+	// 0.5 is well inside the smallest real step (101% = 99.01, 99% = 101.01).
+	if (fabsf(currentTimeStretch - 100.f) < 0.5f)
 		currentTimeStretch = 100;
 
 	return realSpeed ? ConvertSpeed(currentTimeStretch) : currentTimeStretch;
@@ -51,19 +52,46 @@ float RiffRepeater::ConvertSpeed(float speed) {
 
 /// <summary>
 /// Turns on the Actor-Mixer TimeStretch effect in slot 2.
+/// Only touches Wwise when the effect isn't already attached to this song, since every SetActorMixerEffect call rebuilds the effect on the playing voice.
 /// </summary>
 void RiffRepeater::EnableTimeStretch() {
+	if (currentlyEnabled_Above100 && timeStretchSongID == currentSongID)
+		return;
+
 	Wwise::SoundEngine::SetActorMixerEffect(currentSongID, 2, AK_ID_Default_Time_Stretch);
+	timeStretchSongID = currentSongID;
 	currentlyEnabled_Above100 = true;
 }
 
 /// <summary>
-/// Turns off the Actor-Mixer TimeStretch effect in slot 2.
+/// Turns off the Actor-Mixer TimeStretch effect in slot 2, without changing the song speed.
+/// </summary>
+void RiffRepeater::RemoveTimeStretch() {
+	if (!currentlyEnabled_Above100)
+		return;
+
+	Wwise::SoundEngine::SetActorMixerEffect(timeStretchSongID, 2, AK_INVALID_UNIQUE_ID);
+	currentlyEnabled_Above100 = false;
+}
+
+/// <summary>
+/// Turns off the Actor-Mixer TimeStretch effect in slot 2, and resets the song speed to 100%.
 /// </summary>
 void RiffRepeater::DisableTimeStretch() {
-	Wwise::SoundEngine::SetActorMixerEffect(currentSongID, 2, AK_INVALID_UNIQUE_ID);
+	RemoveTimeStretch();
 	SetSpeed(100); // Reset TimeStretch to default.
-	currentlyEnabled_Above100 = false;
+}
+
+/// <summary>
+/// Mirrors what the game does for Riff Repeater (RSAudioService::SetTimeStretchName):
+/// the Time Stretch effect is only in the chain while the song isn't playing at 100%.
+/// Even at 100% the effect still runs the audio through its phase vocoder, which colours the sound.
+/// </summary>
+void RiffRepeater::SyncTimeStretch() {
+	if (GetSpeed() != 100.f)
+		EnableTimeStretch();
+	else
+		RemoveTimeStretch();
 }
 
 /// <summary>
