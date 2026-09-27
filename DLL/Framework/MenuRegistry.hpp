@@ -23,8 +23,6 @@ namespace Framework {
 		bool standaloneWindow = false; // true = drawFn manages its own window; false = rendered as collapsible header in RS Mods window
 	};
 
-	using OwnerAvailabilityFn = std::function<bool(const IMod*, Availability)>;
-
 	class MenuRegistry {
 	public:
 		MenuRegistry();
@@ -44,11 +42,9 @@ namespace Framework {
 		// MainThread: publish snapshot of owner availability.
 		void PublishAvailability(std::unordered_map<const IMod*, Availability> availability);
 
-		// Returns a snapshot of entries whose owners are available, sorted by order asc, then title asc.
-		[[nodiscard]] std::vector<MenuEntry> GetEntries(const OwnerAvailabilityFn& isOwnerAvailable = {}) const;
-
-		// Snapshot of all registered entries regardless of owner availability.
-		[[nodiscard]] std::vector<MenuEntry> SnapshotAll() const;
+		// Render thread: entries whose owners are available per the last published snapshot (all of them
+		// before the first one), sorted by order asc, then title asc.
+		[[nodiscard]] std::vector<MenuEntry> GetEntries() const;
 
 	private:
 		struct Impl;

@@ -56,7 +56,7 @@ int main() {
 		menus.Register(Owner(1), "settings", "Old Title", 5, [] {});
 		menus.Register(Owner(1), "settings", "New Title", 15, [] {}, Availability::Initialized, true);
 
-		const auto all = menus.SnapshotAll();
+		const auto all = menus.GetEntries();
 		Check("upsert replaces in place",
 			all.size() == 1 &&
 			all[0].title == "New Title" &&
@@ -71,24 +71,7 @@ int main() {
 		menus.Register(Owner(1), "menu", "Menu 1", 10, [] {});
 		menus.Register(Owner(2), "menu", "Menu 2", 10, [] {});
 
-		Check("id is scoped per owner", menus.SnapshotAll().size() == 2);
-	}
-
-	// Availability gating.
-	{
-		MenuRegistry menus;
-		menus.Register(Owner(1), "active_only", "Active Item", 10, [] {}, Availability::Active);
-		menus.Register(Owner(2), "initialized", "Initialized Item", 20, [] {}, Availability::Initialized);
-
-		// Owner 1 is inactive, Owner 2 is inactive (but initialized).
-		auto isAvailable = [](const IMod* owner, Availability required) {
-			if (owner == Owner(1)) return false; // Inactive
-			if (owner == Owner(2)) return required == Availability::Initialized; // Initialized
-			return false;
-		};
-
-		const auto entries = menus.GetEntries(isAvailable);
-		Check("gated on owner availability", entries.size() == 1 && entries[0].id == "initialized");
+		Check("id is scoped per owner", menus.GetEntries().size() == 2);
 	}
 
 	// RemoveMod drops only that owner's entries.
@@ -99,7 +82,7 @@ int main() {
 		menus.Register(Owner(2), "m3", "Menu 3", 30, [] {});
 
 		menus.RemoveMod(Owner(1));
-		const auto all = menus.SnapshotAll();
+		const auto all = menus.GetEntries();
 		Check("RemoveMod is owner-scoped", all.size() == 1 && all[0].owner == Owner(2));
 	}
 
@@ -109,10 +92,13 @@ int main() {
 		menus.Register(Owner(1), "active_only", "Active Item", 10, [] {}, Availability::Active);
 		menus.Register(Owner(2), "initialized", "Initialized Item", 20, [] {}, Availability::Initialized);
 		menus.Register(Owner(3), "unsettled_active", "Unsettled Item", 30, [] {}, Availability::Active);
+		menus.Register(Owner(4), "inactive_active", "Inactive Item", 40, [] {}, Availability::Active);
 
+		// Owner 2 and 4 are initialized but not active; owner 3 isn't settled at all.
 		menus.PublishAvailability({
 			{ Owner(1), Availability::Active },
-			{ Owner(2), Availability::Initialized }
+			{ Owner(2), Availability::Initialized },
+			{ Owner(4), Availability::Initialized }
 		});
 
 		const auto entries = menus.GetEntries();

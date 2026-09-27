@@ -57,7 +57,7 @@ namespace Framework {
 		impl->hasAvailabilitySnapshot = true;
 	}
 
-	std::vector<MenuEntry> MenuRegistry::GetEntries(const OwnerAvailabilityFn& isOwnerAvailable) const {
+	std::vector<MenuEntry> MenuRegistry::GetEntries() const {
 		std::vector<MenuEntry> out;
 		{
 			std::lock_guard<std::mutex> lock(impl->mutex);
@@ -65,13 +65,6 @@ namespace Framework {
 			for (const auto& entry : impl->entries) {
 				if (!entry.owner) {
 					out.push_back(entry);
-					continue;
-				}
-
-				if (isOwnerAvailable) {
-					if (isOwnerAvailable(entry.owner, entry.availability)) {
-						out.push_back(entry);
-					}
 					continue;
 				}
 
@@ -98,11 +91,6 @@ namespace Framework {
 		});
 
 		return out;
-	}
-
-	std::vector<MenuEntry> MenuRegistry::SnapshotAll() const {
-		std::lock_guard<std::mutex> lock(impl->mutex);
-		return impl->entries;
 	}
 
 	MenuRegistry& Menus() {
