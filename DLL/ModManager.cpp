@@ -97,6 +97,7 @@ namespace ModManager {
 		AnchorPassSpeedup::Install();
 		ChartPrepSpeedup::Install();
 		LyricsRenderSpeedup::Install();
+		PhraseBanner::Install();
 	}
 
 	/// <summary>

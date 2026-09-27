@@ -6,6 +6,7 @@
 #include "UltrawideShaders.hpp"
 #include "UltrawideFullStage.hpp"
 #include "../Mods/UltrawideMod.hpp"
+#include "../Mods/PhraseBanner.hpp"
 
 using Settings::NoteColorMode;
 namespace Setting = Settings::Setting;
@@ -265,7 +266,8 @@ HRESULT APIENTRY D3DHooks::Hook_SetVertexShader(LPDIRECT3DDEVICE9 pDevice, IDire
 		vShader = veShader;
 
 	// Bind first, publish after: a rejected bind leaves the previous shader current.
-	const HRESULT result = oSetVertexShader(pDevice, veShader);
+	// A phrase banner with too many phrases gets our vertex texture version of its shader. Ultrawide still sees the game's shader.
+	const HRESULT result = oSetVertexShader(pDevice, PhraseBanner::OnSetVertexShader(pDevice, veShader));
 	if (SUCCEEDED(result))
 		UltrawideShaders::OnVertexShaderBound(veShader);
 
@@ -333,6 +335,7 @@ HRESULT APIENTRY D3DHooks::Hook_Reset(IDirect3DDevice9* pDevice, D3DPRESENT_PARA
 		ultrawideRenderTargetTextures.clear(); // Targets are recreated after a reset; stale pointers must not match new textures.
 		UltrawideShaders::Forget(); // Same hazard: shaders are released across a reset too.
 		UltrawideShaders::TextureStages::Forget(); // Textures are released too, and the stage mirror is keyed by raw pointer as well.
+		PhraseBanner::OnDeviceReset(); // Its shader lookup is keyed by raw pointer too.
 	}
 
 	return ResetReturn;

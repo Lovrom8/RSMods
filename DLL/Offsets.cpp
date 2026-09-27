@@ -98,10 +98,69 @@ void Offsets::Initialize() {
 	ptr_lyricsGlyphCountIndices = { {0x0082C152, baseHandle + 0x0042C4C2} };		// Code | 0f b7 83 9c 00 00 00 (index count)
 	ptr_lyricsGlyphCountIndexLoopStart = { {0x0082C1BC, baseHandle + 0x0042C52C} };	// Code | 66 3b 8b 9c 00 00 00
 	ptr_lyricsGlyphCountIndexLoop = { {0x0082C224, baseHandle + 0x0042C594} };		// Code | 0f b7 bb 9c 00 00 00
+
+	// Hand shape chord repeats on song load (function at 0x0055D490, same code on both builds)
+	ptr_handShapeScan = { {0x0055D96F, baseHandle + 0x0015ED1F} };				// Code | 8b 8d 48 f6 ff ff (before the first note walk)
+	ptr_handShapeScanJmpBck = { {0x0055D975, baseHandle + 0x0015ED25} };
+	ptr_handShapeRepeatLoop = { {0x0055DA34, baseHandle + 0x0015EDE4} };			// Code | d9 47 0c d8 d9 (second walk, from the repeat note)
+	ptr_handShapeNext = { {0x0055DD5A, baseHandle + 0x0015F10A} };					// Code | 8b 8d 34 f6 ff ff (next hand shape)
+
+	// Splitting hand shapes at anchor starts on song load (function at 0x0055F3F0, same code on both builds)
+	ptr_splitSpanLoop = { {0x0055F4B6, baseHandle + 0x00160866} };					// Code | d9 44 31 04 d9 5d e0 (top of the hand shape walk)
+	ptr_splitSpanLoopJmpBck = { {0x0055F4BD, baseHandle + 0x0016086D} };
+	ptr_splitSpanLoopDone = { {0x0055F619, baseHandle + 0x001609C9} };				// Code | 8b f3 2b 75 d0 (after the walk)
+
 	// Per frame lyrics glyph walk in the lyrics renderer update (0x0082E2B0, same code on both builds)
 	ptr_lyricsGlyphWalk = { {0x0082E6E1, baseHandle + 0x0042EA51} };				// Code | dd 05 ?? ?? ?? ?? 89 7d f0 8b be b8 00 00 00 8b 8e bc 00 00 00
 	ptr_lyricsGlyphWalkJmpBck = { {0x0082E6E7, baseHandle + 0x0042EA57} };
 	ptr_lyricsGlyphWalkDone = { {0x0082E7F4, baseHandle + 0x0042EB64} };			// Code | f6 05 ?? ?? ?? ?? 01 (after the walk)
+
+	// Anchor phrase starts on song load (loop in the song load finishing step, same code on both builds)
+	ptr_anchorPhraseStarts = { {0x0055AECD, baseHandle + 0x0015C27D} };				// Code | c7 44 24 38 00 00 00 00 8b 54 24 20
+	ptr_anchorPhraseStartsJmpBck = { {0x0055AED5, baseHandle + 0x0015C285} };
+	ptr_anchorPhraseStartsDone = { {0x0055B0FE, baseHandle + 0x0015C4AE} };			// Code | 8b 7b 40 8b 4b 44 8b 74 24 28 (after the anchor loop)
+
+	// 10000 second limit on the anchor end search in the song load function at 0x0055B430 (FLD float ptr [10000.0f])
+	ptr_anchorEndSearchLimit = { {0x0055B62D, baseHandle + 0x0015C9DD} };			// Code | d9 05 c0 d5 13 01 c7 45 f0 00 00 00 00
+	ptr_lastPhraseEndLimit = { {0x0055B8C2, baseHandle + 0x0015CC72} };			// Code | d9 05 c0 d5 13 01 eb 02
+
+	// Anchor zone lookup during play (per frame anchor zone update at 0x007E5260, same code on both builds)
+	ptr_anchorZoneWalkA = { {0x007E5771, baseHandle + 0x003E6141} };				// Code | 3b f7 0f 84 ?? ?? ?? ?? 8d a4 24 00 00 00 00 d9 44 24 28 d9 06
+	ptr_anchorZoneWalkAJmpBck = { {0x007E5780, baseHandle + 0x003E6150} };
+	ptr_anchorZoneWalkAEmpty = { {0x007E5809, baseHandle + 0x003E61D9} };
+	ptr_anchorZoneWalkADone = { {0x007E57F9, baseHandle + 0x003E61C9} };			// Code | 3a 5c 24 12 75 55
+	ptr_anchorZoneWalkB = { {0x007E5A06, baseHandle + 0x003E63D6} };				// Code | 3b f7 0f 84 ?? ?? ?? ?? 8b ff d9 44 24 3c d9 06
+	ptr_anchorZoneWalkBJmpBck = { {0x007E5A10, baseHandle + 0x003E63E0} };
+	ptr_anchorZoneWalkBEmpty = { {0x007E5A99, baseHandle + 0x003E6469} };
+	ptr_anchorZoneWalkBDone = { {0x007E5A89, baseHandle + 0x003E6459} };			// Code | 3a 5c 24 12 75 11
+
+	// Preroll anchor lookup during play, in the per frame preroll update (0x00462170; 0x00232520 on Dec 2024)
+	ptr_prerollNoteSearch = { {0x004624B8, baseHandle + 0x00062868} };				// Code | 8b 72 30 dd d8 (before the note walk)
+	ptr_prerollNoteSearchJmpBck = { {0x004624BD, baseHandle + 0x0006286D} };
+	ptr_prerollAnchorFound = { {0x00462589, baseHandle + 0x00062939} };				// Code | 8a 4e 10 3a 4b 10 (fret / width comparison)
+	ptr_prerollNextAnchor = { {0x00462608, baseHandle + 0x000629B8} };				// Code | 83 c3 1c 3b 5d bc (next upcoming anchor)
+
+	// Per phrase iteration difficulty caches (256 ints inside the dynamic difficulty component at + 0x38, the score attack difficulty component at + 0x18)
+	ptr_phraseDifficultyCompute = { {0x0043C660, baseHandle + 0x0003A070} };		// Code | 56 57 8b f9 8b 48 0c 8b 71 7c (component in EAX, phrase iteration in ECX)
+	ptr_ddFillPhraseDifficulties = { {0x00439E60, baseHandle + 0x0003A0D0} };		// Code | 55 8b ec 51 8b 45 08 80 78 14 00 (fills the cache)
+	ptr_ddGetPhraseDifficulty = { {0x00439DF0, baseHandle + 0x0003A000} };			// Code | Reads one cached difficulty
+	ptr_ddResolvePhraseDifficulty = { {0x00439E20, baseHandle + 0x0003A030} };		// Code | Reads one cached difficulty, with fallback
+	ptr_ddConstructed = { {0x004392B2, baseHandle + 0x000394C2} };					// Code | 5f 8b c6 5b 59 5d, end of the component constructor
+	ptr_ddConstructedJmpBck = { {0x004392B8, baseHandle + 0x000394C8} };			// Code | c2 04 00
+	ptr_saFillPhraseDifficulties = { {0x0043C6C0, baseHandle + 0x0003C8B0} };		// Code | Fills the cache
+	ptr_saGetPhraseDifficulty = { {0x0043C610, baseHandle + 0x0003C860} };			// Code | Reads one cached difficulty
+	ptr_saConstructed = { {0x0046D2F8, baseHandle + 0x0006D688} };					// Code | 8b 7c 24 10 eb 02, right after the score attack setup creates the component
+	ptr_saConstructedJmpBck = { {0x0046D300, baseHandle + 0x0006D68E} };
+
+	// Phrase banner limit. Same code on both builds.
+	ptr_phraseBannerBuild = { {0x0081C050, baseHandle + 0x0041C700} };				// Code | 55 8b ec 83 e4 f8 83 ec 3c 53 8b 5d 0c 8b 4b 0c 2b 4b 08 (builds the banner)
+	ptr_phraseBannerBuildLimitJump = { {0x0081C079, baseHandle + 0x0041C729} };		// Code | 83 f8 64 [0f 87 8d 01 00 00] (the ja after cmp eax, 0x64)
+	ptr_phraseBannerWriteAllPhrases = { {0x0081C830, baseHandle + 0x0041CEE0} };		// Code | 55 8b ec 83 ec 60 53 56 68 d0 06 00 00 6a 00 57 (writes every phrase slot)
+	ptr_phraseBannerWritePhraseHeight = { {0x0081C9F0, baseHandle + 0x0041D0A0} };	// Code | 55 8b ec dd 05 ? ? ? ? 83 ec 4c d9 e8 53 8b 5d 08 (writes one phrase's height)
+	ptr_phraseBannerWritePhraseState = { {0x0081CAC0, baseHandle + 0x0041D170} };	// Code | 55 8b ec 51 d9 e8 8b 45 08 d9 55 fc 89 41 24 (writes one phrase's state)
+	ptr_phraseBannerRender = { {0x00821480, baseHandle + 0x00421B40} };				// Code | 55 8b ec 83 ec 10 57 8b f8 80 bf 60 07 00 00 00 (draws the banner)
+	ptr_phraseBannerScreenWidth = { {0x0081BFD0, baseHandle + 0x0041C680} };			// Code | 55 8b ec 83 ec 48 83 b8 7c 07 00 00 00 74 0a d9 05 (the width the banner is laid out in: 1024 for menu banners, else the resolution width)
+
 	// Per difficulty level anchor pass on song load (function at 0x0055DDC0, rva 0x0015F170 on Dec 2024; same code on both builds)
 	ptr_anchorPassPhraseScan = { {0x0055DF0C, baseHandle + 0x0015F2BC} };			// Code | c6 85 ac fe ff ff 00 (before the phrase iteration note loop)
 	ptr_anchorPassPhraseScanJmpBck = { {0x0055DF13, baseHandle + 0x0015F2C3} };

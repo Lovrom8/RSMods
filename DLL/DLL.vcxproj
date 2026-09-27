@@ -133,6 +133,11 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug with Wwise Logging|Win32'">../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="Mods\PhraseBanner.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug with Wwise Logging|Win32'">../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
     <ClCompile Include="Mods\ChartPrepSpeedup.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug with Wwise Logging|Win32'">../stdafx.h</PrecompiledHeaderFile>
@@ -423,6 +428,9 @@
     <ClInclude Include="Mods\AudioDevices.hpp" />
     <ClInclude Include="Mods\BugPrevention.hpp" />
     <ClInclude Include="Mods\AnchorPassSpeedup.hpp" />
+    <ClInclude Include="Mods\PhraseBanner.hpp" />
+    <ClInclude Include="Mods\PhraseBanner\phrase_bars_vtf.h" />
+    <ClInclude Include="Mods\PhraseBanner\phrase_progress_vtf.h" />
     <ClInclude Include="Mods\ChartPrepSpeedup.hpp" />
     <ClInclude Include="Mods\LyricsRenderSpeedup.hpp" />
     <ClInclude Include="Mods\ProfileBackups.hpp" />

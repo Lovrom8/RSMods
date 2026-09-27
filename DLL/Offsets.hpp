@@ -198,10 +198,68 @@ namespace Offsets {
 	inline VersioningStruct<uintptr_t> ptr_lyricsGlyphCountIndexLoopStart;
 	inline VersioningStruct<uintptr_t> ptr_lyricsGlyphCountIndexLoop;
 
+	// Hand shape chord repeats on song load
+	inline VersioningStruct<uintptr_t> ptr_handShapeScan;
+	inline VersioningStruct<uintptr_t> ptr_handShapeScanJmpBck;
+	inline VersioningStruct<uintptr_t> ptr_handShapeRepeatLoop;
+	inline VersioningStruct<uintptr_t> ptr_handShapeNext;
+
+	// Splitting hand shapes at anchor starts on song load
+	inline VersioningStruct<uintptr_t> ptr_splitSpanLoop;
+	inline VersioningStruct<uintptr_t> ptr_splitSpanLoopJmpBck;
+	inline VersioningStruct<uintptr_t> ptr_splitSpanLoopDone;
+
 	// Per frame lyrics glyph walk
 	inline VersioningStruct<uintptr_t> ptr_lyricsGlyphWalk;
 	inline VersioningStruct<uintptr_t> ptr_lyricsGlyphWalkJmpBck;
 	inline VersioningStruct<uintptr_t> ptr_lyricsGlyphWalkDone;
+
+	// Anchor phrase starts on song load
+	inline VersioningStruct<uintptr_t> ptr_anchorPhraseStarts;
+	inline VersioningStruct<uintptr_t> ptr_anchorPhraseStartsJmpBck;
+	inline VersioningStruct<uintptr_t> ptr_anchorPhraseStartsDone;
+
+	// 10000 second limit on the anchor end search on song load
+	inline VersioningStruct<uintptr_t> ptr_anchorEndSearchLimit;
+	inline VersioningStruct<uintptr_t> ptr_lastPhraseEndLimit;
+
+	// Anchor zone lookup during play
+	inline VersioningStruct<uintptr_t> ptr_anchorZoneWalkA;
+	inline VersioningStruct<uintptr_t> ptr_anchorZoneWalkAJmpBck;
+	inline VersioningStruct<uintptr_t> ptr_anchorZoneWalkAEmpty;
+	inline VersioningStruct<uintptr_t> ptr_anchorZoneWalkADone;
+	inline VersioningStruct<uintptr_t> ptr_anchorZoneWalkB;
+	inline VersioningStruct<uintptr_t> ptr_anchorZoneWalkBJmpBck;
+	inline VersioningStruct<uintptr_t> ptr_anchorZoneWalkBEmpty;
+	inline VersioningStruct<uintptr_t> ptr_anchorZoneWalkBDone;
+
+	// Preroll anchor lookup during play
+	inline VersioningStruct<uintptr_t> ptr_prerollNoteSearch;
+	inline VersioningStruct<uintptr_t> ptr_prerollNoteSearchJmpBck;
+	inline VersioningStruct<uintptr_t> ptr_prerollAnchorFound;
+	inline VersioningStruct<uintptr_t> ptr_prerollNextAnchor;
+
+	// Per phrase iteration difficulty caches
+	inline VersioningStruct<uintptr_t> ptr_phraseDifficultyCompute;
+	inline VersioningStruct<uintptr_t> ptr_ddFillPhraseDifficulties;
+	inline VersioningStruct<uintptr_t> ptr_ddGetPhraseDifficulty;
+	inline VersioningStruct<uintptr_t> ptr_ddResolvePhraseDifficulty;
+	inline VersioningStruct<uintptr_t> ptr_ddConstructed;
+	inline VersioningStruct<uintptr_t> ptr_ddConstructedJmpBck;
+	inline VersioningStruct<uintptr_t> ptr_saFillPhraseDifficulties;
+	inline VersioningStruct<uintptr_t> ptr_saGetPhraseDifficulty;
+	inline VersioningStruct<uintptr_t> ptr_saConstructed;
+	inline VersioningStruct<uintptr_t> ptr_saConstructedJmpBck;
+
+	// Phrase banner limit
+	inline VersioningStruct<uintptr_t> ptr_phraseBannerBuild;
+	inline VersioningStruct<uintptr_t> ptr_phraseBannerBuildLimitJump;
+	inline VersioningStruct<uintptr_t> ptr_phraseBannerWriteAllPhrases;
+	inline VersioningStruct<uintptr_t> ptr_phraseBannerWritePhraseHeight;
+	inline VersioningStruct<uintptr_t> ptr_phraseBannerWritePhraseState;
+	inline VersioningStruct<uintptr_t> ptr_phraseBannerRender;
+	inline VersioningStruct<uintptr_t> ptr_phraseBannerScreenWidth;
+
 	// Anchor pass on song load
 	inline VersioningStruct<uintptr_t> ptr_anchorPassPhraseScan;
 	inline VersioningStruct<uintptr_t> ptr_anchorPassPhraseScanJmpBck;
