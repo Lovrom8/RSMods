@@ -178,7 +178,9 @@ internal sealed partial class AsioSettingsViewModel : ObservableObject
     private static void LoadInput(AsioInputViewModel vm, bool disabled, string driver, int channel,
         bool endpoint, bool master, int percent, bool refHack)
     {
-        vm.Enabled = !disabled;
+        // No driver means RS_ASIO can't use the input. Input 1 marks "disabled" by commenting its driver out, so a
+        // blank uncommented one (a missing RS_ASIO.ini gives that) would otherwise show as enabled.
+        vm.Enabled = !disabled && !string.IsNullOrWhiteSpace(driver);
         vm.Driver = driver;
         vm.Channel = channel;
         vm.EnableEndpointVolume = endpoint;
