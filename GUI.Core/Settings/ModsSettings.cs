@@ -10,14 +10,7 @@ namespace RSMods
 {
     public static class RsModsSettings
     {
-        private static Action _settingChangedHandler;
         private static Action<IniValidationWarning> _validationWarningHandler;
-        public static event Action SettingChanged
-        {
-            add { _settingChangedHandler += value; if (_ini != null) _ini.SettingChanged += value; }
-            remove { _settingChangedHandler -= value; if (_ini != null) _ini.SettingChanged -= value; }
-        }
-
         public static event Action<IniValidationWarning> ValidationWarning
         {
             add { _validationWarningHandler += value; if (_ini != null) _ini.ValidationWarning += value; }
@@ -38,8 +31,6 @@ namespace RSMods
         {
             string path = Path.Combine(GenUtil.GetRSDirectory(), "RSMods.ini");
             _ini = new IniManager(path);
-            if (_settingChangedHandler != null)
-                _ini.SettingChanged += _settingChangedHandler;
             if (_validationWarningHandler != null)
                 _ini.ValidationWarning += _validationWarningHandler;
 

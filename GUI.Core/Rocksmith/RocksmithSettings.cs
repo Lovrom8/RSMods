@@ -33,12 +33,6 @@ namespace RSMods.Rocksmith
         public RendererSettings RendererWin32 { get; }
         public NetSettings Net { get; }
 
-        public event Action SettingChanged
-        {
-            add => _ini.SettingChanged += value;
-            remove => _ini.SettingChanged -= value;
-        }
-
         public event Action<IniValidationWarning> ValidationWarning
         {
             add => _ini.ValidationWarning += value;

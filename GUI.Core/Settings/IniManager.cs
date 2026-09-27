@@ -18,7 +18,6 @@ namespace RSMods
 
     public class IniManager(string filePath)
     {
-        public event Action SettingChanged;
         public event Action<IniValidationWarning> ValidationWarning;
 
         private readonly Dictionary<string, Dictionary<string, string>> _data = new(StringComparer.OrdinalIgnoreCase);
@@ -296,7 +295,7 @@ namespace RSMods
                     return val;
 
                 // Seed the default so Save() persists it, but a read must never count as a
-                // change (that would fire SettingChanged and trigger a spurious save/update).
+                // change (that would trigger a spurious save and game reload).
                 GetOrCreateSection(_data, section)[key] = defaultValue;
                 _fileOutOfDate = true;
                 return defaultValue;
@@ -305,19 +304,15 @@ namespace RSMods
 
         public void SetString(string section, string key, string value)
         {
-            bool changed;
             lock (_gate)
             {
                 var sectionDict = GetOrCreateSection(_data, section);
 
-                changed = !sectionDict.TryGetValue(key, out var oldVal) || oldVal != value;
+                bool changed = !sectionDict.TryGetValue(key, out var oldVal) || oldVal != value;
                 sectionDict[key] = value;
                 _changedSinceSave |= changed;
                 _fileOutOfDate |= changed;
             }
-
-            if (changed)
-                SettingChanged?.Invoke();
         }
 
         public bool GetBool(string section, string key, bool defaultValue = false, bool forceNumeric = false)
