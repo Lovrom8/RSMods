@@ -103,6 +103,9 @@
     <ClCompile Include="SamplingProfiler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="FrameProfiler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="Lib\ImGUI\imgui.cpp">
       <Filter>Main Headers\ImGUI</Filter>
     </ClCompile>
@@ -395,6 +398,9 @@
       <Filter>Main Headers</Filter>
     </ClInclude>
     <ClInclude Include="SamplingProfiler.hpp">
+      <Filter>Main Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="FrameProfiler.hpp">
       <Filter>Main Headers</Filter>
     </ClInclude>
     <ClInclude Include="Offsets.hpp">

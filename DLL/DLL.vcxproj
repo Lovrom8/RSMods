@@ -499,6 +499,7 @@
     </ClCompile>
     <ClCompile Include="MemUtil.cpp" />
     <ClCompile Include="SamplingProfiler.cpp" />
+    <ClCompile Include="FrameProfiler.cpp" />
     <ClCompile Include="Mods\GuitarSkeletons.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug with Wwise Logging|Win32'">../stdafx.h</PrecompiledHeaderFile>
@@ -611,6 +612,7 @@
     <ClInclude Include="EngineString.hpp" />
     <ClInclude Include="MemUtil.hpp" />
     <ClInclude Include="SamplingProfiler.hpp" />
+    <ClInclude Include="FrameProfiler.hpp" />
     <ClInclude Include="Offsets.hpp" />
     <ClInclude Include="Settings.hpp" />
     <ClInclude Include="AspectRatio.hpp" />

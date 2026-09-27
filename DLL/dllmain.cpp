@@ -6,6 +6,7 @@
 #include "D3DOverlay.hpp"
 #include "Version.h"
 #include "GitVersion.h"
+#include "FrameProfiler.hpp"
 
 namespace Setting = Settings::Setting;
 
@@ -175,6 +176,8 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 	if (Menu::IsOverlayCall()) {
 		return originalReturn;
 	}
+
+	FrameProfiler::OnFrame();
 
 	// Don't draw our overlay onto a lost / not-yet-reset device (e.g. mid Alt+Tab out of exclusive fullscreen).
 	if (FAILED(pDevice->TestCooperativeLevel())) {
