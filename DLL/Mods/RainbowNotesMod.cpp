@@ -40,8 +40,9 @@ void RainbowNotesMod::OnInitialize(ModContext& c) {
 			ERMode::ToggleRainbowNotes();
 			D3DHooks::RecreateTextures = true;
 		},
+		// Also while cycling, so switching the setting off mid-cycle can't leave the key unable to stop it.
 		[](const ModContext& context, const KeyEvent&) {
-			return context.IsOn(Setting::RainbowNotesEnabled);
+			return context.IsOn(Setting::RainbowNotesEnabled) || ERMode::IsRainbowNotesEnabled();
 		},
 		"Rainbow Notes");
 
