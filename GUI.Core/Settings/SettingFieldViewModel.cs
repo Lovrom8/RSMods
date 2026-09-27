@@ -15,7 +15,8 @@ public abstract partial class SettingFieldViewModel(SettingDescriptor descriptor
     public string Label => Descriptor.Label;
     public string? Hint => Descriptor.Hint;
     public bool HasHint => !string.IsNullOrWhiteSpace(Hint);
-    public bool IsNested => Descriptor.VisibleWhen != null;
+    /// <summary>True when shown under its parent setting; set by the group that lays the field out.</summary>
+    public bool IsNested { get; internal set; }
 
     public string IniSection { get; } = NormalizeSection(descriptor.Ini.Section);
     public string IniKey => Descriptor.Ini.Name;

@@ -12,9 +12,11 @@ using System.Threading.Tasks;
 namespace RSMods.Core
 {
     /// <summary>A result-screen voice line the user can replace: its display label and the WEM file it maps to.</summary>
-    public sealed class SoundPackVoiceLine(string label, string wem)
+    public sealed class SoundPackVoiceLine(string scoreRange, string name, string wem)
     {
-        public string Label { get; } = label;
+        public string ScoreRange { get; } = scoreRange;
+        public string Name { get; } = name;
+        public string Label => $"{ScoreRange} · {Name}";
         public string Wem { get; } = wem;
     }
 
@@ -114,24 +116,24 @@ namespace RSMods.Core
         // Ordered by ascending score, matching the ranges shown on the WinForms tab.
         private static IReadOnlyList<SoundPackVoiceLine> BuildVoiceLines() =>
         [
-            new("0–49% · Bad Performance", Soundpacks.VoiceLines.BadPerformance),
-            new("50–59% · Disappointing Performance", Soundpacks.VoiceLines.DisappointingPerformance),
-            new("60–65% · Subpar Performance", Soundpacks.VoiceLines.SubparPerformance),
-            new("66–72% · Could Be Better", Soundpacks.VoiceLines.CouldBeBetter),
-            new("73–80% · Decent Performance", Soundpacks.VoiceLines.DecentPerformance),
-            new("81% · Alright Performance", Soundpacks.VoiceLines.AlrightPerformance),
-            new("82–85% · Excellent Performance", Soundpacks.VoiceLines.ExcellentPerformance),
-            new("86–89% · Top Notch Performance", Soundpacks.VoiceLines.TopNotchPerformance),
-            new("90–91% · Superb Performance", Soundpacks.VoiceLines.SuperbPerformance),
-            new("92% · Dazzling Performance", Soundpacks.VoiceLines.DazzlingPerformance),
-            new("93% · You're Gonna Be A Superstar", Soundpacks.VoiceLines.YoureGonnaBeASuperstar),
-            new("94% · Wonderful Performance", Soundpacks.VoiceLines.WonderfulPerformance),
-            new("95% · Exceptional Performance", Soundpacks.VoiceLines.ExceptionalPerformance),
-            new("96% · Amazing Performance", Soundpacks.VoiceLines.AmazingPerformance),
-            new("97% · Exemplary Performance", Soundpacks.VoiceLines.ExemplaryPerformance),
-            new("98% · Masterful Performance", Soundpacks.VoiceLines.MasterfulPerformance_98),
-            new("99% · Masterful Performance", Soundpacks.VoiceLines.MasterfulPerformance_99),
-            new("100% · Flawless Performance", Soundpacks.VoiceLines.FlawlessPerformance),
+            new("0–49%", "Bad Performance", Soundpacks.VoiceLines.BadPerformance),
+            new("50–59%", "Disappointing Performance", Soundpacks.VoiceLines.DisappointingPerformance),
+            new("60–65%", "Subpar Performance", Soundpacks.VoiceLines.SubparPerformance),
+            new("66–72%", "Could Be Better", Soundpacks.VoiceLines.CouldBeBetter),
+            new("73–80%", "Decent Performance", Soundpacks.VoiceLines.DecentPerformance),
+            new("81%", "Alright Performance", Soundpacks.VoiceLines.AlrightPerformance),
+            new("82–85%", "Excellent Performance", Soundpacks.VoiceLines.ExcellentPerformance),
+            new("86–89%", "Top Notch Performance", Soundpacks.VoiceLines.TopNotchPerformance),
+            new("90–91%", "Superb Performance", Soundpacks.VoiceLines.SuperbPerformance),
+            new("92%", "Dazzling Performance", Soundpacks.VoiceLines.DazzlingPerformance),
+            new("93%", "You're Gonna Be A Superstar", Soundpacks.VoiceLines.YoureGonnaBeASuperstar),
+            new("94%", "Wonderful Performance", Soundpacks.VoiceLines.WonderfulPerformance),
+            new("95%", "Exceptional Performance", Soundpacks.VoiceLines.ExceptionalPerformance),
+            new("96%", "Amazing Performance", Soundpacks.VoiceLines.AmazingPerformance),
+            new("97%", "Exemplary Performance", Soundpacks.VoiceLines.ExemplaryPerformance),
+            new("98%", "Masterful Performance", Soundpacks.VoiceLines.MasterfulPerformance_98),
+            new("99%", "Masterful Performance", Soundpacks.VoiceLines.MasterfulPerformance_99),
+            new("100%", "Flawless Performance", Soundpacks.VoiceLines.FlawlessPerformance),
         ];
     }
 }

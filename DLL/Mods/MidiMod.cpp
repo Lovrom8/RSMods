@@ -28,7 +28,8 @@ SettingDefs MidiMod::Settings() const {
 		String(Setting::MidiInDevice, "MIDI Input Device")
 			.Hint("MIDI input device to listen to for tuning changes.")
 			.Ini("Toggle Switches", "MidiInDevice")
-			.ChoicesSource("MidiInDevices"),
+			.ChoicesSource("MidiInDevices")
+			.WithVisibleWhen(Setting::AutoTuneForSong),
 		Enum(Setting::AutoTuneForSongWhen, "Auto Tune When")
 			.Hint("Whether to auto-tune manually or automatically via the in-game tuner.")
 			.Ini("Toggle Switches", "AutoTuneForSongWhen")
@@ -125,7 +126,7 @@ void MidiMod::OnTick(ModContext& c) {
 }
 
 // Two independent one-time setup steps: load the auto-tune pedal settings once AutoTuneForSong is on, 
-// and spin up the MIDI-in listener once a MidiInDevice is configured.
+// and spin up the MIDI-in listener once a MidiInDevice is configured (it only serves auto-tune).
 void MidiMod::ScanForMidiDevices(ModContext& c) {
 	if (!Midi::scannedForMidiDevices && c.IsOn(Setting::AutoTuneForSong)) {
 		Midi::scannedForMidiDevices = true;
@@ -136,7 +137,7 @@ void MidiMod::ScanForMidiDevices(ModContext& c) {
 			c.Value(Setting::MidiInDevice));
 	}
 
-	if (!Midi::attemptedToDetachMidiInThread && c.Value(Setting::MidiInDevice) != "") {
+	if (!Midi::attemptedToDetachMidiInThread && c.IsOn(Setting::AutoTuneForSong) && c.Value(Setting::MidiInDevice) != "") {
 		Midi::attemptedToDetachMidiInThread = true;
 		Midi::FindMidiInDevices(c.Value(Setting::MidiInDevice));
 		std::thread(Midi::ListenToMidiInThread).detach();

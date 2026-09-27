@@ -17,125 +17,174 @@
             <TextBlock Classes="h1" Text="Mod Settings" />
             <TextBlock
                 Classes="pageintro"
-                Text="Mod settings driven by the DLL schema manifest. Editing a value marks the page unsaved; Save writes back to RSMods.ini while preserving comments and unknown entries." />
+                Text="Mod settings driven by the DLL schema manifest. Changes are saved to RSMods.ini as you make them, and a running game picks them up; comments and unknown entries are preserved." />
 
-            <StackPanel Orientation="Horizontal" Spacing="10">
-                <Button Classes="accent" Command="{Binding SaveCommand}" Content="Save" />
-                <Button Command="{Binding RevertCommand}" Content="Revert" />
-                <TextBlock VerticalAlignment="Center" Opacity="0.8" Text="{Binding StatusMessage}" />
-            </StackPanel>
+            <TextBlock FontSize="12" Opacity="0.7" Text="{Binding StatusMessage}" IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
 
             <!-- Dynamic Schema Groups -->
-            <ItemsControl ItemsSource="{Binding SettingGroups}">
+            <ItemsControl x:Name="GroupList" ItemsSource="{Binding SettingGroups}">
+                <!-- Hide a group's container, not just its card: the panel spaces visible containers, so an empty
+                     group would otherwise leave a double gap. Named so it can't match the field lists inside. -->
+                <ItemsControl.Styles>
+                    <Style Selector="ItemsControl#GroupList > ContentPresenter" x:DataType="settings:SettingGroupViewModel">
+                        <Setter Property="IsVisible" Value="{Binding HasVisibleFields}" />
+                    </Style>
+                </ItemsControl.Styles>
+                <!-- Spacing on the panel, not a margin per card, so the last card doesn't add to the page spacing. -->
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Spacing="18" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="settings:SettingGroupViewModel">
                         <Border
                             Classes="card"
-                            Margin="0,0,0,18"
                             IsVisible="{Binding HasVisibleFields}">
                             <StackPanel Spacing="14">
                                 <TextBlock FontSize="16" FontWeight="SemiBold" Text="{Binding Title}" />
-                                <ItemsControl ItemsSource="{Binding Fields}">
+                                <ItemsControl Classes="blocks" ItemsSource="{Binding Blocks}">
                                     <ItemsControl.Styles>
-                                        <Style Selector="ItemsControl > ContentPresenter" x:DataType="settings:SettingFieldViewModel">
+                                        <Style Selector="ItemsControl.blocks > ContentPresenter" x:DataType="settings:SettingBlockViewModel">
                                             <Setter Property="IsVisible" Value="{Binding IsVisible}" />
                                         </Style>
                                     </ItemsControl.Styles>
+                                    <!-- Each block (a setting and the sub-settings under it) takes one cell: as many columns as fit at 300 px,
+                                         sharing the row evenly. Set per cell rather than as WrapPanel.ItemWidth, which would reserve a slot
+                                         for hidden blocks too. -->
                                     <ItemsControl.ItemsPanel>
                                         <ItemsPanelTemplate>
                                             <WrapPanel Orientation="Horizontal" />
                                         </ItemsPanelTemplate>
                                     </ItemsControl.ItemsPanel>
-                                    <ItemsControl.DataTemplates>
-                                        <!-- Bool / Toggle -->
-                                        <DataTemplate DataType="settings:BoolSettingFieldViewModel">
-                                            <Border Width="320" Margin="0,0,14,6">
-                                                <CheckBox
-                                                    Margin="{Binding IsNested, Converter={StaticResource BoolToIndent}}"
-                                                    IsChecked="{Binding Value}"
-                                                    ToolTip.Tip="{Binding Hint}">
-                                                    <TextBlock Text="{Binding Label}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
-                                                </CheckBox>
-                                            </Border>
-                                        </DataTemplate>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate DataType="settings:SettingBlockViewModel">
+                                            <Border Width="{Binding $parent[ItemsControl].Bounds.Width, Converter={x:Static conv:ColumnWidthConverter.Instance}, ConverterParameter=300}" Padding="0,0,14,0">
+                                                <ItemsControl Classes="blockfields" ItemsSource="{Binding Fields}">
+                                                    <ItemsControl.Styles>
+                                                        <Style Selector="ItemsControl.blockfields > ContentPresenter" x:DataType="settings:SettingFieldViewModel">
+                                                            <Setter Property="IsVisible" Value="{Binding IsVisible}" />
+                                                            <Setter Property="ZIndex" Value="{Binding IsNested, Converter={x:Static conv:BoolToZIndexConverter.Instance}}" />
+                                                        </Style>
+                                                        <!-- A nested row's guide: up to the row above (under the parent's checkbox) and across to its control. -->
+                                                        <Style Selector="Path.guide">
+                                                            <Setter Property="Data" Value="M 10,-22 V 16 H 21" />
+                                                            <Setter Property="Stroke" Value="{DynamicResource NavCaptionBrush}" />
+                                                            <Setter Property="StrokeThickness" Value="1.5" />
+                                                            <Setter Property="IsHitTestVisible" Value="False" />
+                                                            <Setter Property="HorizontalAlignment" Value="Left" />
+                                                            <Setter Property="VerticalAlignment" Value="Top" />
+                                                        </Style>
+                                                    </ItemsControl.Styles>
+                                                    <ItemsControl.DataTemplates>
+                                                        <!-- Bool / Toggle -->
+                                                        <DataTemplate DataType="settings:BoolSettingFieldViewModel">
+                                                            <Panel>
+                                                                <Path Classes="guide" IsVisible="{Binding IsNested}" />
+                                                                <Border Padding="0,0,0,6">
+                                                                    <CheckBox
+                                                                        Margin="{Binding IsNested, Converter={StaticResource BoolToIndent}}"
+                                                                        IsChecked="{Binding Value}"
+                                                                        ToolTip.Tip="{Binding Hint}">
+                                                                        <TextBlock Text="{Binding Label}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                                                    </CheckBox>
+                                                                </Border>
+                                                            </Panel>
+                                                        </DataTemplate>
 
-                                        <!-- Numeric -->
-                                        <DataTemplate DataType="settings:NumericSettingFieldViewModel">
-                                            <Border Width="320" Margin="0,0,14,6">
-                                                <Grid ColumnDefinitions="*,110"
-                                                      Margin="{Binding IsNested, Converter={StaticResource BoolToIndent}}">
-                                                    <TextBlock
-                                                        VerticalAlignment="Center"
-                                                        Text="{Binding Label}"
-                                                        ToolTip.Tip="{Binding Hint}"
-                                                        TextTrimming="CharacterEllipsis"
-                                                        Margin="0,0,8,0" />
-                                                    <NumericUpDown
-                                                        Grid.Column="1"
-                                                        HorizontalAlignment="Stretch"
-                                                        Minimum="{Binding Minimum}"
-                                                        Maximum="{Binding Maximum}"
-                                                        Increment="{Binding Increment}"
-                                                        FormatString="{Binding FormatString}"
-                                                        Value="{Binding Value}" />
-                                                </Grid>
-                                            </Border>
-                                        </DataTemplate>
+                                                        <!-- Numeric -->
+                                                        <DataTemplate DataType="settings:NumericSettingFieldViewModel">
+                                                            <Panel>
+                                                                <Path Classes="guide" IsVisible="{Binding IsNested}" />
+                                                                <Border Padding="0,0,0,6">
+                                                                    <Grid ColumnDefinitions="*,110"
+                                                                          Margin="{Binding IsNested, Converter={StaticResource BoolToIndent}}">
+                                                                        <TextBlock
+                                                                            VerticalAlignment="Center"
+                                                                            Text="{Binding Label}"
+                                                                            ToolTip.Tip="{Binding Hint}"
+                                                                            TextTrimming="CharacterEllipsis"
+                                                                            Margin="0,0,8,0" />
+                                                                        <NumericUpDown
+                                                                            Grid.Column="1"
+                                                                            HorizontalAlignment="Stretch"
+                                                                            Minimum="{Binding Minimum}"
+                                                                            Maximum="{Binding Maximum}"
+                                                                            Increment="{Binding Increment}"
+                                                                            FormatString="{Binding FormatString}"
+                                                                            Value="{Binding Value}" />
+                                                                    </Grid>
+                                                                </Border>
+                                                            </Panel>
+                                                        </DataTemplate>
 
-                                        <!-- Enum / Choices -->
-                                        <DataTemplate DataType="settings:EnumSettingFieldViewModel">
-                                            <Border Width="320" Margin="0,0,14,6">
-                                                <Grid ColumnDefinitions="*,130"
-                                                      Margin="{Binding IsNested, Converter={StaticResource BoolToIndent}}">
-                                                    <TextBlock
-                                                        VerticalAlignment="Center"
-                                                        Text="{Binding Label}"
-                                                        ToolTip.Tip="{Binding Hint}"
-                                                        TextTrimming="CharacterEllipsis"
-                                                        Margin="0,0,8,0" />
-                                                    <ComboBox
-                                                        Grid.Column="1"
-                                                        HorizontalAlignment="Stretch"
-                                                        ItemsSource="{Binding Choices}"
-                                                        SelectedItem="{Binding SelectedValue}" />
-                                                </Grid>
-                                            </Border>
-                                        </DataTemplate>
+                                                        <!-- Enum / Choices -->
+                                                        <DataTemplate DataType="settings:EnumSettingFieldViewModel">
+                                                            <Panel>
+                                                                <Path Classes="guide" IsVisible="{Binding IsNested}" />
+                                                                <Border Padding="0,0,0,6">
+                                                                    <Grid ColumnDefinitions="*,130"
+                                                                          Margin="{Binding IsNested, Converter={StaticResource BoolToIndent}}">
+                                                                        <TextBlock
+                                                                            VerticalAlignment="Center"
+                                                                            Text="{Binding Label}"
+                                                                            ToolTip.Tip="{Binding Hint}"
+                                                                            TextTrimming="CharacterEllipsis"
+                                                                            Margin="0,0,8,0" />
+                                                                        <ComboBox
+                                                                            Grid.Column="1"
+                                                                            HorizontalAlignment="Stretch"
+                                                                            ItemsSource="{Binding Choices}"
+                                                                            SelectedItem="{Binding SelectedValue}" />
+                                                                    </Grid>
+                                                                </Border>
+                                                            </Panel>
+                                                        </DataTemplate>
 
-                                        <!-- String / Text -->
-                                        <DataTemplate DataType="settings:StringSettingFieldViewModel">
-                                            <Border Width="320" Margin="0,0,14,6">
-                                                <Grid ColumnDefinitions="*,130"
-                                                      Margin="{Binding IsNested, Converter={StaticResource BoolToIndent}}">
-                                                    <TextBlock
-                                                        VerticalAlignment="Center"
-                                                        Text="{Binding Label}"
-                                                        ToolTip.Tip="{Binding Hint}"
-                                                        TextTrimming="CharacterEllipsis"
-                                                        Margin="0,0,8,0" />
-                                                    <TextBox
-                                                        Grid.Column="1"
-                                                        HorizontalAlignment="Stretch"
-                                                        Text="{Binding Value}" />
-                                                </Grid>
-                                            </Border>
-                                        </DataTemplate>
+                                                        <!-- String / Text -->
+                                                        <DataTemplate DataType="settings:StringSettingFieldViewModel">
+                                                            <Panel>
+                                                                <Path Classes="guide" IsVisible="{Binding IsNested}" />
+                                                                <Border Padding="0,0,0,6">
+                                                                    <Grid ColumnDefinitions="*,130"
+                                                                          Margin="{Binding IsNested, Converter={StaticResource BoolToIndent}}">
+                                                                        <TextBlock
+                                                                            VerticalAlignment="Center"
+                                                                            Text="{Binding Label}"
+                                                                            ToolTip.Tip="{Binding Hint}"
+                                                                            TextTrimming="CharacterEllipsis"
+                                                                            Margin="0,0,8,0" />
+                                                                        <TextBox
+                                                                            Grid.Column="1"
+                                                                            HorizontalAlignment="Stretch"
+                                                                            Text="{Binding Value}" />
+                                                                    </Grid>
+                                                                </Border>
+                                                            </Panel>
+                                                        </DataTemplate>
 
-                                        <!-- Custom Editor Launcher -->
-                                        <DataTemplate DataType="settings:CustomEditorFieldViewModel">
-                                            <Border Width="320" Margin="0,0,14,6">
-                                                <StackPanel
-                                                    Orientation="Horizontal"
-                                                    Spacing="12"
-                                                    Margin="{Binding IsNested, Converter={StaticResource BoolToIndent}}">
-                                                    <Button
-                                                        Content="{Binding ButtonText}"
-                                                        Command="{Binding OpenEditorCommand}"
-                                                        ToolTip.Tip="{Binding Hint}" />
-                                                </StackPanel>
+                                                        <!-- Custom Editor Launcher -->
+                                                        <DataTemplate DataType="settings:CustomEditorFieldViewModel">
+                                                            <Panel>
+                                                                <Path Classes="guide" IsVisible="{Binding IsNested}" />
+                                                                <Border Padding="0,0,0,6">
+                                                                    <StackPanel
+                                                                        Orientation="Horizontal"
+                                                                        Spacing="12"
+                                                                        Margin="{Binding IsNested, Converter={StaticResource BoolToIndent}}">
+                                                                        <Button
+                                                                            Content="{Binding ButtonText}"
+                                                                            Command="{Binding OpenEditorCommand}"
+                                                                            ToolTip.Tip="{Binding Hint}" />
+                                                                    </StackPanel>
+                                                                </Border>
+                                                            </Panel>
+                                                        </DataTemplate>
+                                                    </ItemsControl.DataTemplates>
+                                                </ItemsControl>
                                             </Border>
                                         </DataTemplate>
-                                    </ItemsControl.DataTemplates>
+                                    </ItemsControl.ItemTemplate>
                                 </ItemsControl>
                             </StackPanel>
                         </Border>
@@ -143,39 +192,49 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
 
-            <!-- On-screen text font preview helper -->
-            <Border Classes="card">
-                <StackPanel Spacing="12">
-                    <TextBlock FontWeight="SemiBold" Text="On-screen text font preview" />
-                    <Border Padding="12" Background="{DynamicResource SubtleFillBrush}" CornerRadius="4">
-                        <TextBlock
-                            FontFamily="{Binding OnScreenFontPreview}"
-                            FontSize="22"
-                            Text="ABCabc 0123 — the quick brown fox" />
-                    </Border>
-                </StackPanel>
-            </Border>
+            <!-- Helpers for settings that need a visual check; each shows only while its setting does. -->
+            <UniformGrid Rows="1">
+                <UniformGrid.IsVisible>
+                    <MultiBinding Converter="{x:Static BoolConverters.Or}">
+                        <Binding Path="ShowOnScreenFontPreview" />
+                        <Binding Path="ShowSecondaryMonitor" />
+                    </MultiBinding>
+                </UniformGrid.IsVisible>
 
-            <!-- Secondary monitor position capture helper -->
-            <Border
-                Classes="card"
-                IsVisible="{Binding ShowSecondaryMonitor}">
-                <StackPanel Spacing="10">
-                    <TextBlock FontWeight="SemiBold" Text="Secondary Monitor Position Helper" />
-                    <TextBlock
-                        FontSize="12"
-                        Opacity="0.7"
-                        TextWrapping="Wrap"
-                        Text="Drag this window onto the monitor and spot you want the game to start on, then capture its position." />
-                    <StackPanel Orientation="Horizontal" Spacing="12">
-                        <Button
-                            Content="Set to current window position"
-                            Command="{Binding CaptureSecondaryMonitorPositionCommand}"
-                            CommandParameter="{Binding $parent[Window]}" />
-                        <TextBlock VerticalAlignment="Center" Opacity="0.8" Text="{Binding SecondaryMonitorPositionText}" />
+                <Border Classes="card" Margin="0,0,9,0" IsVisible="{Binding ShowOnScreenFontPreview}">
+                    <StackPanel Spacing="12">
+                        <TextBlock FontWeight="SemiBold" Text="On-screen text font preview" />
+                        <Border Padding="12" Background="{DynamicResource SubtleFillBrush}" CornerRadius="4">
+                            <TextBlock
+                                FontFamily="{Binding OnScreenFontPreview}"
+                                FontSize="22"
+                                TextTrimming="CharacterEllipsis"
+                                Text="ABCabc 0123 — the quick brown fox" />
+                        </Border>
                     </StackPanel>
-                </StackPanel>
-            </Border>
+                </Border>
+
+                <Border Classes="card" Margin="9,0,0,0" IsVisible="{Binding ShowSecondaryMonitor}">
+                    <StackPanel Spacing="10">
+                        <StackPanel Spacing="4">
+                            <TextBlock FontWeight="SemiBold" Text="Secondary monitor position" />
+                            <TextBlock
+                                FontSize="12"
+                                Opacity="0.7"
+                                TextWrapping="Wrap"
+                                Text="Drag this window to the monitor and spot you want the game to start on, then capture its position." />
+                        </StackPanel>
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                            <TextBlock VerticalAlignment="Center" Opacity="0.8" Text="{Binding SecondaryMonitorPositionText}" />
+                            <Button
+                                Grid.Column="1"
+                                Content="Use this window's position"
+                                Command="{Binding CaptureSecondaryMonitorPositionCommand}"
+                                CommandParameter="{Binding $parent[Window]}" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
+            </UniformGrid>
 
             <!-- Guitar Speak -->
             <views:GuitarSpeakControl IsVisible="{Binding ShowGuitarSpeak}" />
@@ -185,4 +244,3 @@
         </StackPanel>
     </ScrollViewer>
 </UserControl>
-

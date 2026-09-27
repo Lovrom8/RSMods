@@ -37,9 +37,9 @@ internal sealed partial class AsioSettingsViewModel : ObservableObject
         _warnings = warnings;
         _saver = autoSave.Create(SaveAsync, ex => StatusMessage = $"Couldn't save: {ex.Message}");
 
-        Input0 = new AsioInputViewModel("Input 0 (instrument)", AvailableDrivers);
-        Input1 = new AsioInputViewModel("Input 1 (second instrument)", AvailableDrivers);
-        InputMic = new AsioInputViewModel("Input Mic (microphone)", AvailableDrivers);
+        Input0 = new AsioInputViewModel("Input 0 (instrument)", "Player 1's cable, through your audio interface.", AvailableDrivers);
+        Input1 = new AsioInputViewModel("Input 1 (second instrument)", "Player 2's cable, through your audio interface.", AvailableDrivers);
+        InputMic = new AsioInputViewModel("Input Mic (microphone)", "For singing. Needs RS_ASIO 0.5.5 or later.", AvailableDrivers);
         Inputs = [Input0, Input1, InputMic];
 
         foreach (var input in Inputs)
@@ -54,7 +54,11 @@ internal sealed partial class AsioSettingsViewModel : ObservableObject
     public static WasapiOutputMode[] WasapiOutputModes { get; } = (WasapiOutputMode[])Enum.GetValues(typeof(WasapiOutputMode));
 
     // --- Asio (buffer) ---
-    [ObservableProperty] private string _bufferSizeMode = RsAsioLimits.BufferModeDriver;
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsCustomBufferSize))]
+    private string _bufferSizeMode = RsAsioLimits.BufferModeDriver;
+
+    public bool IsCustomBufferSize => BufferSizeMode == RsAsioLimits.BufferModeCustom;
     [ObservableProperty] private decimal _customBufferSize;
 
     public static string[] BufferModes { get; } = [RsAsioLimits.BufferModeDriver, RsAsioLimits.BufferModeHost, RsAsioLimits.BufferModeCustom];
@@ -268,7 +272,7 @@ internal sealed partial class AsioSettingsViewModel : ObservableObject
     {
         base.OnPropertyChanged(e);
 
-        if (_loading || e.PropertyName is nameof(StatusMessage))
+        if (_loading || e.PropertyName is nameof(StatusMessage) or nameof(IsCustomBufferSize))
             return;
 
         _saver.Request();

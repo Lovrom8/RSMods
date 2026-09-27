@@ -6,55 +6,68 @@
     x:DataType="vm:ModSettingsViewModel">
 
     <Border Classes="card">
-        <StackPanel Spacing="10">
-            <TextBlock FontWeight="SemiBold" Text="Guitar Speak Note Mappings" />
-            <TextBlock
-                FontSize="12"
-                Opacity="0.7"
-                TextWrapping="Wrap"
-                Text="Map guitar notes to key presses so you can drive menus with your guitar. Pick a note and octave, then assign it to the selected key press." />
-
-            <!-- Mapping editor -->
-            <StackPanel Orientation="Horizontal" Spacing="12">
-                <StackPanel Spacing="4">
-                    <TextBlock FontSize="12" Opacity="0.7" Text="Note" />
-                    <ComboBox
-                        MinWidth="80"
-                        ItemsSource="{Binding GuitarSpeakNotes}"
-                        SelectedItem="{Binding SelectedGuitarSpeakNote}" />
-                </StackPanel>
-                <StackPanel Spacing="4">
-                    <TextBlock FontSize="12" Opacity="0.7" Text="Octave" />
-                    <ComboBox
-                        MinWidth="80"
-                        ItemsSource="{Binding GuitarSpeakOctaves}"
-                        SelectedItem="{Binding SelectedGuitarSpeakOctave}" />
-                </StackPanel>
-                <Button
-                    VerticalAlignment="Bottom"
-                    Content="Assign to selected key"
-                    Command="{Binding AssignGuitarSpeakCommand}" />
+        <StackPanel Spacing="12">
+            <StackPanel Spacing="4">
+                <TextBlock FontWeight="SemiBold" Text="Guitar Speak note mappings" />
+                <TextBlock
+                    FontSize="12"
+                    Opacity="0.7"
+                    TextWrapping="Wrap"
+                    Text="Map guitar notes to key presses so you can drive menus with your guitar. Select a key press, then pick the note and octave that trigger it." />
             </StackPanel>
 
-            <!-- Key-press mappings -->
-            <TextBlock FontSize="12" Opacity="0.7" Text="Key presses" />
-            <ListBox
-                MaxHeight="230"
-                ItemsSource="{Binding GuitarSpeakMappings}"
-                SelectedItem="{Binding SelectedGuitarSpeakMapping}">
-                <ListBox.ItemTemplate>
-                    <DataTemplate x:DataType="vm:GuitarSpeakRowViewModel">
-                        <Grid ColumnDefinitions="*,Auto">
-                            <TextBlock Grid.Column="0" Text="{Binding DisplayName}" />
-                            <TextBlock Grid.Column="1" Opacity="0.8" Text="{Binding NoteDisplay}" />
+            <Grid ColumnDefinitions="*,280" ColumnSpacing="18">
+                <!-- Key-press mappings -->
+                <StackPanel Grid.Column="0" Spacing="6">
+                    <TextBlock FontSize="12" FontWeight="SemiBold" Text="Key presses" />
+                    <ListBox
+                        Height="300"
+                        ItemsSource="{Binding GuitarSpeakMappings}"
+                        SelectedItem="{Binding SelectedGuitarSpeakMapping}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate x:DataType="vm:GuitarSpeakRowViewModel">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock Grid.Column="0" Text="{Binding DisplayName}" />
+                                    <TextBlock Grid.Column="1" Opacity="0.8" Text="{Binding NoteDisplay}" />
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </StackPanel>
+
+                <!-- Mapping editor for the selected key press -->
+                <Border Grid.Column="1" Classes="tile" VerticalAlignment="Top" Margin="0,22,0,0">
+                    <StackPanel Spacing="12">
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                            <StackPanel Grid.Column="0" Spacing="4">
+                                <TextBlock FontSize="12" Opacity="0.7" Text="Note" />
+                                <ComboBox
+                                    HorizontalAlignment="Stretch"
+                                    ItemsSource="{Binding GuitarSpeakNotes}"
+                                    SelectedItem="{Binding SelectedGuitarSpeakNote}" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="1" Spacing="4">
+                                <TextBlock FontSize="12" Opacity="0.7" Text="Octave" />
+                                <ComboBox
+                                    HorizontalAlignment="Stretch"
+                                    ItemsSource="{Binding GuitarSpeakOctaves}"
+                                    SelectedItem="{Binding SelectedGuitarSpeakOctave}" />
+                            </StackPanel>
                         </Grid>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
-            <Button
-                HorizontalAlignment="Left"
-                Content="Clear selected mapping"
-                Command="{Binding ClearGuitarSpeakCommand}" />
+                        <Button
+                            Classes="accent"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Center"
+                            Content="Assign to selected key"
+                            Command="{Binding AssignGuitarSpeakCommand}" />
+                        <Button
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Center"
+                            Content="Clear selected mapping"
+                            Command="{Binding ClearGuitarSpeakCommand}" />
+                    </StackPanel>
+                </Border>
+            </Grid>
         </StackPanel>
     </Border>
 </UserControl>

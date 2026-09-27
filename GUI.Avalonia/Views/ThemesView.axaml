@@ -9,7 +9,7 @@
     <UserControl.Resources>
         <!-- One accent choice: a preview swatch over its name. -->
         <DataTemplate x:Key="AccentTemplate" x:DataType="vm:AccentPreset">
-            <StackPanel Width="72" Spacing="6">
+            <StackPanel Width="52" Spacing="6">
                 <Border
                     Height="32"
                     BorderBrush="{DynamicResource CardBorderBrush}" BorderThickness="1" CornerRadius="4"
@@ -24,50 +24,48 @@
             <TextBlock Classes="h1" Text="Appearance" />
             <TextBlock
                 Classes="pageintro"
-                Text="Choose how the configurator itself looks. Changes preview live; Save writes them to RSMods.ini. (This themes the app, not the game.)" />
+                Text="Choose how the configurator itself looks. Changes apply immediately and are saved to RSMods.ini. (This themes the app, not the game.)" />
 
-            <StackPanel Orientation="Horizontal" Spacing="10">
-                <Button Classes="accent" Command="{Binding SaveCommand}" Content="Save" />
-                <Button Command="{Binding RevertCommand}" Content="Revert" />
-                <TextBlock VerticalAlignment="Center" Opacity="0.8" Text="{Binding StatusMessage}" />
-            </StackPanel>
+            <TextBlock FontSize="12" Opacity="0.7" Text="{Binding StatusMessage}" IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
 
-            <WrapPanel Orientation="Horizontal">
-            <!-- Theme variant -->
-            <Border Classes="card" Width="420" Margin="0,0,18,18" VerticalAlignment="Top">
-                <StackPanel Spacing="10">
-                    <TextBlock FontWeight="SemiBold" Text="Theme" />
-                    <TextBlock
-                        FontSize="12" Opacity="0.7" TextWrapping="Wrap"
-                        Text="System follows your Windows light/dark setting." />
-                    <ComboBox
-                        Width="200"
-                        ItemsSource="{Binding ThemeVariants}"
-                        SelectedItem="{Binding SelectedThemeVariant}" />
+            <Border Classes="card" MaxWidth="{StaticResource PageProseMaxWidth}" HorizontalAlignment="Left">
+                <StackPanel Spacing="14">
+                    <Grid Classes="action" ColumnDefinitions="*,Auto">
+                        <StackPanel Spacing="2" VerticalAlignment="Center">
+                            <TextBlock Classes="actionname" Text="Theme" />
+                            <TextBlock Classes="hint" Text="System follows your Windows light/dark setting." />
+                        </StackPanel>
+                        <ComboBox
+                            Grid.Column="1"
+                            Width="160" VerticalAlignment="Center"
+                            AutomationProperties.Name="Theme"
+                            ItemsSource="{Binding ThemeVariants}"
+                            SelectedItem="{Binding SelectedThemeVariant}" />
+                    </Grid>
+
+                    <Border Classes="divider" />
+
+                    <StackPanel Spacing="10">
+                        <StackPanel Spacing="2">
+                            <TextBlock Classes="actionname" Text="Accent colour" />
+                            <TextBlock Classes="hint" Text="Tints buttons, selections, and highlights across the app." />
+                        </StackPanel>
+                        <ListBox
+                            Margin="-12,0,0,0"
+                            Background="Transparent"
+                            AutomationProperties.Name="Accent colour"
+                            ItemsSource="{Binding AccentPresets}"
+                            SelectedItem="{Binding SelectedAccent}"
+                            ItemTemplate="{StaticResource AccentTemplate}">
+                            <ListBox.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel />
+                                </ItemsPanelTemplate>
+                            </ListBox.ItemsPanel>
+                        </ListBox>
+                    </StackPanel>
                 </StackPanel>
             </Border>
-
-            <!-- Accent colour -->
-            <Border Classes="card" Width="420" Margin="0,0,18,18" VerticalAlignment="Top">
-                <StackPanel Spacing="10">
-                    <TextBlock FontWeight="SemiBold" Text="Accent colour" />
-                    <TextBlock
-                        FontSize="12" Opacity="0.7" TextWrapping="Wrap"
-                        Text="Tints buttons, selections, and highlights across the app." />
-                    <ListBox
-                        Background="Transparent"
-                        ItemsSource="{Binding AccentPresets}"
-                        SelectedItem="{Binding SelectedAccent}"
-                        ItemTemplate="{StaticResource AccentTemplate}">
-                        <ListBox.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <WrapPanel />
-                            </ItemsPanelTemplate>
-                        </ListBox.ItemsPanel>
-                    </ListBox>
-                </StackPanel>
-            </Border>
-            </WrapPanel>
         </StackPanel>
     </ScrollViewer>
 </UserControl>

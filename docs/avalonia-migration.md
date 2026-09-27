@@ -341,7 +341,7 @@ helper code where applicable.
   Rocksmith's note colours" toggle map onto `SeparateNoteColorsMode` (`Off`/`RocksmithColors`/`Custom`),
   hiding the custom note swatches while Rocksmith's own colours are in use.
 - Kept both the normal and colour-blind palettes for strings and notes in the snapshot (the game
-  chooses between them), with a per-section palette switch, and persisted only the cells the user
+  chooses between them), shown side by side as Normal and Colour-blind columns, and persisted only the cells the user
   changed via a small `ColorSwatchViewModel` (loaded-value baseline) so untouched defaults are never
   materialised into the INI — matching WinForms, which writes a colour only when it is picked.
 - Used a dependency-free swatch: an editable 6-digit hex field with a live preview `Border` fed by a

@@ -6,7 +6,13 @@
     x:DataType="vm:ProfilesViewModel">
 
     <ScrollViewer>
-        <StackPanel Classes="page">
+        <!-- Lets the page fill the width even while its cards are short (no profile selected yet), yet keeps it
+             left-anchored at the shared max width on wide windows, like every other tab. -->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" MaxWidth="{StaticResource PageOuterMaxWidth}" />
+            </Grid.ColumnDefinitions>
+        <StackPanel Classes="page" HorizontalAlignment="Stretch">
             <TextBlock Classes="h1" Text="Profiles" />
             <TextBlock
                 Classes="pageintro"
@@ -17,117 +23,136 @@
                 <TextBlock VerticalAlignment="Center" Opacity="0.8" Text="{Binding StatusMessage}" />
             </StackPanel>
 
-            <!-- Profile selection -->
-            <Border Classes="card">
-                <StackPanel Spacing="10">
-                    <TextBlock FontWeight="SemiBold" Text="Profile" />
-                    <StackPanel Orientation="Horizontal" Spacing="10">
-                        <TextBlock VerticalAlignment="Center" Text="Active profile:" />
-                        <ComboBox
-                            Width="240"
-                            PlaceholderText="Select a profile"
-                            ItemsSource="{Binding AvailableProfiles}"
-                            SelectedItem="{Binding SelectedProfile}" />
-                    </StackPanel>
-                </StackPanel>
-            </Border>
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="18">
+                <!-- The selected profile and the one-shot edits that apply to it. -->
+                <Border Grid.Column="0" Classes="card">
+                    <StackPanel Spacing="12">
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="16">
+                            <TextBlock VerticalAlignment="Center" FontWeight="SemiBold" Text="Profile" />
+                            <ComboBox
+                                Grid.Column="1"
+                                HorizontalAlignment="Stretch"
+                                PlaceholderText="Select a profile"
+                                ItemsSource="{Binding AvailableProfiles}"
+                                SelectedItem="{Binding SelectedProfile}" />
+                        </Grid>
 
-            <!-- Song lists -->
-            <Border Classes="card"
-                    IsVisible="{Binding HasSelectedProfile}">
-                <StackPanel Spacing="10">
-                    <TextBlock FontWeight="SemiBold" Text="Song lists" />
-                    <StackPanel Orientation="Horizontal" Spacing="6">
-                        <TextBlock Text="Song lists in this profile:" />
-                        <TextBlock FontWeight="SemiBold" Text="{Binding SongListCount}" />
-                    </StackPanel>
-                    <TextBlock
-                        FontSize="12" Opacity="0.7" TextWrapping="Wrap"
-                        Text="Rocksmith keeps between 6 and 20 song lists. Adding or removing a list is saved to the profile straight away." />
-                    <StackPanel Orientation="Horizontal" Spacing="10">
-                        <Button Command="{Binding AddSongListCommand}" Content="Add song list" />
-                        <Button Command="{Binding RemoveSongListCommand}" Content="Remove newest" />
-                    </StackPanel>
-                </StackPanel>
-            </Border>
+                        <TextBlock
+                            Classes="hint"
+                            IsVisible="{Binding !HasSelectedProfile}"
+                            Text="Select a profile to edit its song lists, rewards and tones." />
 
-            <!-- Rewards -->
-            <Border Classes="card"
-                    IsVisible="{Binding HasSelectedProfile}">
-                <StackPanel Spacing="10">
-                    <TextBlock FontWeight="SemiBold" Text="Rewards" />
-                    <TextBlock
-                        FontSize="12" Opacity="0.7" TextWrapping="Wrap"
-                        Text="Unlock every in-game reward at once, or lock them all back. This rewrites the profile's reward state." />
-                    <StackPanel Orientation="Horizontal" Spacing="10">
-                        <Button Command="{Binding UnlockRewardsCommand}" Content="Unlock all rewards" />
-                        <Button Command="{Binding LockRewardsCommand}" Content="Lock all rewards" />
-                    </StackPanel>
-                </StackPanel>
-            </Border>
+                        <StackPanel Spacing="12" IsVisible="{Binding HasSelectedProfile}">
+                            <Border Classes="divider" />
 
-            <!-- Import tones -->
-            <Border Classes="card"
-                    IsVisible="{Binding HasSelectedProfile}">
-                <StackPanel Spacing="10">
-                    <TextBlock FontWeight="SemiBold" Text="Import tones" />
-                    <TextBlock
-                        FontSize="12" Opacity="0.7" TextWrapping="Wrap"
-                        Text="Add custom tones to the selected profile from a CDLC tone manifest (.json) or a Toolkit tone template (.tone2014.xml). XML tones ask whether each tone is for guitar or bass." />
-                    <CheckBox Content="Select multiple files at once" IsChecked="{Binding ImportTonesBulk}" />
-                    <StackPanel Orientation="Horizontal" Spacing="10">
-                        <Button Command="{Binding ImportJsonTonesCommand}" Content="Import JSON manifest…" />
-                        <Button Command="{Binding ImportXmlTonesCommand}" Content="Import Toolkit XML…" />
+                            <Grid Classes="action" ColumnDefinitions="*,Auto">
+                                <StackPanel Spacing="2">
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <TextBlock Classes="actionname" Text="Song lists" />
+                                        <TextBlock Opacity="0.7" Text="{Binding SongListCount}" />
+                                    </StackPanel>
+                                    <TextBlock Classes="hint" Text="Between 6 and 20, saved straight away." />
+                                </StackPanel>
+                                <StackPanel Classes="buttons">
+                                    <Button Command="{Binding AddSongListCommand}" Content="Add" AutomationProperties.Name="Add song list" />
+                                    <Button Command="{Binding RemoveSongListCommand}" Content="Remove newest" />
+                                </StackPanel>
+                            </Grid>
+                            <Border Classes="divider" />
+
+                            <Grid Classes="action" ColumnDefinitions="*,Auto">
+                                <StackPanel Spacing="2">
+                                    <TextBlock Classes="actionname" Text="Rewards" />
+                                    <TextBlock Classes="hint" Text="Every in-game reward at once." />
+                                </StackPanel>
+                                <StackPanel Classes="buttons">
+                                    <Button Command="{Binding UnlockRewardsCommand}" Content="Unlock all" AutomationProperties.Name="Unlock all rewards" />
+                                    <Button Command="{Binding LockRewardsCommand}" Content="Lock all" AutomationProperties.Name="Lock all rewards" />
+                                </StackPanel>
+                            </Grid>
+                            <Border Classes="divider" />
+
+                            <Grid Classes="action" ColumnDefinitions="*,Auto">
+                                <StackPanel Spacing="2">
+                                    <TextBlock Classes="actionname" Text="Import tones" />
+                                    <TextBlock
+                                        Classes="hint"
+                                        Text="From a CDLC manifest (.json) or a Toolkit template (.tone2014.xml)." />
+                                </StackPanel>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="6">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <Button Command="{Binding ImportJsonTonesCommand}" Content="JSON…" AutomationProperties.Name="Import JSON manifest" />
+                                        <Button Command="{Binding ImportXmlTonesCommand}" Content="Toolkit XML…" AutomationProperties.Name="Import Toolkit XML" />
+                                    </StackPanel>
+                                    <CheckBox Content="Several files at once" IsChecked="{Binding ImportTonesBulk}" />
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
                     </StackPanel>
-                </StackPanel>
-            </Border>
+                </Border>
+
+                <Border Grid.Column="1" Classes="card">
+                    <StackPanel Spacing="12">
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
+                            <StackPanel Spacing="4">
+                                <TextBlock FontWeight="SemiBold" Text="Backups" />
+                                <TextBlock
+                                    Classes="hint"
+                                    Text="Restoring overwrites your current profiles, so use it only to recover." />
+                            </StackPanel>
+                            <Button
+                                Grid.Column="1"
+                                VerticalAlignment="Top"
+                                Command="{Binding RefreshBackupsCommand}"
+                                Content="Refresh"
+                                AutomationProperties.Name="Refresh backups" />
+                        </Grid>
+                        <ListBox
+                            Height="190"
+                            ItemsSource="{Binding Backups}"
+                            SelectedItem="{Binding SelectedBackup}" />
+                        <Button
+                            HorizontalAlignment="Right"
+                            Command="{Binding RevertToBackupCommand}"
+                            Content="Revert to selected backup" />
+                    </StackPanel>
+                </Border>
+            </Grid>
 
             <!-- Song lists / Favorites grid -->
-            <Border Classes="card"
-                    IsVisible="{Binding HasSelectedProfile}">
-                <StackPanel Spacing="10">
-                    <TextBlock FontWeight="SemiBold" Text="Song list &amp; Favorites editor" />
-                    <TextBlock
-                        FontSize="12" Opacity="0.7" TextWrapping="Wrap"
-                        Text="Load your song library to add songs to Favorites and to each song list. Reading the archives can take a while. Toggling a box updates the profile in memory; click Save song lists to write it to disk." />
-                    <StackPanel Orientation="Horizontal" Spacing="10">
-                        <Button Command="{Binding LoadSongsCommand}" Content="Load songs" />
-                        <Button Command="{Binding SaveSongListsCommand}" Content="Save song lists" />
-                        <ProgressBar
-                            Width="160" Minimum="0" Maximum="100"
-                            Value="{Binding LoadProgress}"
-                            IsVisible="{Binding IsLoadingSongs}" />
-                    </StackPanel>
+            <Border Classes="card" IsVisible="{Binding HasSelectedProfile}">
+                <StackPanel Spacing="12">
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
+                        <StackPanel Spacing="4">
+                            <TextBlock FontWeight="SemiBold" Text="Song list &amp; Favorites editor" />
+                            <TextBlock
+                                Classes="hint"
+                                Text="Load your song library, then tick songs into Favorites and each song list. Reading the archives can take a while. Ticks change the profile in memory until you save." />
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Top" Orientation="Horizontal" Spacing="8">
+                            <Button Command="{Binding LoadSongsCommand}" Content="Load songs" />
+                            <Button Classes="accent" Command="{Binding SaveSongListsCommand}" Content="Save song lists" />
+                        </StackPanel>
+                    </Grid>
+                    <ProgressBar
+                        Minimum="0" Maximum="100"
+                        Value="{Binding LoadProgress}"
+                        IsVisible="{Binding IsLoadingSongs}" />
+                    <!-- Columns are built in code-behind: Artist and Title stay frozen while the list columns scroll. -->
                     <DataGrid
                         x:Name="SongsGrid"
-                        Height="420"
+                        Height="480"
                         AutoGenerateColumns="False"
                         CanUserReorderColumns="False"
                         CanUserResizeColumns="True"
                         CanUserSortColumns="True"
+                        FrozenColumnCount="2"
                         GridLinesVisibility="All"
                         IsVisible="{Binding HasLoadedSongs}"
                         ItemsSource="{Binding SongRows}" />
                 </StackPanel>
             </Border>
-
-            <!-- Backups -->
-            <Border Classes="card">
-                <StackPanel Spacing="10">
-                    <TextBlock FontWeight="SemiBold" Text="Backups" />
-                    <TextBlock
-                        FontSize="12" Opacity="0.7" TextWrapping="Wrap"
-                        Text="Restore your save data from an automatic backup. This overwrites your current profiles, so use it only to recover." />
-                    <ListBox
-                        Height="160"
-                        ItemsSource="{Binding Backups}"
-                        SelectedItem="{Binding SelectedBackup}" />
-                    <StackPanel Orientation="Horizontal" Spacing="10">
-                        <Button Command="{Binding RevertToBackupCommand}" Content="Revert to selected backup" />
-                        <Button Command="{Binding RefreshBackupsCommand}" Content="Refresh" />
-                    </StackPanel>
-                </StackPanel>
-            </Border>
         </StackPanel>
+        </Grid>
     </ScrollViewer>
 </UserControl>

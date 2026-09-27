@@ -21,6 +21,8 @@
                  windows (cards reflow within it); PageProseMaxWidth keeps help text at a readable
                  line length. Change here, not per view. -->
             <x:Double x:Key="PageMaxWidth">1200</x:Double>
+            <!-- PageMaxWidth plus the page's 32 px side margins: caps a full-width page wrapper at the same edge. -->
+            <x:Double x:Key="PageOuterMaxWidth">1264</x:Double>
             <x:Double x:Key="PageProseMaxWidth">820</x:Double>
 
             <ResourceDictionary.ThemeDictionaries>
@@ -112,6 +114,50 @@
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="CornerRadius" Value="10" />
             <Setter Property="Padding" Value="16" />
+        </Style>
+
+        <!-- ============================ Card content ============================ -->
+        <!-- One row per setting or action: name and a one-line hint on the left, its control on the right. -->
+        <Style Selector="Grid.action">
+            <Setter Property="ColumnSpacing" Value="16" />
+        </Style>
+        <Style Selector="Grid.action > Button">
+            <Setter Property="Grid.Column" Value="1" />
+            <Setter Property="MinWidth" Value="84" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+        </Style>
+        <Style Selector="Grid.action > StackPanel.buttons">
+            <Setter Property="Grid.Column" Value="1" />
+            <Setter Property="Orientation" Value="Horizontal" />
+            <Setter Property="Spacing" Value="8" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <Style Selector="TextBlock.actionname">
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+        <Style Selector="TextBlock.hint">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Opacity" Value="0.7" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+        <Style Selector="Border.divider">
+            <Setter Property="Height" Value="1" />
+            <Setter Property="Background" Value="{DynamicResource CardBorderBrush}" />
+        </Style>
+        <!-- A setting row: label and hint on the left, its input at a fixed width on the right (ColumnDefinitions="*,Auto"). -->
+        <Style Selector="Grid.field">
+            <Setter Property="ColumnSpacing" Value="16" />
+        </Style>
+        <Style Selector="Grid.field > StackPanel">
+            <Setter Property="Spacing" Value="2" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <Style Selector="Grid.field > NumericUpDown, Grid.field > ComboBox, Grid.field > TextBox">
+            <Setter Property="Grid.Column" Value="1" />
+            <Setter Property="Width" Value="150" />
+            <Setter Property="VerticalAlignment" Value="Center" />
         </Style>
 
         <!-- ============================ Sidebar nav ============================ -->

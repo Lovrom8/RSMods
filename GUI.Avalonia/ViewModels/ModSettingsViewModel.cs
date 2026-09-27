@@ -46,9 +46,9 @@ internal sealed partial class ModSettingsViewModel : ObservableObject
     public IReadOnlyList<SettingGroupViewModel> SettingGroups => Coordinator.Groups;
 
     // --- On-screen text font preview ---
-    // Shown alongside the font setting, which is only visible while the on-screen note is on.
+    // Shown whenever the font setting is.
     public bool ShowOnScreenFontPreview =>
-        Coordinator.Find<BoolSettingFieldViewModel>("ShowCurrentNoteOnScreen")?.Value ?? false;
+        Coordinator.Find("OnScreenFont")?.IsVisible ?? false;
 
     public FontFamily OnScreenFontPreview
     {

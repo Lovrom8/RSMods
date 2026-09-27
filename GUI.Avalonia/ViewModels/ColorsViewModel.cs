@@ -9,6 +9,9 @@ using RSMods.Util;
 
 namespace RSMods.ViewModels;
 
+/// <summary>One string's colour in both palettes, shown side by side.</summary>
+internal sealed record ColorPairRow(string Label, ColorSwatchViewModel Normal, ColorSwatchViewModel Colorblind);
+
 /// <summary>
 /// The Custom Colors screen: the string, note, and highway colours that live in the shared
 /// <see cref="RsModsSettings"/> store. Each palette keeps both a normal and a colour-blind set (the game
@@ -29,6 +32,8 @@ internal sealed partial class ColorsViewModel : ObservableObject
     public ColorSwatchViewModel[] StringColorsColorblind { get; }
     public ColorSwatchViewModel[] NoteColorsNormal { get; }
     public ColorSwatchViewModel[] NoteColorsColorblind { get; }
+    public ColorPairRow[] StringColorRows { get; }
+    public ColorPairRow[] NoteColorRows { get; }
 
     public ColorSwatchViewModel HighwayNumbered { get; } = new("Numbered frets");
     public ColorSwatchViewModel HighwayUnNumbered { get; } = new("Un-numbered frets");
@@ -41,8 +46,6 @@ internal sealed partial class ColorsViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(ShowStringColors))]
     private bool _useCustomStringColors;
 
-    [ObservableProperty] private bool _stringColorblindPalette;
-
     // --- Note colours ---
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ShowNoteColors), nameof(ShowNoteSwatches))]
@@ -51,8 +54,6 @@ internal sealed partial class ColorsViewModel : ObservableObject
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ShowNoteSwatches))]
     private bool _useRocksmithNoteColors;
-
-    [ObservableProperty] private bool _noteColorblindPalette;
 
     // --- Highway colours ---
     [ObservableProperty]
@@ -77,6 +78,8 @@ internal sealed partial class ColorsViewModel : ObservableObject
         StringColorsColorblind = BuildRow();
         NoteColorsNormal = BuildRow();
         NoteColorsColorblind = BuildRow();
+        StringColorRows = Pair(StringColorsNormal, StringColorsColorblind);
+        NoteColorRows = Pair(NoteColorsNormal, NoteColorsColorblind);
         HighwaySwatches = [HighwayNumbered, HighwayUnNumbered, HighwayGutter, HighwayFretNumbers];
 
         foreach (ColorSwatchViewModel swatch in AllSwatches())
@@ -84,6 +87,9 @@ internal sealed partial class ColorsViewModel : ObservableObject
     }
 
     private static ColorSwatchViewModel[] BuildRow() => StringLabels.Select(label => new ColorSwatchViewModel(label)).ToArray();
+
+    private static ColorPairRow[] Pair(ColorSwatchViewModel[] normal, ColorSwatchViewModel[] colorblind) =>
+        normal.Zip(colorblind, (n, c) => new ColorPairRow(n.Label, n, c)).ToArray();
 
     private IEnumerable<ColorSwatchViewModel> AllSwatches() =>
         StringColorsNormal
@@ -115,10 +121,6 @@ internal sealed partial class ColorsViewModel : ObservableObject
             UseSeparateNoteColors = RsModsSettings.Toggles.SeparateNoteColors == OnOffMode.On;
             UseRocksmithNoteColors = RsModsSettings.ModSettings.SeparateNoteColorsMode == NoteColorMode.RocksmithColors;
             UseCustomHighwayColors = RsModsSettings.HighwayColors.CustomHighwayColors;
-
-            // Palette pickers are view-only state; always start on the normal palette.
-            StringColorblindPalette = false;
-            NoteColorblindPalette = false;
 
             for (int i = 0; i < StringLabels.Length; i++)
             {
@@ -197,13 +199,11 @@ internal sealed partial class ColorsViewModel : ObservableObject
         if (_loading)
             return;
 
-        // Only the four data toggles are saved. The palette pickers and computed visibility flags are
-        // presentation state, and the status line is not persisted.
+        // Only the four data toggles are saved. The computed visibility flags are presentation state, and the
+        // status line is not persisted.
         switch (e.PropertyName)
         {
             case nameof(StatusMessage):
-            case nameof(StringColorblindPalette):
-            case nameof(NoteColorblindPalette):
             case nameof(ShowStringColors):
             case nameof(ShowNoteColors):
             case nameof(ShowNoteSwatches):

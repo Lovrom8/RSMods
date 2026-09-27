@@ -9,9 +9,10 @@ namespace RSMods.ViewModels;
 /// parent maps each one to/from its store section. "Enabled" plus a driver selection stands in for the
 /// store's disable convention (blank or commented driver), which the parent applies on save.
 /// </summary>
-internal sealed partial class AsioInputViewModel(string title, ObservableCollection<string> availableDrivers) : ObservableObject
+internal sealed partial class AsioInputViewModel(string title, string hint, ObservableCollection<string> availableDrivers) : ObservableObject
 {
     public string Title { get; } = title;
+    public string Hint { get; } = hint;
     public ObservableCollection<string> AvailableDrivers { get; } = availableDrivers;
 
     [ObservableProperty] private bool _enabled;

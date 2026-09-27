@@ -7,6 +7,19 @@
     xmlns:conv="clr-namespace:RSMods.Converters"
     x:DataType="vm:TwitchViewModel">
 
+    <UserControl.Styles>
+        <Style Selector="TextBlock.statuslabel">
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Opacity" Value="0.6" />
+        </Style>
+        <Style Selector="TextBlock.statusvalue">
+            <Setter Property="FontSize" Value="17" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+    </UserControl.Styles>
+
     <ScrollViewer>
         <StackPanel Classes="page">
             <TextBlock Classes="h1" Text="Twitch" />
@@ -14,70 +27,75 @@
                 Classes="pageintro"
                 Text="Authorize a streamer account, listen for Twitch events, monitor the Rocksmith effect connection, and configure which effects run for subscriptions, Bits, and Channel Points." />
 
-            <Grid ColumnDefinitions="*,*,*" ColumnSpacing="12">
-                <Border Grid.Column="0" Classes="card">
-                    <StackPanel Spacing="6">
-                        <TextBlock FontSize="12" Opacity="0.7" Text="TWITCH ACCOUNT" />
-                        <TextBlock FontSize="18" FontWeight="SemiBold" Text="{Binding AuthenticationStatus}" />
-                    </StackPanel>
-                </Border>
-                <Border Grid.Column="1" Classes="card">
-                    <StackPanel Spacing="6">
-                        <TextBlock FontSize="12" Opacity="0.7" Text="EVENTSUB" />
-                        <TextBlock FontSize="18" FontWeight="SemiBold" Text="{Binding EventSubStatus}" />
-                    </StackPanel>
-                </Border>
-                <Border Grid.Column="2" Classes="card">
-                    <StackPanel Spacing="6">
-                        <TextBlock FontSize="12" Opacity="0.7" Text="ROCKSMITH" />
-                        <TextBlock FontSize="18" FontWeight="SemiBold" Text="{Binding RocksmithStatus}" />
-                    </StackPanel>
-                </Border>
-            </Grid>
-
-            <TextBlock IsVisible="{Binding HasIdentity}" TextWrapping="Wrap">
-                <Run Text="Authorized as " />
-                <Run FontWeight="SemiBold" Text="{Binding Username}" />
-                <Run Text="  ·  Channel ID: " />
-                <Run Text="{Binding ChannelId}" />
-            </TextBlock>
-            <TextBlock Opacity="0.75" Text="{Binding StatusDetail}" TextWrapping="Wrap" />
-
+            <!-- Connection: the three states at a glance, then who is authorized and the controls. -->
             <Border Classes="card">
-                <StackPanel Spacing="12">
-                    <TextBlock FontWeight="SemiBold" Text="Authorization and listening" />
-                    <WrapPanel>
-                        <Button Margin="0,0,10,10" Command="{Binding AuthorizeCommand}" Content="{Binding AuthorizeButtonText}" />
-                        <Button Margin="0,0,10,10" Command="{Binding CancelAuthorizationCommand}" Content="Cancel authorization" IsVisible="{Binding IsAuthorizing}" />
-                        <Button Margin="0,0,10,10" Command="{Binding ForgetAuthorizationCommand}" Content="Forget authorization" />
-                        <Button Margin="0,0,10,10" Command="{Binding StartListeningCommand}" Content="Start listening" />
-                        <Button Margin="0,0,10,10" Command="{Binding StopListeningCommand}" Content="Stop listening" />
-                    </WrapPanel>
+                <StackPanel Spacing="14">
+                    <Grid ColumnDefinitions="*,*,*" ColumnSpacing="18">
+                        <StackPanel Grid.Column="0" Spacing="3">
+                            <TextBlock Classes="statuslabel" Text="TWITCH ACCOUNT" />
+                            <TextBlock Classes="statusvalue" Text="{Binding AuthenticationStatus}" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Spacing="3">
+                            <TextBlock Classes="statuslabel" Text="EVENTSUB" />
+                            <TextBlock Classes="statusvalue" Text="{Binding EventSubStatus}" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="2" Spacing="3">
+                            <TextBlock Classes="statuslabel" Text="ROCKSMITH" />
+                            <TextBlock Classes="statusvalue" Text="{Binding RocksmithStatus}" />
+                        </StackPanel>
+                    </Grid>
+
+                    <Border Classes="divider" />
+
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
+                        <StackPanel VerticalAlignment="Center" Spacing="3">
+                            <TextBlock IsVisible="{Binding HasIdentity}" TextWrapping="Wrap">
+                                <Run Text="Authorized as " />
+                                <Run FontWeight="SemiBold" Text="{Binding Username}" />
+                                <Run Text="  ·  Channel ID: " />
+                                <Run Text="{Binding ChannelId}" />
+                            </TextBlock>
+                            <TextBlock Classes="hint" Text="{Binding StatusDetail}" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Orientation="Horizontal" Spacing="8">
+                            <Button Command="{Binding AuthorizeCommand}" Content="{Binding AuthorizeButtonText}" />
+                            <Button Command="{Binding CancelAuthorizationCommand}" Content="Cancel" IsVisible="{Binding IsAuthorizing}" AutomationProperties.Name="Cancel authorization" />
+                            <Button Command="{Binding ForgetAuthorizationCommand}" Content="Forget" AutomationProperties.Name="Forget authorization" />
+                            <Button Command="{Binding StartListeningCommand}" Content="Start listening" />
+                            <Button Command="{Binding StopListeningCommand}" Content="Stop" AutomationProperties.Name="Stop listening" />
+                        </StackPanel>
+                    </Grid>
 
                     <Border Padding="14" Background="{DynamicResource ShellHeaderBrush}" CornerRadius="6" IsVisible="{Binding IsAuthorizing}">
-                        <StackPanel Spacing="8">
-                            <TextBlock FontWeight="SemiBold" Text="Complete authorization in your browser" />
-                            <TextBlock TextWrapping="Wrap" Text="Enter this code on Twitch. RSMods will continue automatically when authorization finishes." />
-                            <TextBlock FontFamily="Consolas" FontSize="24" FontWeight="Bold" Text="{Binding UserCode}" />
-                            <TextBlock Opacity="0.8" Text="{Binding VerificationUri}" TextWrapping="Wrap" />
-                            <Button HorizontalAlignment="Left" Command="{Binding OpenVerificationPageCommand}" Content="Open verification page" />
-                        </StackPanel>
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
+                            <StackPanel Spacing="6">
+                                <TextBlock FontWeight="SemiBold" Text="Complete authorization in your browser" />
+                                <TextBlock Classes="hint" Text="Enter this code on Twitch. RSMods continues automatically when authorization finishes." />
+                                <TextBlock Opacity="0.8" Text="{Binding VerificationUri}" TextWrapping="Wrap" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="8">
+                                <TextBlock HorizontalAlignment="Center" FontFamily="Consolas" FontSize="26" FontWeight="Bold" Text="{Binding UserCode}" />
+                                <Button Classes="accent" Command="{Binding OpenVerificationPageCommand}" Content="Open verification page" />
+                            </StackPanel>
+                        </Grid>
                     </Border>
                 </StackPanel>
             </Border>
 
-            <TextBlock FontSize="22" FontWeight="SemiBold" Text="Reward rules" />
-            <TextBlock
-                FontSize="12"
-                Opacity="0.7"
-                TextWrapping="Wrap"
-                Text="Choose an effect and trigger to add a rule. Edit the enabled rules, then save to update both the running listener and the shared TwitchEnabledEffects.xml file." />
-
-            <Grid ColumnDefinitions="300,*" ColumnSpacing="14">
+            <!-- Reward rules: pick from the catalog on the left, edit what's enabled on the right. -->
+            <!-- The catalog gives way first on narrow windows; the rules grid scrolls sideways once Effect hits its minimum. -->
+            <Grid ColumnSpacing="18">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" MinWidth="250" MaxWidth="320" />
+                    <ColumnDefinition Width="2*" />
+                </Grid.ColumnDefinitions>
                 <Border Grid.Column="0" Classes="card">
-                    <Grid RowDefinitions="Auto,300,Auto,Auto" RowSpacing="10">
-                        <TextBlock FontWeight="SemiBold" Text="Effect catalog" />
-                        <ListBox Grid.Row="1" ItemsSource="{Binding CatalogEffects}" SelectedItem="{Binding SelectedCatalogEffect}">
+                    <StackPanel Spacing="12">
+                        <StackPanel Spacing="4">
+                            <TextBlock FontWeight="SemiBold" Text="Effect catalog" />
+                            <TextBlock Classes="hint" Text="Pick an effect and what triggers it, then add it as a rule." />
+                        </StackPanel>
+                        <ListBox Height="336" ItemsSource="{Binding CatalogEffects}" SelectedItem="{Binding SelectedCatalogEffect}">
                             <ListBox.ItemTemplate>
                                 <DataTemplate DataType="twitch:TwitchReward">
                                     <StackPanel Margin="0,3" Spacing="2">
@@ -87,26 +105,35 @@
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
                         </ListBox>
-                        <ComboBox Grid.Row="2" ItemsSource="{Binding TriggerChoices}" SelectedItem="{Binding SelectedTriggerChoice}" />
-                        <Button Grid.Row="3" Command="{Binding AddRuleCommand}" Content="Add selected effect" />
-                    </Grid>
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                            <ComboBox
+                                HorizontalAlignment="Stretch"
+                                ItemsSource="{Binding TriggerChoices}"
+                                SelectedItem="{Binding SelectedTriggerChoice}" />
+                            <Button Grid.Column="1" Classes="accent" Command="{Binding AddRuleCommand}" Content="Add" AutomationProperties.Name="Add selected effect" />
+                        </Grid>
+                    </StackPanel>
                 </Border>
 
                 <Border Grid.Column="1" Classes="card">
-                    <Grid RowDefinitions="Auto,360,Auto,Auto,Auto" RowSpacing="10">
-                        <TextBlock FontWeight="SemiBold" Text="Enabled rules" />
+                    <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto" RowSpacing="12">
+                        <StackPanel Spacing="4">
+                            <TextBlock FontWeight="SemiBold" Text="Enabled rules" />
+                            <TextBlock Classes="hint" Text="Save updates the running listener and the shared TwitchEnabledEffects.xml." />
+                        </StackPanel>
                         <DataGrid
                             Grid.Row="1"
+                            Height="300"
                             AutoGenerateColumns="False"
                             GridLinesVisibility="All"
                             ItemsSource="{Binding RewardRules}"
                             SelectedItem="{Binding SelectedRule}">
                             <DataGrid.Columns>
-                                <DataGridCheckBoxColumn Header="On" Binding="{Binding Enabled, Mode=TwoWay}" Width="45" />
-                                <DataGridTextColumn Header="Effect" Binding="{Binding Name}" IsReadOnly="True" Width="2*" />
-                                <DataGridTextColumn Header="Seconds" Binding="{Binding DurationText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="80" />
-                                <DataGridTextColumn Header="Trigger" Binding="{Binding TriggerLabel}" IsReadOnly="True" Width="115" />
-                                <DataGridTemplateColumn Header="Amount" Width="90">
+                                <DataGridCheckBoxColumn Header="On" Binding="{Binding Enabled, Mode=TwoWay}" Width="64" />
+                                <DataGridTextColumn Header="Effect" Binding="{Binding Name}" IsReadOnly="True" Width="*" MinWidth="150" />
+                                <DataGridTextColumn Header="Seconds" Binding="{Binding DurationText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="100" />
+                                <DataGridTextColumn Header="Trigger" Binding="{Binding TriggerLabel}" IsReadOnly="True" Width="120" />
+                                <DataGridTemplateColumn Header="Amount" Width="92">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate DataType="vm:TwitchRewardRuleViewModel">
                                             <Grid>
@@ -122,19 +149,20 @@
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
-                                <DataGridTextColumn Header="ID" Binding="{Binding LocalId}" IsReadOnly="True" Width="55" />
+                                <DataGridTextColumn Header="ID" Binding="{Binding LocalId}" IsReadOnly="True" Width="56" />
                             </DataGrid.Columns>
                         </DataGrid>
 
+                        <!-- FallbackValue: with no rule selected the path doesn't resolve, which would leave the panel visible. -->
                         <Border
                             Grid.Row="2"
                             Padding="12"
                             Background="{DynamicResource ShellHeaderBrush}"
                             CornerRadius="6"
-                            IsVisible="{Binding SelectedRule.IsSolidNotes}">
-                            <StackPanel Spacing="8">
-                                <TextBlock FontWeight="SemiBold" Text="Solid Color Notes" />
-                                <StackPanel Orientation="Horizontal" Spacing="10">
+                            IsVisible="{Binding SelectedRule.IsSolidNotes, FallbackValue=False}">
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
+                                <TextBlock VerticalAlignment="Center" FontWeight="SemiBold" Text="Solid Color Notes colour" />
+                                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10">
                                     <CheckBox Content="Random" IsChecked="{Binding SelectedRule.RandomColor}" />
                                     <TextBox
                                         Width="110"
@@ -147,9 +175,10 @@
                                         Height="28"
                                         BorderBrush="{DynamicResource CardBorderBrush}"
                                         BorderThickness="1"
+                                        CornerRadius="4"
                                         Background="{Binding SelectedRule.SwatchHex, Converter={x:Static conv:HexToBrushConverter.Instance}}" />
                                 </StackPanel>
-                            </StackPanel>
+                            </Grid>
                         </Border>
 
                         <TextBlock
@@ -160,21 +189,27 @@
 
                         <Grid Grid.Row="4" ColumnDefinitions="*,Auto" ColumnSpacing="10">
                             <TextBlock VerticalAlignment="Center" Opacity="0.75" Text="{Binding RulesStatus}" TextWrapping="Wrap" />
-                            <WrapPanel Grid.Column="1">
-                                <Button Margin="0,0,8,0" Command="{Binding RemoveRuleCommand}" Content="Remove" />
-                                <Button Margin="0,0,8,0" Command="{Binding TestRuleCommand}" Content="Test reward" />
-                                <Button Margin="0,0,8,0" Command="{Binding RevertRulesCommand}" Content="Revert" />
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                                <Button Command="{Binding RemoveRuleCommand}" Content="Remove" />
+                                <Button Command="{Binding TestRuleCommand}" Content="Test reward" />
+                                <Button Command="{Binding RevertRulesCommand}" Content="Revert" />
                                 <Button Classes="accent" Command="{Binding SaveRulesCommand}" Content="Save" />
-                            </WrapPanel>
+                            </StackPanel>
                         </Grid>
                     </Grid>
                 </Border>
             </Grid>
 
             <Border Classes="card">
-                <Grid RowDefinitions="Auto,260,Auto" RowSpacing="10">
-                    <TextBlock FontWeight="SemiBold" Text="Runtime log" />
-                    <ListBox Grid.Row="1" ItemsSource="{Binding LogEntries}" SelectedItem="{Binding SelectedLogEntry}">
+                <StackPanel Spacing="12">
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
+                        <TextBlock VerticalAlignment="Center" FontWeight="SemiBold" Text="Runtime log" />
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                            <Button Command="{Binding ClearLogCommand}" Content="Clear" AutomationProperties.Name="Clear log" />
+                            <Button Command="{Binding SaveLogCommand}" Content="Save log…" />
+                        </StackPanel>
+                    </Grid>
+                    <ListBox Height="220" ItemsSource="{Binding LogEntries}" SelectedItem="{Binding SelectedLogEntry}">
                         <ListBox.ItemTemplate>
                             <DataTemplate DataType="twitch:TwitchLogEntry">
                                 <Grid ColumnDefinitions="80,*" Margin="0,2">
@@ -184,11 +219,7 @@
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
-                    <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="10">
-                        <Button Command="{Binding ClearLogCommand}" Content="Clear log" />
-                        <Button Command="{Binding SaveLogCommand}" Content="Save log…" />
-                    </StackPanel>
-                </Grid>
+                </StackPanel>
             </Border>
         </StackPanel>
     </ScrollViewer>

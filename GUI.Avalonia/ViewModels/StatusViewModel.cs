@@ -50,8 +50,6 @@ internal sealed partial class StatusViewModel : ObservableObject
 
     public string SavePathDisplay => SavePathAvailable ? SavePath! : "No save folder set. Profile Edits stays disabled until one is selected.";
 
-    public string CoreAssembly => typeof(RsModsSettings).Assembly.GetName().Name ?? "GUI.Core";
-
     // ---- Latest release ----
 
     [ObservableProperty]

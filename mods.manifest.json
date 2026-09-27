@@ -417,16 +417,13 @@
     "default": "Arial",
     "label": "On-Screen Font",
     "hint": "If RSMods needs to show text in game, what font should we use?",
-    "category": "Toggle Switches",
+    "category": "Mod Settings",
     "min": null,
     "max": null,
     "scale": null,
     "choices": [],
     "choicesSource": "SystemFonts",
-    "visibleWhen": {
-      "key": "ShowCurrentNoteOnScreen",
-      "equals": "on"
-    },
+    "visibleWhen": null,
     "editor": null
   },
   {
@@ -445,10 +442,7 @@
     "scale": null,
     "choices": [],
     "choicesSource": null,
-    "visibleWhen": {
-      "key": "ShowCurrentNoteOnScreen",
-      "equals": "on"
-    },
+    "visibleWhen": null,
     "editor": null
   },
   {
@@ -1054,7 +1048,10 @@
     "scale": null,
     "choices": [],
     "choicesSource": "MidiInDevices",
-    "visibleWhen": null,
+    "visibleWhen": {
+      "key": "AutoTuneForSong",
+      "equals": "on"
+    },
     "editor": null
   },
   {

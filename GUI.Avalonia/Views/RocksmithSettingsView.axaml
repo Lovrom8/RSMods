@@ -3,127 +3,247 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:vm="clr-namespace:RSMods.ViewModels"
+    xmlns:conv="clr-namespace:RSMods.Converters"
     x:DataType="vm:RocksmithSettingsViewModel">
 
+    <UserControl.Styles>
+        <Style Selector="NumericUpDown.dimension">
+            <Setter Property="Width" Value="80" />
+            <Setter Property="ShowButtonSpinner" Value="False" />
+            <Setter Property="Increment" Value="1" />
+            <Setter Property="Minimum" Value="0" />
+        </Style>
+        <!-- Each column of cards takes half the page, or all of it once two no longer fit. -->
+        <Style Selector="WrapPanel#Columns > :is(Control)">
+            <Setter Property="Width" Value="{Binding $parent[WrapPanel].Bounds.Width, Converter={x:Static conv:ColumnWidthConverter.Instance}, ConverterParameter=440}" />
+        </Style>
+        <Style Selector="WrapPanel#Columns Border.card">
+            <Setter Property="Margin" Value="0,0,18,18" />
+        </Style>
+        <Style Selector="WrapPanel.effects > CheckBox">
+            <Setter Property="Width" Value="{Binding $parent[WrapPanel].Bounds.Width, Converter={x:Static conv:ColumnWidthConverter.Instance}, ConverterParameter=210}" />
+            <Setter Property="VerticalAlignment" Value="Top" />
+            <Setter Property="Margin" Value="0,0,0,8" />
+        </Style>
+    </UserControl.Styles>
+
     <ScrollViewer>
-        <StackPanel Classes="page">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" MaxWidth="{StaticResource PageOuterMaxWidth}" />
+            </Grid.ColumnDefinitions>
+        <StackPanel Classes="page" HorizontalAlignment="Stretch">
             <TextBlock Classes="h1" Text="Rocksmith settings" />
             <TextBlock
                 Classes="pageintro"
-                Text="Rocksmith.ini — the game's own audio and renderer configuration. Saving preserves comments and any entries not shown here." />
+                Text="The game's own audio and renderer configuration. Changes are saved as you make them, Rocksmith reads them when it starts." />
 
-            <StackPanel Orientation="Horizontal" Spacing="10">
-                <Button Classes="accent" Command="{Binding SaveCommand}" Content="Save" />
-                <Button Command="{Binding RevertCommand}" Content="Revert" />
-                <TextBlock VerticalAlignment="Center" Opacity="0.8" Text="{Binding StatusMessage}" />
-            </StackPanel>
+            <TextBlock FontSize="12" Opacity="0.7" Text="{Binding StatusMessage}" IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
 
-            <!-- Cards flow into as many columns as the window width allows. -->
-            <WrapPanel Orientation="Horizontal">
-            <!-- Audio -->
-            <Border Classes="card" Width="560" Margin="0,0,18,18" VerticalAlignment="Top">
-                <StackPanel Spacing="10">
-                    <TextBlock FontWeight="SemiBold" Text="Audio" />
-                    <WrapPanel Orientation="Horizontal">
-                        <CheckBox Width="260" Content="Enable microphone" IsChecked="{Binding EnableMicrophone}" />
-                        <CheckBox Width="250" Content="Exclusive mode" IsChecked="{Binding ExclusiveMode}" />
-                        <CheckBox Width="260" Content="Force WDM" IsChecked="{Binding ForceWdm}" />
-                        <CheckBox Width="250" Content="Force DirectX sink" IsChecked="{Binding ForceDirectXSink}" />
-                        <CheckBox Width="260" Content="Real Tone cable only" IsChecked="{Binding RealToneCableOnly}" />
-                        <CheckBox Width="250" Content="Win32 ultra-low-latency mode" IsChecked="{Binding Win32UltraLowLatencyMode}" />
-                        <CheckBox Width="260" Content="Dump audio log" IsChecked="{Binding DumpAudioLog}" />
-                    </WrapPanel>
+            <WrapPanel x:Name="Columns" Orientation="Horizontal">
+                <StackPanel>
+                    <!-- Audio -->
+                    <Border Classes="card">
+                        <StackPanel Spacing="12">
+                            <StackPanel Spacing="4">
+                                <TextBlock FontWeight="SemiBold" Text="Audio" />
+                                <TextBlock Classes="hint" Text="If audio crackles or lags, work down this list: each fallback trades latency for stability." />
+                            </StackPanel>
 
-                    <Grid ColumnDefinitions="220,*" RowDefinitions="Auto,Auto,Auto" Margin="0,6,0,0">
-                        <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Text="Latency buffer" />
-                        <NumericUpDown
-                            Grid.Row="0" Grid.Column="1"
-                            MinWidth="200" HorizontalAlignment="Left"
-                            Increment="1"
-                            Minimum="{Binding LatencyBufferMin}"
-                            Maximum="{Binding LatencyBufferMax}"
-                            Value="{Binding LatencyBuffer}" />
+                            <CheckBox AutomationProperties.Name="Exclusive mode" IsChecked="{Binding ExclusiveMode}">
+                                <StackPanel Spacing="1">
+                                    <TextBlock Text="Exclusive mode" />
+                                    <TextBlock Classes="hint" Text="Gives Rocksmith exclusive control of your PC's audio. Turning it off adds latency." />
+                                </StackPanel>
+                            </CheckBox>
+                            <CheckBox AutomationProperties.Name="Win32 ultra-low-latency mode" IsChecked="{Binding Win32UltraLowLatencyMode}">
+                                <StackPanel Spacing="1">
+                                    <TextBlock Text="Win32 ultra-low-latency mode" />
+                                    <TextBlock Classes="hint" Text="Turn off if audio crackles: falls back to the original, higher-latency audio settings." />
+                                </StackPanel>
+                            </CheckBox>
+                            <CheckBox AutomationProperties.Name="Force WDM" IsChecked="{Binding ForceWdm}">
+                                <StackPanel Spacing="1">
+                                    <TextBlock Text="Force WDM" />
+                                    <TextBlock Classes="hint" Text="An older Windows audio path, for when nothing else fixes latency or audio issues. Can add latency." />
+                                </StackPanel>
+                            </CheckBox>
+                            <CheckBox AutomationProperties.Name="Force DirectX sink" IsChecked="{Binding ForceDirectXSink}">
+                                <StackPanel Spacing="1">
+                                    <TextBlock Text="Force DirectX sink" />
+                                    <TextBlock Classes="hint" Text="Last resort: an even older audio path that almost always adds high latency." />
+                                </StackPanel>
+                            </CheckBox>
+                            <CheckBox AutomationProperties.Name="Enable microphone" IsChecked="{Binding EnableMicrophone}">
+                                <StackPanel Spacing="1">
+                                    <TextBlock Text="Enable microphone" />
+                                    <TextBlock Classes="hint" Text="Needed for singing." />
+                                </StackPanel>
+                            </CheckBox>
+                            <CheckBox AutomationProperties.Name="Real Tone cable only" IsChecked="{Binding RealToneCableOnly}">
+                                <StackPanel Spacing="1">
+                                    <TextBlock Text="Real Tone cable only" />
+                                    <TextBlock Classes="hint" Text="Only official cables work, so Rocksmith can't take over your microphone." />
+                                </StackPanel>
+                            </CheckBox>
+                            <CheckBox AutomationProperties.Name="Dump audio log" IsChecked="{Binding DumpAudioLog}">
+                                <StackPanel Spacing="1">
+                                    <TextBlock Text="Dump audio log" />
+                                    <TextBlock Classes="hint" Text="Writes audiodump.txt next to the game for Ubisoft support. Hurts performance, so leave it off to play." />
+                                </StackPanel>
+                            </CheckBox>
 
-                        <TextBlock Grid.Row="1" Grid.Column="0" Margin="0,10,0,0" VerticalAlignment="Center" Text="Max output buffer size" />
-                        <NumericUpDown
-                            Grid.Row="1" Grid.Column="1"
-                            Margin="0,10,0,0"
-                            MinWidth="200" HorizontalAlignment="Left"
-                            Increment="1" Minimum="0"
-                            Value="{Binding MaxOutputBufferSize}" />
+                            <Border Classes="divider" />
 
-                        <TextBlock Grid.Row="2" Grid.Column="0" Margin="0,10,0,0" VerticalAlignment="Center" Text="Force playback device" />
-                        <TextBox
-                            Grid.Row="2" Grid.Column="1"
-                            Margin="0,10,0,0"
-                            MinWidth="200" HorizontalAlignment="Left"
-                            Watermark="(system default)"
-                            Text="{Binding ForceDefaultPlaybackDevice}" />
-                    </Grid>
-                </StackPanel>
-            </Border>
-
-            <!-- Renderer -->
-            <Border Classes="card" Width="560" Margin="0,0,18,18" VerticalAlignment="Top">
-                <StackPanel Spacing="10">
-                    <TextBlock FontWeight="SemiBold" Text="Renderer" />
-                    <WrapPanel Orientation="Horizontal">
-                        <CheckBox Width="260" Content="Show gamepad UI" IsChecked="{Binding ShowGamepadUi}" />
-                        <CheckBox Width="250" Content="Enable post effects" IsChecked="{Binding EnablePostEffects}" />
-                        <CheckBox Width="260" Content="Enable shadows" IsChecked="{Binding EnableShadows}" />
-                        <CheckBox Width="250" Content="Enable high-res scope" IsChecked="{Binding EnableHighResScope}" />
-                        <CheckBox Width="260" Content="Enable depth of field" IsChecked="{Binding EnableDepthOfField}" />
-                        <CheckBox Width="250" Content="Enable per-pixel lighting" IsChecked="{Binding EnablePerPixelLighting}" />
-                        <CheckBox Width="260" Content="Disable browser" IsChecked="{Binding DisableBrowser}" />
-                    </WrapPanel>
-
-                    <Grid ColumnDefinitions="220,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto" Margin="0,6,0,0">
-                        <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Text="Fullscreen" />
-                        <ComboBox
-                            Grid.Row="0" Grid.Column="1"
-                            MinWidth="200"
-                            ItemsSource="{Binding FullscreenModes}"
-                            SelectedItem="{Binding Fullscreen}" />
-
-                        <TextBlock Grid.Row="1" Grid.Column="0" Margin="0,10,0,0" VerticalAlignment="Center" Text="Visual quality" />
-                        <ComboBox
-                            Grid.Row="1" Grid.Column="1"
-                            Margin="0,10,0,0"
-                            MinWidth="200"
-                            ItemsSource="{Binding VisualQualityModes}"
-                            SelectedItem="{Binding VisualQuality}" />
-
-                        <TextBlock Grid.Row="2" Grid.Column="0" Margin="0,10,0,0" VerticalAlignment="Center" Text="MSAA samples" />
-                        <ComboBox
-                            Grid.Row="2" Grid.Column="1"
-                            Margin="0,10,0,0"
-                            MinWidth="200"
-                            ItemsSource="{Binding MsaaModes}"
-                            SelectedItem="{Binding MsaaSamples}" />
-
-                        <TextBlock Grid.Row="3" Grid.Column="0" Margin="0,10,0,0" VerticalAlignment="Center" Text="Screen width × height" />
-                        <StackPanel Grid.Row="3" Grid.Column="1" Margin="0,10,0,0" Orientation="Horizontal" Spacing="8">
-                            <NumericUpDown Width="130" Increment="1" Minimum="0" Value="{Binding ScreenWidth}" />
-                            <NumericUpDown Width="130" Increment="1" Minimum="0" Value="{Binding ScreenHeight}" />
+                            <Grid Classes="field" ColumnDefinitions="*,Auto">
+                                <StackPanel>
+                                    <TextBlock Text="Latency buffer" />
+                                    <TextBlock Classes="hint" Text="Fewer buffers lower latency but make crackling more likely." />
+                                </StackPanel>
+                                <NumericUpDown
+                                    AutomationProperties.Name="Latency buffer"
+                                    Increment="1"
+                                    Minimum="{Binding LatencyBufferMin}"
+                                    Maximum="{Binding LatencyBufferMax}"
+                                    Value="{Binding LatencyBuffer}" />
+                            </Grid>
+                            <Grid Classes="field" ColumnDefinitions="*,Auto">
+                                <StackPanel>
+                                    <TextBlock Text="Max output buffer size" />
+                                    <TextBlock Classes="hint" Text="0 lets Rocksmith choose. Most cards use 1024, fast PCs manage 512; without exclusive mode you may need more." />
+                                </StackPanel>
+                                <NumericUpDown
+                                    AutomationProperties.Name="Max output buffer size"
+                                    Increment="1" Minimum="0"
+                                    Value="{Binding MaxOutputBufferSize}" />
+                            </Grid>
+                            <Grid Classes="field" ColumnDefinitions="*,Auto">
+                                <StackPanel>
+                                    <TextBlock Text="Force playback device" />
+                                    <TextBlock Classes="hint" Text="Leave empty to use the Windows default device." />
+                                </StackPanel>
+                                <TextBox
+                                    AutomationProperties.Name="Force playback device"
+                                    Watermark="(system default)"
+                                    Text="{Binding ForceDefaultPlaybackDevice}" />
+                            </Grid>
                         </StackPanel>
+                    </Border>
 
-                        <TextBlock Grid.Row="4" Grid.Column="0" Margin="0,10,0,0" VerticalAlignment="Center" Text="Rendering width × height" />
-                        <StackPanel Grid.Row="4" Grid.Column="1" Margin="0,10,0,0" Orientation="Horizontal" Spacing="8">
-                            <NumericUpDown Width="130" Increment="1" Minimum="0" Value="{Binding RenderingWidth}" />
-                            <NumericUpDown Width="130" Increment="1" Minimum="0" Value="{Binding RenderingHeight}" />
+                    <!-- Net -->
+                    <Border Classes="card">
+                        <StackPanel Spacing="12">
+                            <TextBlock FontWeight="SemiBold" Text="Network" />
+                            <CheckBox AutomationProperties.Name="Use proxy" IsChecked="{Binding UseProxy}">
+                                <StackPanel Spacing="1">
+                                    <TextBlock Text="Use proxy" />
+                                    <TextBlock Classes="hint" Text="Connects to the Rocksmith servers through a proxy. What it's actually used for is unknown." />
+                                </StackPanel>
+                            </CheckBox>
                         </StackPanel>
-                    </Grid>
+                    </Border>
                 </StackPanel>
-            </Border>
 
-            <!-- Net -->
-            <Border Classes="card" Width="360" Margin="0,0,18,18" VerticalAlignment="Top">
-                <StackPanel Spacing="8">
-                    <TextBlock FontWeight="SemiBold" Text="Net" />
-                    <CheckBox Content="Use proxy" IsChecked="{Binding UseProxy}" />
+                <!-- Renderer -->
+                <StackPanel>
+                    <Border Classes="card">
+                        <StackPanel Spacing="12">
+                            <StackPanel Spacing="4">
+                                <TextBlock FontWeight="SemiBold" Text="Graphics" />
+                                <TextBlock Classes="hint" Text="Display mode, resolution and visual effects." />
+                            </StackPanel>
+
+                            <Grid Classes="field" ColumnDefinitions="*,Auto">
+                                <StackPanel>
+                                    <TextBlock Text="Fullscreen" />
+                                    <TextBlock Classes="hint" Text="Non-exclusive keeps other windows usable on a second monitor." />
+                                </StackPanel>
+                                <ComboBox
+                                    AutomationProperties.Name="Fullscreen"
+                                    ItemsSource="{Binding FullscreenModes}"
+                                    SelectedItem="{Binding Fullscreen}" />
+                            </Grid>
+                            <Grid Classes="field" ColumnDefinitions="*,Auto">
+                                <StackPanel>
+                                    <TextBlock Text="Visual quality" />
+                                </StackPanel>
+                                <ComboBox
+                                    AutomationProperties.Name="Visual quality"
+                                    ItemsSource="{Binding VisualQualityModes}"
+                                    SelectedItem="{Binding VisualQuality}" />
+                            </Grid>
+                            <Grid Classes="field" ColumnDefinitions="*,Auto">
+                                <StackPanel>
+                                    <TextBlock Text="MSAA samples" />
+                                    <TextBlock Classes="hint" Text="Anti-aliasing." />
+                                </StackPanel>
+                                <ComboBox
+                                    AutomationProperties.Name="MSAA samples"
+                                    ItemsSource="{Binding MsaaModes}"
+                                    SelectedItem="{Binding MsaaSamples}" />
+                            </Grid>
+                            <Grid Classes="field" ColumnDefinitions="*,Auto">
+                                <StackPanel>
+                                    <TextBlock Text="Screen resolution" />
+                                    <TextBlock Classes="hint" Text="Width × height in pixels." />
+                                </StackPanel>
+                                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6">
+                                    <NumericUpDown Classes="dimension" AutomationProperties.Name="Screen width" Value="{Binding ScreenWidth}" />
+                                    <TextBlock VerticalAlignment="Center" Opacity="0.7" Text="×" />
+                                    <NumericUpDown Classes="dimension" AutomationProperties.Name="Screen height" Value="{Binding ScreenHeight}" />
+                                </StackPanel>
+                            </Grid>
+                            <Grid Classes="field" ColumnDefinitions="*,Auto">
+                                <StackPanel>
+                                    <TextBlock Text="Rendering resolution" />
+                                    <TextBlock Classes="hint" Text="The size the game renders at; 0 turns this off." />
+                                </StackPanel>
+                                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6">
+                                    <NumericUpDown Classes="dimension" AutomationProperties.Name="Rendering width" Value="{Binding RenderingWidth}" />
+                                    <TextBlock VerticalAlignment="Center" Opacity="0.7" Text="×" />
+                                    <NumericUpDown Classes="dimension" AutomationProperties.Name="Rendering height" Value="{Binding RenderingHeight}" />
+                                </StackPanel>
+                            </Grid>
+
+                            <Border Classes="divider" />
+
+                            <WrapPanel Classes="effects" Orientation="Horizontal">
+                                <CheckBox AutomationProperties.Name="Enable post effects" IsChecked="{Binding EnablePostEffects}">
+                                    <StackPanel Spacing="1">
+                                        <TextBlock Text="Post effects" />
+                                        <TextBlock Classes="hint" Text="Bloom, glow and colour correction." />
+                                    </StackPanel>
+                                </CheckBox>
+                                <CheckBox AutomationProperties.Name="Enable high-res scope" IsChecked="{Binding EnableHighResScope}">
+                                    <StackPanel Spacing="1">
+                                        <TextBlock Text="High-res scope" />
+                                        <TextBlock Classes="hint" Text="The high-resolution audio visualizer." />
+                                    </StackPanel>
+                                </CheckBox>
+                                <CheckBox AutomationProperties.Name="Enable shadows" Content="Shadows" IsChecked="{Binding EnableShadows}" />
+                                <CheckBox AutomationProperties.Name="Enable depth of field" Content="Depth of field" IsChecked="{Binding EnableDepthOfField}" />
+                            <CheckBox AutomationProperties.Name="Enable per-pixel lighting" Content="Per-pixel lighting" IsChecked="{Binding EnablePerPixelLighting}" />
+                        </WrapPanel>
+
+                        <Border Classes="divider" />
+
+                        <CheckBox AutomationProperties.Name="Show gamepad UI" IsChecked="{Binding ShowGamepadUi}">
+                            <StackPanel Spacing="1">
+                                <TextBlock Text="Show gamepad UI" />
+                                <TextBlock Classes="hint" Text="Shows the controller UI in game." />
+                            </StackPanel>
+                        </CheckBox>
+                        <CheckBox AutomationProperties.Name="Disable browser" IsChecked="{Binding DisableBrowser}">
+                            <StackPanel Spacing="1">
+                                <TextBlock Text="Disable browser" />
+                                <TextBlock Classes="hint" Text="Stops Rocksmith opening its website every two weeks." />
+                            </StackPanel>
+                        </CheckBox>
+                        </StackPanel>
+                    </Border>
                 </StackPanel>
-            </Border>
             </WrapPanel>
         </StackPanel>
+        </Grid>
     </ScrollViewer>
 </UserControl>

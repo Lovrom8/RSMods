@@ -84,7 +84,8 @@
                                 Classes.active="{Binding ActiveSection, Converter={x:Static conv:StringEqualsConverter.Instance}, ConverterParameter=SetAndForget}" />
 
                         <TextBlock Classes="eyebrow" Margin="12,14,0,4" Text="AUDIO" />
-                        <Button Classes="nav" Command="{Binding ShowAsioCommand}" Content="RS_ASIO"
+                        <!-- Doubled underscore: a single one is taken as an access key and hidden. -->
+                        <Button Classes="nav" Command="{Binding ShowAsioCommand}" Content="RS__ASIO" AutomationProperties.Name="RS_ASIO"
                                 Classes.active="{Binding ActiveSection, Converter={x:Static conv:StringEqualsConverter.Instance}, ConverterParameter=Asio}" />
                         <Button Classes="nav" Command="{Binding ShowSoundPacksCommand}" Content="SoundPacks"
                                 Classes.active="{Binding ActiveSection, Converter={x:Static conv:StringEqualsConverter.Instance}, ConverterParameter=SoundPacks}" />

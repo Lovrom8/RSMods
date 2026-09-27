@@ -3,146 +3,257 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:vm="clr-namespace:RSMods.ViewModels"
+    xmlns:conv="clr-namespace:RSMods.Converters"
     x:DataType="vm:AsioSettingsViewModel">
 
+    <UserControl.Styles>
+        <!-- Two cards per row, one once two no longer fit. -->
+        <Style Selector="WrapPanel#Columns > :is(Control)">
+            <Setter Property="Width" Value="{Binding $parent[WrapPanel].Bounds.Width, Converter={x:Static conv:ColumnWidthConverter.Instance}, ConverterParameter=440}" />
+            <Setter Property="VerticalAlignment" Value="Top" />
+        </Style>
+        <Style Selector="WrapPanel#Columns Border.card">
+            <Setter Property="Margin" Value="0,0,18,18" />
+        </Style>
+        <Style Selector="TextBlock.unit">
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="0,0,8,0" />
+            <Setter Property="Opacity" Value="0.7" />
+        </Style>
+        <Style Selector="ComboBox.driver">
+            <Setter Property="Width" Value="220" />
+            <Setter Property="PlaceholderText" Value="Choose a driver" />
+        </Style>
+    </UserControl.Styles>
+
+    <UserControl.Resources>
+        <!-- One input channel; Input 0, Input 1 and Input Mic share the same shape. -->
+        <DataTemplate x:Key="InputCard" x:DataType="vm:AsioInputViewModel">
+            <Border Classes="card">
+                <StackPanel Spacing="12">
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
+                        <StackPanel Spacing="4">
+                            <TextBlock FontWeight="SemiBold" Text="{Binding Title}" />
+                            <TextBlock Classes="hint" Text="{Binding Hint}" />
+                        </StackPanel>
+                        <CheckBox
+                            Grid.Column="1" VerticalAlignment="Top"
+                            AutomationProperties.Name="{Binding Title, StringFormat='Enable {0}'}"
+                            Content="Enabled"
+                            IsChecked="{Binding Enabled}" />
+                    </Grid>
+
+                    <StackPanel Spacing="12" IsEnabled="{Binding Enabled}">
+                        <Grid Classes="field" ColumnDefinitions="*,Auto">
+                            <StackPanel>
+                                <TextBlock Text="Driver" />
+                            </StackPanel>
+                            <ComboBox
+                                Classes="driver"
+                                AutomationProperties.Name="{Binding Title, StringFormat='{}{0} driver'}"
+                                ItemsSource="{Binding AvailableDrivers}"
+                                SelectedItem="{Binding Driver}" />
+                        </Grid>
+                        <Grid Classes="field" ColumnDefinitions="*,Auto">
+                            <StackPanel>
+                                <TextBlock Text="Channel" />
+                                <TextBlock Classes="hint" Text="The input number minus one: the 2nd input is channel 1." />
+                            </StackPanel>
+                            <NumericUpDown
+                                AutomationProperties.Name="{Binding Title, StringFormat='{}{0} channel'}"
+                                Increment="1"
+                                Minimum="{Binding ChannelMin}"
+                                Maximum="{Binding ChannelMax}"
+                                Value="{Binding Channel}" />
+                        </Grid>
+                        <Grid Classes="field" ColumnDefinitions="*,Auto">
+                            <CheckBox
+                                AutomationProperties.Name="{Binding Title, StringFormat='{}{0} software master volume control'}"
+                                Content="Software master volume"
+                                IsChecked="{Binding EnableMasterVolume}" />
+                            <NumericUpDown
+                                AutomationProperties.Name="{Binding Title, StringFormat='{}{0} master volume percent'}"
+                                IsEnabled="{Binding EnableMasterVolume}"
+                                Increment="1"
+                                Minimum="{Binding VolumePercentMin}"
+                                Maximum="{Binding VolumePercentMax}"
+                                Value="{Binding MasterVolumePercent}">
+                                <NumericUpDown.InnerRightContent>
+                                    <TextBlock Classes="unit" Text="%" />
+                                </NumericUpDown.InnerRightContent>
+                            </NumericUpDown>
+                        </Grid>
+                        <CheckBox
+                            AutomationProperties.Name="{Binding Title, StringFormat='{}{0} software endpoint volume control'}"
+                            Content="Software endpoint volume"
+                            IsChecked="{Binding EnableEndpointVolume}" />
+                        <CheckBox
+                            AutomationProperties.Name="{Binding Title, StringFormat='{}{0} ref-count hack'}"
+                            Content="Ref-count hack"
+                            IsChecked="{Binding RefCountHack}" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </DataTemplate>
+    </UserControl.Resources>
+
     <ScrollViewer>
-        <StackPanel Classes="page">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" MaxWidth="{StaticResource PageOuterMaxWidth}" />
+            </Grid.ColumnDefinitions>
+        <StackPanel Classes="page" HorizontalAlignment="Stretch">
             <TextBlock Classes="h1" Text="RS_ASIO settings" />
             <TextBlock
                 Classes="pageintro"
-                Text="RS_ASIO.ini — low-latency ASIO/WASAPI routing. Disabling a channel blanks its driver (Input 1 is commented out so its value is kept). Saving preserves comments and unknown entries." />
+                Text="Disabling a channel blanks its driver (Input 1 is commented out so its value is kept). Changes are saved as you make them, preserving comments and unknown entries." />
 
-            <StackPanel Orientation="Horizontal" Spacing="10">
-                <Button Classes="accent" Command="{Binding SaveCommand}" Content="Save" />
-                <Button Command="{Binding RevertCommand}" Content="Revert" />
-                <TextBlock VerticalAlignment="Center" Opacity="0.8" Text="{Binding StatusMessage}" />
-            </StackPanel>
+            <TextBlock FontSize="12" Opacity="0.7" Text="{Binding StatusMessage}" IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
 
-            <WrapPanel Orientation="Horizontal">
-            <!-- Config -->
-            <Border Classes="card" Width="480" Margin="0,0,18,18" VerticalAlignment="Top">
-                <StackPanel Spacing="10">
-                    <TextBlock FontWeight="SemiBold" Text="Config" />
-                    <Grid ColumnDefinitions="220,*" RowDefinitions="Auto">
-                        <TextBlock Grid.Column="0" VerticalAlignment="Center" Text="WASAPI outputs" />
-                        <ComboBox
-                            Grid.Column="1"
-                            MinWidth="200"
-                            ItemsSource="{Binding WasapiOutputModes}"
-                            SelectedItem="{Binding WasapiOutputs}" />
-                    </Grid>
-                    <CheckBox Content="Enable WASAPI inputs" IsChecked="{Binding EnableWasapiInputs}" />
-                    <CheckBox Content="Enable ASIO" IsChecked="{Binding EnableAsio}" />
-                </StackPanel>
-            </Border>
+            <WrapPanel x:Name="Columns" Orientation="Horizontal">
+                <!-- General: [Config] and [Asio] -->
+                <StackPanel>
+                    <Border Classes="card">
+                        <StackPanel Spacing="12">
+                            <TextBlock FontWeight="SemiBold" Text="General" />
 
-            <!-- Buffer -->
-            <Border Classes="card" Width="480" Margin="0,0,18,18" VerticalAlignment="Top">
-                <StackPanel Spacing="12">
-                    <TextBlock FontWeight="SemiBold" Text="Buffer" />
-                    <Grid ColumnDefinitions="220,*" RowDefinitions="Auto,Auto">
-                        <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Text="Buffer size mode" />
-                        <ComboBox
-                            Grid.Row="0" Grid.Column="1"
-                            MinWidth="200"
-                            ItemsSource="{Binding BufferModes}"
-                            SelectedItem="{Binding BufferSizeMode}" />
-                        <TextBlock Grid.Row="1" Grid.Column="0" Margin="0,10,0,0" VerticalAlignment="Center" Text="Custom buffer size" />
-                        <NumericUpDown
-                            Grid.Row="1" Grid.Column="1"
-                            Margin="0,10,0,0"
-                            MinWidth="200" HorizontalAlignment="Left"
-                            Increment="1"
-                            Minimum="{Binding CustomBufferSizeMin}"
-                            Maximum="{Binding CustomBufferSizeMax}"
-                            Value="{Binding CustomBufferSize}" />
-                    </Grid>
-                </StackPanel>
-            </Border>
+                            <CheckBox AutomationProperties.Name="Enable ASIO" IsChecked="{Binding EnableAsio}">
+                                <StackPanel Spacing="1">
+                                    <TextBlock Text="Enable ASIO" />
+                                    <TextBlock Classes="hint" Text="Routes audio through your audio interface to lower latency; the main reason to use RS_ASIO." />
+                                </StackPanel>
+                            </CheckBox>
+                            <CheckBox AutomationProperties.Name="Enable WASAPI inputs" IsChecked="{Binding EnableWasapiInputs}">
+                                <StackPanel Spacing="1">
+                                    <TextBlock Text="Enable WASAPI inputs" />
+                                    <TextBlock Classes="hint" Text="Lets a USB cable play alongside your audio interface in multiplayer." />
+                                </StackPanel>
+                            </CheckBox>
+                            <Grid Classes="field" ColumnDefinitions="*,Auto">
+                                <StackPanel>
+                                    <TextBlock Text="WASAPI outputs" />
+                                    <TextBlock Classes="hint" Text="On if your headphones don't go through the audio interface. Prompt asks at every launch." />
+                                </StackPanel>
+                                <ComboBox
+                                    AutomationProperties.Name="WASAPI outputs"
+                                    ItemsSource="{Binding WasapiOutputModes}"
+                                    SelectedItem="{Binding WasapiOutputs}" />
+                            </Grid>
 
-            <!-- Output -->
-            <Border Classes="card" Width="520" Margin="0,0,18,18" VerticalAlignment="Top">
-                <StackPanel Spacing="10">
-                    <TextBlock FontWeight="SemiBold" Text="Output" />
-                    <CheckBox Content="Enabled" IsChecked="{Binding OutputEnabled}" />
-                    <Grid ColumnDefinitions="220,*" RowDefinitions="Auto,Auto,Auto">
-                        <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Text="Driver" />
-                        <ComboBox
-                            Grid.Row="0" Grid.Column="1"
-                            MinWidth="260"
-                            IsEnabled="{Binding OutputEnabled}"
-                            ItemsSource="{Binding AvailableDrivers}"
-                            SelectedItem="{Binding OutputDriver}" />
-                        <TextBlock Grid.Row="1" Grid.Column="0" Margin="0,10,0,0" VerticalAlignment="Center" Text="Base / alt base channel" />
-                        <StackPanel Grid.Row="1" Grid.Column="1" Margin="0,10,0,0" Orientation="Horizontal" Spacing="8">
-                            <NumericUpDown Width="130" Increment="1" Minimum="{Binding ChannelMin}" Maximum="{Binding ChannelMax}" Value="{Binding OutputBaseChannel}" />
-                            <NumericUpDown Width="130" Increment="1" Minimum="{Binding ChannelMin}" Maximum="{Binding ChannelMax}" Value="{Binding OutputAltBaseChannel}" />
+                            <Border Classes="divider" />
+
+                            <Grid Classes="field" ColumnDefinitions="*,Auto">
+                                <StackPanel>
+                                    <TextBlock Text="Buffer size" />
+                                    <TextBlock Classes="hint" Text="Driver uses your device's setting, host uses Rocksmith's, custom uses the size below." />
+                                </StackPanel>
+                                <ComboBox
+                                    AutomationProperties.Name="Buffer size mode"
+                                    ItemsSource="{Binding BufferModes}"
+                                    SelectedItem="{Binding BufferSizeMode}" />
+                            </Grid>
+                            <Grid Classes="field" ColumnDefinitions="*,Auto" IsEnabled="{Binding IsCustomBufferSize}">
+                                <StackPanel>
+                                    <TextBlock Text="Custom buffer size" />
+                                    <TextBlock Classes="hint" Text="Lower means less latency but more chance of crackling." />
+                                </StackPanel>
+                                <NumericUpDown
+                                    AutomationProperties.Name="Custom buffer size"
+                                    Increment="1"
+                                    Minimum="{Binding CustomBufferSizeMin}"
+                                    Maximum="{Binding CustomBufferSizeMax}"
+                                    Value="{Binding CustomBufferSize}" />
+                            </Grid>
                         </StackPanel>
-                        <TextBlock Grid.Row="2" Grid.Column="0" Margin="0,10,0,0" VerticalAlignment="Center" Text="Master volume %" />
-                        <NumericUpDown
-                            Grid.Row="2" Grid.Column="1"
-                            Margin="0,10,0,0"
-                            Width="130" HorizontalAlignment="Left"
-                            Increment="1"
-                            Minimum="{Binding VolumePercentMin}"
-                            Maximum="{Binding VolumePercentMax}"
-                            Value="{Binding OutputMasterVolumePercent}" />
-                    </Grid>
-                    <CheckBox Content="Software endpoint volume control" IsChecked="{Binding OutputEnableEndpointVolume}" />
-                    <CheckBox Content="Software master volume control" IsChecked="{Binding OutputEnableMasterVolume}" />
-                    <CheckBox Content="Enable ref-count hack" IsChecked="{Binding OutputRefCountHack}" />
+                    </Border>
                 </StackPanel>
-            </Border>
-            </WrapPanel>
 
-            <!-- Inputs -->
-            <ItemsControl ItemsSource="{Binding Inputs}">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <WrapPanel Orientation="Horizontal" />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate DataType="vm:AsioInputViewModel">
-                        <Border Width="520" Margin="0,0,18,18" Classes="card" VerticalAlignment="Top">
-                            <StackPanel Spacing="10">
-                                <TextBlock FontWeight="SemiBold" Text="{Binding Title}" />
-                                <CheckBox Content="Enabled" IsChecked="{Binding Enabled}" />
-                                <Grid ColumnDefinitions="220,*" RowDefinitions="Auto,Auto,Auto">
-                                    <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Text="Driver" />
+                <!-- Output -->
+                <StackPanel>
+                    <Border Classes="card">
+                        <StackPanel Spacing="12">
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
+                                <StackPanel Spacing="4">
+                                    <TextBlock FontWeight="SemiBold" Text="Output" />
+                                    <TextBlock Classes="hint" Text="Headphones or speakers on an ASIO device." />
+                                </StackPanel>
+                                <CheckBox
+                                    Grid.Column="1" VerticalAlignment="Top"
+                                    AutomationProperties.Name="Enable Output"
+                                    Content="Enabled"
+                                    IsChecked="{Binding OutputEnabled}" />
+                            </Grid>
+
+                            <StackPanel Spacing="12" IsEnabled="{Binding OutputEnabled}">
+                                <Grid Classes="field" ColumnDefinitions="*,Auto">
+                                    <StackPanel>
+                                        <TextBlock Text="Driver" />
+                                    </StackPanel>
                                     <ComboBox
-                                        Grid.Row="0" Grid.Column="1"
-                                        MinWidth="260"
-                                        IsEnabled="{Binding Enabled}"
+                                        Classes="driver"
+                                        AutomationProperties.Name="Output driver"
                                         ItemsSource="{Binding AvailableDrivers}"
-                                        SelectedItem="{Binding Driver}" />
-                                    <TextBlock Grid.Row="1" Grid.Column="0" Margin="0,10,0,0" VerticalAlignment="Center" Text="Channel" />
+                                        SelectedItem="{Binding OutputDriver}" />
+                                </Grid>
+                                <Grid Classes="field" ColumnDefinitions="*,Auto">
+                                    <StackPanel>
+                                        <TextBlock Text="Base channel" />
+                                        <TextBlock Classes="hint" Text="The output number minus one: the 2nd output is channel 1." />
+                                    </StackPanel>
                                     <NumericUpDown
-                                        Grid.Row="1" Grid.Column="1"
-                                        Margin="0,10,0,0"
-                                        Width="130" HorizontalAlignment="Left"
+                                        AutomationProperties.Name="Output base channel"
                                         Increment="1"
                                         Minimum="{Binding ChannelMin}"
                                         Maximum="{Binding ChannelMax}"
-                                        Value="{Binding Channel}" />
-                                    <TextBlock Grid.Row="2" Grid.Column="0" Margin="0,10,0,0" VerticalAlignment="Center" Text="Master volume %" />
+                                        Value="{Binding OutputBaseChannel}" />
+                                </Grid>
+                                <Grid Classes="field" ColumnDefinitions="*,Auto">
+                                    <StackPanel>
+                                        <TextBlock Text="Alt base channel" />
+                                        <TextBlock Classes="hint" Text="A second channel to mirror the audio to. Needs RS_ASIO 0.5.6 or later." />
+                                    </StackPanel>
                                     <NumericUpDown
-                                        Grid.Row="2" Grid.Column="1"
-                                        Margin="0,10,0,0"
-                                        Width="130" HorizontalAlignment="Left"
+                                        AutomationProperties.Name="Output alt base channel"
+                                        Increment="1"
+                                        Minimum="{Binding ChannelMin}"
+                                        Maximum="{Binding ChannelMax}"
+                                        Value="{Binding OutputAltBaseChannel}" />
+                                </Grid>
+                                <Grid Classes="field" ColumnDefinitions="*,Auto">
+                                    <CheckBox
+                                        AutomationProperties.Name="Output software master volume control"
+                                        Content="Software master volume"
+                                        IsChecked="{Binding OutputEnableMasterVolume}" />
+                                    <NumericUpDown
+                                        AutomationProperties.Name="Output master volume percent"
+                                        IsEnabled="{Binding OutputEnableMasterVolume}"
                                         Increment="1"
                                         Minimum="{Binding VolumePercentMin}"
                                         Maximum="{Binding VolumePercentMax}"
-                                        Value="{Binding MasterVolumePercent}" />
+                                        Value="{Binding OutputMasterVolumePercent}">
+                                        <NumericUpDown.InnerRightContent>
+                                            <TextBlock Classes="unit" Text="%" />
+                                        </NumericUpDown.InnerRightContent>
+                                    </NumericUpDown>
                                 </Grid>
-                                <CheckBox Content="Software endpoint volume control" IsChecked="{Binding EnableEndpointVolume}" />
-                                <CheckBox Content="Software master volume control" IsChecked="{Binding EnableMasterVolume}" />
-                                <CheckBox Content="Enable ref-count hack" IsChecked="{Binding RefCountHack}" />
+                                <CheckBox
+                                    AutomationProperties.Name="Output software endpoint volume control"
+                                    Content="Software endpoint volume"
+                                    IsChecked="{Binding OutputEnableEndpointVolume}" />
+                                <CheckBox
+                                    AutomationProperties.Name="Output ref-count hack"
+                                    Content="Ref-count hack"
+                                    IsChecked="{Binding OutputRefCountHack}" />
                             </StackPanel>
-                        </Border>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+
+                <ContentControl Content="{Binding Input0}" ContentTemplate="{StaticResource InputCard}" />
+                <ContentControl Content="{Binding Input1}" ContentTemplate="{StaticResource InputCard}" />
+                <ContentControl Content="{Binding InputMic}" ContentTemplate="{StaticResource InputCard}" />
+            </WrapPanel>
         </StackPanel>
+        </Grid>
     </ScrollViewer>
 </UserControl>

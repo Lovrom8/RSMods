@@ -15,17 +15,26 @@
             <TextBlock FontSize="15" TextWrapping="Wrap" Text="{Binding StatusMessage}" />
 
             <Border Classes="card">
-                <StackPanel Spacing="10">
-                    <TextBlock FontWeight="SemiBold" Text="Resolved locations" />
-                    <TextBlock Text="{Binding RocksmithFolder, StringFormat='Rocksmith: {0}', TargetNullValue='Rocksmith: resolving…'}" TextWrapping="Wrap" />
-                    <TextBlock Text="{Binding SavePathDisplay, StringFormat='Save folder: {0}'}" TextWrapping="Wrap" />
-                    <TextBlock Opacity="0.7" Text="{Binding CoreAssembly, StringFormat='Core assembly: {0}'}" />
+                <StackPanel Spacing="12">
+                    <Grid Classes="action" ColumnDefinitions="*,Auto">
+                        <StackPanel Spacing="2">
+                            <TextBlock Classes="actionname" Text="Rocksmith folder" />
+                            <TextBlock TextWrapping="Wrap" Text="{Binding RocksmithFolder, TargetNullValue='Resolving…'}" />
+                        </StackPanel>
+                    </Grid>
+                    <Border Classes="divider" />
+                    <Grid Classes="action" ColumnDefinitions="*,Auto">
+                        <StackPanel Spacing="2">
+                            <TextBlock Classes="actionname" Text="Save folder" />
+                            <TextBlock TextWrapping="Wrap" Text="{Binding SavePathDisplay}" />
+                        </StackPanel>
+                        <Button
+                            AutomationProperties.Name="Set save folder"
+                            Command="{Binding SetSavePathCommand}"
+                            Content="Change…" />
+                    </Grid>
                 </StackPanel>
             </Border>
-
-            <StackPanel Orientation="Horizontal" Spacing="10">
-                <Button Command="{Binding SetSavePathCommand}" Content="Set save folder" />
-            </StackPanel>
 
             <!-- What's new: the latest published GitHub release. -->
             <Border Classes="card">
