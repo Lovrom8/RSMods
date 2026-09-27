@@ -281,11 +281,16 @@ int main() {
 		reg.RunPendingReleases();
 		Check("CancelTextureRelease removes pending release before drain", modAReleaseCount == 1);
 
-		// RemoveMod clears pending releases and unregisters callbacks
+		// RemoveMod keeps an already-queued release (a mod faulting while Active queues it in OnDisabled)
 		reg.RequestTextureRelease(&modA);
 		reg.RemoveMod(&modA);
 		reg.RunPendingReleases();
-		Check("RemoveMod cancels pending releases and unregisters release callback", modAReleaseCount == 1);
+		Check("RemoveMod still runs a release queued before removal", modAReleaseCount == 2);
+
+		// ...but unregisters the callback, so later requests do nothing
+		reg.RequestTextureRelease(&modA);
+		reg.RunPendingReleases();
+		Check("RemoveMod unregisters the release callback", modAReleaseCount == 2);
 	}
 
 	// Path flags: UP draws are opt-in, All covers every path, a combined query has no list of its own.

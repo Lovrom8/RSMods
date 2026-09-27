@@ -150,6 +150,7 @@ namespace Framework {
 		void RegisterDeviceReset(const IMod* owner, DeviceResetCallback fn);
 
 		// MainThread: drop every interceptor, regen, release, frame, reset and device-event handler owned by this mod.
+		// A release it already queued still runs at the next RunPendingReleases.
 		void RemoveMod(const IMod* owner);
 
 		// MainThread: rebuild the active snapshots from currently-enabled owners.

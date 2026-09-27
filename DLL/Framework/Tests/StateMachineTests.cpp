@@ -534,6 +534,30 @@ static void Test_RetryFaultedMods() {
 	reg.Shutdown();
 }
 
+// Settings reloads rebuild every key from the schema, so a faulted mod's keys must stay in it.
+static void Test_FaultKeepsSettingsSchema() {
+	ClearEvents();
+	ModRegistry reg;
+	const auto addWithToggle = [&](const std::string& id, const char* throwOn, const char* key) {
+		auto m = std::make_unique<TestMod>(id);
+		m->throwOn = throwOn;
+		m->declaredSettings = { Framework::SettingDef::Toggle(key, key, "Label") };
+		reg.Register(std::move(m));
+	};
+	addWithToggle("InitBoom", "OnInitialize", "InitBoomToggle");
+	addWithToggle("TickBoom", "OnTick", "TickBoomToggle");
+
+	reg.DispatchInitialize();
+	reg.Tick(GamePhase::Menu);
+
+	Expect(Framework::SettingsSchema().Find("InitBoomToggle") != nullptr, "mod faulted while Inactive keeps its schema");
+	Expect(Framework::SettingsSchema().Find("TickBoomToggle") != nullptr, "mod faulted while Active keeps its schema");
+
+	reg.Shutdown();
+	Expect(Framework::SettingsSchema().Find("InitBoomToggle") == nullptr &&
+		Framework::SettingsSchema().Find("TickBoomToggle") == nullptr, "shutdown still removes faulted mods' schema");
+}
+
 int main() {
 	std::cout << "ModRegistry state-machine tests\n";
 
@@ -556,6 +580,7 @@ int main() {
 	Test_ShutdownRevertsAndDestroysInOrder();
 	Test_StatusSnapshotReflectsStates();
 	Test_RetryFaultedMods();
+	Test_FaultKeepsSettingsSchema();
 
 	std::cout << (g_failures == 0 ? "\nALL PASS\n" : "\nFAILURES: " + std::to_string(g_failures) + "\n");
 	return g_failures == 0 ? 0 : 1;

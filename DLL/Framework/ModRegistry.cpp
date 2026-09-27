@@ -145,12 +145,17 @@ namespace Framework {
 			LOG_ERROR("[Framework] " << record.mod->Id() << " faulted (" << reason << "); it will no longer run" << std::endl);
 
 			record.state = ModState::Faulted;
-			Commands().RemoveMod(record.mod.get());
-			Hud().RemoveMod(record.mod.get());
-			Menus().RemoveMod(record.mod.get());
-			Draw().RemoveMod(record.mod.get());
-			SettingsSchema().RemoveMod(record.mod.get());
-			watchdog.Forget(record.mod.get());
+			Unregister(record.mod.get());
+		}
+
+		// Drops what a mod registered at runtime. Its settings schema stays until Shutdown: Settings
+		// reloads read every key from the schema, so a faulted mod's keys would otherwise vanish.
+		void Unregister(const IMod* mod) {
+			Commands().RemoveMod(mod);
+			Hud().RemoveMod(mod);
+			Menus().RemoveMod(mod);
+			Draw().RemoveMod(mod);
+			watchdog.Forget(mod);
 		}
 
 		// Best-effort revert of live game state before a mod leaves Active.
@@ -174,10 +179,7 @@ namespace Framework {
 
 			const ModState target = TeardownTargetState(reason);
 			if (target == ModState::Faulted) {
-				Commands().RemoveMod(record.mod.get());
-				Menus().RemoveMod(record.mod.get());
-				Draw().RemoveMod(record.mod.get());
-				watchdog.Forget(record.mod.get());
+				Unregister(record.mod.get());
 			}
 
 			record.state = target;
@@ -585,12 +587,8 @@ namespace Framework {
 			}
 
 			impl->Invoke(record, &IMod::OnShutdown, "OnShutdown");
-			Commands().RemoveMod(record.mod.get());
-			Hud().RemoveMod(record.mod.get());
-			Menus().RemoveMod(record.mod.get());
-			Draw().RemoveMod(record.mod.get());
+			impl->Unregister(record.mod.get());
 			SettingsSchema().RemoveMod(record.mod.get());
-			impl->watchdog.Forget(record.mod.get());
 		}
 
 		impl->records.clear();

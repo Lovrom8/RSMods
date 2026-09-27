@@ -106,6 +106,7 @@ namespace Framework {
 		std::vector<RegisteredRegen>  regenCallbacks;
 		std::vector<RegisteredRelease> releaseCallbacks;
 		std::vector<const IMod*> pendingReleases;  // owners waiting for deferred release
+		std::vector<TextureReleaseCallback> orphanedReleases; // queued by an owner removed before EndScene ran them
 
 		std::atomic<std::shared_ptr<const std::vector<ActiveEntry>>> active[pathCount];
 		std::atomic<std::shared_ptr<const std::vector<FrameCallback>>> activeFrame;
@@ -206,6 +207,15 @@ namespace Framework {
 		impl->device.RemoveMod(owner);
 
 		std::lock_guard<std::mutex> lock(impl->mutex);
+
+		// A mod faulting while Active queues its release in OnDisabled and is removed in the same call;
+		// keep that release so its textures still get freed at the next EndScene.
+		if (std::ranges::find(impl->pendingReleases, owner) != impl->pendingReleases.end()) {
+			auto it = std::find_if(impl->releaseCallbacks.begin(), impl->releaseCallbacks.end(),
+				[owner](const Impl::RegisteredRelease& r) { return r.owner == owner; });
+			if (it != impl->releaseCallbacks.end() && it->fn)
+				impl->orphanedReleases.push_back(it->fn);
+		}
 
 		std::erase_if(impl->frameCallbacks, [owner](const OwnedCallback<FrameCallback>& r) { return r.owner == owner; });
 		std::erase_if(impl->resetCallbacks, [owner](const OwnedCallback<DeviceResetCallback>& r) { return r.owner == owner; });
@@ -321,9 +331,10 @@ namespace Framework {
 		std::vector<TextureReleaseCallback> callbacks;
 		{
 			std::lock_guard<std::mutex> lock(impl->mutex);
-			if (impl->pendingReleases.empty()) return;
+			if (impl->pendingReleases.empty() && impl->orphanedReleases.empty()) return;
 
-			callbacks.reserve(impl->pendingReleases.size());
+			callbacks = std::move(impl->orphanedReleases);
+			impl->orphanedReleases.clear();
 			for (const IMod* owner : impl->pendingReleases) {
 				auto it = std::find_if(impl->releaseCallbacks.begin(), impl->releaseCallbacks.end(),
 					[owner](const Impl::RegisteredRelease& r) { return r.owner == owner; });
