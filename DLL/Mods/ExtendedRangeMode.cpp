@@ -415,7 +415,14 @@ void ERMode::ToggleRainbowMode() {
 /// Toggle RainbowNotesEnabled on / off.
 /// </summary>
 void ERMode::ToggleRainbowNotes() {
-	RainbowNotesEnabled = !RainbowNotesEnabled.load();
+	SetRainbowNotes(!RainbowNotesEnabled.load());
+}
+
+/// <summary>
+/// Turn RainbowNotesEnabled on / off.
+/// </summary>
+void ERMode::SetRainbowNotes(bool enabled) {
+	RainbowNotesEnabled = enabled;
 	D3DHooks::RecreateTextures = true;
 }
 

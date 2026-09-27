@@ -19,7 +19,7 @@ namespace CrowdControl::Effects {
 
 	/// <summary>
 	/// Makes note heads continuously shift their colors 
-	/// All note head changing is handled in ERMode, so it just toggles the switch in there
+	/// All note head changing is handled in ERMode, so it just flips the switch in there
 	/// Does not affect the strings!
 	/// </summary>
 	/// <returns> Enums::EffectStatus::Retry if we aren't currently in a song or the same effect is running already, or Enums::EffectStatus::Success if we are in a song</returns>
@@ -27,7 +27,7 @@ namespace CrowdControl::Effects {
 	{
 		LOG_INFO("RainbowNotesEffect::Start()" << std::endl);
 
-		ERMode::ToggleRainbowNotes();
+		ERMode::SetRainbowNotes(true);
 
 		SetDuration(request);
 		running = true;
@@ -44,7 +44,8 @@ namespace CrowdControl::Effects {
 		LOG_INFO("RainbowNotesEffect::Stop()" << std::endl);
 
 		running = false;
-		ERMode::ToggleRainbowNotes();
+		// Set, not toggle: the Rainbow Notes key may have switched it off mid-effect, and a toggle would turn it back on for good.
+		ERMode::SetRainbowNotes(false);
 
 		return Enums::EffectStatus::Success;
 	}

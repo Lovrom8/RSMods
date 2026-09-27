@@ -11,6 +11,7 @@ namespace ERMode {
 	void StopRainbowThread();
 	void ToggleRainbowMode();
 	void ToggleRainbowNotes();
+	void SetRainbowNotes(bool enabled);
 	bool IsRainbowEnabled();
 	bool IsRainbowNotesEnabled();
 	void ResetString(int strIndex);
