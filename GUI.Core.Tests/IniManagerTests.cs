@@ -50,4 +50,55 @@ public sealed class IniManagerTests
         using (new FileStream(path, FileMode.Create, FileAccess.ReadWrite, FileShare.None))
             Assert.ThrowsAny<IOException>(() => ini.Save());
     }
+
+    [Fact]
+    public void SaveReportsWhetherAnyValueChanged()
+    {
+        using var dir = new TemporaryDirectory();
+        var ini = new IniManager(dir.File("RSMods.ini"));
+
+        ini.GetString("[Toggle Switches]", "Seeded", "off");
+        Assert.False(ini.Save()); // Seeding a default is written but isn't a change.
+
+        ini.SetString("[Toggle Switches]", "Seeded", "off");
+        Assert.False(ini.Save()); // Same value.
+
+        ini.SetString("[Toggle Switches]", "Seeded", "on");
+        Assert.True(ini.Save());
+        Assert.False(ini.Save()); // Reported once.
+
+        ini.SetCommentedString("[Asio.Input.1]", "Driver", "X", commented: true);
+        Assert.True(ini.Save());
+        ini.SetCommentedString("[Asio.Input.1]", "Driver", "X", commented: false);
+        Assert.True(ini.Save()); // Uncommenting is a change even with the same value.
+    }
+
+    [Fact]
+    public void ChangeWrittenBySuspendedScopeIsReportedByTheNextSave()
+    {
+        using var dir = new TemporaryDirectory();
+        var ini = new IniManager(dir.File("RSMods.ini"));
+
+        using (ini.SuspendSave())
+        {
+            ini.SetString("[Mod Settings]", "Key", "1");
+            Assert.False(ini.Save()); // Deferred to the end of the scope.
+        }
+
+        Assert.True(ini.Save());
+    }
+
+    [Fact]
+    public void FailedSaveKeepsTheChangeForTheNextSave()
+    {
+        using var dir = new TemporaryDirectory();
+        string path = dir.File("RSMods.ini");
+        var ini = new IniManager(path);
+        ini.SetString("[Toggle Switches]", "Key", "on");
+
+        using (new FileStream(path, FileMode.Create, FileAccess.ReadWrite, FileShare.None))
+            Assert.ThrowsAny<IOException>(() => ini.Save());
+
+        Assert.True(ini.Save());
+    }
 }

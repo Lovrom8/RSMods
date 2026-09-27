@@ -56,10 +56,8 @@ namespace RSMods
             SeedDefaultsAndSave(manifest);
         }
 
-        public static void Save()
-        {
-            _ini.Save();
-        }
+        /// <inheritdoc cref="IniManager.Save"/>
+        public static bool Save() => _ini.Save();
 
         public static List<string> SongListTitles { get; } = [];
 

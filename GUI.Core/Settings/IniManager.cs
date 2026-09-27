@@ -30,6 +30,7 @@ namespace RSMods
 
         private int _saveSuspendCount;
         private bool _saveDeferred;
+        private bool _changedSinceSave; // A value was set to something new; reading or seeding a default doesn't count.
 
         public void Load()
         {
@@ -41,6 +42,7 @@ namespace RSMods
         {
             _data.Clear();
             _commentedData.Clear();
+            _changedSinceSave = false;
 
             try
             {
@@ -99,26 +101,35 @@ namespace RSMods
                 if (_saveSuspendCount == 0 && _saveDeferred)
                 {
                     _saveDeferred = false;
-                    SaveLocked();
+                    WriteLocked(); // Leaves _changedSinceSave for the next Save() to report.
                 }
             }
         }
 
-        /// <summary>Writes the file. Throws <see cref="IOException"/> when it can't, so the caller can report it.</summary>
-        public void Save()
+        /// <summary>
+        /// Writes the file. Throws <see cref="IOException"/> when it can't, so the caller can report it.
+        /// Returns whether any value changed since the last save, so a caller can skip telling the game to reload.
+        /// </summary>
+        public bool Save()
         {
             lock (_gate)
-                SaveLocked();
+            {
+                if (_saveSuspendCount > 0)
+                {
+                    _saveDeferred = true;
+                    return false;
+                }
+
+                WriteLocked();
+
+                bool changed = _changedSinceSave;
+                _changedSinceSave = false;
+                return changed;
+            }
         }
 
-        private void SaveLocked()
+        private void WriteLocked()
         {
-            if (_saveSuspendCount > 0)
-            {
-                _saveDeferred = true;
-                return;
-            }
-
             using var sw = new StreamWriter(filePath);
 
             // _data ordering first, then any section that exists only as commented lines.
@@ -234,6 +245,7 @@ namespace RSMods
 
                 changed = !sectionDict.TryGetValue(key, out var oldVal) || oldVal != value;
                 sectionDict[key] = value;
+                _changedSinceSave |= changed;
             }
 
             if (changed)
@@ -330,7 +342,9 @@ namespace RSMods
             {
                 lock (_gate)
                 {
-                    GetOrCreateSection(_commentedData, section)[key] = value;
+                    var commentedSection = GetOrCreateSection(_commentedData, section);
+                    _changedSinceSave |= !commentedSection.TryGetValue(key, out var oldVal) || oldVal != value;
+                    commentedSection[key] = value;
                     GetOrCreateSection(_data, section)[key] = value;
                 }
             }
@@ -339,7 +353,7 @@ namespace RSMods
                 lock (_gate)
                 {
                     if (_commentedData.TryGetValue(section, out var sec))
-                        sec.Remove(key);
+                        _changedSinceSave |= sec.Remove(key);
                 }
 
                 SetString(section, key, value);

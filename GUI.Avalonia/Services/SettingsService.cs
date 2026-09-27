@@ -16,7 +16,8 @@ internal sealed class SettingsService
     /// </summary>
     public Task SaveAsync() => Task.Run(() =>
     {
-        RsModsSettings.Save();
-        WinMsgUtil.SendMsgToRS("update all");
+        // Only when a value changed: the game rereads the whole INI on every "update all".
+        if (RsModsSettings.Save())
+            WinMsgUtil.SendMsgToRS("update all");
     });
 }
