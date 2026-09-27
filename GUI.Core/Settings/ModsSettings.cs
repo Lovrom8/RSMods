@@ -1,9 +1,9 @@
+using RSMods.Core.Settings;
 using RSMods.Util;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 
 namespace RSMods
 {
@@ -33,7 +33,7 @@ namespace RSMods
         private static IniSection _highwayColors;
         private static IniSection _guiSettings;
 
-        public static void LoadSettingsFromINI()
+        public static void LoadSettingsFromINI(IManifestService manifest)
         {
             string path = Path.Combine(GenUtil.GetRSDirectory(), "RSMods.ini");
             _ini = new IniManager(path);
@@ -52,7 +52,7 @@ namespace RSMods
             _highwayColors = new IniSection(_ini, "[Highway Colors]");
             _guiSettings = new IniSection(_ini, "[GUI Settings]");
 
-            SeedDefaultsAndSave();
+            SeedDefaultsAndSave(manifest);
         }
 
         public static void Save()
@@ -82,7 +82,7 @@ namespace RSMods
             _songListTitles.SetString($"SongListTitle_{index}", value);
         }
 
-        private static void SeedDefaultsAndSave()
+        private static void SeedDefaultsAndSave(IManifestService manifest)
         {
             for (int i = 1; i <= 20; i++) GetSongListTitle(i);
 
@@ -94,68 +94,33 @@ namespace RSMods
                 }
             }
 
+            SeedManifestDefaults(_ini, manifest);
             _ini.Save();
+        }
+
+        /// <summary>
+        /// Writes each manifest setting's declared default where the INI has no value, as the store's own
+        /// properties do. Key binds and custom-editor launchers were never seeded, so they still aren't.
+        /// </summary>
+        public static void SeedManifestDefaults(IniManager ini, IManifestService manifest)
+        {
+            foreach (SettingDescriptor setting in manifest.AllSettings)
+            {
+                if (setting.Type == SettingType.Key || !string.IsNullOrEmpty(setting.Editor))
+                    continue;
+
+                ini.GetString(SettingFieldViewModel.NormalizeSection(setting.Ini.Section), setting.Ini.Name, setting.Default);
+            }
         }
 
         public static class Toggles
         {
-            public static bool ToggleLoft { get => _toggleSwitches.GetBool(); set => _toggleSwitches.SetBool(value); }
-            public static bool VolumeControl { get => _toggleSwitches.GetBool(); set => _toggleSwitches.SetBool(value); }
-            public static bool ShowSongTimer { get => _toggleSwitches.GetBool(); set => _toggleSwitches.SetBool(value); }
-            public static EnumerationMode ForceReEnumeration { get => _toggleSwitches.GetEnum(EnumerationMode.Off); set => _toggleSwitches.SetEnum(value); }
-            public static bool RainbowStrings { get => _toggleSwitches.GetBool(); set => _toggleSwitches.SetBool(value); }
-            public static bool RainbowNotes { get => _toggleSwitches.GetBool(); set => _toggleSwitches.SetBool(value); }
             public static bool ExtendedRange { get => _toggleSwitches.GetBool(); set => _toggleSwitches.SetBool(value); }
-            public static bool ExtendedRangeDropTuning { get => _toggleSwitches.GetBool(); set => _toggleSwitches.SetBool(value); }
-            public static bool ExtendedRangeFixBassTuning { get => _toggleSwitches.GetBool(); set => _toggleSwitches.SetBool(value); }
             public static CustomStringColorMode CustomStringColors { get => _toggleSwitches.GetEnumInt(CustomStringColorMode.Off); set => _toggleSwitches.SetEnumInt(value); }
             public static OnOffMode SeparateNoteColors { get => _toggleSwitches.GetEnum(OnOffMode.Off); set => _toggleSwitches.SetEnum(value); }
-            public static bool Headstock { get => _toggleSwitches.GetBool(); set => _toggleSwitches.SetBool(value); }
-            public static bool Skyline { get => _toggleSwitches.GetBool(); set => _toggleSwitches.SetBool(value); }
-            public static bool GreenScreenWall { get => _toggleSwitches.GetBool(); set => _toggleSwitches.SetBool(value); }
-            public static bool ForceProfileLoad { get => _toggleSwitches.GetBool(); set => _toggleSwitches.SetBool(value); }
-            public static bool Fretless { get => _toggleSwitches.GetBool(); set => _toggleSwitches.SetBool(value); }
-            public static bool Inlays { get => _toggleSwitches.GetBool(); set => _toggleSwitches.SetBool(value); }
-            public static LoftMode ToggleLoftWhen { get => _toggleSwitches.GetEnum(LoftMode.Manual); set => _toggleSwitches.SetEnum(value); }
-            public static bool LaneMarkers { get => _toggleSwitches.GetBool(); set => _toggleSwitches.SetBool(value); }
-            public static SkylineMode ToggleSkylineWhen { get => _toggleSwitches.GetEnum(SkylineMode.Song); set => _toggleSwitches.SetEnum(value); }
-            public static bool Lyrics { get => _toggleSwitches.GetBool(); set => _toggleSwitches.SetBool(value); }
-            public static LyricsMode RemoveLyricsWhen { get => _toggleSwitches.GetEnum(LyricsMode.Manual); set => _toggleSwitches.SetEnum(value); }
-            public static bool GuitarSpeak { get => _toggleSwitches.GetBool(); set => _toggleSwitches.SetBool(value); }
-            public static HeadstockMode RemoveHeadstockWhen { get => _toggleSwitches.GetEnum(HeadstockMode.Song); set => _toggleSwitches.SetEnum(value); }
-            public static bool ScreenShotScores { get => _toggleSwitches.GetBool(); set => _toggleSwitches.SetBool(value); }
-            public static bool RRSpeedAboveOneHundred { get => _toggleSwitches.GetBool(); set => _toggleSwitches.SetBool(value); }
-            public static bool AutoTuneForSong { get => _toggleSwitches.GetBool(); set => _toggleSwitches.SetBool(value); }
-            public static string AutoTuneForSongDevice { get => _toggleSwitches.GetString(""); set => _toggleSwitches.SetString(value); }
-            public static string MidiInDevice { get => _toggleSwitches.GetString(""); set => _toggleSwitches.SetString(value); }
-            public static AutoTuneWhen AutoTuneForSongWhen { get => _toggleSwitches.GetEnum(AutoTuneWhen.Manual); set => _toggleSwitches.SetEnum(value); }
-            public static string AutoTuneForSoftwareSemitoneSettings { get => _toggleSwitches.GetString(""); set => _toggleSwitches.SetString(value); }
-            public static string AutoTuneForSoftwareSemitoneTriggers { get => _toggleSwitches.GetString(""); set => _toggleSwitches.SetString(value); }
-            public static string AutoTuneForSoftwareTrueTuningSettings { get => _toggleSwitches.GetString(""); set => _toggleSwitches.SetString(value); }
-            public static string AutoTuneForSoftwareTrueTuningTriggers { get => _toggleSwitches.GetString(""); set => _toggleSwitches.SetString(value); }
-            public static bool ChordsMode { get => _toggleSwitches.GetBool(); set => _toggleSwitches.SetBool(value); }
-            public static bool ShowCurrentNoteOnScreen { get => _toggleSwitches.GetBool(); set => _toggleSwitches.SetBool(value); }
-            public static string OnScreenFont { get => _toggleSwitches.GetString("Arial"); set => _toggleSwitches.SetString(value); }
-            public static string ProfileToLoad { get => _toggleSwitches.GetString(""); set => _toggleSwitches.SetString(value); }
-            public static SongTimerWhen ShowSongTimerWhen { get => _toggleSwitches.GetEnum(SongTimerWhen.Manual); set => _toggleSwitches.SetEnum(value); }
-            public static OnOffMode SecondaryMonitor { get => _toggleSwitches.GetEnum(OnOffMode.Off); set => _toggleSwitches.SetEnum(value); }
-            public static bool SongPreviews { get => _toggleSwitches.GetBool(); set => _toggleSwitches.SetBool(value); }
-            public static bool OverrideInputVolumeEnabled { get => _toggleSwitches.GetBool(); set => _toggleSwitches.SetBool(value); }
-            public static string OverrideInputVolumeDevice { get => _toggleSwitches.GetString(""); set => _toggleSwitches.SetString(value); }
-            public static bool AllowAudioInBackground { get => _toggleSwitches.GetBool(); set => _toggleSwitches.SetBool(value); }
-            public static bool BypassTwoRTCMessageBox { get => _toggleSwitches.GetBool(); set => _toggleSwitches.SetBool(value); }
-            public static bool LinearRiffRepeater { get => _toggleSwitches.GetBool(); set => _toggleSwitches.SetBool(value); }
-            public static bool AltOutputSampleRate { get => _toggleSwitches.GetBool(); set => _toggleSwitches.SetBool(value); }
-            public static bool AllowLooping { get => _toggleSwitches.GetBool(); set => _toggleSwitches.SetBool(value); }
-            public static bool AllowRewind { get => _toggleSwitches.GetBool(); set => _toggleSwitches.SetBool(value); }
             public static bool FixOculusCrash { get => _toggleSwitches.GetBool(); set => _toggleSwitches.SetBool(value); }
             public static bool FixBrokenTones { get => _toggleSwitches.GetBool(); set => _toggleSwitches.SetBool(value); }
-            public static bool UseCustomNSPTimer { get => _toggleSwitches.GetBool(); set => _toggleSwitches.SetBool(value); }
-            public static bool DisplayCurrentAccuracy { get => _toggleSwitches.GetBool(); set => _toggleSwitches.SetBool(value); }
             public static bool PreventMidSongPause { get => _toggleSwitches.GetBool(); set => _toggleSwitches.SetBool(value); }
-            public static bool RemoveFingerprints { get => _toggleSwitches.GetBool(); set => _toggleSwitches.SetBool(value); }
-            public static bool Ultrawide { get => _toggleSwitches.GetBool(); set => _toggleSwitches.SetBool(value); }
-            public static bool FastProfileLoadAndSave { get => _toggleSwitches.GetBool(); set => _toggleSwitches.SetBool(value); }
         }
 
         public static class StringColors
@@ -176,21 +141,7 @@ namespace RSMods
         public static class ModSettings
         {
             public static int ExtendedRangeModeAt { get => _modSettings.GetInt(-5); set => _modSettings.SetInt(value); }
-            public static int CheckForNewSongsInterval { get => _modSettings.GetInt(5000); set => _modSettings.SetInt(value); }
-            public static decimal RRSpeedInterval { get => _modSettings.GetDecimal(2); set => _modSettings.SetDecimal(value); }
-            public static TuningPedalDevice TuningPedal { get => _modSettings.GetEnumInt(TuningPedalDevice.None); set => _modSettings.SetEnumInt(value); }
-            public static int TuningOffset { get => _modSettings.GetInt(0); set => _modSettings.SetInt(value); }
-            public static int VolumeControlInterval { get => _modSettings.GetInt(5); set => _modSettings.SetInt(value); }
-            public static int SecondaryMonitorXPosition { get => _modSettings.GetInt(0); set => _modSettings.SetInt(value); }
-            public static int SecondaryMonitorYPosition { get => _modSettings.GetInt(0); set => _modSettings.SetInt(value); }
             public static NoteColorMode SeparateNoteColorsMode { get => _modSettings.GetEnumInt(NoteColorMode.Off); set => _modSettings.SetEnumInt(value); }
-            public static int OverrideInputVolume { get => _modSettings.GetInt(17); set => _modSettings.SetInt(value); }
-            public static int AlternativeOutputSampleRate { get => _modSettings.GetInt(48000); set => _modSettings.SetInt(value); }
-            public static int LoopingLeadUp { get => _modSettings.GetInt(0); set => _modSettings.SetInt(value); }
-            public static int RewindBy { get => _modSettings.GetInt(5000); set => _modSettings.SetInt(value); }
-            public static int RewindLeadup { get => _modSettings.GetInt(2000); set => _modSettings.SetInt(value); }
-            public static int CustomNSPTimeLimit { get => _modSettings.GetInt(10000); set => _modSettings.SetInt(value); }
-            public static int OnScreenFontSize { get => _modSettings.GetInt(24); set => _modSettings.SetInt(value); }
         }
 
         public static class GuitarSpeak
@@ -210,7 +161,6 @@ namespace RSMods
             public static string GuitarSpeakTildeaWhen { get => _guitarSpeak.GetString(""); set => _guitarSpeak.SetString(value); }
             public static string GuitarSpeakForSlashWhen { get => _guitarSpeak.GetString(""); set => _guitarSpeak.SetString(value); }
             public static string GuitarSpeakAltWhen { get => _guitarSpeak.GetString(""); set => _guitarSpeak.SetString(value); }
-            public static bool GuitarSpeakWhileTuning { get => _guitarSpeak.GetBool(); set => _guitarSpeak.SetBool(value); }
         }
 
         public static class HighwayColors

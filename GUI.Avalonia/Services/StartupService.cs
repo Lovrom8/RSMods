@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using RSMods.Core;
+using RSMods.Core.Settings;
 using RSMods.Data;
 
 namespace RSMods.Services;
@@ -23,7 +24,7 @@ internal sealed class StartupResult
 /// persist them to the shared <c>GUI_Settings.ini</c>, and load <see cref="RsModsSettings"/> so
 /// settings-dependent screens have data to bind.
 /// </summary>
-internal sealed class StartupService(IDialogService dialogs, IAppEnvironment environment)
+internal sealed class StartupService(IDialogService dialogs, IAppEnvironment environment, IManifestService manifest)
 {
     public async Task<StartupResult> RunAsync()
     {
@@ -46,7 +47,7 @@ internal sealed class StartupService(IDialogService dialogs, IAppEnvironment env
         RsModsSettings.ValidationWarning += Collect;
         try
         {
-            RsModsSettings.LoadSettingsFromINI();
+            RsModsSettings.LoadSettingsFromINI(manifest);
         }
         finally
         {

@@ -671,12 +671,14 @@ persisting. A new screen that saves mod settings should go through `SettingsServ
 ### The guard test
 
 `GUI.Core.Tests/SettingsKeyParityTests.cs` scrapes `DLL/Settings.{cpp,hpp}` for every `(section, key)` the
-DLL reads, reflects `RsModsSettings` for every one the GUI writes, and asserts both directions. It covers
+DLL reads, takes every one the GUI writes from `RsModsSettings` (by reflection) and `mods.manifest.json`, and
+asserts both directions. Manifest-declared settings are rendered from the manifest, so `RsModsSettings` keeps
+a property only where a hand-built screen (Colors, Guitar Speak, Themes) or a DLL-only key needs one. It covers
 declarative keys only — runtime-built names (`string{n}_N`, `SongListTitle_{i}`) drop out symmetrically —
 and `[GUI Settings]` is excluded as frontend-only.
 
-Its `KnownUnexposed` allowlist is the live inventory of settings the DLL reads that no GUI exposes. All
-three current entries are dead on the DLL side too, so the list should only ever shrink.
+Its `KnownUnexposed` allowlist is the live inventory of settings the DLL reads that no GUI exposes. Every
+entry is dead on the DLL side too, so the list should only ever shrink.
 
 ## Current migration boundary
 

@@ -103,7 +103,7 @@ public sealed class App : Application
         if (string.IsNullOrEmpty(GenUtil.GetRSDirectory()))
             return;
 
-        RsModsSettings.LoadSettingsFromINI();
+        RsModsSettings.LoadSettingsFromINI(_services!.GetRequiredService<IManifestService>());
         _services!.GetRequiredService<ThemeService>().ApplyFromSettings();
     }
 }
