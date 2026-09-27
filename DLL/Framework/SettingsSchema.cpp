@@ -94,7 +94,8 @@ namespace Framework {
 			{ "choices", d.choices },
 			{ "choicesSource", StringOrNull(d.choicesSource) },
 			{ "visibleWhen", d.visibleWhen ? VisibleWhenToJson(*d.visibleWhen) : nullptr },
-			{ "editor", StringOrNull(d.editor) }
+			{ "editor", StringOrNull(d.editor) },
+			{ "editedBy", StringOrNull(d.editedBy) }
 		};
 	}
 

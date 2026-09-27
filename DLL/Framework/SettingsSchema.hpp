@@ -60,6 +60,7 @@ namespace Framework {
 
 		std::optional<VisibleWhen> visibleWhen = std::nullopt;           // Tier 2: { key, equals }
 		std::string editor = {};                                         // Tier 3: custom UserControl name
+		std::string editedBy = {};                                       // A bespoke GUI editor owns this value; the generic form skips it
 
 		// --- Fluent Builders (paired && and const & overloads for temporary safety) ---
 
@@ -188,6 +189,18 @@ namespace Framework {
 		SettingDef WithEditor(std::string_view editorName) const & {
 			SettingDef copy = *this;
 			copy.editor = editorName;
+			return copy;
+		}
+
+		// For a value a bespoke editor (e.g. the Guitar Speak mapping card) writes, so the GUI doesn't show a
+		// second, generic field that edits the same key.
+		SettingDef EditedBy(std::string_view editorName) && {
+			editedBy = editorName;
+			return std::move(*this);
+		}
+		SettingDef EditedBy(std::string_view editorName) const & {
+			SettingDef copy = *this;
+			copy.editedBy = editorName;
 			return copy;
 		}
 

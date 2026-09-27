@@ -65,8 +65,9 @@ public sealed partial class SettingsCoordinator : ObservableObject
 
     private void InitializeFields(IManifestService manifestService, IChoicesProvider? choicesProvider)
     {
-        // Key binds live on the keybindings page, which captures key presses (see ManifestKeybinds).
-        foreach (var desc in manifestService.AllSettings.Where(d => d.Type != SettingType.Key))
+        // Key binds live on the keybindings page, which captures key presses (see ManifestKeybinds), and values a
+        // bespoke editor owns would otherwise get a second field that overwrites it with a stale value.
+        foreach (var desc in manifestService.AllSettings.Where(d => d.Type != SettingType.Key && string.IsNullOrEmpty(d.EditedBy)))
         {
             var field = CreateField(desc, choicesProvider);
             _allFields.Add(field);

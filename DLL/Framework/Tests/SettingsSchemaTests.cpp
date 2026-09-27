@@ -191,7 +191,8 @@ int main() {
 				.type = SettingType::String,
 				.def = "",
 				.label = "Guitar Speak",
-				.editor = "GuitarSpeak"
+				.editor = "GuitarSpeak",
+				.editedBy = "GuitarSpeak"
 			}
 		});
 
@@ -216,10 +217,12 @@ int main() {
 			Check("item0 max is null", item0["max"].is_null());
 			Check("item0 choices is empty array", item0["choices"].is_array() && item0["choices"].empty());
 			Check("item0 editor is null", item0["editor"].is_null());
+			Check("item0 editedBy is null", item0["editedBy"].is_null());
 
 			const auto& item1 = parsed[1];
 			Check("item1 key == 'CustomEditorField'", item1["key"] == "CustomEditorField");
 			Check("item1 editor == 'GuitarSpeak'", item1["editor"] == "GuitarSpeak");
+			Check("item1 editedBy == 'GuitarSpeak'", item1["editedBy"] == "GuitarSpeak");
 		}
 	}
 

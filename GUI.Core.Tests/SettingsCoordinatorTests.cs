@@ -14,7 +14,7 @@ public sealed class SettingsCoordinatorTests
         var manifest = new ManifestService();
         var coordinator = new SettingsCoordinator(manifest);
 
-        Assert.Equal(manifest.AllSettings.Count(d => d.Type != SettingType.Key), coordinator.AllFields.Count);
+        Assert.Equal(manifest.AllSettings.Count(d => d.Type != SettingType.Key && d.EditedBy == null), coordinator.AllFields.Count);
         Assert.Null(coordinator.Find("ToggleLoftKey")); // Key binds belong to the keybindings page.
         Assert.NotEmpty(coordinator.Groups);
 
@@ -389,5 +389,19 @@ public sealed class SettingsCoordinatorTests
         coordinator.Save(ini);
         Assert.Equal("startup", ini.GetString("[Toggle Switches]", "ToggleSkylineWhen"));
         Assert.False(coordinator.IsDirty);
+    }
+
+    // The Guitar Speak mapping card writes these; a second, generic field would overwrite it with a stale value.
+    [Fact]
+    public void ValuesABespokeEditorOwnsGetNoGenericField()
+    {
+        var manifest = new ManifestService();
+        var coordinator = new SettingsCoordinator(manifest);
+
+        var owned = manifest.AllSettings.Where(d => d.EditedBy == "GuitarSpeak").ToList();
+        Assert.Equal(15, owned.Count);
+        Assert.All(owned, d => Assert.Null(coordinator.Find(d.Key)));
+        Assert.NotNull(coordinator.Find("GuitarSpeak")); // The toggle and the editor launcher stay.
+        Assert.NotNull(coordinator.Find("GuitarSpeakCustomEditor"));
     }
 }

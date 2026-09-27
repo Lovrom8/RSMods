@@ -38,5 +38,7 @@ public sealed record SettingDescriptor(
     [property: JsonPropertyName("choices")] IReadOnlyList<string>? Choices,
     [property: JsonPropertyName("choicesSource")] string? ChoicesSource,
     [property: JsonPropertyName("visibleWhen")] SettingVisibilityCondition? VisibleWhen,
-    [property: JsonPropertyName("editor")] string? Editor
+    [property: JsonPropertyName("editor")] string? Editor,
+    // A bespoke screen (e.g. the Guitar Speak mapping card) writes this value, so the generic form leaves it out.
+    [property: JsonPropertyName("editedBy")] string? EditedBy = null
 );

@@ -16,7 +16,8 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "VolumeControlInterval",
@@ -38,7 +39,8 @@
       "key": "VolumeControlEnabled",
       "equals": "on"
     },
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "MasterVolumeKey",
@@ -57,7 +59,8 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "SongVolumeKey",
@@ -76,7 +79,8 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "Player1VolumeKey",
@@ -95,7 +99,8 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "Player2VolumeKey",
@@ -114,7 +119,8 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "MicrophoneVolumeKey",
@@ -133,7 +139,8 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "VoiceOverVolumeKey",
@@ -152,7 +159,8 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "SFXVolumeKey",
@@ -171,7 +179,8 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "DisplayMixerKey",
@@ -190,7 +199,8 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "MutePlayer1Key",
@@ -209,7 +219,8 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "MutePlayer2Key",
@@ -228,7 +239,8 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "ChangedSelectedVolumeKey",
@@ -247,7 +259,8 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "BypassTwoRTCMessageBox",
@@ -266,7 +279,8 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "TwitchSettings",
@@ -285,7 +299,8 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": "Twitch"
+    "editor": "Twitch",
+    "editedBy": null
   },
   {
     "key": "SongPreviews",
@@ -304,7 +319,8 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "DisplayCurrentAccuracy",
@@ -323,7 +339,8 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "ShowSongTimerEnabled",
@@ -342,7 +359,8 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "ShowSongTimerWhen",
@@ -367,7 +385,8 @@
       "key": "ShowSongTimerEnabled",
       "equals": "on"
     },
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "ShowSongTimerKey",
@@ -386,7 +405,8 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "ShowCurrentNoteOnScreen",
@@ -405,7 +425,8 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "OnScreenFont",
@@ -424,7 +445,8 @@
     "choices": [],
     "choicesSource": "SystemFonts",
     "visibleWhen": null,
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "OnScreenFontSize",
@@ -443,7 +465,8 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "ScreenShotScores",
@@ -462,7 +485,8 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "LinearRiffRepeater",
@@ -481,7 +505,8 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "AllowRewind",
@@ -500,7 +525,8 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "RewindBy",
@@ -522,7 +548,8 @@
       "key": "AllowRewind",
       "equals": "on"
     },
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "RewindLeadup",
@@ -544,7 +571,8 @@
       "key": "AllowRewind",
       "equals": "on"
     },
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "AllowLooping",
@@ -563,7 +591,8 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "LoopingLeadUp",
@@ -585,7 +614,8 @@
       "key": "AllowLooping",
       "equals": "on"
     },
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "RRSpeedAboveOneHundred",
@@ -604,7 +634,8 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "RRSpeedInterval",
@@ -626,7 +657,8 @@
       "key": "RRSpeedAboveOneHundred",
       "equals": "on"
     },
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "RRSpeedKey",
@@ -645,7 +677,8 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "LoopStartKey",
@@ -664,7 +697,8 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "LoopEndKey",
@@ -683,7 +717,8 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "RewindKey",
@@ -702,7 +737,8 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "RemoveSkylineEnabled",
@@ -721,7 +757,8 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "ToggleSkylineWhen",
@@ -746,7 +783,8 @@
       "key": "RemoveSkylineEnabled",
       "equals": "on"
     },
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "RemoveLyrics",
@@ -765,7 +803,8 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "RemoveLyricsWhen",
@@ -790,7 +829,8 @@
       "key": "RemoveLyrics",
       "equals": "on"
     },
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "RemoveLyricsKey",
@@ -809,7 +849,8 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "RemoveLaneMarkersEnabled",
@@ -828,7 +869,8 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "RemoveInlaysEnabled",
@@ -847,7 +889,8 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "RemoveHeadstockEnabled",
@@ -866,7 +909,8 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "RemoveHeadstockWhen",
@@ -891,7 +935,8 @@
       "key": "RemoveHeadstockEnabled",
       "equals": "on"
     },
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "RemoveFingerprints",
@@ -910,7 +955,8 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "RainbowNotesEnabled",
@@ -929,7 +975,8 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "RainbowNotesKey",
@@ -948,7 +995,8 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "UseCustomNSPTimer",
@@ -967,7 +1015,8 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "CustomNSPTimeLimit",
@@ -989,7 +1038,8 @@
       "key": "UseCustomNSPTimer",
       "equals": "on"
     },
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "AutoTuneForSong",
@@ -1008,7 +1058,8 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "AutoTuneForSongDevice",
@@ -1030,7 +1081,8 @@
       "key": "AutoTuneForSong",
       "equals": "on"
     },
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "MidiInDevice",
@@ -1052,7 +1104,8 @@
       "key": "AutoTuneForSong",
       "equals": "on"
     },
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "AutoTuneForSongWhen",
@@ -1077,7 +1130,8 @@
       "key": "AutoTuneForSong",
       "equals": "on"
     },
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "TuningPedal",
@@ -1096,7 +1150,8 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "TuningOffset",
@@ -1115,7 +1170,8 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "ChordsMode",
@@ -1137,7 +1193,8 @@
       "key": "AutoTuneForSong",
       "equals": "on"
     },
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "AutoTuneForSoftwareSemitoneSettings",
@@ -1159,7 +1216,8 @@
       "key": "AutoTuneForSong",
       "equals": "on"
     },
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "AutoTuneForSoftwareSemitoneTriggers",
@@ -1181,7 +1239,8 @@
       "key": "AutoTuneForSong",
       "equals": "on"
     },
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "AutoTuneForSoftwareTrueTuningSettings",
@@ -1203,7 +1262,8 @@
       "key": "AutoTuneForSong",
       "equals": "on"
     },
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "AutoTuneForSoftwareTrueTuningTriggers",
@@ -1225,7 +1285,8 @@
       "key": "AutoTuneForSong",
       "equals": "on"
     },
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "MidiCustomEditor",
@@ -1244,7 +1305,8 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": "Midi"
+    "editor": "Midi",
+    "editedBy": null
   },
   {
     "key": "TuningOffsetKey",
@@ -1263,7 +1325,8 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "OverrideInputVolumeEnabled",
@@ -1282,7 +1345,8 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "OverrideInputVolumeDevice",
@@ -1304,7 +1368,8 @@
       "key": "OverrideInputVolumeEnabled",
       "equals": "on"
     },
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "OverrideInputVolume",
@@ -1326,7 +1391,8 @@
       "key": "OverrideInputVolumeEnabled",
       "equals": "on"
     },
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "ToggleLoftEnabled",
@@ -1345,7 +1411,8 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "ToggleLoftWhen",
@@ -1371,7 +1438,8 @@
       "key": "ToggleLoftEnabled",
       "equals": "on"
     },
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "ToggleLoftKey",
@@ -1390,7 +1458,8 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "SecondaryMonitor",
@@ -1409,7 +1478,8 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "SecondaryMonitorXPosition",
@@ -1431,7 +1501,8 @@
       "key": "SecondaryMonitor",
       "equals": "on"
     },
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "SecondaryMonitorYPosition",
@@ -1453,7 +1524,8 @@
       "key": "SecondaryMonitor",
       "equals": "on"
     },
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "GuitarSpeak",
@@ -1472,7 +1544,8 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "GuitarSpeakWhileTuning",
@@ -1494,7 +1567,8 @@
       "key": "GuitarSpeak",
       "equals": "on"
     },
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "GuitarSpeakCustomEditor",
@@ -1516,7 +1590,8 @@
       "key": "GuitarSpeak",
       "equals": "on"
     },
-    "editor": "GuitarSpeak"
+    "editor": "GuitarSpeak",
+    "editedBy": null
   },
   {
     "key": "GuitarSpeakDelete",
@@ -1538,7 +1613,8 @@
       "key": "GuitarSpeak",
       "equals": "on"
     },
-    "editor": null
+    "editor": null,
+    "editedBy": "GuitarSpeak"
   },
   {
     "key": "GuitarSpeakSpace",
@@ -1560,7 +1636,8 @@
       "key": "GuitarSpeak",
       "equals": "on"
     },
-    "editor": null
+    "editor": null,
+    "editedBy": "GuitarSpeak"
   },
   {
     "key": "GuitarSpeakEnter",
@@ -1582,7 +1659,8 @@
       "key": "GuitarSpeak",
       "equals": "on"
     },
-    "editor": null
+    "editor": null,
+    "editedBy": "GuitarSpeak"
   },
   {
     "key": "GuitarSpeakTab",
@@ -1604,7 +1682,8 @@
       "key": "GuitarSpeak",
       "equals": "on"
     },
-    "editor": null
+    "editor": null,
+    "editedBy": "GuitarSpeak"
   },
   {
     "key": "GuitarSpeakPageUp",
@@ -1626,7 +1705,8 @@
       "key": "GuitarSpeak",
       "equals": "on"
     },
-    "editor": null
+    "editor": null,
+    "editedBy": "GuitarSpeak"
   },
   {
     "key": "GuitarSpeakPageDown",
@@ -1648,7 +1728,8 @@
       "key": "GuitarSpeak",
       "equals": "on"
     },
-    "editor": null
+    "editor": null,
+    "editedBy": "GuitarSpeak"
   },
   {
     "key": "GuitarSpeakUpArrow",
@@ -1670,7 +1751,8 @@
       "key": "GuitarSpeak",
       "equals": "on"
     },
-    "editor": null
+    "editor": null,
+    "editedBy": "GuitarSpeak"
   },
   {
     "key": "GuitarSpeakDownArrow",
@@ -1692,7 +1774,8 @@
       "key": "GuitarSpeak",
       "equals": "on"
     },
-    "editor": null
+    "editor": null,
+    "editedBy": "GuitarSpeak"
   },
   {
     "key": "GuitarSpeakEscape",
@@ -1714,7 +1797,8 @@
       "key": "GuitarSpeak",
       "equals": "on"
     },
-    "editor": null
+    "editor": null,
+    "editedBy": "GuitarSpeak"
   },
   {
     "key": "GuitarSpeakClose",
@@ -1736,7 +1820,8 @@
       "key": "GuitarSpeak",
       "equals": "on"
     },
-    "editor": null
+    "editor": null,
+    "editedBy": "GuitarSpeak"
   },
   {
     "key": "GuitarSpeakOBracket",
@@ -1758,7 +1843,8 @@
       "key": "GuitarSpeak",
       "equals": "on"
     },
-    "editor": null
+    "editor": null,
+    "editedBy": "GuitarSpeak"
   },
   {
     "key": "GuitarSpeakCBracket",
@@ -1780,7 +1866,8 @@
       "key": "GuitarSpeak",
       "equals": "on"
     },
-    "editor": null
+    "editor": null,
+    "editedBy": "GuitarSpeak"
   },
   {
     "key": "GuitarSpeakTildea",
@@ -1802,7 +1889,8 @@
       "key": "GuitarSpeak",
       "equals": "on"
     },
-    "editor": null
+    "editor": null,
+    "editedBy": "GuitarSpeak"
   },
   {
     "key": "GuitarSpeakForSlash",
@@ -1824,7 +1912,8 @@
       "key": "GuitarSpeak",
       "equals": "on"
     },
-    "editor": null
+    "editor": null,
+    "editedBy": "GuitarSpeak"
   },
   {
     "key": "GuitarSpeakAlt",
@@ -1846,7 +1935,8 @@
       "key": "GuitarSpeak",
       "equals": "on"
     },
-    "editor": null
+    "editor": null,
+    "editedBy": "GuitarSpeak"
   },
   {
     "key": "GreenScreenWallEnabled",
@@ -1865,7 +1955,8 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "FretlessModeEnabled",
@@ -1884,7 +1975,8 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "ExtendedRangeEnabled",
@@ -1903,7 +1995,8 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "ExtendedRangeDropTuning",
@@ -1925,7 +2018,8 @@
       "key": "ExtendedRangeEnabled",
       "equals": "on"
     },
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "ExtendedRangeFixBassTuning",
@@ -1947,7 +2041,8 @@
       "key": "ExtendedRangeEnabled",
       "equals": "on"
     },
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "ExtendedRangeMode",
@@ -1969,7 +2064,8 @@
       "key": "ExtendedRangeEnabled",
       "equals": "on"
     },
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "CustomStringColors",
@@ -1988,7 +2084,8 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "SeparateNoteColors",
@@ -2007,7 +2104,8 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "SeparateNoteColorsMode",
@@ -2029,7 +2127,8 @@
       "key": "SeparateNoteColors",
       "equals": "on"
     },
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "RainbowStringsEnabled",
@@ -2048,7 +2147,8 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "StringColorsCustomEditor",
@@ -2067,7 +2167,8 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": "StringColors"
+    "editor": "StringColors",
+    "editedBy": null
   },
   {
     "key": "RainbowStringsKey",
@@ -2086,7 +2187,8 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "ToggleExtendedRangeKey",
@@ -2105,7 +2207,8 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "ForceReEnumerationEnabled",
@@ -2128,7 +2231,8 @@
     ],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "CheckForNewSongsInterval",
@@ -2150,7 +2254,8 @@
       "key": "ForceReEnumerationEnabled",
       "equals": "automatic"
     },
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "ForceReEnumerationKey",
@@ -2169,7 +2274,8 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "CustomHighwayColors",
@@ -2188,7 +2294,8 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": "HighwayColors"
+    "editor": "HighwayColors",
+    "editedBy": null
   },
   {
     "key": "ForceProfileEnabled",
@@ -2207,7 +2314,8 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "ProfileToLoad",
@@ -2229,7 +2337,8 @@
       "key": "ForceProfileEnabled",
       "equals": "on"
     },
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "AltOutputSampleRate",
@@ -2248,7 +2357,8 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "AlternativeOutputSampleRate",
@@ -2277,7 +2387,8 @@
       "key": "AltOutputSampleRate",
       "equals": "on"
     },
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "AllowAudioInBackground",
@@ -2296,7 +2407,8 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "BackupProfile",
@@ -2315,7 +2427,8 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "FastProfileLoadAndSave",
@@ -2337,7 +2450,8 @@
       "key": "BackupProfile",
       "equals": "on"
     },
-    "editor": null
+    "editor": null,
+    "editedBy": null
   },
   {
     "key": "Ultrawide",
@@ -2356,6 +2470,7 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": null
+    "editor": null,
+    "editedBy": null
   }
 ]
