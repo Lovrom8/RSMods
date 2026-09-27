@@ -135,8 +135,8 @@ namespace RSMods
             // Load All Available Rocksmith Profiles
             Startup_LoadRocksmithProfiles();
 
-            // Unpack Cache.psarc
-            Startup_UnpackCachePsarc();
+            // Backup Cache.psarc
+            Startup_BackupCachePsarc();
 
             // Load Set And Forget Mods
             SetForget_LoadSetAndForgetMods();
@@ -444,7 +444,11 @@ namespace RSMods
 
         private void Startup_CheckStatusAudioPsarc() => SoundPacks_ChangeUIForUnpackedFolder(Directory.Exists("audio_psarc"));
 
-        private void Startup_UnpackCachePsarc() => SetAndForgetMods.UnpackCachePsarc();
+        private void Startup_BackupCachePsarc()
+        {
+            SetAndForgetMods.BackupCachePsarc();
+            SetAndForgetMods.RemoveTempFolders(); // Older versions kept an unpacked cache around between sessions.
+        }
 
         #endregion
         #region Show Prior Settings In GUI
@@ -1728,7 +1732,6 @@ namespace RSMods
         private void SetForget_LoadSetAndForgetMods()
         {
             SetAndForgetMods.LoadDefaultFiles();
-            SetAndForgetMods.UnpackCachePsarc(); // We need to unpack the cache AGAIN in-case the user resets their psarc, and we don't know.
             SetForget_FillUI();
             SetForget_SetTunerColors();
         }

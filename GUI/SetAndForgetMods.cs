@@ -21,13 +21,27 @@ namespace RSMods
         #region Generic
         // General PSARC operations 
 
-        public static void RepackCachePsarc()
+        // Every Set & Forget mod starts from the cache.psarc currently on disk, and the unpacked copy is thrown away afterwards.
+        // Re-using an old unpack would silently re-apply mods the user has since removed (ie: Restore Defaults, or Steam verify).
+        private static void ModifyCachePsarc(Func<bool> applyChanges)
         {
             try
             {
-                if (!Directory.Exists(Constants.CachePcPath))
-                    UnpackCachePsarc();
+                UnpackCachePsarc();
 
+                if (applyChanges())
+                    RepackCachePsarc();
+            }
+            finally
+            {
+                RemoveTempFolders();
+            }
+        }
+
+        private static void RepackCachePsarc()
+        {
+            try
+            {
                 if (!File.Exists(Path.Combine(Constants.CachePcPath, "sltsv1_aggregategraph.nt")))
                     GenUtil.ExtractEmbeddedResource(Constants.CachePcPath, Assembly.GetExecutingAssembly(), "RSMods.Resources", new string[] { "sltsv1_aggregategraph.nt" }); //NOTE: when adding resources, change Build Action to Embeded Resource  
 
@@ -40,15 +54,20 @@ namespace RSMods
             }
         }
 
-        public static void UnpackCachePsarc()
+        private static void UnpackCachePsarc()
         {
-            if (!Directory.Exists(Constants.WorkFolder))
-                Directory.CreateDirectory(Constants.WorkFolder);
+            RemoveTempFolders();
+            Directory.CreateDirectory(Constants.WorkFolder);
 
-            if (!File.Exists(Constants.CacheBackupPath))
-                File.Copy(Constants.CachePsarcPath, Constants.CacheBackupPath);
+            BackupCachePsarc();
 
             Packer.Unpack(Constants.CachePsarcPath, Constants.WorkFolder);
+        }
+
+        public static void BackupCachePsarc()
+        {
+            if (!File.Exists(Constants.CacheBackupPath))
+                File.Copy(Constants.CachePsarcPath, Constants.CacheBackupPath);
         }
 
         public static bool RestoreDefaults()
@@ -79,23 +98,16 @@ namespace RSMods
             }
         }
 
-        public static void CleanUnpackedCache()
-        {
-            if (!Directory.Exists(Constants.CachePcPath))
-                return;
-
-            ZipUtilities.DeleteDirectory(Constants.CachePcPath, true);
-
-            UnpackCachePsarc();
-        }
+        public static void CleanUnpackedCache() => RemoveTempFolders(); // Every mod unpacks cache.psarc fresh, so there is nothing to re-unpack.
 
         public static bool ImportExistingSettings()
         {
-            if (!File.Exists(Constants.Cache4_7zPath) || !File.Exists(Constants.Cache7_7zPath))
-                UnpackCachePsarc();
-
-            ZipUtilities.ExtractSingleFile(Constants.CustomModsFolder, Constants.Cache7_7zPath, Constants.TuningsJSON_InternalPath);
-            ZipUtilities.ExtractSingleFile(Constants.CustomModsFolder, Constants.Cache4_7zPath, Constants.LocalizationCSV_InternalPath);
+            ModifyCachePsarc(() =>
+            {
+                ZipUtilities.ExtractSingleFile(Constants.CustomModsFolder, Constants.Cache7_7zPath, Constants.TuningsJSON_InternalPath);
+                ZipUtilities.ExtractSingleFile(Constants.CustomModsFolder, Constants.Cache4_7zPath, Constants.LocalizationCSV_InternalPath);
+                return false; // Read only, don't repack.
+            });
 
             return true;
         }
@@ -148,15 +160,14 @@ namespace RSMods
 
         public static void AddCustomTunings()
         {
-            if (!Directory.Exists(Constants.CachePcPath) || GenUtil.IsDirectoryEmpty(Constants.CachePcPath)) // Don't replace existing unpacked cache, in case the user wants to add more mods together
-                UnpackCachePsarc();
+            ModifyCachePsarc(() =>
+            {
+                AddLocalizationForTuningEntries();
 
-            AddLocalizationForTuningEntries();
-
-            ZipUtilities.InjectFile(Constants.TuningJSON_CustomPath, Constants.Cache7_7zPath, Constants.TuningsJSON_InternalPath, OutArchiveFormat.SevenZip, CompressionMode.Append);
-            ZipUtilities.InjectFile(Constants.LocalizationCSV_CustomPath, Constants.Cache4_7zPath, Constants.LocalizationCSV_InternalPath, OutArchiveFormat.SevenZip, CompressionMode.Append);
-
-            RepackCachePsarc();
+                ZipUtilities.InjectFile(Constants.TuningJSON_CustomPath, Constants.Cache7_7zPath, Constants.TuningsJSON_InternalPath, OutArchiveFormat.SevenZip, CompressionMode.Append);
+                ZipUtilities.InjectFile(Constants.LocalizationCSV_CustomPath, Constants.Cache4_7zPath, Constants.LocalizationCSV_InternalPath, OutArchiveFormat.SevenZip, CompressionMode.Append);
+                return true;
+            });
         }
 
         public static Tuple<string, string> SplitTuningUIName(string uiName)
@@ -246,23 +257,21 @@ namespace RSMods
 
         public static void AddExitGameMenuOption()
         {
-            if (!Directory.Exists(Constants.CachePcPath) || GenUtil.IsDirectoryEmpty(Constants.CachePcPath))
-                UnpackCachePsarc();
-
-            ZipUtilities.InjectFile(Constants.MainMenuJson_CustomPath, Constants.Cache7_7zPath, Constants.MainMenuJson_InternalPath, OutArchiveFormat.SevenZip, CompressionMode.Append);
-
-            RepackCachePsarc();
+            ModifyCachePsarc(() =>
+            {
+                ZipUtilities.InjectFile(Constants.MainMenuJson_CustomPath, Constants.Cache7_7zPath, Constants.MainMenuJson_InternalPath, OutArchiveFormat.SevenZip, CompressionMode.Append);
+                return true;
+            });
         }
 
         public static void AddDirectConnectModeOption()
         {
-            if (!Directory.Exists(Constants.CachePcPath) || GenUtil.IsDirectoryEmpty(Constants.CachePcPath))
-                UnpackCachePsarc();
-
-            ZipUtilities.InjectFile(Constants.ExtendedMenuJson_CustomPath, Constants.Cache7_7zPath, Constants.ExtendedMenuJson_InternalPath, OutArchiveFormat.SevenZip, CompressionMode.Append);
-            ZipUtilities.InjectFile(Constants.DirectConnectStartupJson_CustomPath, Constants.Cache7_7zPath, Constants.DirectConnectStartupJson_InternalPath, OutArchiveFormat.SevenZip, CompressionMode.Append);
-
-            RepackCachePsarc();
+            ModifyCachePsarc(() =>
+            {
+                ZipUtilities.InjectFile(Constants.ExtendedMenuJson_CustomPath, Constants.Cache7_7zPath, Constants.ExtendedMenuJson_InternalPath, OutArchiveFormat.SevenZip, CompressionMode.Append);
+                ZipUtilities.InjectFile(Constants.DirectConnectStartupJson_CustomPath, Constants.Cache7_7zPath, Constants.DirectConnectStartupJson_InternalPath, OutArchiveFormat.SevenZip, CompressionMode.Append);
+                return true;
+            });
         }
         #endregion
         #region Default Tones
@@ -272,73 +281,53 @@ namespace RSMods
 
         public static void SetDefaultTones(string selectedToneName, int selectedToneType, bool alreadyTried = false)
         {
-            ZipUtilities.ExtractSingleFile(Constants.CustomModsFolder, Constants.Cache7_7zPath, Constants.ToneManager_InternalPath);
-
-            if (!File.Exists(Constants.ToneManager_CustomPath))
-            {
-                MessageBox.Show("Could not extract tones from cache.psarc.", "Error");
-                return;
-            }
-
-            string toneManagerFileContent = File.ReadAllText(Constants.ToneManager_CustomPath);
-            var tonesJson = JObject.Parse(toneManagerFileContent);
-            //var toneList = tonesJson["Static"]["ToneManager"]["Tones"];
-            //var defaultTones = JsonConvert.DeserializeObject<List<Tone2014>>(toneList.ToString());
-
-            var selectedTone = tonesFromAllProfiles[selectedToneName];
-
-            tonesJson["Static"]["ToneManager"]["Tones"][selectedToneType]["GearList"] = JObject.FromObject(selectedTone.GearList);
-
-            try
-            {
-                File.WriteAllText(Constants.ToneManager_CustomPath, tonesJson.ToString());
-            }
-            catch (IOException ioex)
-            {
-                MessageBox.Show($"Error:{ioex.Message}");
-                return;
-            }
-
-            ZipUtilities.InjectFile(Constants.ToneManager_CustomPath, Constants.Cache7_7zPath, Constants.ToneManager_InternalPath, OutArchiveFormat.SevenZip, CompressionMode.Append);
-
-            RepackCachePsarc();
-
-            MessageBox.Show("Successfully changed default tones!", "Success");
+            if (ReplaceToneInCachePsarc(selectedToneName, selectedToneType))
+                MessageBox.Show("Successfully changed default tones!", "Success");
         }
 
         public static void SetGuitarArcadeTone(string selectedToneName, int selectedToneType)
         {
-            ZipUtilities.ExtractSingleFile(Constants.CustomModsFolder, Constants.Cache7_7zPath, Constants.ToneManager_InternalPath);
+            if (ReplaceToneInCachePsarc(selectedToneName, selectedToneType + 8)) // GuitarArcade tones start at the 8th element of Tone list
+                MessageBox.Show("Successfully changed Guitarcade tones!", "Success");
+        }
 
-            if (!File.Exists(Constants.ToneManager_CustomPath))
-                MessageBox.Show("Could not extract tones from cache.psarc. Please press Import Existing Settings button!", "Error");
+        private static bool ReplaceToneInCachePsarc(string selectedToneName, int toneIndex)
+        {
+            bool success = false;
 
-            string toneManagerFileContent = File.ReadAllText(Constants.ToneManager_CustomPath);
-            var tonesJson = JObject.Parse(toneManagerFileContent);
-
-            var selectedTone = tonesFromAllProfiles[selectedToneName];
-
-            selectedToneType += 8; // GuitarArcade tones start at the 8th element of Tone list
-
-            var x = tonesJson["Static"]["ToneManager"]["Tones"][selectedToneType];
-
-            tonesJson["Static"]["ToneManager"]["Tones"][selectedToneType]["GearList"] = JObject.FromObject(selectedTone.GearList);
-
-            try
+            ModifyCachePsarc(() =>
             {
-                File.WriteAllText(Constants.ToneManager_CustomPath, tonesJson.ToString());
-            }
-            catch (IOException ioex)
-            {
-                MessageBox.Show($"Error:{ioex.Message}");
-                return;
-            }
+                ZipUtilities.ExtractSingleFile(Constants.CustomModsFolder, Constants.Cache7_7zPath, Constants.ToneManager_InternalPath);
 
-            ZipUtilities.InjectFile(Constants.ToneManager_CustomPath, Constants.Cache7_7zPath, Constants.ToneManager_InternalPath, OutArchiveFormat.SevenZip, CompressionMode.Append);
+                if (!File.Exists(Constants.ToneManager_CustomPath))
+                {
+                    MessageBox.Show("Could not extract tones from cache.psarc.", "Error");
+                    return false;
+                }
 
-            RepackCachePsarc();
+                string toneManagerFileContent = File.ReadAllText(Constants.ToneManager_CustomPath);
+                var tonesJson = JObject.Parse(toneManagerFileContent);
 
-            MessageBox.Show("Successfully changed Guitarcade tones!", "Success");
+                var selectedTone = tonesFromAllProfiles[selectedToneName];
+
+                tonesJson["Static"]["ToneManager"]["Tones"][toneIndex]["GearList"] = JObject.FromObject(selectedTone.GearList);
+
+                try
+                {
+                    File.WriteAllText(Constants.ToneManager_CustomPath, tonesJson.ToString());
+                }
+                catch (IOException ioex)
+                {
+                    MessageBox.Show($"Error:{ioex.Message}");
+                    return false;
+                }
+
+                ZipUtilities.InjectFile(Constants.ToneManager_CustomPath, Constants.Cache7_7zPath, Constants.ToneManager_InternalPath, OutArchiveFormat.SevenZip, CompressionMode.Append);
+                success = true;
+                return true;
+            });
+
+            return success;
         }
 
         public static List<string> GetSteamProfilesTones()
@@ -455,9 +444,6 @@ namespace RSMods
 
         public static void AddFastLoadMod()
         {
-            if (!Directory.Exists(Constants.CachePcPath) || GenUtil.IsDirectoryEmpty(Constants.CachePcPath))
-                UnpackCachePsarc();
-
             try
             {
                 char driveLetter = Constants.RSFolder.ToUpper()[0];
@@ -495,20 +481,21 @@ namespace RSMods
                 MessageBox.Show($"Unable to copy required files. Error: {ioex.Message}");
             }
 
-            ZipUtilities.InjectFile(Constants.IntroGFX_CustomPath, Constants.Cache4_7zPath, Constants.IntroGFX_InternalPath, OutArchiveFormat.SevenZip, CompressionMode.Append);
-
-            RepackCachePsarc();
+            ModifyCachePsarc(() =>
+            {
+                ZipUtilities.InjectFile(Constants.IntroGFX_CustomPath, Constants.Cache4_7zPath, Constants.IntroGFX_InternalPath, OutArchiveFormat.SevenZip, CompressionMode.Append);
+                return true;
+            });
         }
         #endregion
         #region Custom Wwise
         public static void AddIncreasedVolumeWwiseBank()
         {
-            if (!Directory.Exists(Constants.CachePcPath) || GenUtil.IsDirectoryEmpty(Constants.CachePcPath))
-                UnpackCachePsarc();
-
-            ZipUtilities.InjectFile(Constants.WwiseInitBnk_CustomPath, Constants.Cache3_7zPath, Constants.WwiseInitBnk_InternalPath, OutArchiveFormat.SevenZip, CompressionMode.Append);
-
-            RepackCachePsarc();
+            ModifyCachePsarc(() =>
+            {
+                ZipUtilities.InjectFile(Constants.WwiseInitBnk_CustomPath, Constants.Cache3_7zPath, Constants.WwiseInitBnk_InternalPath, OutArchiveFormat.SevenZip, CompressionMode.Append);
+                return true;
+            });
         }
         #endregion
     }
