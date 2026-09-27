@@ -460,23 +460,25 @@ static void Test_DuplicateIdRejected() {
 	reg.Shutdown();
 }
 
-static void Test_ShutdownRevertsAndDestroysInOrder() {
+static void Test_ShutdownRevertsInOrderAndKeepsModsAlive() {
 	ClearEvents();
-	ModRegistry reg;
-	TestMod* mod = Add(reg, "S");
-	mod->recordDestruction = true;
-	reg.DispatchInitialize();
-	reg.Tick(GamePhase::Song); // active in a song, so inSong is set
-	Expect(Has("S:OnEnabled") && Has("S:OnSongEnter"), "mod is active in a song before shutdown");
+	{
+		ModRegistry reg;
+		TestMod* mod = Add(reg, "S");
+		mod->recordDestruction = true;
+		reg.DispatchInitialize();
+		reg.Tick(GamePhase::Song); // active in a song, so inSong is set
+		Expect(Has("S:OnEnabled") && Has("S:OnSongEnter"), "mod is active in a song before shutdown");
 
-	ClearEvents();
-	reg.Shutdown();
-	Expect(Has("S:OnSongExit") && Has("S:OnDisabled") && Has("S:OnShutdown") && Has("S:destroy"),
-		"shutdown runs the full teardown and destroys the mod");
-	Expect(IndexOf("S:OnSongExit") < IndexOf("S:OnDisabled") &&
-		IndexOf("S:OnDisabled") < IndexOf("S:OnShutdown") &&
-		IndexOf("S:OnShutdown") < IndexOf("S:destroy"),
-		"shutdown order: OnSongExit -> OnDisabled -> OnShutdown -> destruction");
+		ClearEvents();
+		reg.Shutdown();
+		ExpectSeq({ "S:OnSongExit", "S:OnDisabled", "S:OnShutdown" },
+			"shutdown order: OnSongExit -> OnDisabled -> OnShutdown");
+		// A render frame already in flight may still call the mod's callbacks.
+		Expect(!Has("S:destroy"), "shutdown keeps the mod object alive");
+		Expect(reg.StatusSnapshot().empty(), "shutdown empties the status view");
+	}
+	Expect(Has("S:destroy"), "the mod is destroyed with the registry");
 }
 
 static void Test_StartupOrderHarvestsSettingsBeforeDispatchInitialize() {
@@ -621,7 +623,7 @@ int main() {
 	Test_StallMonitorSeesHooksAndCommands();
 	Test_DuplicateIdRejected();
 	Test_StartupOrderHarvestsSettingsBeforeDispatchInitialize();
-	Test_ShutdownRevertsAndDestroysInOrder();
+	Test_ShutdownRevertsInOrderAndKeepsModsAlive();
 	Test_StatusSnapshotReflectsStates();
 	Test_RetryFaultedMods();
 	Test_FaultKeepsSettingsSchema();

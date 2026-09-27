@@ -6,6 +6,7 @@
 #include <deque>
 #include <exception>
 #include <iomanip>
+#include <iterator>
 #include <mutex>
 #include <string>
 #include <string_view>
@@ -462,6 +463,7 @@ namespace Framework {
 		}
 
 		std::vector<Record> records;
+		std::vector<Record> retired; // Shut-down mods, kept alive: a frame already in flight may still call their render callbacks.
 		ModContext ctx;
 		bool resourceIndexDirty = false;
 		std::vector<std::vector<std::string>> exclusiveResourcesByMod;
@@ -595,6 +597,7 @@ namespace Framework {
 			SettingsSchema().RemoveMod(record.mod.get());
 		}
 
+		std::ranges::move(impl->records, std::back_inserter(impl->retired));
 		impl->records.clear();
 		Ledger().Release(&registryOwner);
 		Menus().PublishAvailability({});
