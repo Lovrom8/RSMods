@@ -53,7 +53,7 @@ namespace CrowdControl::Effects {
 
 		// Update note texture
 		Framework::Registry().EnqueueSettingsUpdate([hexColor] {
-			Settings::UpdateModSetting(Setting::SolidNoteColor, hexColor);
+			Settings::UpdateTwitchSetting(Setting::Twitch::SolidNoteColor, hexColor);
 			Settings::UpdateTwitchSetting(Setting::Twitch::SolidNotes, "on");
 			D3DHooks::RecreateTextures = true;
 		});
@@ -194,7 +194,7 @@ namespace CrowdControl::Effects {
 		// Update note texture and publish its regeneration request as one ordered settings change.
 		const std::string hexColor = ss.str();
 		Framework::Registry().EnqueueSettingsUpdate([hexColor] {
-			Settings::UpdateModSetting(Setting::SolidNoteColor, hexColor);
+			Settings::UpdateTwitchSetting(Setting::Twitch::SolidNoteColor, hexColor);
 			Settings::UpdateTwitchSetting(Setting::Twitch::SolidNotes, "on");
 			D3DHooks::RecreateTextures = true;
 		});

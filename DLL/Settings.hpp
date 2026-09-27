@@ -148,9 +148,6 @@ namespace Settings {
 		inline constexpr char UseCustomNSPTimer[]      = "UseCustomNSPTimer";
 		inline constexpr char CustomNSPTimeLimit[]     = "CustomNSPTimeLimit";
 
-		// Solid Notes (user-defined hex color; lives in modSettings, set by the Twitch/CC SolidNotes effect)
-		inline constexpr char SolidNoteColor[]         = "SolidNoteColor";
-
 		// Ultrawide support
 		inline constexpr char Ultrawide[]               = "Ultrawide";
 
@@ -195,9 +192,10 @@ namespace Settings {
 			inline constexpr char ChangedSelectedVolume[]    = "ChangedSelectedVolumeKey";
 		}
 
-		// Twitch / Crowd Control effect toggles. These live in the separate twitchSettings map
-		// (IsTwitchSettingEnabled / UpdateTwitchSetting), NOT modSettings, so they get their own scope.
+		// Twitch / Crowd Control effect state. These live in the separate twitchSettings map
+		// (IsTwitchSettingEnabled / TwitchSettingValue / UpdateTwitchSetting), NOT modSettings, so an INI reload keeps them.
 		namespace Twitch {
+			inline constexpr char SolidNoteColor[]   = "SolidNoteColor"; // Hex, or "random"; set by the SolidNotes effect.
 			inline constexpr char RainbowStrings[]   = "RainbowStrings";
 			inline constexpr char RemoveNotes[]      = "RemoveNotes";
 			inline constexpr char TransparentNotes[] = "TransparentNotes";
@@ -248,6 +246,7 @@ namespace Settings {
 	void ParseTwitchToggle(const std::string& twitchMsg, const std::string_view& toggleType);
 	void ParseSolidColorsMessage(const std::string& twitchMsg);
 	bool IsTwitchSettingEnabled(const std::string& name);
+	std::string TwitchSettingValue(const std::string& name);
 	std::vector<std::string> SplitByWhitespace(const std::string& input);
 
 	inline std::map<std::string, std::string, std::less<>> keyBinds;

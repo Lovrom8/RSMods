@@ -411,6 +411,16 @@ bool Settings::IsTwitchSettingEnabled(const std::string& name) {
 }
 
 /// <summary>
+/// Raw twitch effect value; empty when unset.
+/// </summary>
+/// <param name="name"> - std::map[key]</param>
+std::string Settings::TwitchSettingValue(const std::string& name) {
+	std::shared_lock lock(g_settingsMutex);
+	auto it = twitchSettings.find(name);
+	return it != twitchSettings.end() ? it->second : std::string();
+}
+
+/// <summary>
 /// Read Noteway Color
 /// </summary>
 /// <param name="name"> - std::map[key]</param>
@@ -514,7 +524,7 @@ void Settings::ParseSolidColorsMessage(const std::string& twitchMsg) {
 	if (msgParts.size() < 3)
 		return;
 
-	UpdateModSetting(Setting::SolidNoteColor, msgParts[2]);
+	UpdateTwitchSetting(Setting::Twitch::SolidNoteColor, msgParts[2]);
 }
 
 /// <summary>

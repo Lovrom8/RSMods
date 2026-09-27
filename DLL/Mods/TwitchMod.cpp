@@ -43,7 +43,7 @@ void TwitchMod::SyncState() {
 	s_drunkMode.store(Settings::IsTwitchSettingEnabled(Setting::Twitch::DrunkMode), std::memory_order_relaxed);
 
 	if (solid) {
-		if (Settings::ReturnSettingValue(Setting::SolidNoteColor) == "random") {
+		if (Settings::TwitchSettingValue(Setting::Twitch::SolidNoteColor) == "random") {
 			int idx = currentRandomTexture;
 			if (idx >= 0 && idx < static_cast<int>(randomTextures.size())) {
 				s_activeSolidTexture.store(randomTextures[idx], std::memory_order_relaxed);
@@ -198,7 +198,7 @@ void TwitchMod::GenerateRandomTextures(IDirect3DDevice9* pDevice) {
 void TwitchMod::RegenerateUserDefinedTexture(IDirect3DDevice9* pDevice) {
 	if (!pDevice) return;
 
-	RSColor userDefColor = Settings::ConvertHexToColor(Settings::ReturnSettingValue(Setting::SolidNoteColor));
+	RSColor userDefColor = Settings::ConvertHexToColor(Settings::TwitchSettingValue(Setting::Twitch::SolidNoteColor));
 
 	ColorList customColorList(16, userDefColor);
 	D3D::GenerateGradientTexture(pDevice, &twitchUserDefinedTexture, customColorList);
