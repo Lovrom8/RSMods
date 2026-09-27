@@ -69,7 +69,7 @@ internal sealed partial class SetAndForgetViewModel(
     [NotifyCanExecuteChangedFor(
         nameof(AddCustomTuningsCommand), nameof(IncreaseVolumeCommand), nameof(AddExitGameCommand),
         nameof(AddDirectConnectCommand), nameof(ApplyFastLoadCommand), nameof(RestoreDefaultsCommand),
-        nameof(ResetCacheCommand), nameof(UnpackAgainCommand), nameof(RemoveTempFoldersCommand),
+        nameof(ResetCacheCommand), nameof(RemoveTempFoldersCommand),
         nameof(ImportExistingSettingsCommand), nameof(AddTuningCommand), nameof(SaveTuningCommand),
         nameof(RemoveTuningCommand), nameof(LoadSongsCommand), nameof(LoadCustomTuningFromSongCommand),
         nameof(LoadProfileTonesCommand), nameof(AssignDefaultToneCommand), nameof(AssignGuitarcadeToneCommand)
@@ -138,6 +138,7 @@ internal sealed partial class SetAndForgetViewModel(
         {
             await Task.Run(() =>
             {
+                cache.RemoveTempFolders(); // Older versions kept an unpacked cache between sessions.
                 cache.LoadDefaultFiles();
                 _tuning.Load();
             });
@@ -615,13 +616,6 @@ internal sealed partial class SetAndForgetViewModel(
     }
 
     [RelayCommand(CanExecute = nameof(CanRun))]
-    private Task UnpackAgainAsync() => RunModActionAsync(
-        cache.CleanUnpackedCache,
-        "Unpacking cache.psarc again...",
-        "cache.psarc unpacked again successfully.",
-        "Unable to unpack cache.psarc");
-
-    [RelayCommand(CanExecute = nameof(CanRun))]
     private Task<bool> RemoveTempFoldersAsync() => RunModActionAsync(
         cache.RemoveTempFolders,
         "Removing temporary files...",
@@ -633,10 +627,10 @@ internal sealed partial class SetAndForgetViewModel(
         () =>
         {
             if (!cache.ImportExistingSettings())
-                throw new IOException("Could not import existing settings from the unpacked cache.");
+                throw new IOException("Could not import existing settings from cache.psarc.");
             _tuning.Load();
         },
-        "Importing settings from the unpacked cache...",
+        "Importing settings from cache.psarc...",
         "Existing cache settings imported.",
         "Unable to import existing settings",
         () => ReloadTuningNames());

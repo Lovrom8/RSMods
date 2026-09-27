@@ -45,6 +45,14 @@ namespace Offsets {
 	// Note Detection
 	inline VersioningStruct<uintptr_t> ptr_noteDetectionFloor;
 
+	// Fast Load soft lock retry
+	inline VersioningStruct<uintptr_t> ptr_menuLoadUpdate;
+	inline VersioningStruct<uintptr_t> ptr_menuLoadUpdateJmpBck;
+	inline VersioningStruct<uintptr_t> ptr_menuMovieSetup;
+	inline VersioningStruct<uintptr_t> ptr_menuMovieSetupJmpBck;
+	inline VersioningStruct<uintptr_t> func_menuMovieRequest;
+	inline VersioningStruct<uintptr_t> ptr_menuMovieVTable;
+
 	// Removed do to access to Wwise calls.
 	//// Mixer Volumes
 	//extern uintptr_t ptr_songVolume;

@@ -148,10 +148,10 @@ void RiffRepeaterMod::ChangeSpeed(const ModContext& c, const KeyEvent& event) {
 
 	float newSongSpeed = RiffRepeater::GetSpeed(true);
 	newSongSpeed += event.control ? -interval : interval;
-	newSongSpeed = std::clamp(newSongSpeed, 25.f, 1600.f);
+	newSongSpeed = std::clamp(newSongSpeed, RiffRepeater::MinRealSpeed, RiffRepeater::MaxRealSpeed);
 
 	RiffRepeater::SetSpeed(newSongSpeed, true);
-	RiffRepeater::EnableTimeStretch();
+	RiffRepeater::SyncTimeStretch();
 	RiffRepeater::saveNewRRSpeedToFile = true;
 
 	LOG_INFO("Triggered Mod: Song Speed set to " << newSongSpeed << "%" << std::endl);
@@ -187,8 +187,9 @@ void RiffRepeaterMod::OnSongTick(ModContext& c) {
 		RiffRepeater::readyToLogSongID = false;
 	}
 
-	if (c.IsOn(Setting::RRSpeedAboveOneHundred)) {
-		RiffRepeater::EnableTimeStretch();
+	// Only attach Time Stretch while the speed isn't 100%, and only once we know which object to attach it to.
+	if (c.IsOn(Setting::RRSpeedAboveOneHundred) && RiffRepeater::loggedCurrentSongID) {
+		RiffRepeater::SyncTimeStretch();
 	}
 
 	UpdateLoopState(c);

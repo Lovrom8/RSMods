@@ -10,23 +10,51 @@ namespace RSMods.SetAndForget
     /// <summary>
     /// Owns the <c>cache.psarc</c> lifecycle (unpack, backup, repack, restore, cleanup) and the
     /// archive injection/extraction primitives. Every cache mod runs through <see cref="Modify"/>, so the
-    /// "ensure unpacked → mutate files → repack" round-trip, backup creation, and mutation-failure handling
+    /// "unpack → mutate files → repack → clean up" round-trip, backup creation, and mutation-failure handling
     /// live in exactly one place instead of being repeated (and quietly ignored) at each mod site.
     /// </summary>
     public sealed class CachePsarcService
     {
+        private readonly Action<string, string> _unpack;
+        private readonly Action<string, string> _pack;
+
+        public CachePsarcService()
+            : this((archive, destination) => Packer.Unpack(archive, destination),
+                   (source, archive) => Packer.Pack(source, archive))
+        {
+        }
+
+        /// <summary>Test seam: stands in for the toolkit's psarc unpack and pack.</summary>
+        internal CachePsarcService(Action<string, string> unpack, Action<string, string> pack)
+        {
+            _unpack = unpack ?? throw new ArgumentNullException(nameof(unpack));
+            _pack = pack ?? throw new ArgumentNullException(nameof(pack));
+        }
+
         /// <summary>
-        /// Ensures the cache is unpacked, applies the caller's mutations, then repacks. Any failure inside
-        /// <paramref name="mutate"/> (including an injection that did not take) aborts before the repack and
-        /// propagates to the caller, so a partially-applied mod can never be reported as success.
+        /// Unpacks the cache, applies the caller's mutations, repacks, and deletes the unpacked copy. Any
+        /// failure inside <paramref name="mutate"/> (including an injection that did not take) aborts before
+        /// the repack and propagates to the caller, so a partially-applied mod can never be reported as success.
+        /// <para>
+        /// Every call starts from the cache.psarc on disk. Mods still stack, since each one is repacked into
+        /// it, but an old unpack is never reused: it would re-apply mods the user has since removed with
+        /// Restore Defaults or a Steam verify.
+        /// </para>
         /// </summary>
         public void Modify(Action<CacheModification> mutate)
         {
             ArgumentNullException.ThrowIfNull(mutate);
 
-            EnsureUnpacked();
-            mutate(new CacheModification());
-            Repack();
+            try
+            {
+                Unpack();
+                mutate(new CacheModification());
+                Repack();
+            }
+            finally
+            {
+                RemoveTempFolders();
+            }
         }
 
         public void AddCustomTunings(TuningService tuning)
@@ -75,31 +103,27 @@ namespace RSMods.SetAndForget
             return true;
         }
 
-        public void CleanUnpackedCache()
-        {
-            if (!Directory.Exists(Constants.CachePcPath))
-                return;
-
-            ZipUtilities.DeleteDirectory(Constants.CachePcPath, true);
-
-            Unpack();
-        }
-
         /// <summary>
-        /// Extracts the current tuning and localization files out of the unpacked cache so the editor can
-        /// import settings already applied to the game. Returns false if either extraction failed.
+        /// Extracts the current tuning and localization files out of cache.psarc so the editor can import
+        /// settings already applied to the game. Returns false if either extraction failed.
         /// </summary>
         public bool ImportExistingSettings()
         {
-            if (!File.Exists(Constants.Cache4_7zPath) || !File.Exists(Constants.Cache7_7zPath))
+            try
+            {
                 Unpack();
 
-            bool tunings = ZipUtilities.ExtractSingleFile(
-                Constants.CustomModsFolder, Constants.Cache7_7zPath, Constants.TuningsJSON_InternalPath);
-            bool localization = ZipUtilities.ExtractSingleFile(
-                Constants.CustomModsFolder, Constants.Cache4_7zPath, Constants.LocalizationCSV_InternalPath);
+                bool tunings = ZipUtilities.ExtractSingleFile(
+                    Constants.CustomModsFolder, Constants.Cache7_7zPath, Constants.TuningsJSON_InternalPath);
+                bool localization = ZipUtilities.ExtractSingleFile(
+                    Constants.CustomModsFolder, Constants.Cache4_7zPath, Constants.LocalizationCSV_InternalPath);
 
-            return tunings && localization;
+                return tunings && localization;
+            }
+            finally
+            {
+                RemoveTempFolders();
+            }
         }
 
         public void RemoveTempFolders()
@@ -125,34 +149,24 @@ namespace RSMods.SetAndForget
                 GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, typeof(CachePsarcService).Assembly, "RSMods.Core.Resources", [resourceName]);
         }
 
-        private static void EnsureUnpacked()
+        private void Unpack()
         {
-            // Don't replace an existing unpacked cache, in case the user wants to stack several mods together.
-            if (!Directory.Exists(Constants.CachePcPath) || GenUtil.IsDirectoryEmpty(Constants.CachePcPath))
-                Unpack();
-        }
-
-        private static void Unpack()
-        {
-            if (!Directory.Exists(Constants.WorkFolder))
-                Directory.CreateDirectory(Constants.WorkFolder);
+            RemoveTempFolders();
+            Directory.CreateDirectory(Constants.WorkFolder);
 
             if (!File.Exists(Constants.CacheBackupPath))
                 File.Copy(Constants.CachePsarcPath, Constants.CacheBackupPath);
 
-            Packer.Unpack(Constants.CachePsarcPath, Constants.WorkFolder);
+            _unpack(Constants.CachePsarcPath, Constants.WorkFolder);
         }
 
-        private static void Repack()
+        private void Repack()
         {
-            if (!Directory.Exists(Constants.CachePcPath))
-                Unpack();
-
             //NOTE: when adding resources, change Build Action to Embedded Resource
             if (!File.Exists(Path.Combine(Constants.CachePcPath, "sltsv1_aggregategraph.nt")))
                 GenUtil.ExtractEmbeddedResource(Constants.CachePcPath, typeof(CachePsarcService).Assembly, "RSMods.Core.Resources", ["sltsv1_aggregategraph.nt"]);
 
-            Packer.Pack(Constants.CachePcPath, Constants.CachePsarcPath);
+            _pack(Constants.CachePcPath, Constants.CachePsarcPath);
         }
     }
 

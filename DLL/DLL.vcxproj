@@ -606,6 +606,7 @@
     <ClInclude Include="Lib\ImGUI\imstb_rectpack.h" />
     <ClInclude Include="Lib\ImGUI\imstb_textedit.h" />
     <ClInclude Include="Lib\ImGUI\imstb_truetype.h" />
+    <ClInclude Include="EngineString.hpp" />
     <ClInclude Include="MemUtil.hpp" />
     <ClInclude Include="SamplingProfiler.hpp" />
     <ClInclude Include="Offsets.hpp" />

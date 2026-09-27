@@ -250,7 +250,7 @@
                         FontSize="12"
                         Opacity="0.7"
                         TextWrapping="Wrap"
-                        Text="These actions unpack cache.psarc when needed, inject the selected change, and repack it for the game. Applying another action preserves the already-unpacked changes so the mods can be combined." />
+                        Text="Each action unpacks the game's current cache.psarc, injects the selected change, and repacks it. Mods you have already applied stay in, so they can be combined; mods removed with Restore cache backup or a Steam verify stay out." />
 
                     <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="12" RowSpacing="10">
                         <Button
@@ -300,11 +300,10 @@
                         FontSize="12"
                         Opacity="0.7"
                         TextWrapping="Wrap"
-                        Text="Restore the automatic backup, rebuild the temporary unpacked cache, or import changes already present there. Removing temporary folders frees the working space without changing the game's current cache.psarc." />
+                        Text="Restore the automatic backup, or import the tunings already in the game's cache.psarc. Removing temporary folders frees space left over from older versions without changing cache.psarc." />
 
                     <WrapPanel>
                         <Button Margin="0,0,10,10" Command="{Binding RestoreDefaultsCommand}" Content="Restore cache backup" />
-                        <Button Margin="0,0,10,10" Command="{Binding UnpackAgainCommand}" Content="Unpack again" />
                         <Button Margin="0,0,10,10" Command="{Binding ImportExistingSettingsCommand}" Content="Import existing settings" />
                         <Button Margin="0,0,10,10" Command="{Binding RemoveTempFoldersCommand}" Content="Remove temporary folders" />
                     </WrapPanel>

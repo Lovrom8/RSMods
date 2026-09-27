@@ -3,6 +3,7 @@ using RSMods.SetAndForget;
 
 namespace RSMods.Core.Tests;
 
+[Collection(ConstantsCollection.Name)]
 public sealed class FastLoadServiceTests
 {
     [Theory]

@@ -27,6 +27,13 @@ void Offsets::Initialize() {
 	ptr_tuningText = { {0x00F5F62C, 0x00F6062C} };										// Memory | Copied from loft
 	ptr_guitarSpeak = { {0x00F5F57C, 0x00F6057C} };										// Memory | Copied from timer
 	ptr_noteDetectionFloor = { {0x004DBF79, baseHandle + 0x000DCBF9 } };				// Code | c7 83 f4 11 00 00 18 00 00 00 (we want the 18)
+	// Fast Load soft lock retry. A menu needs its object ready and its Flash movie made; the movie waits on the answer to a request.
+	ptr_menuLoadUpdate = { {0x0059DB80, baseHandle + 0x0019EF80} };							// Code | 55 8b ec 83 e4 f8 83 ec 14 8b 45 08 53 8b 58 0c 83 c3 04 (per frame, menu loader as the first argument)
+	ptr_menuLoadUpdateJmpBck = { {0x0059DB86, baseHandle + 0x0019EF86} };
+	ptr_menuMovieSetup = { {0x00C167A0, baseHandle + 0x00815EE0} };							// Code | 55 8b ec 83 e4 f8 83 ec 14 56 8b f1 80 be 21 01 00 00 00 (menu movie object in ECX)
+	ptr_menuMovieSetupJmpBck = { {0x00C167A6, baseHandle + 0x00815EE6} };
+	func_menuMovieRequest = { {0x00C192A0, baseHandle + 0x008189E0} };						// Code | 55 8b ec 83 e4 f8 83 ec 08 56 8b f0 8b 4e 38 (movie object in EAX, 8 byte request id on the stack, RET 8)
+	ptr_menuMovieVTable = { {0x0121E1B8, baseHandle + 0x00E1FA30} };							// Data | First dword of every menu movie object
 	func_ForceEnumeration = { {0x008c9cb0, baseHandle + 0x004C9310 } };					// Code | c6 86 dc 00 00 00 01 38 5e 05 (we want addresss of the start of the function)
 	ptr_enumerateService = { { 0xF74E90 } };											// Memory |
 	hookAddr_ModifyLocalized = { {0x005511EB, baseHandle + 0x001524FB } };				// Code | 8b 45 e0 8b ? ? ? ? ? 50 6a 01 51 8d 4d 80 (8b ? near the MOV + DWORD is what we want)

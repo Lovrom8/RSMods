@@ -452,6 +452,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="EngineString.hpp">
+      <Filter>Main Headers</Filter>
+    </ClInclude>
     <ClInclude Include="Mods\UltrawideRRDim.hpp">
       <Filter>Mods\Headers</Filter>
     </ClInclude>

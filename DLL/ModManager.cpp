@@ -166,6 +166,7 @@ namespace ModManager {
 		BugPrevention::FixModifyingFunctions();
 		ApplyAlwaysOnBugPrevention();
 		QualityOfLife::LowerNoteDetectionFloor(); // Before note detection starts
+		QualityOfLife::RetryFastLoadUponSoftLock(); // Before the first menu loads
 		Settings::Initialize();
 		UpdateSettings();
 		ERMode::Initialize();

@@ -2,6 +2,7 @@
 #include "ProfileSaveStreaming.hpp"
 #include "ProfileBackups.hpp"
 #include "../MemUtil.hpp"
+#include "../EngineString.hpp"
 #include "../SamplingProfiler.hpp"
 #include <atomic>
 #include <condition_variable>
@@ -10,17 +11,7 @@
 
 namespace ProfileSaveStreaming {
 	namespace {
-		/// <summary>
-		/// The game's string layout. Strings of 15 chars or less live in the 16 byte inline buffer,
-		/// and endOfStorage then points at finish (the end of that buffer).
-		/// </summary>
-		struct EngineString {
-			char* data;
-			char inlineRest[12];
-			char* finish;
-			char* endOfStorage;
-		};
-		static_assert(sizeof(EngineString) == 0x18, "EngineString must match the game's layout");
+		using EngineStrings::Data;
 
 		/// <summary>
 		/// z_stream from the zlib 1.2.7 the game links statically.
@@ -96,10 +87,6 @@ namespace ProfileSaveStreaming {
 		std::atomic<bool> streamFailed = false;
 		tCompressBound origCompressBound = nullptr;
 		tCompress2 origCompress2 = nullptr;
-
-		char* Data(EngineString* str) {
-			return str->endOfStorage == reinterpret_cast<char*>(&str->finish) ? reinterpret_cast<char*>(str) : str->data;
-		}
 
 		void** VTable(void* object) {
 			return *reinterpret_cast<void***>(object);
