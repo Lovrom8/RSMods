@@ -266,8 +266,8 @@ namespace Framework {
 				record.inSong = true;
 			}
 			else if (!songPhase && record.inSong) {
-				Invoke(record, &IMod::OnSongExit, "OnSongExit");
-				record.inSong = false;
+				record.inSong = false; // First: a throw tears down, and that revert mustn't exit the song again.
+				if (!InvokeActive(record, &IMod::OnSongExit, "OnSongExit")) return;
 			}
 
 			if (!InvokeActive(record, &IMod::OnTick, "OnTick")) return;
@@ -289,10 +289,14 @@ namespace Framework {
 			}
 
 			// Only settled Inactive/Active mods are notified (Registered isn't initialized yet;
-			// Faulted is terminal). A mod suppressed this tick reverts synchronously below.
+			// Faulted is terminal). A mod suppressed this tick reverts synchronously below. A throw faults
+			// like any other hook; an Active mod gets its best-effort revert first.
 			for (auto& record : records) {
-				if (IsResolutionEligible(record.state)) {
-					Invoke(record, &IMod::OnSettingsChanged, "OnSettingsChanged");
+				if (record.state == ModState::Active) {
+					InvokeActive(record, &IMod::OnSettingsChanged, "OnSettingsChanged");
+				}
+				else if (record.state == ModState::Inactive && !Invoke(record, &IMod::OnSettingsChanged, "OnSettingsChanged")) {
+					Fault(record, "threw in OnSettingsChanged");
 				}
 			}
 

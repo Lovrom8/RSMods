@@ -303,6 +303,48 @@ static void Test_SettingsAppliedThenNotifiedOnTick() {
 	reg.Shutdown();
 }
 
+static void Test_SettingsChangedThrowFaults() {
+	ClearEvents();
+	ModRegistry reg;
+	TestMod* active = Add(reg, "Act"); active->throwOn = "OnSettingsChanged";
+	TestMod* inactive = Add(reg, "Off", false); inactive->throwOn = "OnSettingsChanged";
+	reg.DispatchInitialize();
+	reg.Tick(GamePhase::Menu);
+	ClearEvents();
+
+	reg.EnqueueSettingsUpdate([] {});
+	reg.Tick(GamePhase::Menu);
+	Expect(Has("Act:OnDisabled") && IndexOf("Act:OnSettingsChanged") < IndexOf("Act:OnDisabled"),
+		"active mod throwing in OnSettingsChanged is reverted");
+	Expect(!Has("Act:OnTick"), "settings-faulted active mod doesn't tick");
+
+	const auto snap = reg.StatusSnapshot();
+	const auto kindOf = [&](const char* id) {
+		for (const auto& s : snap) if (s.id == id) return s.kind;
+		return Framework::ModStatusKind::Registered;
+	};
+	Expect(kindOf("Act") == Framework::ModStatusKind::Faulted, "active mod throwing in OnSettingsChanged faults");
+	Expect(kindOf("Off") == Framework::ModStatusKind::Faulted, "inactive mod throwing in OnSettingsChanged faults");
+	reg.Shutdown();
+}
+
+static void Test_SongExitThrowFaults() {
+	ClearEvents();
+	ModRegistry reg;
+	TestMod* s = Add(reg, "S"); s->throwOn = "OnSongExit";
+	reg.DispatchInitialize();
+	reg.Tick(GamePhase::Song);
+	ClearEvents();
+
+	reg.Tick(GamePhase::Menu);
+	ExpectSeq({ "S:OnSongExit", "S:OnDisabled" }, "OnSongExit throw reverts once, without a second OnSongExit");
+	Expect(!Has("S:OnTick"), "song-exit-faulted mod doesn't tick");
+	ClearEvents();
+	reg.Tick(GamePhase::Menu);
+	Expect(EventsEmpty(), "song-exit-faulted mod produces no further events");
+	reg.Shutdown();
+}
+
 static Framework::KeyEvent TestKeyEvent(unsigned int key, bool control = false) {
 	Framework::KeyEvent event;
 	event.virtualKey = key;
@@ -572,6 +614,8 @@ int main() {
 	Test_OnSongEnterThrowsShortCircuits();
 	Test_TickFailureFaultsImmediately();
 	Test_SettingsAppliedThenNotifiedOnTick();
+	Test_SettingsChangedThrowFaults();
+	Test_SongExitThrowFaults();
 	Test_KeyAvailabilityTracksRegistryLifecycle();
 	Test_ConflictSuppressionGatesEffectiveCommand();
 	Test_StallMonitorSeesHooksAndCommands();

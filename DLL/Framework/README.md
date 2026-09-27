@@ -114,7 +114,7 @@ Registered ──OnInitialize──▶ Inactive ──OnEnabled──▶ Active
      │                          ▲                       │
      │ OnInitialize throws      └───────OnDisabled──────┘
      ▼
-  Faulted ◀──────────── OnEnabled / tick hook throws
+  Faulted ◀──── OnEnabled / tick hook / OnSettingsChanged throws
 ```
 
 - **Inactive** means initialized but not effectively active. It covers a mod that never activated,
@@ -131,8 +131,10 @@ Registered ──OnInitialize──▶ Inactive ──OnEnabled──▶ Active
 - **Failure policy**:
   - `OnInitialize`/`OnEnabled` throw → **Faulted** (never runs again). `OnEnabled` must be
     strongly exception-safe, as `OnDisabled` is *not* called on a failed enable.
-  - A tick hook (`OnTick`/`OnMenuTick`/`OnSongTick`/`OnSongEnter`) throws → the mod is faulted
-    immediately and receives a best-effort `OnDisabled` revert.
+  - A tick hook (`OnTick`/`OnMenuTick`/`OnSongTick`/`OnSongEnter`/`OnSongExit`) or
+    `OnSettingsChanged` throws → the mod is faulted immediately; an `Active` one receives a best-effort
+    `OnDisabled` revert first. Only the `OnSongExit`/`OnDisabled` calls made while tearing a mod down
+    are best-effort, since the mod is leaving anyway.
 - **Shutdown**: `OnSongExit`(if in song) → `OnDisabled`(if active) → `OnShutdown`, then the
   registry destroys the mod objects.
 
