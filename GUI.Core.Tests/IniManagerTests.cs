@@ -101,4 +101,78 @@ public sealed class IniManagerTests
 
         Assert.True(ini.Save());
     }
+
+    [Fact]
+    public void SaveLeavesNoTemporaryFileBehind()
+    {
+        using var dir = new TemporaryDirectory();
+        var ini = new IniManager(dir.File("RSMods.ini"));
+        ini.SetString("[Toggle Switches]", "Key", "on");
+
+        ini.Save();
+        ini.Save(); // The second save replaces an existing file.
+
+        Assert.Equal(["RSMods.ini"], Directory.GetFiles(dir.Path).Select(Path.GetFileName));
+    }
+
+    // The game reads the INI with a handle that allows writes but not a replace; the save waits for it.
+    [Fact]
+    public async Task SaveWaitsOutABriefReader()
+    {
+        using var dir = new TemporaryDirectory();
+        string path = dir.File("RSMods.ini");
+        var ini = new IniManager(path);
+        ini.SetString("[Toggle Switches]", "Key", "old");
+        ini.Save();
+
+        var reader = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+        ini.SetString("[Toggle Switches]", "Key", "new");
+        Task save = Task.Run(() => ini.Save());
+        await Task.Delay(80);
+        reader.Dispose();
+        await save;
+
+        Assert.Contains("Key=new", File.ReadAllLines(path));
+    }
+
+    [Fact]
+    public void FailedSaveLeavesTheOldFileWhole()
+    {
+        using var dir = new TemporaryDirectory();
+        string path = dir.File("RSMods.ini");
+        var ini = new IniManager(path);
+        ini.SetString("[Toggle Switches]", "Key", "old");
+        ini.Save();
+
+        ini.SetString("[Toggle Switches]", "Key", "new");
+        using (new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.None))
+            Assert.ThrowsAny<IOException>(() => ini.Save());
+
+        Assert.Contains("Key=old", File.ReadAllLines(path));
+        Assert.Equal(["RSMods.ini"], Directory.GetFiles(dir.Path).Select(Path.GetFileName));
+    }
+
+    [Fact]
+    public void FileOutOfDateTracksSeededDefaultsButNotReads()
+    {
+        using var dir = new TemporaryDirectory();
+        string path = dir.File("RSMods.ini");
+        File.WriteAllText(path, "[Toggle Switches]" + Environment.NewLine + "Key=on" + Environment.NewLine);
+        var ini = new IniManager(path);
+        ini.Load();
+
+        ini.GetString("[Toggle Switches]", "Key", "off");
+        Assert.False(ini.FileOutOfDate); // Read an existing value.
+
+        ini.GetString("[Toggle Switches]", "Missing", "off");
+        Assert.True(ini.FileOutOfDate); // Seeded a default the file lacks.
+
+        ini.Save();
+        Assert.False(ini.FileOutOfDate);
+
+        ini.SetString("[Toggle Switches]", "Key", "on");
+        Assert.False(ini.FileOutOfDate); // Same value.
+        ini.SetString("[Toggle Switches]", "Key", "off");
+        Assert.True(ini.FileOutOfDate);
+    }
 }

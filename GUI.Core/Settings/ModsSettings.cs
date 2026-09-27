@@ -95,6 +95,10 @@ namespace RSMods
 
             SeedManifestDefaults(_ini, manifest);
 
+            // Rewriting a file that already had every default would only change its date on every launch.
+            if (!_ini.FileOutOfDate)
+                return;
+
             // Best effort, as before: a locked file mustn't stop the app starting; the next save retries.
             try
             {

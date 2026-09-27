@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Threading;
 
 namespace RSMods
 {
@@ -31,6 +32,7 @@ namespace RSMods
         private int _saveSuspendCount;
         private bool _saveDeferred;
         private bool _changedSinceSave; // A value was set to something new; reading or seeding a default doesn't count.
+        private bool _fileOutOfDate;    // Anything the file on disk lacks, seeded defaults and corrections included.
 
         public void Load()
         {
@@ -43,6 +45,7 @@ namespace RSMods
             _data.Clear();
             _commentedData.Clear();
             _changedSinceSave = false;
+            _fileOutOfDate = false;
 
             try
             {
@@ -128,10 +131,73 @@ namespace RSMods
             }
         }
 
+        /// <summary>True when memory holds something the file doesn't, even if it's only a seeded default.</summary>
+        public bool FileOutOfDate
+        {
+            get
+            {
+                lock (_gate)
+                    return _fileOutOfDate;
+            }
+        }
+
+        // The DLL rereads RSMods.ini whenever it likes, and a crash mid-write used to leave it truncated, so the
+        // new contents go to a temporary file that's swapped in whole.
         private void WriteLocked()
         {
-            using var sw = new StreamWriter(filePath);
+            string temporary = filePath + ".tmp";
+            try
+            {
+                using (var stream = new FileStream(temporary, FileMode.Create, FileAccess.Write, FileShare.None))
+                using (var sw = new StreamWriter(stream))
+                {
+                    WriteContents(sw);
+                    sw.Flush();
+                    stream.Flush(flushToDisk: true);
+                }
+            }
+            catch (UnauthorizedAccessException)
+            {
+                // A folder that lets us edit the file but not create one next to it: write in place as before.
+                using (var sw = new StreamWriter(filePath))
+                    WriteContents(sw);
+                _fileOutOfDate = false;
+                return;
+            }
 
+            try
+            {
+                ReplaceWithRetry(temporary);
+                _fileOutOfDate = false;
+            }
+            catch
+            {
+                try { File.Delete(temporary); } catch { }
+                throw;
+            }
+        }
+
+        private void ReplaceWithRetry(string temporary)
+        {
+            for (int attempt = 1; ; attempt++)
+            {
+                try
+                {
+                    if (File.Exists(filePath))
+                        File.Replace(temporary, filePath, null);
+                    else
+                        File.Move(temporary, filePath);
+                    return;
+                }
+                catch (IOException) when (attempt < 5)
+                {
+                    Thread.Sleep(50); // The game opens the file without allowing a replace, but only while it reads it.
+                }
+            }
+        }
+
+        private void WriteContents(StreamWriter sw)
+        {
             // _data ordering first, then any section that exists only as commented lines.
             var sectionNames = new List<string>(_data.Keys);
             foreach (var section in _commentedData.Keys)
@@ -232,6 +298,7 @@ namespace RSMods
                 // Seed the default so Save() persists it, but a read must never count as a
                 // change (that would fire SettingChanged and trigger a spurious save/update).
                 GetOrCreateSection(_data, section)[key] = defaultValue;
+                _fileOutOfDate = true;
                 return defaultValue;
             }
         }
@@ -246,6 +313,7 @@ namespace RSMods
                 changed = !sectionDict.TryGetValue(key, out var oldVal) || oldVal != value;
                 sectionDict[key] = value;
                 _changedSinceSave |= changed;
+                _fileOutOfDate |= changed;
             }
 
             if (changed)
@@ -343,7 +411,9 @@ namespace RSMods
                 lock (_gate)
                 {
                     var commentedSection = GetOrCreateSection(_commentedData, section);
-                    _changedSinceSave |= !commentedSection.TryGetValue(key, out var oldVal) || oldVal != value;
+                    bool changed = !commentedSection.TryGetValue(key, out var oldVal) || oldVal != value;
+                    _changedSinceSave |= changed;
+                    _fileOutOfDate |= changed;
                     commentedSection[key] = value;
                     GetOrCreateSection(_data, section)[key] = value;
                 }
@@ -352,8 +422,11 @@ namespace RSMods
             {
                 lock (_gate)
                 {
-                    if (_commentedData.TryGetValue(section, out var sec))
-                        _changedSinceSave |= sec.Remove(key);
+                    if (_commentedData.TryGetValue(section, out var sec) && sec.Remove(key))
+                    {
+                        _changedSinceSave = true;
+                        _fileOutOfDate = true;
+                    }
                 }
 
                 SetString(section, key, value);
@@ -369,7 +442,10 @@ namespace RSMods
         public void SetSectionComments(string section, string[] comments)
         {
             lock (_gate)
+            {
                 _sectionComments[section] = comments;
+                _fileOutOfDate = true;
+            }
         }
 
         private void ReportInvalid(string section, string key, string rawValue, string defaultValue, string reason)
@@ -377,7 +453,10 @@ namespace RSMods
             // Self-heal: overwrite the invalid raw value with the default in memory so the next
             // Save() persists the correction.
             lock (_gate)
+            {
                 GetOrCreateSection(_data, section)[key] = defaultValue;
+                _fileOutOfDate = true;
+            }
 
             ValidationWarning?.Invoke(new IniValidationWarning(
                 filePath,
