@@ -116,6 +116,36 @@ void Offsets::Initialize() {
 	ptr_anchorPassSkipAfterPhrase = { {0x0055E1B1, baseHandle + 0x0015F561} };		// Code | 0f 85 c9 11 00 00 de e1 (starts at or after its end: jnz 0x0055F380)
 	ptr_anchorPassSkipAtPhraseEnd = { {0x0055E1C4, baseHandle + 0x0015F574} };		// Code | 0f 85 ba 11 00 00 8b 4e (starts within 0.002 of its end: jnz 0x0055F384)
 	ptr_anchorPassAnchorLoopNext = { {0x0055F384, baseHandle + 0x00160734} };		// Code | 8b 4e 04 2b 0e 8b 9d b8 (next step of the anchor loop)
+	// Chart prep pass on song load (function at 0x0055B430, rva 0x0015C7E0 on Dec 2024; same code on both builds)
+	ptr_chartPrepAnchors = { {0x0055B607, baseHandle + 0x0015C9B7} };
+	ptr_chartPrepAnchorsJmpBck = { {0x0055B60C, baseHandle + 0x0015C9BC} };
+	ptr_chartPrepAnchorsDone = { {0x0055B9A8, baseHandle + 0x0015CD58} };
+	ptr_chartPrepAnchorsDoneJmpBck = { {0x0055B9AE, baseHandle + 0x0015CD5E} };
+	ptr_chartPrepNoteAnchors = { {0x0055BDCD, baseHandle + 0x0015D17D} };
+	ptr_chartPrepNoteAnchorsJmpBck = { {0x0055BDD3, baseHandle + 0x0015D183} };
+	ptr_chartPrepNoteAnchorsDone = { {0x0055BE2B, baseHandle + 0x0015D1DB} };
+	ptr_chartPrepNoteAnchorsDoneJmpBck = { {0x0055BE31, baseHandle + 0x0015D1E1} };
+	ptr_chartPrepEmptyLoop = { {0x0055BF2E, baseHandle + 0x0015D2DE} };
+	ptr_chartPrepEmptyLoopJmpBck = { {0x0055BF34, baseHandle + 0x0015D2E4} };
+	ptr_chartPrepEmptyLoopDone = { {0x0055BFA0, baseHandle + 0x0015D350} };
+	ptr_chartPrepNoteShapes = { {0x0055C333, baseHandle + 0x0015D6E3} };
+	ptr_chartPrepNoteShapesJmpBck = { {0x0055C339, baseHandle + 0x0015D6E9} };
+	ptr_chartPrepNoteShapesDone = { {0x0055C453, baseHandle + 0x0015D803} };
+	ptr_chartPrepNoteShapesDoneJmpBck = { {0x0055C459, baseHandle + 0x0015D809} };
+	ptr_chartPrepNoteLinks = { {0x0055C5F7, baseHandle + 0x0015D9A7} };
+	ptr_chartPrepNoteLinksJmpBck = { {0x0055C5FD, baseHandle + 0x0015D9AD} };
+	ptr_chartPrepNoteLinksDone = { {0x0055C6FB, baseHandle + 0x0015DAAB} };
+	ptr_chartPrepNoteLinksDoneJmpBck = { {0x0055C701, baseHandle + 0x0015DAB1} };
+	ptr_chartPrepSpans = { {0x0055C7AC, baseHandle + 0x0015DB5C} };
+	ptr_chartPrepSpansJmpBck = { {0x0055C7B2, baseHandle + 0x0015DB62} };
+	ptr_chartPrepSpansDone = { {0x0055C9A6, baseHandle + 0x0015DD56} };
+	ptr_chartPrepSpansDoneJmpBck = { {0x0055C9AC, baseHandle + 0x0015DD5C} };
+	ptr_chartPrepSections = { {0x0055CB14, baseHandle + 0x0015DEC4} };
+	ptr_chartPrepSectionsJmpBck = { {0x0055CB1A, baseHandle + 0x0015DECA} };
+	ptr_chartPrepSectionsDone = { {0x0055CD00, baseHandle + 0x0015E0B0} };
+	ptr_chartPrepSectionsDoneJmpBck = { {0x0055CD06, baseHandle + 0x0015E0B6} };
+
+	// Window focus check
 	ptr_IsWindowInFocus = { {0x1251A78, baseHandle + 0x00E52A78} };						// Static Memory | 00 00 00 80 01 00 00 00 04 00 00 00 01 00 00 00 (second variable)
 	ptr_WindowNotInFocusValue = { {0xEC5D46, baseHandle + 0x00AC5496} };    // Code | c6 05 78 2a 02 01 00 (we want to change that 00 to an 01).
 

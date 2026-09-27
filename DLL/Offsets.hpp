@@ -216,6 +216,35 @@ namespace Offsets {
 	inline VersioningStruct<uintptr_t> ptr_anchorPassSkipAfterPhrase;
 	inline VersioningStruct<uintptr_t> ptr_anchorPassSkipAtPhraseEnd;
 	inline VersioningStruct<uintptr_t> ptr_anchorPassAnchorLoopNext;
+	// Chart prep pass on song load
+	inline VersioningStruct<uintptr_t> ptr_chartPrepAnchors;
+	inline VersioningStruct<uintptr_t> ptr_chartPrepAnchorsJmpBck;
+	inline VersioningStruct<uintptr_t> ptr_chartPrepAnchorsDone;
+	inline VersioningStruct<uintptr_t> ptr_chartPrepAnchorsDoneJmpBck;
+	inline VersioningStruct<uintptr_t> ptr_chartPrepNoteAnchors;
+	inline VersioningStruct<uintptr_t> ptr_chartPrepNoteAnchorsJmpBck;
+	inline VersioningStruct<uintptr_t> ptr_chartPrepNoteAnchorsDone;
+	inline VersioningStruct<uintptr_t> ptr_chartPrepNoteAnchorsDoneJmpBck;
+	inline VersioningStruct<uintptr_t> ptr_chartPrepEmptyLoop;
+	inline VersioningStruct<uintptr_t> ptr_chartPrepEmptyLoopJmpBck;
+	inline VersioningStruct<uintptr_t> ptr_chartPrepEmptyLoopDone;
+	inline VersioningStruct<uintptr_t> ptr_chartPrepNoteShapes;
+	inline VersioningStruct<uintptr_t> ptr_chartPrepNoteShapesJmpBck;
+	inline VersioningStruct<uintptr_t> ptr_chartPrepNoteShapesDone;
+	inline VersioningStruct<uintptr_t> ptr_chartPrepNoteShapesDoneJmpBck;
+	inline VersioningStruct<uintptr_t> ptr_chartPrepNoteLinks;
+	inline VersioningStruct<uintptr_t> ptr_chartPrepNoteLinksJmpBck;
+	inline VersioningStruct<uintptr_t> ptr_chartPrepNoteLinksDone;
+	inline VersioningStruct<uintptr_t> ptr_chartPrepNoteLinksDoneJmpBck;
+	inline VersioningStruct<uintptr_t> ptr_chartPrepSpans;
+	inline VersioningStruct<uintptr_t> ptr_chartPrepSpansJmpBck;
+	inline VersioningStruct<uintptr_t> ptr_chartPrepSpansDone;
+	inline VersioningStruct<uintptr_t> ptr_chartPrepSpansDoneJmpBck;
+	inline VersioningStruct<uintptr_t> ptr_chartPrepSections;
+	inline VersioningStruct<uintptr_t> ptr_chartPrepSectionsJmpBck;
+	inline VersioningStruct<uintptr_t> ptr_chartPrepSectionsDone;
+	inline VersioningStruct<uintptr_t> ptr_chartPrepSectionsDoneJmpBck;
+
 	// Audio In Background
 	inline VersioningStruct<uintptr_t> ptr_IsWindowInFocus;
 	inline VersioningStruct<uintptr_t> ptr_WindowNotInFocusValue;
