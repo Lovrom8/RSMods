@@ -143,6 +143,11 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug with Wwise Logging|Win32'">../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="Mods\EnumerationEnvironment.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug with Wwise Logging|Win32'">../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
     <ClCompile Include="Mods\ProfileBackups.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug with Wwise Logging|Win32'">../stdafx.h</PrecompiledHeaderFile>
@@ -424,6 +429,7 @@
     <ClInclude Include="Mods\BugPrevention.hpp" />
     <ClInclude Include="Mods\AssetLoadDrain.hpp" />
     <ClInclude Include="Mods\EnumerationDrain.hpp" />
+    <ClInclude Include="Mods\EnumerationEnvironment.hpp" />
     <ClInclude Include="Mods\JsonNumberHash.hpp" />
     <ClInclude Include="Mods\ProfileBackups.hpp" />
     <ClInclude Include="Mods\ProfileSaveStreaming.hpp" />
