@@ -50,13 +50,11 @@ public sealed partial class SettingsCoordinator : ObservableObject
 
     public void Save(IniManager ini)
     {
-        using (ini.SuspendSave())
+        // Fields only set values in memory; the caller writes the file.
+        foreach (var field in _allFields)
         {
-            foreach (var field in _allFields)
-            {
-                if (field.IsDirty)
-                    field.Save(ini);
-            }
+            if (field.IsDirty)
+                field.Save(ini);
         }
 
         OnPropertyChanged(nameof(IsDirty));
