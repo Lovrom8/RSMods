@@ -93,18 +93,8 @@ namespace Framework {
 		std::vector<RegisteredInterceptor> interceptors;
 		std::vector<OwnedCallback<FrameCallback>> frameCallbacks;
 		std::vector<OwnedCallback<DeviceResetCallback>> resetCallbacks;
-
-		struct RegisteredRegen {
-			const IMod* owner = nullptr;
-			TextureRegenCallback fn;
-		};
-		struct RegisteredRelease {
-			const IMod* owner = nullptr;
-			TextureReleaseCallback fn;
-		};
-
-		std::vector<RegisteredRegen>  regenCallbacks;
-		std::vector<RegisteredRelease> releaseCallbacks;
+		std::vector<OwnedCallback<TextureRegenCallback>> regenCallbacks;
+		std::vector<OwnedCallback<TextureReleaseCallback>> releaseCallbacks;
 		std::vector<const IMod*> pendingReleases;  // owners waiting for deferred release
 		std::vector<TextureReleaseCallback> orphanedReleases; // queued by an owner removed before EndScene ran them
 
@@ -144,40 +134,13 @@ namespace Framework {
 
 	void DrawRegistry::RegisterTextureLifecycle(const IMod* owner, TextureRegenCallback regenFn, TextureReleaseCallback releaseFn) {
 		std::lock_guard<std::mutex> lock(impl->mutex);
-
-		// Regen
-		{
-			auto it = std::find_if(impl->regenCallbacks.begin(), impl->regenCallbacks.end(),
-				[owner](const Impl::RegisteredRegen& r) { return r.owner == owner; });
-			if (it == impl->regenCallbacks.end())
-				impl->regenCallbacks.push_back({ owner, std::move(regenFn) });
-			else
-				it->fn = std::move(regenFn);
-		}
-
-		// Release
-		{
-			auto it = std::find_if(impl->releaseCallbacks.begin(), impl->releaseCallbacks.end(),
-				[owner](const Impl::RegisteredRelease& r) { return r.owner == owner; });
-			if (it == impl->releaseCallbacks.end())
-				impl->releaseCallbacks.push_back({ owner, std::move(releaseFn) });
-			else
-				it->fn = std::move(releaseFn);
-		}
+		Upsert(impl->regenCallbacks, owner, std::move(regenFn));
+		Upsert(impl->releaseCallbacks, owner, std::move(releaseFn));
 	}
 
 	void DrawRegistry::RegisterTextureRegen(const IMod* owner, TextureRegenCallback fn) {
 		std::lock_guard<std::mutex> lock(impl->mutex);
-
-		auto it = std::find_if(impl->regenCallbacks.begin(), impl->regenCallbacks.end(),
-			[owner](const Impl::RegisteredRegen& r) { return r.owner == owner; });
-		
-		if (it == impl->regenCallbacks.end()) {
-			impl->regenCallbacks.push_back({ owner, std::move(fn) });
-		}
-		else {
-			it->fn = std::move(fn);
-		}
+		Upsert(impl->regenCallbacks, owner, std::move(fn));
 	}
 
 	void DrawRegistry::RequestTextureRelease(const IMod* owner) {
@@ -212,7 +175,7 @@ namespace Framework {
 		// keep that release so its textures still get freed at the next EndScene.
 		if (std::ranges::find(impl->pendingReleases, owner) != impl->pendingReleases.end()) {
 			auto it = std::find_if(impl->releaseCallbacks.begin(), impl->releaseCallbacks.end(),
-				[owner](const Impl::RegisteredRelease& r) { return r.owner == owner; });
+				[owner](const OwnedCallback<TextureReleaseCallback>& r) { return r.owner == owner; });
 			if (it != impl->releaseCallbacks.end() && it->fn)
 				impl->orphanedReleases.push_back(it->fn);
 		}
@@ -220,8 +183,8 @@ namespace Framework {
 		std::erase_if(impl->frameCallbacks, [owner](const OwnedCallback<FrameCallback>& r) { return r.owner == owner; });
 		std::erase_if(impl->resetCallbacks, [owner](const OwnedCallback<DeviceResetCallback>& r) { return r.owner == owner; });
 		std::erase_if(impl->interceptors, [owner](const RegisteredInterceptor& r) { return r.owner == owner; });
-		std::erase_if(impl->regenCallbacks, [owner](const Impl::RegisteredRegen& r) { return r.owner == owner; });
-		std::erase_if(impl->releaseCallbacks, [owner](const Impl::RegisteredRelease& r) { return r.owner == owner; });
+		std::erase_if(impl->regenCallbacks, [owner](const OwnedCallback<TextureRegenCallback>& r) { return r.owner == owner; });
+		std::erase_if(impl->releaseCallbacks, [owner](const OwnedCallback<TextureReleaseCallback>& r) { return r.owner == owner; });
 		std::erase_if(impl->pendingReleases, [owner](const IMod* p) { return p == owner; });
 	}
 
@@ -337,7 +300,7 @@ namespace Framework {
 			impl->orphanedReleases.clear();
 			for (const IMod* owner : impl->pendingReleases) {
 				auto it = std::find_if(impl->releaseCallbacks.begin(), impl->releaseCallbacks.end(),
-					[owner](const Impl::RegisteredRelease& r) { return r.owner == owner; });
+					[owner](const OwnedCallback<TextureReleaseCallback>& r) { return r.owner == owner; });
 				if (it != impl->releaseCallbacks.end() && it->fn)
 					callbacks.push_back(it->fn);
 			}
