@@ -10,12 +10,12 @@ void Wwise::Exports::Initialize() {
 
 	// IAkStreamMgr
 	// Only has a single pointer, and is protected https://www.audiokinetic.com/library/2015.1.9_5624/?source=SDK&id=class_a_k_1_1_i_ak_stream_mgr_a85c6043c1a45f13b7df2f05729248b1f.html
-	func_Wwise_IAkStreamMgr_m_pStreamMgr = { {0x00f1c460, 0x00F53580} }; // Idk
+	func_Wwise_IAkStreamMgr_m_pStreamMgr = { {0x01352580, baseHandle + 0x00F53580} }; // Idk
 
 	// MemoryMgr
 	func_Wwise_Memory_CheckPoolId = { {0x00E9FF70, baseHandle + 0x00A9EEE0} };
-	func_Wwise_Memory_CreatePool = { {0x00E9FC80, baseHandle + 0x00A9EBF0} };
-	func_Wwise_Memory_DestroyPool = { {0x00E9FE20, baseHandle + 0x00A9ED90} };
+	func_Wwise_Memory_CreatePool = { {0x00E9FC80, baseHandle + 0x00A9EBD0} };
+	func_Wwise_Memory_DestroyPool = { {0x00E9FE20, baseHandle + 0x00A9ED70} };
 	func_Wwise_Memory_Falign = { {0x00EA01E0, baseHandle + 0x00A9F150 } };
 	func_Wwise_Memory_GetBlock = { {0x00EA0230, baseHandle + 0x00A9F1A0} };
 	func_Wwise_Memory_GetBlockSize = { {0x00E9FF30, baseHandle + 0x00A9EEA0} };
@@ -23,19 +23,19 @@ void Wwise::Exports::Initialize() {
 	func_Wwise_Memory_GetNumPools = { {0x00E9FF50, baseHandle + 0x00A9EEC0} };
 	func_Wwise_Memory_GetPoolAttributes = { {0x00E9FF10, baseHandle + 0x00A9EE80} };
 	func_Wwise_Memory_GetPoolMemoryUsed = { {0x00EA01A0, baseHandle + 0x00A9F110} };
-	func_Wwise_Memory_GetPoolName = { {0x00c94f80, baseHandle + 0x00893EF0} }; // TODO: may be worth a check, this one doesn't seem to be exported
+	func_Wwise_Memory_GetPoolName = { {0x00c94f80, baseHandle + 0x00472340} }; // TODO: may be worth a check, this one doesn't seem to be exported
 	func_Wwise_Memory_GetPoolStats = { {0x00EA0130, baseHandle + 0x00A9F0A0} };
-	func_Wwise_Memory_IsInitialized = { {0x00E9FED0, baseHandle + 0x00A9EE40} };
+	func_Wwise_Memory_IsInitialized = { {0x00E9FED0, baseHandle + 0x00A9EE20} };
 	func_Wwise_Memory_Malign = { {0x00EA00D0, baseHandle + 0x00A9F040} };
 	func_Wwise_Memory_Malloc = { {0x00EA0050, baseHandle + 0x00A9EFC0} };
 	func_Wwise_Memory_Free = { {0x00EA01E0, baseHandle + 0x00A9F150} };
 	func_Wwise_Memory_ReleaseBlock = { {0x00EA0280, baseHandle + 0x00A9F1F0} };
-	func_Wwise_Memory_SetMonitoring = { {0x00D3F130, baseHandle + 0x0093E0A0} };
-	func_Wwise_Memory_SetPoolName = { {0x00E9FEE0, baseHandle + 0x00A9EE50} };
+	func_Wwise_Memory_SetMonitoring = { {0x00D3F130, baseHandle + 0x001C9BF0} };
+	func_Wwise_Memory_SetPoolName = { {0x00E9FEE0, baseHandle + 0x00A9EE30} };
 	func_Wwise_Memory_Term = { {0x00EA02D0, baseHandle + 0x00A9F240} };
 
 	// Monitor
-	func_Wwise_Monitor_PostCode = { {0x00a004a, baseHandle + 0x008204A0} };
+	func_Wwise_Monitor_PostCode = { {0x00A004A0, baseHandle + 0x00894B00} };
 
 	// Motion Engine
 	func_Wwise_Motion_AddPlayerMotionDevice = { {0x00ec2a00, baseHandle + 0x00AC2060} };
@@ -64,29 +64,29 @@ void Wwise::Exports::Initialize() {
 	func_Wwise_Sound_DynamicSequence_Break = { {0x00ec58d0, baseHandle + 0x00AC4FD0} };
 	func_Wwise_Sound_DynamicSequence_Close = { {0x00ec5950, baseHandle + 0x00AC5050} };
 	func_Wwise_Sound_DynamicSequence_LockPlaylist = { {0x00ec59d0, baseHandle + 0x00AC50D0} };
-	func_Wwise_Sound_DynamicSequence_Open = { {0x00ec1cd0, baseHandle + 0x00AC13D0} };
+	func_Wwise_Sound_DynamicSequence_Open = { {0x00ec1cd0, baseHandle + 0x00AC1330} };
 	func_Wwise_Sound_DynamicSequence_Pause = { {0x00ec5750, baseHandle + 0x00AC4E50} };
 	func_Wwise_Sound_DynamicSequence_Play = { {0x00ec56d0, baseHandle + 0x00AC4DD0} };
 	func_Wwise_Sound_DynamicSequence_Resume = { {0x00ec57d0, baseHandle + 0x00AC4ED0} };
 	func_Wwise_Sound_DynamicSequence_Stop = { {0x00ec5850, baseHandle + 0x00AC4F50} };
 	func_Wwise_Sound_DynamicSequence_UnlockPlaylist = { {0x00ec5a10, baseHandle + 0x00AC5110} };
-	func_Wwise_Sound_ExecuteActionOnEvent_UniqueID = { {0x00ec5240, baseHandle + 0x00AC4930} };
-	func_Wwise_Sound_ExecuteActionOnEvent_Char = { {0x00ec52f0, baseHandle + 0x00AC49E0} };
-	func_Wwise_Sound_g_PlayingID = { {0x00ec0890, baseHandle + 0x00F52810} }; // Idk
-	func_Wwise_Sound_GetDefaultInitSettings = { {0x00ec1120, baseHandle + 0x00ABF750 } };
-	func_Wwise_Sound_GetDefaultPlatformInitSettings = { {0x00ec1180, baseHandle + 0x00ABF7B0 } };
-	func_Wwise_Sound_GetIDFromString = { {0x00ec2c30, baseHandle + 0x00AC21F0} };
+	func_Wwise_Sound_ExecuteActionOnEvent_UniqueID = { {0x00ec5240, baseHandle + 0x00AC4900} };
+	func_Wwise_Sound_ExecuteActionOnEvent_Char = { {0x00ec52f0, baseHandle + 0x00AC49B0} };
+	func_Wwise_Sound_g_PlayingID = { {0x01351810, baseHandle + 0x00F52810} }; // Idk
+	func_Wwise_Sound_GetDefaultInitSettings = { {0x00ec1120, baseHandle + 0x00AC0750 } };
+	func_Wwise_Sound_GetDefaultPlatformInitSettings = { {0x00ec1180, baseHandle + 0x00AC07B0 } };
+	func_Wwise_Sound_GetIDFromString = { {0x00ec2c30, baseHandle + 0x00AC22B0} };
 	func_Wwise_Sound_GetPanningRule = { {0x00ec1190, baseHandle + 0x00AC07C0} };
 	func_Wwise_Sound_GetSourcePlayPosition = { {0x00ec1ca0, baseHandle + 0x00AC1300} };
 	func_Wwise_Sound_GetSpeakerConfiguration = { {0x00ec11a0, baseHandle + 0x00AC07D0} };
 	func_Wwise_Sound_Init = { {0x00ec5b90, baseHandle + 0x00AC5290} };
 	func_Wwise_Sound_IsInitialized = { {0x00ec1110, baseHandle + 0x00AC0740} };
 	func_Wwise_Sound_LoadBank_BankID_MemPoolID = { {0x00ec2070, baseHandle + 0x00AC16D0} };
-	func_Wwise_Sound_LoadBank_Void_UInt32_BankID = { {0x00ec2130, baseHandle + 0x00AC2790} };
-	func_Wwise_Sound_LoadBank_BankID_Callback = { {0x00ec21e0, baseHandle + 0x00AC2840} };
-	func_Wwise_Sound_LoadBank_Void_UInt32_Callback = { {0x00ec2240, baseHandle + 0x00AC28A0} };
-	func_Wwise_Sound_LoadBank_Char_MemPoolID = { {0x00ec33a0, baseHandle + 0x00AC3A60} };
-	func_Wwise_Sound_LoadBank_Char_Callback = { {0x00ec34b0, baseHandle + 0x00AC3B70} };
+	func_Wwise_Sound_LoadBank_Void_UInt32_BankID = { {0x00ec2130, baseHandle + 0x00AC1790} };
+	func_Wwise_Sound_LoadBank_BankID_Callback = { {0x00ec21e0, baseHandle + 0x00AC1840} };
+	func_Wwise_Sound_LoadBank_Void_UInt32_Callback = { {0x00ec2240, baseHandle + 0x00AC18A0} };
+	func_Wwise_Sound_LoadBank_Char_MemPoolID = { {0x00ec33a0, baseHandle + 0x00AC2A60} };
+	func_Wwise_Sound_LoadBank_Char_Callback = { {0x00ec34b0, baseHandle + 0x00AC2B70} };
 	func_Wwise_Sound_LoadBankUnique = { {0x00ec3510, baseHandle + 0x00AC2BD0} };
 	func_Wwise_Sound_PlaySourcePlugin = { {0x00ec1b90, baseHandle + 0x00AC11F0} };
 	func_Wwise_Sound_PostEvent_Char = { {0x00ec51b0, baseHandle + 0x00AC4870} };
@@ -94,17 +94,17 @@ void Wwise::Exports::Initialize() {
 	func_Wwise_Sound_PostTrigger_TriggerID = { {0x00ec1610, baseHandle + 0x00AC0C70} };
 	func_Wwise_Sound_PostTrigger_Char = { {0x00ec2ee0, baseHandle + 0x00AC2570} };
 	func_Wwise_Sound_PrepareBank_BankID_Callback = { {0x00ec2420, baseHandle + 0x00AC1A80 } };
-	func_Wwise_Sound_PrepareBank_BankID_BankContent = { {0x00ec36f0, baseHandle + 0x00AC2EC0 } };
+	func_Wwise_Sound_PrepareBank_BankID_BankContent = { {0x00ec36f0, baseHandle + 0x00AC2DB0 } };
 	func_Wwise_Sound_PrepareBank_Char_Callback = { {0x00ec3800,  baseHandle + 0x00AC2EC0 } };
 	func_Wwise_Sound_PrepareBank_Char_BankContent = { {0x00ec4590, baseHandle + 0x00AC3C50} };
 	func_Wwise_Sound_PrepareEvent_EventID_UInt32 = { {0x00ec2480, baseHandle + 0x00AC1AE0} };
-	func_Wwise_Sound_PrepareEvent_EventID_UInt32_Callback_Void = { {baseHandle + 0x00AC1B60} };
+	func_Wwise_Sound_PrepareEvent_EventID_UInt32_Callback_Void = { {0x00ec2500, baseHandle + 0x00AC1B60} };
 	func_Wwise_Sound_PrepareEvent_Char_UInt32 = { {0x00ec39f0, baseHandle + 0x00AC30B0 } };
 	func_Wwise_Sound_PrepareEvent_Char_UInt32_Callback_Void = { {0x00ec3ce0, baseHandle + 0x00AC33A0 } };
-	func_Wwise_Sound_PrepareGameSyncs_UInt32_UInt32_UInt32_Callback_Void = { {0x00ec3f60, baseHandle + 0x00AC1C30} };
-	func_Wwise_Sound_PrepareGameSyncs_UInt32_UInt32_UInt32 = { {0x00ec41a0, baseHandle + 0x00AC1C60 } };
-	func_Wwise_Sound_PrepareGameSyncs_Char_Char_UInt32_Callback_Void = { {0x00ec25d0, baseHandle + 0x00AC3620 } };
-	func_Wwise_Sound_PrepareGameSyncs_Char_Char_UInt32 = { {0x00ec2600, baseHandle + 0x00AC3860 } };
+	func_Wwise_Sound_PrepareGameSyncs_UInt32_UInt32_UInt32_Callback_Void = { {0x00ec25d0, baseHandle + 0x00AC1C30} };
+	func_Wwise_Sound_PrepareGameSyncs_UInt32_UInt32_UInt32 = { {0x00ec2600, baseHandle + 0x00AC1C60 } };
+	func_Wwise_Sound_PrepareGameSyncs_Char_Char_UInt32_Callback_Void = { {0x00ec3f60, baseHandle + 0x00AC3620 } };
+	func_Wwise_Sound_PrepareGameSyncs_Char_Char_UInt32 = { {0x00ec41a0, baseHandle + 0x00AC3860 } };
 	func_Wwise_Sound_Query_GetActiveGameObjects = { {0x00ec0790, baseHandle + 0x00ABFDC0 } };
 	func_Wwise_Sound_Query_GetActiveListeners = { {0x00ec0a90, baseHandle + 0x00AC00C0 } };
 	func_Wwise_Sound_Query_GetCustomPropertyValue_Int32 = { {0x00ec08c0, baseHandle + 0x00ABFEF0 } };
@@ -115,7 +115,7 @@ void Wwise::Exports::Initialize() {
 	func_Wwise_Sound_Query_GetGameObjectFromPlayingID = { {0x00ec0870, baseHandle + 0x00ABFEA0 } };
 	func_Wwise_Sound_Query_GetIsGameObjectActive = { {0x00ec07c0, baseHandle + 0x00ABFDF0 } };
 	func_Wwise_Sound_Query_GetListenerPosition = { {0x00ec05b0, baseHandle + 0x00ABFBE0 } };
-	func_Wwise_Sound_Query_GetListenerSpatialization = { {0x00ec061, baseHandle + 0x00ABFC40 } };
+	func_Wwise_Sound_Query_GetListenerSpatialization = { {0x00ec0610, baseHandle + 0x00ABFC40 } };
 	func_Wwise_Sound_Query_GetMaxRadius_RadiusList = { {0x00ec07f0, baseHandle + 0x00ABFE20 } };
 	func_Wwise_Sound_Query_GetMaxRadius_GameObject = { {0x00ec0820, baseHandle + 0x00ABFE50 } };
 	func_Wwise_Sound_Query_GetObjectObstructionAndOcclusion = { {0x00ec0f10, baseHandle + 0x00AC0540 } };
