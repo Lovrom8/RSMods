@@ -88,7 +88,6 @@ namespace Settings {
 		inline constexpr char ExtendedRangeFixBassTuning[] = "ExtendedRangeFixBassTuning";
 
 		// Gameplay / Highway toggles (D3D texture mods)
-		inline constexpr char DiscoModeEnabled[]         = "DiscoModeEnabled";
 		inline constexpr char RemoveFingerprints[]       = "RemoveFingerprints";
 		inline constexpr char CustomHighwayColors[]      = "CustomHighwayColors";
 		inline constexpr char GreenScreenWallEnabled[]   = "GreenScreenWallEnabled";

@@ -250,9 +250,6 @@ namespace Offsets {
 	inline VersioningStruct<uintptr_t> func_playnextTrim;
 	inline VersioningStruct<uintptr_t> func_profileSongs;
 
-	// Runtime data.
-	inline uintptr_t runtimeVersionStructValue;
-
 	extern std::vector<unsigned int> ptr_noteDataOffsets;
 	extern std::vector<unsigned int> ptr_scoreAttackNoteDataOffsets;
 

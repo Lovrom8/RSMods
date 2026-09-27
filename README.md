@@ -221,7 +221,6 @@ Same VKey format. Require `VolumeControl = on`. Use Control with the key to decr
 | `ExtendedRangeFixBassTuning` | `off` | on/off | Fix bad bass string 4/5 tuning on some charts. |
 | `CustomStringColors` | `0` | `0` / `1` / `2` | `0` = stock colors, `1` = ZZ set, `2` = `[String Colors]`. |
 | `SeparateNoteColors` | `off` | on/off | Use separate note colors (see `SeparateNoteColorsMode`). |
-| `DiscoMode` | `off` | on/off | Deprecated / unused in current GUI. |
 | `Headstock` | `off` | on/off | Remove headstock. |
 | `Skyline` | `off` | on/off | Remove DD skyline bars. |
 | `GreenScreenWall` | `off` | on/off | Remove back wall only (keep amps). |

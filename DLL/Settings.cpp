@@ -64,7 +64,6 @@ void Settings::Initialize()
 		{Setting::ExtendedRangeDropTuning, "off"},
 		{Setting::ExtendedRangeFixBassTuning, "off"},
 		{Setting::SeparateNoteColors, "off"},
-		{Setting::DiscoModeEnabled, "off"},
 		{Setting::RemoveHeadstockEnabled, "off"},
 		{Setting::RemoveSkylineEnabled, "off"},
 		{Setting::GreenScreenWallEnabled, "off"},
@@ -206,7 +205,6 @@ void Settings::ReadModSettings() {
 	modSettings.clear();
 	customSettings.clear();
 
-	modSettings[Setting::DiscoModeEnabled] = reader.GetValue("Toggle Switches", "DiscoMode", "off");
 	modSettings[Setting::FixOculusCrash] = reader.GetValue("Toggle Switches", "FixOculusCrash", "off");
 	modSettings[Setting::FixBrokenTones] = reader.GetValue("Toggle Switches", "FixBrokenTones", "off");
 	modSettings[Setting::PreventMidSongPause] = reader.GetValue("Toggle Switches", "PreventMidSongPause", "off");

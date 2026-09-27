@@ -29,10 +29,7 @@ public sealed class SettingsKeyParityTests
     /// the debt, so it should only ever shrink. Removing an entry means either wiring the setting up in
     /// the GUI or deleting the DLL's read.
     /// </summary>
-    private static readonly Dictionary<(string Section, string Key), string> KnownUnexposed = new()
-    {
-        [("Toggle Switches", "DiscoMode")] = "Its D3DHooks implementation is entirely commented out.",
-    };
+    private static readonly Dictionary<(string Section, string Key), string> KnownUnexposed = new();
 
     /// <summary>Maps each nested store class onto the INI section its <c>IniSection</c> writes to.</summary>
     private static readonly Dictionary<string, string> SectionForStoreClass = new()
