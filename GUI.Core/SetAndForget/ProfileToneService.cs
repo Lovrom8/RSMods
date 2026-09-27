@@ -28,7 +28,9 @@ namespace RSMods.SetAndForget
         public List<string> LoadProfileTones()
         {
             var toneNames = new List<string>();
-            string userProfileFolder = GenUtil.GetSteamProfilesFolderManual();
+            // Same folder as the Profiles tab: the configured save path or the Steam user in the registry. The
+            // userdata probe alone takes whichever account it meets first, which may not be the one playing.
+            string userProfileFolder = GenUtil.GetSaveDirectory();
 
             _tonesByName.Clear();
 
