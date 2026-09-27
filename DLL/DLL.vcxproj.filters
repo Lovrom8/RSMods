@@ -388,6 +388,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="EngineString.hpp">
+      <Filter>Main Headers</Filter>
+    </ClInclude>
     <ClInclude Include="MemUtil.hpp">
       <Filter>Main Headers</Filter>
     </ClInclude>
