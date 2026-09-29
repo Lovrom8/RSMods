@@ -119,9 +119,9 @@ namespace RSMods
             this.textBox_String5Color = new System.Windows.Forms.TextBox();
             this.button_String5ColorButton = new System.Windows.Forms.Button();
             this.groupBox_StringColors = new System.Windows.Forms.GroupBox();
+            this.checkBox_UseExactColors = new System.Windows.Forms.CheckBox();
             this.radio_colorBlindERStringColors = new System.Windows.Forms.RadioButton();
             this.radio_DefaultStringColors = new System.Windows.Forms.RadioButton();
-            this.checkBox_UseExactColors = new System.Windows.Forms.CheckBox();
             this.groupBox_SetAndForget = new System.Windows.Forms.GroupBox();
             this.tabControl_SetAndForget = new System.Windows.Forms.TabControl();
             this.tabPage_SetAndForget_CustomTunings = new System.Windows.Forms.TabPage();
@@ -323,9 +323,9 @@ namespace RSMods
             this.button_ChangeNumberedFrets = new System.Windows.Forms.Button();
             this.groupBox_Backups = new System.Windows.Forms.GroupBox();
             this.checkBox_UnlimitedBackups = new System.Windows.Forms.CheckBox();
+            this.nUpDown_NumberOfBackups = new System.Windows.Forms.NumericUpDown();
             this.groupBox_ProfileLoadSave = new System.Windows.Forms.GroupBox();
             this.checkBox_FastProfileLoadAndSave = new System.Windows.Forms.CheckBox();
-            this.nUpDown_NumberOfBackups = new System.Windows.Forms.NumericUpDown();
             this.groupBox_RRSpeed = new System.Windows.Forms.GroupBox();
             this.nUpDown_RiffRepeaterSpeed = new System.Windows.Forms.NumericUpDown();
             this.groupBox_ControlVolumeIncrement = new System.Windows.Forms.GroupBox();
@@ -617,8 +617,8 @@ namespace RSMods
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_OverrideInputVolume)).BeginInit();
             this.groupBox_CustomHighway.SuspendLayout();
             this.groupBox_Backups.SuspendLayout();
-            this.groupBox_ProfileLoadSave.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_NumberOfBackups)).BeginInit();
+            this.groupBox_ProfileLoadSave.SuspendLayout();
             this.groupBox_RRSpeed.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_RiffRepeaterSpeed)).BeginInit();
             this.groupBox_ControlVolumeIncrement.SuspendLayout();
@@ -1160,7 +1160,7 @@ namespace RSMods
             this.checkBox_Ultrawide.AutoSize = true;
             this.checkBox_Ultrawide.Location = new System.Drawing.Point(11, 468);
             this.checkBox_Ultrawide.Name = "checkBox_Ultrawide";
-            this.checkBox_Ultrawide.Size = new System.Drawing.Size(140, 17);
+            this.checkBox_Ultrawide.Size = new System.Drawing.Size(132, 17);
             this.checkBox_Ultrawide.TabIndex = 82;
             this.checkBox_Ultrawide.Text = "Ultrawide (21:9 / 32:9)";
             this.checkBox_Ultrawide.UseVisualStyleBackColor = true;
@@ -1793,6 +1793,19 @@ namespace RSMods
             this.groupBox_StringColors.Text = "Change String Colors";
             this.groupBox_StringColors.Visible = false;
             // 
+            // checkBox_UseExactColors
+            // 
+            this.checkBox_UseExactColors.AutoSize = true;
+            this.checkBox_UseExactColors.Location = new System.Drawing.Point(76, 245);
+            this.checkBox_UseExactColors.Name = "checkBox_UseExactColors";
+            this.checkBox_UseExactColors.Size = new System.Drawing.Size(107, 17);
+            this.checkBox_UseExactColors.TabIndex = 67;
+            this.checkBox_UseExactColors.Text = "Use Exact Colors";
+            this.checkBox_UseExactColors.UseVisualStyleBackColor = true;
+            this.checkBox_UseExactColors.CheckedChanged += new System.EventHandler(this.Save_UseExactColors);
+            this.checkBox_UseExactColors.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.checkBox_UseExactColors.MouseHover += new System.EventHandler(this.ToolTips_Show);
+            // 
             // radio_colorBlindERStringColors
             // 
             this.radio_colorBlindERStringColors.AutoSize = true;
@@ -1819,19 +1832,6 @@ namespace RSMods
             this.radio_DefaultStringColors.Text = "Default Colors";
             this.radio_DefaultStringColors.UseVisualStyleBackColor = true;
             this.radio_DefaultStringColors.CheckedChanged += new System.EventHandler(this.StringColors_DefaultStringColors);
-            // 
-            // checkBox_UseExactColors
-            // 
-            this.checkBox_UseExactColors.AutoSize = true;
-            this.checkBox_UseExactColors.Location = new System.Drawing.Point(76, 245);
-            this.checkBox_UseExactColors.Name = "checkBox_UseExactColors";
-            this.checkBox_UseExactColors.Size = new System.Drawing.Size(106, 17);
-            this.checkBox_UseExactColors.TabIndex = 67;
-            this.checkBox_UseExactColors.Text = "Use Exact Colors";
-            this.checkBox_UseExactColors.UseVisualStyleBackColor = true;
-            this.checkBox_UseExactColors.CheckedChanged += new System.EventHandler(this.Save_UseExactColors);
-            this.checkBox_UseExactColors.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
-            this.checkBox_UseExactColors.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // groupBox_SetAndForget
             // 
@@ -4265,29 +4265,6 @@ namespace RSMods
             this.button_ChangeNumberedFrets.Click += new System.EventHandler(this.NotewayColors_ChangeNotewayColor);
             this.button_ChangeNumberedFrets.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
-            // groupBox_ProfileLoadSave
-            // 
-            this.groupBox_ProfileLoadSave.Controls.Add(this.checkBox_FastProfileLoadAndSave);
-            this.groupBox_ProfileLoadSave.Location = new System.Drawing.Point(27, 234);
-            this.groupBox_ProfileLoadSave.Name = "groupBox_ProfileLoadSave";
-            this.groupBox_ProfileLoadSave.Size = new System.Drawing.Size(166, 38);
-            this.groupBox_ProfileLoadSave.TabIndex = 100014;
-            this.groupBox_ProfileLoadSave.TabStop = false;
-            this.groupBox_ProfileLoadSave.Text = "Profiles";
-            this.groupBox_ProfileLoadSave.MouseHover += new System.EventHandler(this.ToolTips_Show);
-            // 
-            // checkBox_FastProfileLoadAndSave
-            // 
-            this.checkBox_FastProfileLoadAndSave.AutoSize = true;
-            this.checkBox_FastProfileLoadAndSave.Location = new System.Drawing.Point(8, 15);
-            this.checkBox_FastProfileLoadAndSave.Name = "checkBox_FastProfileLoadAndSave";
-            this.checkBox_FastProfileLoadAndSave.Size = new System.Drawing.Size(135, 17);
-            this.checkBox_FastProfileLoadAndSave.TabIndex = 0;
-            this.checkBox_FastProfileLoadAndSave.Text = "Fast Profile Load/Save";
-            this.checkBox_FastProfileLoadAndSave.UseVisualStyleBackColor = true;
-            this.checkBox_FastProfileLoadAndSave.CheckedChanged += new System.EventHandler(this.Save_FastProfileLoadAndSave);
-            this.checkBox_FastProfileLoadAndSave.MouseHover += new System.EventHandler(this.ToolTips_Show);
-            // 
             // groupBox_Backups
             // 
             this.groupBox_Backups.Controls.Add(this.checkBox_UnlimitedBackups);
@@ -4330,6 +4307,29 @@ namespace RSMods
             0,
             0});
             this.nUpDown_NumberOfBackups.ValueChanged += new System.EventHandler(this.Save_NumberOfBackups);
+            // 
+            // groupBox_ProfileLoadSave
+            // 
+            this.groupBox_ProfileLoadSave.Controls.Add(this.checkBox_FastProfileLoadAndSave);
+            this.groupBox_ProfileLoadSave.Location = new System.Drawing.Point(27, 234);
+            this.groupBox_ProfileLoadSave.Name = "groupBox_ProfileLoadSave";
+            this.groupBox_ProfileLoadSave.Size = new System.Drawing.Size(166, 38);
+            this.groupBox_ProfileLoadSave.TabIndex = 100014;
+            this.groupBox_ProfileLoadSave.TabStop = false;
+            this.groupBox_ProfileLoadSave.Text = "Profiles";
+            this.groupBox_ProfileLoadSave.MouseHover += new System.EventHandler(this.ToolTips_Show);
+            // 
+            // checkBox_FastProfileLoadAndSave
+            // 
+            this.checkBox_FastProfileLoadAndSave.AutoSize = true;
+            this.checkBox_FastProfileLoadAndSave.Location = new System.Drawing.Point(8, 15);
+            this.checkBox_FastProfileLoadAndSave.Name = "checkBox_FastProfileLoadAndSave";
+            this.checkBox_FastProfileLoadAndSave.Size = new System.Drawing.Size(135, 17);
+            this.checkBox_FastProfileLoadAndSave.TabIndex = 0;
+            this.checkBox_FastProfileLoadAndSave.Text = "Fast Profile Load/Save";
+            this.checkBox_FastProfileLoadAndSave.UseVisualStyleBackColor = true;
+            this.checkBox_FastProfileLoadAndSave.CheckedChanged += new System.EventHandler(this.Save_FastProfileLoadAndSave);
+            this.checkBox_FastProfileLoadAndSave.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // groupBox_RRSpeed
             // 
@@ -5146,7 +5146,7 @@ namespace RSMods
             this.label_Rocksmith_Thanks.Name = "label_Rocksmith_Thanks";
             this.label_Rocksmith_Thanks.Size = new System.Drawing.Size(574, 34);
             this.label_Rocksmith_Thanks.TabIndex = 4;
-            this.label_Rocksmith_Thanks.Text = "Thank you Ubisoft San Fransisco for creating Rocksmith 1, and Rocksmith 2014.\r\nMo" +
+            this.label_Rocksmith_Thanks.Text = "Thank you Ubisoft San Francisco for creating Rocksmith 1, and Rocksmith 2014.\r\nMo" +
     "st of the tooltips from this section are from their documentation provided with " +
     "the game.";
             // 
@@ -7066,9 +7066,9 @@ namespace RSMods
             this.groupBox_CustomHighway.PerformLayout();
             this.groupBox_Backups.ResumeLayout(false);
             this.groupBox_Backups.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_NumberOfBackups)).EndInit();
             this.groupBox_ProfileLoadSave.ResumeLayout(false);
             this.groupBox_ProfileLoadSave.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_NumberOfBackups)).EndInit();
             this.groupBox_RRSpeed.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_RiffRepeaterSpeed)).EndInit();
             this.groupBox_ControlVolumeIncrement.ResumeLayout(false);
