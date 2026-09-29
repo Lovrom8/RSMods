@@ -324,6 +324,7 @@ namespace RSMods
             this.checkBox_UnlimitedBackups = new System.Windows.Forms.CheckBox();
             this.groupBox_ProfileLoadSave = new System.Windows.Forms.GroupBox();
             this.checkBox_FastProfileLoadAndSave = new System.Windows.Forms.CheckBox();
+            this.checkBox_FastEnumeration = new System.Windows.Forms.CheckBox();
             this.nUpDown_NumberOfBackups = new System.Windows.Forms.NumericUpDown();
             this.groupBox_RRSpeed = new System.Windows.Forms.GroupBox();
             this.nUpDown_RiffRepeaterSpeed = new System.Windows.Forms.NumericUpDown();
@@ -4252,13 +4253,14 @@ namespace RSMods
             // 
             // groupBox_ProfileLoadSave
             // 
+            this.groupBox_ProfileLoadSave.Controls.Add(this.checkBox_FastEnumeration);
             this.groupBox_ProfileLoadSave.Controls.Add(this.checkBox_FastProfileLoadAndSave);
             this.groupBox_ProfileLoadSave.Location = new System.Drawing.Point(27, 234);
             this.groupBox_ProfileLoadSave.Name = "groupBox_ProfileLoadSave";
-            this.groupBox_ProfileLoadSave.Size = new System.Drawing.Size(166, 38);
+            this.groupBox_ProfileLoadSave.Size = new System.Drawing.Size(166, 54);
             this.groupBox_ProfileLoadSave.TabIndex = 100014;
             this.groupBox_ProfileLoadSave.TabStop = false;
-            this.groupBox_ProfileLoadSave.Text = "Profiles";
+            this.groupBox_ProfileLoadSave.Text = "Loading";
             this.groupBox_ProfileLoadSave.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // checkBox_FastProfileLoadAndSave
@@ -4272,6 +4274,18 @@ namespace RSMods
             this.checkBox_FastProfileLoadAndSave.UseVisualStyleBackColor = true;
             this.checkBox_FastProfileLoadAndSave.CheckedChanged += new System.EventHandler(this.Save_FastProfileLoadAndSave);
             this.checkBox_FastProfileLoadAndSave.MouseHover += new System.EventHandler(this.ToolTips_Show);
+            // 
+            // checkBox_FastEnumeration
+            // 
+            this.checkBox_FastEnumeration.AutoSize = true;
+            this.checkBox_FastEnumeration.Location = new System.Drawing.Point(8, 33);
+            this.checkBox_FastEnumeration.Name = "checkBox_FastEnumeration";
+            this.checkBox_FastEnumeration.Size = new System.Drawing.Size(106, 17);
+            this.checkBox_FastEnumeration.TabIndex = 1;
+            this.checkBox_FastEnumeration.Text = "Fast Song Scan";
+            this.checkBox_FastEnumeration.UseVisualStyleBackColor = true;
+            this.checkBox_FastEnumeration.CheckedChanged += new System.EventHandler(this.Save_FastEnumeration);
+            this.checkBox_FastEnumeration.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // groupBox_Backups
             // 
@@ -7445,6 +7459,7 @@ namespace RSMods
         private System.Windows.Forms.CheckBox checkBox_UnlimitedBackups;
         private System.Windows.Forms.GroupBox groupBox_ProfileLoadSave;
         private System.Windows.Forms.CheckBox checkBox_FastProfileLoadAndSave;
+        private System.Windows.Forms.CheckBox checkBox_FastEnumeration;
         private System.Windows.Forms.NumericUpDown nUpDown_NumberOfBackups;
         private System.Windows.Forms.CheckBox checkBox_RainbowNotes;
         private System.Windows.Forms.Label label_RainbowNotesKey;

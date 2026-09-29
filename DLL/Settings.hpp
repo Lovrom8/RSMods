@@ -45,6 +45,23 @@ namespace Settings {
 		inline constexpr char ForceReEnumerationEnabled[] = "ForceReEnumerationEnabled";
 		inline constexpr char CheckForNewSongsInterval[]  = "CheckForNewSongsInterval";
 
+		// Fast enumeration tuning. Hidden: in RSMods.ini under [Fast Enumeration], not in the GUI.
+		inline constexpr char FastEnumerationInstallsPerTick[]      = "FastEnumerationInstallsPerTick";
+		inline constexpr char FastEnumerationLoadsPerTick[]         = "FastEnumerationLoadsPerTick";
+		inline constexpr char FastEnumerationBudgetMs[]             = "FastEnumerationBudgetMs";
+		inline constexpr char FastEnumerationMenuBudgetMs[]         = "FastEnumerationMenuBudgetMs";
+		inline constexpr char FastEnumerationSkipUnchanged[]        = "FastEnumerationSkipUnchanged";
+		inline constexpr char FastEnumerationSkipShaderScan[]       = "FastEnumerationSkipShaderScan";
+		inline constexpr char FastEnumerationStreamLimit[]          = "FastEnumerationStreamLimit";
+		inline constexpr char FastEnumerationFileCeiling[]          = "FastEnumerationFileCeiling";
+		inline constexpr char FastEnumerationPrefetchKB[]           = "FastEnumerationPrefetchKB";
+		inline constexpr char FastEnumerationPrefetchHddOnly[]      = "FastEnumerationPrefetchHddOnly";
+		inline constexpr char FastEnumerationEarlyScan[]            = "FastEnumerationEarlyScan";
+		inline constexpr char FastEnumerationEarlyScanMax[]         = "FastEnumerationEarlyScanMax";
+		inline constexpr char FastEnumerationBootBudgetMs[]         = "FastEnumerationBootBudgetMs";
+		inline constexpr char FastEnumerationBootInstallsPerTick[]  = "FastEnumerationBootInstallsPerTick";
+		inline constexpr char FastEnumerationAssetLoadsPerTick[]    = "FastEnumerationAssetLoadsPerTick";
+
 		// Remove Lyrics
 		inline constexpr char RemoveLyricsEnabled[]     = "RemoveLyrics";
 		inline constexpr char RemoveLyricsWhen[]        = "RemoveLyricsWhen";
@@ -137,6 +154,7 @@ namespace Settings {
 		inline constexpr char PreventMidSongPause[] = "PreventMidSongPause";
 		inline constexpr char BackupProfile[]           = "BackupProfile"; // Shared with the GUI, which also backs up when it opens.
 		inline constexpr char FastProfileLoadAndSave[]  = "FastProfileLoadAndSave";
+		inline constexpr char FastEnumeration[]         = "FastEnumeration";
 
 		// Standalone toggles
 		inline constexpr char AllowAudioInBackground[]  = "AllowAudioInBackground";

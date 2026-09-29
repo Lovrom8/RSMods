@@ -5,5 +5,5 @@ namespace Enumeration {
 	int GetCurrentDLCCount();
 	int GetFileCount(std::filesystem::path path);
 	void HookEnumerationService();
-	inline uint32_t* rsSteamServiceFlagsPtr = nullptr;
+	inline std::uint8_t* rsSteamServiceFlagsPtr = nullptr; // DLC service + 0x04: [0] = scan request, [1] = enabled.
 };
