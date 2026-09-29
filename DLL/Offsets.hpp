@@ -88,6 +88,12 @@ namespace Offsets {
 	extern const char* patch_ListNumbers;
 	extern const char* patch_SprintfArgs;
 
+	// Non-Stop Play: extra song lists (Mods/ExtraSongLists.cpp)
+	inline VersioningStruct<uintptr_t> ptr_songListService;				// Static Memory | Song list service; +0x10 holds the song lists object, whose +0x0C is the array of lists
+	inline VersioningStruct<uintptr_t> ptr_nspSongListIdsLoop, ptr_nspSongListIdsLoopTop, ptr_nspSongListIdsLoopExit;
+	inline VersioningStruct<uintptr_t> ptr_nspSongListLabelsLoop, ptr_nspSongListLabelsLoopTop, ptr_nspSongListLabelsLoopExit;
+	inline VersioningStruct<uintptr_t> ptr_nspPoolSongListSwitch, ptr_nspPoolDispatch, ptr_nspPoolSongList, ptr_nspPoolEmpty;
+
 	// Disable Controllers
 	inline VersioningStruct<uintptr_t> hookAddr_DirectInput8, hookBackAddr_DirectInput8;
 	inline VersioningStruct<uintptr_t> xinputModule;

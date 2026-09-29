@@ -94,6 +94,9 @@
     <ClCompile Include="Mods\CustomSongTitles.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
+    <ClCompile Include="Mods\ExtraSongLists.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
     <ClCompile Include="Mods\CollectColors.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
@@ -533,6 +536,9 @@
       <Filter>Mods\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Mods\CustomSongTitles.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\ExtraSongLists.hpp">
       <Filter>Mods\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Mods\Enumeration.hpp">

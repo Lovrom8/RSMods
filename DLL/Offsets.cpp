@@ -46,6 +46,18 @@ void Offsets::Initialize() {
 	patch_addedSpaces = { {0x00551234, baseHandle + 0x00152544 } };			// Code | 8d 45 b0 8d 55 a8 8d 4d c0 89 45 c0 89 4d c4 8b c6 39 55 ac (function call right before these bytes)
 	patch_addedNumbers = { {0x00551275, baseHandle + 0x00152585 } };		// Code | 8b d6 3b d7 74 19 8d 45 c0 39 45 c4 (function call right before these bytes)
 	patch_sprintfArg = { {0x00832653, baseHandle + 0x00432923 } };			// Code | 83 c4 0c 8b 44 24 18 8b 48 4c 2b 48 48 b8 ab aa aa 2a (we want byte 0c)
+	// Non-Stop Play song list choice, built in one function of the Non-Stop Play menu (0x0067A630 / +0x0027B370).
+	ptr_songListService = { {0x0135F5A8, baseHandle + 0x00F605A8 } };				// Static Memory | a1 ? ? ? ? at the start of that function (read before the 8 option ids are pushed)
+	ptr_nspSongListIdsLoop = { {0x0067A6B7, baseHandle + 0x0027B3F7 } };			// Code | 43 83 fb 08 72 d8 8b 5d a8 b8 08 00 00 00 (the 43)
+	ptr_nspSongListIdsLoopTop = { {0x0067A695, baseHandle + 0x0027B3D5 } };		// Code | Target of the 72 d8 above
+	ptr_nspSongListIdsLoopExit = { {0x0067A6BD, baseHandle + 0x0027B3FD } };		// Code | The 8b 5d a8 above
+	ptr_nspSongListLabelsLoop = { {0x0067A855, baseHandle + 0x0027B595 } };		// Code | 8b 4d a0 41 89 4d a0 83 f9 08 0f 85 (the first 8b)
+	ptr_nspSongListLabelsLoopTop = { {0x0067A6EF, baseHandle + 0x0027B42F } };	// Code | Target of the 0f 85 above (8b 55 ac 52 8d 7d b4 e8, the call that names one option)
+	ptr_nspSongListLabelsLoopExit = { {0x0067A865, baseHandle + 0x0027B5A5 } };	// Code | The instruction after the 0f 85 above (8b fb)
+	ptr_nspPoolSongListSwitch = { {0x004EEACE, baseHandle + 0x000EF6CE } };		// Code | 8b 86 a4 00 00 00 83 f8 07 0f 87 ? ? ? ? ff 24 85 (the 83 - the Non-Stop Play pool builder's switch on the chosen id)
+	ptr_nspPoolDispatch = { {0x004EEAD7, baseHandle + 0x000EF6D7 } };				// Code | The ff 24 85 above
+	ptr_nspPoolSongList = { {0x004EEB08, baseHandle + 0x000EF708 } };				// Code | Jump table entries 2-7 (8b 0d, song list service, then song list id - 2)
+	ptr_nspPoolEmpty = { {0x004EEC6B, baseHandle + 0x000EF86B } };					// Code | Target of the 0f 87 above
 	hookAddr_DirectInput8 = { {0x00C019EC, baseHandle + 0x00800B0C } };		// Code | 56 6a 00 8d b7 80 00 00 00 56 (we want 6 bytes after)
 	hookBackAddr_DirectInput8 = { {0x00C019F1, baseHandle + 0x00800B11 } };	// Code | 56 6a 00 8d b7 80 00 00 00 56 (we want 11 bytes after)
 	xinputModule = { {0x01360e98, baseHandle + 0x00F61E98 } };				// Code | 56 6a 00 8d b7 80 00 00 00 56 68 ? ? ? ? 68 00 08 00 00 50 (we want the static variable set at the end)
