@@ -25,19 +25,19 @@ namespace RSMods.Core
         /// </summary>
         Task<bool> ShowChoiceAsync(string message, string title, string positiveText, string negativeText);
 
-        /// <summary>Folder picker. Returns the chosen path, or null if the user cancelled.</summary>
+        /// <summary>Folder picker. Returns the chosen path, or null if the user canceled.</summary>
         Task<string?> PickFolderAsync(string title, string? startPath = null);
 
         /// <summary>
         /// Multi-file open picker. <paramref name="patterns"/> are glob patterns such as "*.json" or
-        /// "*.tone2014.xml". Returns the chosen file paths, or an empty list if the user cancelled.
+        /// "*.tone2014.xml". Returns the chosen file paths, or an empty list if the user canceled.
         /// </summary>
         Task<IReadOnlyList<string>> PickFilesAsync(
             string title, string typeName, IReadOnlyList<string> patterns, bool allowMultiple);
 
         /// <summary>
         /// Save-file picker. <paramref name="pattern"/> is a glob such as "*.rs_soundpack". Returns the chosen
-        /// path (with the extension applied), or null if the user cancelled.
+        /// path (with the extension applied), or null if the user canceled.
         /// </summary>
         Task<string?> PickSaveFileAsync(
             string title, string suggestedFileName, string typeName, string pattern, string? startPath = null);

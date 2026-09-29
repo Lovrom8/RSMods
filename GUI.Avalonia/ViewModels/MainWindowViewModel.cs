@@ -165,7 +165,7 @@ internal sealed partial class MainWindowViewModel : ObservableObject
     [RelayCommand(CanExecute = nameof(SectionsEnabled))]
     private async Task ShowColorsAsync()
     {
-        // Colours live in the already-loaded RSMods.ini store; the snapshot is built on first navigation.
+        // Colors live in the already-loaded RSMods.ini store; the snapshot is built on first navigation.
         await _colors.InitializeAsync();
         CurrentPage = _colors;
         ActiveSection = "Colors";

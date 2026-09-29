@@ -3,7 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace RSMods.ViewModels;
 
-/// <summary>One editable string offset and its live note/colour presentation.</summary>
+/// <summary>One editable string offset and its live note/color presentation.</summary>
 internal sealed partial class TuningStringViewModel : ObservableObject
 {
     public int Index { get; }
@@ -19,6 +19,13 @@ internal sealed partial class TuningStringViewModel : ObservableObject
     [ObservableProperty]
     private string _colorHex = string.Empty;
 
+    // The palette the swatch shows: Rocksmith draws extended-range tunings with the colorblind colors.
+    private bool _normalPalette = true;
+    private bool _refreshing;
+
+    /// <summary>Raised when a color is picked on the swatch: the string, which palette, and the new hex.</summary>
+    public event Action<int, bool, string>? ColorPicked;
+
     public TuningStringViewModel(int index, string label, int baseMidiNote)
     {
         Index = index;
@@ -29,7 +36,13 @@ internal sealed partial class TuningStringViewModel : ObservableObject
 
     partial void OnOffsetChanged(decimal value) => RefreshPresentation();
 
-    /// <summary>Refreshes settings-backed colour state when the user revisits the screen.</summary>
+    partial void OnColorHexChanged(string value)
+    {
+        if (!_refreshing)
+            ColorPicked?.Invoke(Index, _normalPalette, value);
+    }
+
+    /// <summary>Refreshes settings-backed color state when the user revisits the screen.</summary>
     public void RefreshPresentation()
     {
         int offset = (int)Offset;
@@ -37,6 +50,15 @@ internal sealed partial class TuningStringViewModel : ObservableObject
         NoteName = Index == 5 ? noteName.ToLowerInvariant() : noteName;
 
         bool extendedRange = RsModsSettings.Toggles.ExtendedRange && RsModsSettings.ModSettings.ExtendedRangeModeAt >= offset;
-        ColorHex = RsModsSettings.StringColors.GetStringColor(Index, normal: !extendedRange);
+        _refreshing = true;
+        try
+        {
+            _normalPalette = !extendedRange;
+            ColorHex = RsModsSettings.StringColors.GetStringColor(Index, normal: _normalPalette);
+        }
+        finally
+        {
+            _refreshing = false;
+        }
     }
 }

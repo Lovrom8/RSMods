@@ -7,17 +7,18 @@ using CommunityToolkit.Mvvm.ComponentModel;
 namespace RSMods.Core.Settings;
 
 /// <summary>
-/// Coordinates manifest-driven setting field view models, category grouping,
+/// Coordinates manifest-driven setting field view models, their grouping into mods,
 /// reactive visibility conditions, and INI load/save orchestration.
 /// </summary>
 public sealed partial class SettingsCoordinator : ObservableObject
 {
     private readonly List<SettingFieldViewModel> _allFields = [];
     private readonly Dictionary<string, SettingFieldViewModel> _fieldsByKey = new(StringComparer.OrdinalIgnoreCase);
-    private readonly List<SettingGroupViewModel> _groups = [];
 
     public IReadOnlyList<SettingFieldViewModel> AllFields => _allFields;
-    public IReadOnlyList<SettingGroupViewModel> Groups => _groups;
+
+    /// <summary>One entry per mod, sorted by name.</summary>
+    public IReadOnlyList<ModEntryViewModel> Mods { get; }
 
     public bool IsDirty => _allFields.Any(f => f.IsDirty);
 
@@ -27,7 +28,8 @@ public sealed partial class SettingsCoordinator : ObservableObject
     {
         InitializeFields(manifestService, choicesProvider);
         WireVisibilityConditions();
-        GroupByCategory();
+        WireDirtyTracking();
+        Mods = ModCatalog.Build(manifestService.AllSettings, _fieldsByKey);
     }
 
     public SettingFieldViewModel? Find(string key) => _fieldsByKey.TryGetValue(key, out var field) ? field : null;
@@ -40,9 +42,6 @@ public sealed partial class SettingsCoordinator : ObservableObject
             field.Load(ini);
 
         ReevaluateAllVisibilities();
-
-        foreach (var group in _groups)
-            group.UpdateVisibility();
 
         OnPropertyChanged(nameof(IsDirty));
         StateChanged?.Invoke(this, EventArgs.Empty);
@@ -92,33 +91,18 @@ public sealed partial class SettingsCoordinator : ObservableObject
         ReevaluateAllVisibilities();
     }
 
-    private void GroupByCategory()
+    private void WireDirtyTracking()
     {
-        var categoryGroups = _allFields
-            .GroupBy(f => string.IsNullOrWhiteSpace(f.Descriptor.Category) ? "General" : f.Descriptor.Category);
-
-        foreach (var group in categoryGroups)
+        foreach (var field in _allFields)
         {
-            string categoryName = group.Key;
-            string displayTitle = FormatCategoryTitle(categoryName);
-            var groupVm = new SettingGroupViewModel(categoryName, displayTitle, group);
-
-            foreach (var field in group)
+            field.PropertyChanged += (_, e) =>
             {
-                field.PropertyChanged += (_, e) =>
+                if (e.PropertyName == nameof(SettingFieldViewModel.IsDirty))
                 {
-                    if (e.PropertyName == nameof(SettingFieldViewModel.IsVisible))
-                        groupVm.UpdateVisibility();
-
-                    if (e.PropertyName == nameof(SettingFieldViewModel.IsDirty))
-                    {
-                        OnPropertyChanged(nameof(IsDirty));
-                        StateChanged?.Invoke(this, EventArgs.Empty);
-                    }
-                };
-            }
-
-            _groups.Add(groupVm);
+                    OnPropertyChanged(nameof(IsDirty));
+                    StateChanged?.Invoke(this, EventArgs.Empty);
+                }
+            };
         }
     }
 
@@ -155,11 +139,4 @@ public sealed partial class SettingsCoordinator : ObservableObject
             _ => new StringSettingFieldViewModel(desc)
         };
     }
-
-    private static string FormatCategoryTitle(string category) => category switch
-    {
-        "Toggle Switches" => "Toggles",
-        "Mod Settings" => "Mod Settings",
-        _ => category
-    };
 }

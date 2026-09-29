@@ -9,14 +9,14 @@ namespace RSMods.Core.Tests;
 public sealed class SettingsCoordinatorTests
 {
     [Fact]
-    public void CoordinatorInstantiatesAllFieldsAndGroups()
+    public void CoordinatorInstantiatesAllFieldsAndMods()
     {
         var manifest = new ManifestService();
         var coordinator = new SettingsCoordinator(manifest);
 
         Assert.Equal(manifest.AllSettings.Count(d => d.Type != SettingType.Key && d.EditedBy == null), coordinator.AllFields.Count);
-        Assert.Null(coordinator.Find("ToggleLoftKey")); // Key binds belong to the keybindings page.
-        Assert.NotEmpty(coordinator.Groups);
+        Assert.Null(coordinator.Find("ToggleLoftKey")); // Key binds are captured by the mod's key bind rows.
+        Assert.NotEmpty(coordinator.Mods);
 
         var volumeControl = coordinator.Find<BoolSettingFieldViewModel>("VolumeControlEnabled");
         Assert.NotNull(volumeControl);

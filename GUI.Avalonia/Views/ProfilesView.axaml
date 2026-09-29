@@ -5,25 +5,18 @@
     xmlns:vm="clr-namespace:RSMods.ViewModels"
     x:DataType="vm:ProfilesViewModel">
 
-    <ScrollViewer>
-        <!-- Lets the page fill the width even while its cards are short (no profile selected yet), yet keeps it
-             left-anchored at the shared max width on wide windows, like every other tab. -->
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" MaxWidth="{StaticResource PageOuterMaxWidth}" />
-            </Grid.ColumnDefinitions>
-        <StackPanel Classes="page" HorizontalAlignment="Stretch">
+    <!-- The page doesn't scroll: the song grid takes the rest of the height and is the one thing that scrolls, so
+         there is never a scrolling list inside another. -->
+    <Grid Margin="32,28" MaxWidth="{StaticResource PageMaxWidth}" HorizontalAlignment="Stretch"
+          RowDefinitions="Auto,Auto,Auto,*" RowSpacing="18">
             <TextBlock Classes="h1" Text="Profiles" />
-            <TextBlock
-                Classes="pageintro"
-                Text="Manage your Rocksmith save profiles. Select a profile to edit its song lists and rewards, or restore a previous backup of your save data. Each action is applied and saved immediately." />
 
-            <StackPanel Orientation="Horizontal" Spacing="10">
+            <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="10">
                 <ProgressBar Width="120" IsIndeterminate="True" IsVisible="{Binding IsBusy}" />
                 <TextBlock VerticalAlignment="Center" Opacity="0.8" Text="{Binding StatusMessage}" />
             </StackPanel>
 
-            <Grid ColumnDefinitions="*,*" ColumnSpacing="18">
+            <Grid Grid.Row="2" ColumnDefinitions="*,*" ColumnSpacing="18">
                 <!-- The selected profile and the one-shot edits that apply to it. -->
                 <Border Grid.Column="0" Classes="card">
                     <StackPanel Spacing="12">
@@ -107,21 +100,25 @@
                                 Content="Refresh"
                                 AutomationProperties.Name="Refresh backups" />
                         </Grid>
-                        <ListBox
-                            Height="190"
-                            ItemsSource="{Binding Backups}"
-                            SelectedItem="{Binding SelectedBackup}" />
-                        <Button
-                            HorizontalAlignment="Right"
-                            Command="{Binding RevertToBackupCommand}"
-                            Content="Revert to selected backup" />
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                            <ComboBox
+                                HorizontalAlignment="Stretch"
+                                PlaceholderText="Select a backup"
+                                AutomationProperties.Name="Backup"
+                                ItemsSource="{Binding Backups}"
+                                SelectedItem="{Binding SelectedBackup}" />
+                            <Button
+                                Grid.Column="1"
+                                Command="{Binding RevertToBackupCommand}"
+                                Content="Revert to backup" />
+                        </Grid>
                     </StackPanel>
                 </Border>
             </Grid>
 
             <!-- Song lists / Favorites grid -->
-            <Border Classes="card" IsVisible="{Binding HasSelectedProfile}">
-                <StackPanel Spacing="12">
+            <Border Grid.Row="3" Classes="card" IsVisible="{Binding HasSelectedProfile}">
+                <Grid RowDefinitions="Auto,Auto,*" RowSpacing="12">
                     <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
                         <StackPanel Spacing="4">
                             <TextBlock FontWeight="SemiBold" Text="Song list &amp; Favorites editor" />
@@ -135,13 +132,14 @@
                         </StackPanel>
                     </Grid>
                     <ProgressBar
+                        Grid.Row="1"
                         Minimum="0" Maximum="100"
                         Value="{Binding LoadProgress}"
                         IsVisible="{Binding IsLoadingSongs}" />
                     <!-- Columns are built in code-behind: Artist and Title stay frozen while the list columns scroll. -->
                     <DataGrid
                         x:Name="SongsGrid"
-                        Height="480"
+                        Grid.Row="2"
                         AutoGenerateColumns="False"
                         CanUserReorderColumns="False"
                         CanUserResizeColumns="True"
@@ -150,9 +148,7 @@
                         GridLinesVisibility="All"
                         IsVisible="{Binding HasLoadedSongs}"
                         ItemsSource="{Binding SongRows}" />
-                </StackPanel>
+                </Grid>
             </Border>
-        </StackPanel>
-        </Grid>
-    </ScrollViewer>
+    </Grid>
 </UserControl>

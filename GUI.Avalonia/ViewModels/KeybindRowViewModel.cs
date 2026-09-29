@@ -17,8 +17,15 @@ internal sealed partial class KeybindRowViewModel(KeybindItem item) : Observable
     public string DisplayName => _item.DisplayName;
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(KeyDisplay))]
+    [NotifyPropertyChangedFor(nameof(KeyDisplay), nameof(ButtonText))]
     private string _vkey = item.GetKey();
+
+    /// <summary>True while the row's button waits for the key press to bind.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ButtonText))]
+    private bool _isCapturing;
+
+    public string ButtonText => IsCapturing ? "Press a key…" : KeyDisplay;
 
     /// <summary>The stored key without its "VK_" prefix; an unset bind shows as a dash.</summary>
     public string KeyDisplay

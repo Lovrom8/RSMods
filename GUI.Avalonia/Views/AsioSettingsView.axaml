@@ -47,6 +47,7 @@
                         <Grid Classes="field" ColumnDefinitions="*,Auto">
                             <StackPanel>
                                 <TextBlock Text="Driver" />
+                                <TextBlock Classes="hint" IsVisible="{Binding DriverNotInstalled}" Text="Saved, but not an installed ASIO driver." />
                             </StackPanel>
                             <ComboBox
                                 Classes="driver"
@@ -104,9 +105,13 @@
             </Grid.ColumnDefinitions>
         <StackPanel Classes="page" HorizontalAlignment="Stretch">
             <TextBlock Classes="h1" Text="RS_ASIO settings" />
-            <TextBlock
-                Classes="pageintro"
-                Text="Disabling a channel blanks its driver (Input 1 is commented out so its value is kept). Changes are saved as you make them, preserving comments and unknown entries." />
+
+            <Border Classes="warning" Margin="0,0,18,0" IsVisible="{Binding HasSetupWarning}">
+                <StackPanel Spacing="4">
+                    <TextBlock FontWeight="SemiBold" Text="RS_ASIO isn't set up" />
+                    <TextBlock TextWrapping="Wrap" Text="{Binding SetupWarning}" />
+                </StackPanel>
+            </Border>
 
             <TextBlock FontSize="12" Opacity="0.7" Text="{Binding StatusMessage}" IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
 
@@ -188,6 +193,7 @@
                                 <Grid Classes="field" ColumnDefinitions="*,Auto">
                                     <StackPanel>
                                         <TextBlock Text="Driver" />
+                                        <TextBlock Classes="hint" IsVisible="{Binding OutputDriverNotInstalled}" Text="Saved, but not an installed ASIO driver." />
                                     </StackPanel>
                                     <ComboBox
                                         Classes="driver"

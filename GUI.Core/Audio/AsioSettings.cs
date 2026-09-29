@@ -71,7 +71,8 @@ namespace RSMods.ASIO
 
             internal ConfigSettings(IniManager ini) => _section = new IniSection(ini, "[Config]", numericBools: true);
 
-            public WasapiOutputMode WasapiOutputs { get => _section.GetEnumInt(WasapiOutputMode.Off); set { _section.SetEnumInt(value); _section.Save(); } }
+            // RS_ASIO names the key EnableWasapiOutputs; the property keeps the shorter name as it's tri-state.
+            public WasapiOutputMode WasapiOutputs { get => _section.GetEnumInt(WasapiOutputMode.Off, "EnableWasapiOutputs"); set { _section.SetEnumInt(value, "EnableWasapiOutputs"); _section.Save(); } }
             public bool EnableWasapiInputs { get => _section.GetBool(); set { _section.SetBool(value); _section.Save(); } }
             public bool EnableAsio { get => _section.GetBool(true); set { _section.SetBool(value); _section.Save(); } }
         }

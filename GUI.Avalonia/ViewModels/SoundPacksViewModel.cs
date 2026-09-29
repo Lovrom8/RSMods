@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -52,15 +53,50 @@ internal sealed partial class SoundPacksViewModel(SoundPackService service, IDia
     [NotifyCanExecuteChangedFor(nameof(PlayResultVoiceOverCommand))]
     private string? _selectedResultVo;
 
+    /// <summary>Why MP3 / OGG / WAV lines can't be converted (no usable Wwise), or empty when they can.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasWwiseWarning))]
+    private string _wwiseWarning = string.Empty;
+
+    public bool HasWwiseWarning => WwiseWarning.Length > 0;
+
     /// <summary>Reads the current unpacked state on first navigation.</summary>
     public Task InitializeAsync()
     {
+        // Checked on every visit, so installing Wwise clears the warning without a restart.
+        CheckWwise();
+
         if (_initialized)
             return Task.CompletedTask;
         _initialized = true;
 
         IsUnpacked = service.IsUnpacked;
         return Task.CompletedTask;
+    }
+
+    private void CheckWwise()
+    {
+        WwiseCheckResult result = WwiseInstallation.Check();
+        const string supported = "Wwise 2013 to 2017";
+
+        WwiseWarning = result.Status switch
+        {
+            WwiseStatus.NotInstalled =>
+                $"Wwise isn't installed, so only .wem files can replace a voice line: MP3, OGG and WAV files are converted " +
+                $"with {supported}. Use Download under Tools, then open Wwise once to accept its EULA.",
+            WwiseStatus.Incompatible =>
+                $"{DescribeInstalled(result.Installs)} installed, but {(result.Installs.Count == 1 ? "it can't" : "none of them can")} " +
+                $"convert MP3, OGG and WAV files: that needs WwiseCLI.exe from {supported} (later versions don't include it), " +
+                "so only .wem files can be used. Use Download under Tools to install a compatible version alongside it.",
+            _ => string.Empty,
+        };
+    }
+
+    private static string DescribeInstalled(IReadOnlyList<WwiseInstall> installs)
+    {
+        List<string> versions = installs.Select(i => $"Wwise {i.Version}").Distinct().ToList();
+        string list = versions.Count == 1 ? versions[0] : string.Join(", ", versions.Take(versions.Count - 1)) + " and " + versions[^1];
+        return list + (versions.Count == 1 ? " is" : " are");
     }
 
     private bool CanRun => !IsBusy;

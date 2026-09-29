@@ -105,7 +105,7 @@ internal sealed partial class ProfilesViewModel(
         }
         catch
         {
-            // A corrupt/missing profile list is presented as empty, matching the shared service's behaviour.
+            // A corrupt/missing profile list is presented as empty, matching the shared service's behavior.
         }
     }
 

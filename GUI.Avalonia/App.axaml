@@ -36,6 +36,8 @@
                     <SolidColorBrush x:Key="SubtleFillBrush" Color="#15181C" />
                     <SolidColorBrush x:Key="NavHoverBrush" Color="#252A31" />
                     <SolidColorBrush x:Key="NavCaptionBrush" Color="#7C838D" />
+                    <SolidColorBrush x:Key="WarningBackgroundBrush" Color="#3A2F14" />
+                    <SolidColorBrush x:Key="WarningBorderBrush" Color="#C7952B" />
                 </ResourceDictionary>
                 <ResourceDictionary x:Key="Light">
                     <SolidColorBrush x:Key="ShellHeaderBrush" Color="#ECEEF1" />
@@ -47,6 +49,8 @@
                     <SolidColorBrush x:Key="SubtleFillBrush" Color="#EDEFF2" />
                     <SolidColorBrush x:Key="NavHoverBrush" Color="#E6E8EC" />
                     <SolidColorBrush x:Key="NavCaptionBrush" Color="#8A9099" />
+                    <SolidColorBrush x:Key="WarningBackgroundBrush" Color="#FFF4CE" />
+                    <SolidColorBrush x:Key="WarningBorderBrush" Color="#D9A400" />
                 </ResourceDictionary>
             </ResourceDictionary.ThemeDictionaries>
         </ResourceDictionary>
@@ -55,6 +59,7 @@
     <Application.Styles>
         <FluentTheme />
         <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml" />
+        <StyleInclude Source="avares://Avalonia.Controls.ColorPicker/Themes/Fluent/Fluent.xaml" />
 
         <!-- ============================ Typography ============================ -->
         <Style Selector="TextBlock.h1">
@@ -63,6 +68,10 @@
         </Style>
         <Style Selector="TextBlock.h2">
             <Setter Property="FontSize" Value="16" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+        <Style Selector="TextBlock.h3">
+            <Setter Property="FontSize" Value="14" />
             <Setter Property="FontWeight" Value="SemiBold" />
         </Style>
         <Style Selector="TextBlock.caption">
@@ -86,14 +95,6 @@
             <Setter Property="MaxWidth" Value="{StaticResource PageMaxWidth}" />
             <Setter Property="HorizontalAlignment" Value="Left" />
         </Style>
-        <!-- Intro / help paragraph under a page's h1. Capped tighter than the page for readability. -->
-        <Style Selector="TextBlock.pageintro">
-            <Setter Property="FontSize" Value="13" />
-            <Setter Property="Opacity" Value="0.7" />
-            <Setter Property="TextWrapping" Value="Wrap" />
-            <Setter Property="MaxWidth" Value="{StaticResource PageProseMaxWidth}" />
-            <Setter Property="HorizontalAlignment" Value="Left" />
-        </Style>
 
         <!-- ============================ Cards ============================ -->
         <!-- A raised surface panel. Replaces the flat hairline-bordered borders so panels
@@ -105,6 +106,20 @@
             <Setter Property="CornerRadius" Value="10" />
             <Setter Property="Padding" Value="20" />
             <Setter Property="BoxShadow" Value="0 2 10 0 #22000000" />
+        </Style>
+
+        <!-- A page-level warning: something outside the app needs fixing before the page's settings work. -->
+        <Style Selector="Border.warning">
+            <Setter Property="Background" Value="{DynamicResource WarningBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource WarningBorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="Padding" Value="16,12" />
+        </Style>
+
+        <!-- Flyouts whose content brings its own margins, like the color wheel. -->
+        <Style Selector="FlyoutPresenter.nopadding">
+            <Setter Property="Padding" Value="0" />
         </Style>
 
         <!-- A small inset "stat" tile: heavier fill, used for at-a-glance status chips. -->

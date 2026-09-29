@@ -26,6 +26,9 @@ internal sealed partial class AsioSettingsViewModel : ObservableObject
 
     public ObservableCollection<string> AvailableDrivers { get; } = [];
 
+    // The drivers found in the registry; AvailableDrivers also lists saved ones that aren't installed.
+    private readonly HashSet<string> _installedDrivers = new(StringComparer.OrdinalIgnoreCase);
+
     public AsioInputViewModel Input0 { get; }
     public AsioInputViewModel Input1 { get; }
     public AsioInputViewModel InputMic { get; }
@@ -37,9 +40,9 @@ internal sealed partial class AsioSettingsViewModel : ObservableObject
         _warnings = warnings;
         _saver = autoSave.Create(SaveAsync, ex => StatusMessage = $"Couldn't save: {ex.Message}");
 
-        Input0 = new AsioInputViewModel("Input 0 (instrument)", "Player 1's cable, through your audio interface.", AvailableDrivers);
-        Input1 = new AsioInputViewModel("Input 1 (second instrument)", "Player 2's cable, through your audio interface.", AvailableDrivers);
-        InputMic = new AsioInputViewModel("Input Mic (microphone)", "For singing. Needs RS_ASIO 0.5.5 or later.", AvailableDrivers);
+        Input0 = new AsioInputViewModel("Input 0 (instrument)", "Player 1's cable, through your audio interface.", AvailableDrivers, IsInstalled);
+        Input1 = new AsioInputViewModel("Input 1 (second instrument)", "Player 2's cable, through your audio interface.", AvailableDrivers, IsInstalled);
+        InputMic = new AsioInputViewModel("Input Mic (microphone)", "For singing. Needs RS_ASIO 0.5.5 or later.", AvailableDrivers, IsInstalled);
         Inputs = [Input0, Input1, InputMic];
 
         foreach (var input in Inputs)
@@ -68,7 +71,11 @@ internal sealed partial class AsioSettingsViewModel : ObservableObject
 
     // --- Output ---
     [ObservableProperty] private bool _outputEnabled;
-    [ObservableProperty] private string? _outputDriver;
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(OutputDriverNotInstalled))]
+    private string? _outputDriver;
+
+    public bool OutputDriverNotInstalled => !string.IsNullOrEmpty(OutputDriver) && !IsInstalled(OutputDriver);
     [ObservableProperty] private decimal _outputBaseChannel;
     [ObservableProperty] private decimal _outputAltBaseChannel;
     [ObservableProperty] private bool _outputEnableEndpointVolume;
@@ -84,6 +91,13 @@ internal sealed partial class AsioSettingsViewModel : ObservableObject
     [ObservableProperty]
     private string _statusMessage = string.Empty;
 
+    /// <summary>Why RS_ASIO can't work as set up (missing files, no ASIO driver), or empty when nothing is wrong.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasSetupWarning))]
+    private string _setupWarning = string.Empty;
+
+    public bool HasSetupWarning => SetupWarning.Length > 0;
+
     /// <summary>
     /// First-time load: enumerates devices, captures validation warnings while reading the snapshot,
     /// and presents them. Idempotent; navigating back reuses the loaded snapshot.
@@ -91,7 +105,15 @@ internal sealed partial class AsioSettingsViewModel : ObservableObject
     public async Task InitializeAsync()
     {
         if (_initialized)
+        {
+            // Checked on every visit, so installing what was missing clears the warning without a restart.
+            PopulateDrivers(_service.Get());
+            CheckSetup();
+            OnPropertyChanged(nameof(OutputDriverNotInstalled));
+            foreach (var input in Inputs)
+                input.RefreshInstalled();
             return;
+        }
         _initialized = true;
 
         var settings = _service.Get();
@@ -110,17 +132,45 @@ internal sealed partial class AsioSettingsViewModel : ObservableObject
             settings.ValidationWarning -= Collect;
         }
 
-        if (!settings.SettingsExist)
-            StatusMessage = "RS_ASIO.ini was not found; showing defaults. Changing a setting will create it.";
-
+        CheckSetup();
         await _warnings.PresentAsync(warnings);
+    }
+
+    private bool IsInstalled(string? driver) => driver is not null && _installedDrivers.Contains(driver);
+
+    private void CheckSetup()
+    {
+        var problems = new List<string>();
+
+        IReadOnlyList<string> missing = _service.FindMissingFiles();
+        if (missing.Count > 0)
+        {
+            string files = missing.Count == 1 ? missing[0] : string.Join(", ", missing.Take(missing.Count - 1)) + " and " + missing[^1];
+            string verb = missing.Count == 1 ? "is" : "are";
+            problems.Add(
+                $"{files} {verb} missing from your Rocksmith folder, so Rocksmith won't use RS_ASIO and these settings have no effect. " +
+                "Install (or reinstall) RS_ASIO to use them." +
+                (missing.Contains(AsioSettings.DefaultFileName) ? " Changing a setting here creates RS_ASIO.ini with the values shown." : ""));
+        }
+
+        if (_installedDrivers.Count == 0)
+            problems.Add("No ASIO drivers are installed. RS_ASIO needs your audio interface's ASIO driver, with the interface plugged in.");
+
+        SetupWarning = string.Join(Environment.NewLine + Environment.NewLine, problems);
     }
 
     private void PopulateDrivers(AsioSettings settings)
     {
-        AvailableDrivers.Clear();
+        _installedDrivers.Clear();
         foreach (var name in _service.FindDeviceNames())
-            AvailableDrivers.Add(name);
+            _installedDrivers.Add(name);
+
+        // Added to rather than rebuilt, so a driver box keeps its selection when the list is refreshed.
+        foreach (var name in _installedDrivers)
+        {
+            if (!AvailableDrivers.Contains(name))
+                AvailableDrivers.Add(name);
+        }
 
         // Keep any saved driver that is no longer installed, so its ComboBox still shows it.
         foreach (var saved in new[]
@@ -148,7 +198,7 @@ internal sealed partial class AsioSettingsViewModel : ObservableObject
             CustomBufferSize = s.AsioSection.CustomBufferSize;
 
             OutputEnabled = !s.Output.Disabled;
-            OutputDriver = s.Output.Driver;
+            OutputDriver = string.IsNullOrWhiteSpace(s.Output.Driver) ? null : s.Output.Driver;
             OutputBaseChannel = s.Output.BaseChannel;
             OutputAltBaseChannel = s.Output.AltBaseChannel;
             OutputEnableEndpointVolume = s.Output.EnableSoftwareEndpointVolumeControl;
@@ -181,7 +231,8 @@ internal sealed partial class AsioSettingsViewModel : ObservableObject
         // No driver means RS_ASIO can't use the input. Input 1 marks "disabled" by commenting its driver out, so a
         // blank uncommented one (a missing RS_ASIO.ini gives that) would otherwise show as enabled.
         vm.Enabled = !disabled && !string.IsNullOrWhiteSpace(driver);
-        vm.Driver = driver;
+        // No driver is null, as the driver box reports it; a blank string would read as a change and save straight away.
+        vm.Driver = string.IsNullOrWhiteSpace(driver) ? null : driver;
         vm.Channel = channel;
         vm.EnableEndpointVolume = endpoint;
         vm.EnableMasterVolume = master;

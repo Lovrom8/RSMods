@@ -6,9 +6,9 @@ using RSMods.Core;
 namespace RSMods.Services;
 
 /// <summary>
-/// Applies the Avalonia frontend's appearance (FluentTheme light/dark variant and accent colour) to the
-/// live <see cref="Application"/>. This deliberately replaces the WinForms tri-colour recolouring with the
-/// idiomatic FluentTheme approach: a theme variant plus an optional accent, rather than recolouring every
+/// Applies the Avalonia frontend's appearance (FluentTheme light/dark variant and accent color) to the
+/// live <see cref="Application"/>. This deliberately replaces the WinForms tri-color recoloring with the
+/// idiomatic FluentTheme approach: a theme variant plus an optional accent, rather than recoloring every
 /// control by hand. Persistence lives in <see cref="RsModsSettings.GUISettings"/>; this service only
 /// applies values.
 /// </summary>

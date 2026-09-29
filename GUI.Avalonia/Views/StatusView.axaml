@@ -6,15 +6,15 @@
     xmlns:vm="clr-namespace:RSMods.ViewModels"
     x:DataType="vm:StatusViewModel">
 
-    <ScrollViewer>
-        <StackPanel Classes="page">
+    <!-- The page doesn't scroll: the release notes fill what's left and scroll on their own, so there is never a
+         scrolling area inside another. -->
+    <Grid Margin="32,28" MaxWidth="{StaticResource PageMaxWidth}" HorizontalAlignment="Stretch"
+          RowDefinitions="Auto,Auto,Auto,*" RowSpacing="18">
             <TextBlock Classes="h1" Text="Home" />
-            <TextBlock
-                Classes="pageintro"
-                Text="Where the configurator found Rocksmith and your save data. If Profile Edits is disabled, set your save folder here." />
-            <TextBlock FontSize="15" TextWrapping="Wrap" Text="{Binding StatusMessage}" />
+            <TextBlock Grid.Row="1" FontSize="15" TextWrapping="Wrap" Text="{Binding StatusMessage}"
+                       IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
 
-            <Border Classes="card">
+            <Border Grid.Row="2" Classes="card">
                 <StackPanel Spacing="12">
                     <Grid Classes="action" ColumnDefinitions="*,Auto">
                         <StackPanel Spacing="2">
@@ -37,8 +37,8 @@
             </Border>
 
             <!-- What's new: the latest published GitHub release. -->
-            <Border Classes="card">
-                <StackPanel Spacing="12">
+            <Border Grid.Row="3" Classes="card">
+                <Grid RowDefinitions="Auto,Auto,Auto,*" RowSpacing="12">
                     <Grid ColumnDefinitions="*,Auto">
                         <StackPanel VerticalAlignment="Center" Orientation="Horizontal" Spacing="10">
                             <TextBlock VerticalAlignment="Center" FontWeight="SemiBold" Text="What's new" />
@@ -69,31 +69,28 @@
                     </Grid>
 
                     <!-- Loading -->
-                    <StackPanel Orientation="Horizontal" Spacing="10" IsVisible="{Binding IsLoadingRelease}">
+                    <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="10" IsVisible="{Binding IsLoadingRelease}">
                         <ProgressBar Width="120" IsIndeterminate="True" />
                         <TextBlock VerticalAlignment="Center" Opacity="0.8" Text="Loading the latest release…" />
                     </StackPanel>
 
                     <!-- Error / retry -->
-                    <StackPanel Spacing="10" IsVisible="{Binding HasReleaseError}">
+                    <StackPanel Grid.Row="2" Spacing="10" IsVisible="{Binding HasReleaseError}">
                         <TextBlock Opacity="0.8" TextWrapping="Wrap" Text="{Binding ReleaseError}" />
                         <Button HorizontalAlignment="Left" Command="{Binding LoadLatestReleaseCommand}" Content="Retry" />
                     </StackPanel>
 
                     <!-- Release notes -->
-                    <StackPanel Spacing="8" IsVisible="{Binding HasRelease}">
+                    <Grid Grid.Row="3" RowDefinitions="Auto,Auto,*" RowSpacing="8" IsVisible="{Binding HasRelease}">
                         <TextBlock FontSize="15" FontWeight="SemiBold" Text="{Binding ReleaseTitle}" />
                         <TextBlock
+                            Grid.Row="1"
                             Opacity="0.6" FontSize="12"
                             IsVisible="{Binding ReleasePublished, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
                             Text="{Binding ReleasePublished, StringFormat='Released {0}'}" />
-                        <!-- Caps tall changelogs and scrolls them internally rather than stretching the page. -->
-                        <md:MarkdownScrollViewer
-                            MaxHeight="520"
-                            Markdown="{Binding ReleaseNotes}" />
-                    </StackPanel>
-                </StackPanel>
+                        <md:MarkdownScrollViewer Grid.Row="2" Markdown="{Binding ReleaseNotes}" />
+                    </Grid>
+                </Grid>
             </Border>
-        </StackPanel>
-    </ScrollViewer>
+    </Grid>
 </UserControl>

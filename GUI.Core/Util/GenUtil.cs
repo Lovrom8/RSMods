@@ -17,6 +17,42 @@ namespace RSMods.Util
 
         public static bool IsDirectoryEmpty(string path) => !Directory.EnumerateFileSystemEntries(path).Any();
 
+        /// <summary>
+        /// One spelling for a folder we store and show: backslashes only, no trailing separator, and each part's
+        /// casing as it is on disk (the registry hands back paths like "c:/program files (x86)/steam").
+        /// </summary>
+        public static string NormalizePath(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+                return path;
+
+            string full;
+            try
+            {
+                full = Path.GetFullPath(path.Trim());
+            }
+            catch (Exception ex) when (ex is ArgumentException or NotSupportedException or PathTooLongException)
+            {
+                return path;
+            }
+
+            string root = Path.GetPathRoot(full) ?? string.Empty;
+            full = full.Length > root.Length ? full.TrimEnd(Path.DirectorySeparatorChar) : full;
+
+            try
+            {
+                var names = new Stack<string>();
+                for (var dir = new DirectoryInfo(full); dir.Parent is { } parent; dir = parent)
+                    names.Push(parent.EnumerateDirectories(dir.Name).FirstOrDefault()?.Name ?? dir.Name);
+
+                return Path.Combine([root.ToUpperInvariant(), .. names]);
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or System.Security.SecurityException)
+            {
+                return full; // Casing is cosmetic; the separators are already consistent.
+            }
+        }
+
         public static void ExtractEmbeddedResource(string outputDir, Assembly resourceAssembly, string resourceLocation, string[] files)
         {
             if (!Directory.Exists(outputDir))

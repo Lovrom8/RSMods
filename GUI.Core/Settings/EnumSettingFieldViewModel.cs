@@ -21,6 +21,9 @@ public sealed partial class EnumSettingFieldViewModel : SettingFieldViewModel
 
     private string? _initialValue;
 
+    /// <summary>True for a list of installed fonts, which the GUI shows each in its own font.</summary>
+    public bool IsFontChoice => string.Equals(Descriptor.ChoicesSource, "SystemFonts", StringComparison.OrdinalIgnoreCase);
+
     public EnumSettingFieldViewModel(SettingDescriptor descriptor, IChoicesProvider? choicesProvider = null) : base(descriptor)
     {
         _choicesProvider = choicesProvider;

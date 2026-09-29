@@ -5,7 +5,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 namespace RSMods.ViewModels;
 
 /// <summary>
-/// One editable colour cell on the Custom Colors screen: a label plus its 6-digit hex value. Tracks the
+/// One editable color cell on the Custom Colors screen: a label plus its 6-digit hex value. Tracks the
 /// value it was loaded with so the screen can persist only the cells the user actually changed.
 /// </summary>
 internal sealed partial class ColorSwatchViewModel(string label) : ObservableObject
@@ -27,7 +27,7 @@ internal sealed partial class ColorSwatchViewModel(string label) : ObservableObj
     /// <summary>Re-baselines after a successful save so later saves only write further edits.</summary>
     public void Commit() => _originalHex = Hex;
 
-    /// <summary>True for a complete colour, so a half-typed value is held back until it's finished.</summary>
+    /// <summary>True for a complete color, so a half-typed value is held back until it's finished.</summary>
     public bool IsValid => Canonical(Hex) is { Length: 6 } hex && hex.All(Uri.IsHexDigit);
 
     /// <summary>True when the current value differs from the loaded/last-saved value (ignoring case and a leading #).</summary>

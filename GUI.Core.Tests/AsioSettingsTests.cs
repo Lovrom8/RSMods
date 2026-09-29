@@ -35,6 +35,41 @@ public sealed class AsioSettingsTests
     }
 
     [Fact]
+    public void WasapiOutputsUsesRsAsiosKeyName()
+    {
+        using var dir = new TemporaryDirectory();
+        string path = dir.File(AsioSettings.DefaultFileName);
+        File.WriteAllText(path, "[Config]\nEnableWasapiOutputs=1\n");
+
+        var settings = new AsioSettings(path);
+        Assert.Equal(WasapiOutputMode.On, settings.Config.WasapiOutputs);
+
+        settings.Config.WasapiOutputs = WasapiOutputMode.Prompt;
+        string[] lines = File.ReadAllLines(path);
+        Assert.Contains("EnableWasapiOutputs=-1", lines);
+        Assert.DoesNotContain(lines, l => l.StartsWith("WasapiOutputs="));
+    }
+
+    // RS_ASIO's own default RS_ASIO.ini leaves several values blank; that means "default", not "invalid".
+    [Fact]
+    public void BlankValuesReadAsDefaultsWithoutWarnings()
+    {
+        using var dir = new TemporaryDirectory();
+        string path = dir.File(AsioSettings.DefaultFileName);
+        File.WriteAllText(path, "[Asio.Output]\nDriver=\nAltBaseChannel=\nEnableRefCountHack=\n\n[Asio.Input.Mic]\nChannel=\nSoftwareMasterVolumePercent=\n");
+
+        var settings = new AsioSettings(path);
+        int warnings = 0;
+        settings.ValidationWarning += _ => warnings++;
+
+        Assert.Equal(0, settings.Output.AltBaseChannel);
+        Assert.False(settings.Output.EnableRefCountHack);
+        Assert.Equal(1, settings.InputMic.Channel);
+        Assert.Equal(100, settings.InputMic.SoftwareMasterVolumePercent);
+        Assert.Equal(0, warnings);
+    }
+
+    [Fact]
     public void OnOffWrittenByEarlierBuildsStillReads()
     {
         using var dir = new TemporaryDirectory();

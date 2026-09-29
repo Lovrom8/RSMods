@@ -4,7 +4,20 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:vm="clr-namespace:RSMods.ViewModels"
     xmlns:conv="clr-namespace:RSMods.Converters"
+    xmlns:views="clr-namespace:RSMods.Views"
     x:DataType="vm:ThemesViewModel">
+
+    <UserControl.Styles>
+        <!-- The Custom tile sits beside the preset list and lights up like a selected preset while it's in use. -->
+        <Style Selector="Border.customaccent">
+            <Setter Property="Padding" Value="12,9" />
+            <Setter Property="CornerRadius" Value="3" />
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+        <Style Selector="Border.customaccent.selected">
+            <Setter Property="Background" Value="{DynamicResource AccentBrushDark1}" />
+        </Style>
+    </UserControl.Styles>
 
     <UserControl.Resources>
         <!-- One accent choice: a preview swatch over its name. -->
@@ -22,9 +35,6 @@
     <ScrollViewer>
         <StackPanel Classes="page">
             <TextBlock Classes="h1" Text="Appearance" />
-            <TextBlock
-                Classes="pageintro"
-                Text="Choose how the configurator itself looks. Changes apply immediately and are saved to RSMods.ini. (This themes the app, not the game.)" />
 
             <TextBlock FontSize="12" Opacity="0.7" Text="{Binding StatusMessage}" IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
 
@@ -47,22 +57,33 @@
 
                     <StackPanel Spacing="10">
                         <StackPanel Spacing="2">
-                            <TextBlock Classes="actionname" Text="Accent colour" />
+                            <TextBlock Classes="actionname" Text="Accent color" />
                             <TextBlock Classes="hint" Text="Tints buttons, selections, and highlights across the app." />
                         </StackPanel>
-                        <ListBox
-                            Margin="-12,0,0,0"
-                            Background="Transparent"
-                            AutomationProperties.Name="Accent colour"
-                            ItemsSource="{Binding AccentPresets}"
-                            SelectedItem="{Binding SelectedAccent}"
-                            ItemTemplate="{StaticResource AccentTemplate}">
-                            <ListBox.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <WrapPanel />
-                                </ItemsPanelTemplate>
-                            </ListBox.ItemsPanel>
-                        </ListBox>
+                        <WrapPanel Margin="-12,0,0,0">
+                            <ListBox
+                                Background="Transparent"
+                                AutomationProperties.Name="Accent color"
+                                ItemsSource="{Binding AccentPresets}"
+                                SelectedItem="{Binding SelectedAccent}"
+                                ItemTemplate="{StaticResource AccentTemplate}">
+                                <ListBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel />
+                                    </ItemsPanelTemplate>
+                                </ListBox.ItemsPanel>
+                            </ListBox>
+                            <!-- Any color: click the swatch for a color wheel. -->
+                            <Border Classes="customaccent" Classes.selected="{Binding IsCustomAccent}">
+                                <StackPanel Width="52" Spacing="6">
+                                    <views:ColorSwatchButton
+                                        Width="52" Height="32"
+                                        AutomationProperties.Name="Custom accent color"
+                                        Hex="{Binding CustomAccentHex}" />
+                                    <TextBlock HorizontalAlignment="Center" FontSize="12" Text="Custom" />
+                                </StackPanel>
+                            </Border>
+                        </WrapPanel>
                     </StackPanel>
                 </StackPanel>
             </Border>

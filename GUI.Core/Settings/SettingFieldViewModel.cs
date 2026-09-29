@@ -15,7 +15,7 @@ public abstract partial class SettingFieldViewModel(SettingDescriptor descriptor
     public string Label => Descriptor.Label;
     public string? Hint => Descriptor.Hint;
     public bool HasHint => !string.IsNullOrWhiteSpace(Hint);
-    /// <summary>True when shown under its parent setting; set by the group that lays the field out.</summary>
+    /// <summary>True when shown under another sub-setting of its mod rather than the mod itself; set by <see cref="ModCatalog"/>.</summary>
     public bool IsNested { get; internal set; }
 
     public string IniSection { get; } = NormalizeSection(descriptor.Ini.Section);

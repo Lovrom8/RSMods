@@ -306,7 +306,7 @@ internal sealed partial class TwitchViewModel : ObservableObject, IDisposable
         }
         catch (OperationCanceledException)
         {
-            StatusDetail = "Authorization cancelled.";
+            StatusDetail = "Authorization canceled.";
         }
         catch (Exception ex)
         {

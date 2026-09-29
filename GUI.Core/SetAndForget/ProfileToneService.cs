@@ -80,7 +80,7 @@ namespace RSMods.SetAndForget
                     if (!ZipUtilities.ExtractSingleFile(Constants.CustomModsFolder, Constants.Cache7_7zPath, Constants.ToneManager_InternalPath) ||
                         !File.Exists(Constants.ToneManager_CustomPath))
                     {
-                        throw new IOException("Could not extract tones from cache.psarc. Please check your existing settings.");
+                        throw new IOException("Could not read the tones from the game's files. Please check your existing settings.");
                     }
 
                     JObject tonesJson = JObject.Parse(File.ReadAllText(Constants.ToneManager_CustomPath));

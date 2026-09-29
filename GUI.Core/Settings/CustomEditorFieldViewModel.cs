@@ -5,7 +5,7 @@ using CommunityToolkit.Mvvm.Input;
 namespace RSMods.Core.Settings;
 
 /// <summary>
-/// A button that opens a bespoke editor (Guitar Speak, colours, Twitch, MIDI). It holds no value of its own:
+/// A button that opens a bespoke editor (Guitar Speak, colors, Twitch, MIDI). It holds no value of its own:
 /// the editor it opens reads and writes its settings.
 /// </summary>
 public sealed partial class CustomEditorFieldViewModel(SettingDescriptor descriptor) : SettingFieldViewModel(descriptor)

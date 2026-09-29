@@ -9,9 +9,13 @@
     <ScrollViewer>
         <StackPanel Classes="page">
             <TextBlock Classes="h1" Text="SoundPacks" />
-            <TextBlock
-                Classes="pageintro"
-                Text="Replace Rocksmith's result-screen voice lines with your own audio. Unpack the game's audio archive, swap any of the result lines (MP3, OGG, WAV or WEM), then repack. You can also import or export a whole sound pack to share with friends." />
+
+            <Border Classes="warning" IsVisible="{Binding HasWwiseWarning}">
+                <StackPanel Spacing="4">
+                    <TextBlock FontWeight="SemiBold" Text="Wwise isn't set up" />
+                    <TextBlock TextWrapping="Wrap" Text="{Binding WwiseWarning}" />
+                </StackPanel>
+            </Border>
 
             <!-- Busy status -->
             <StackPanel Orientation="Horizontal" Spacing="10" IsVisible="{Binding IsBusy}">
@@ -56,7 +60,7 @@
                                 <TextBlock FontWeight="SemiBold" Text="Result voice lines" />
                                 <TextBlock
                                     Classes="hint"
-                                    Text="Replace the line played for a score with your own audio. WAV and OGG need Wwise installed to convert. Repack when you're done." />
+                                    Text="Replace the line played for a score with your own audio. MP3, OGG and WAV files need Wwise 2013 to 2017 to convert; WEM files don't. Repack when you're done." />
                             </StackPanel>
 
                             <StackPanel Spacing="2">
@@ -189,7 +193,7 @@
                             <Grid Classes="action" ColumnDefinitions="*,Auto">
                                 <StackPanel Spacing="2">
                                     <TextBlock Classes="actionname" Text="Wwise" />
-                                    <TextBlock Classes="hint" Text="Converts WAV and OGG files to the game's audio format." />
+                                    <TextBlock Classes="hint" Text="Converts MP3, OGG and WAV files to the game's audio format." />
                                 </StackPanel>
                                 <Button
                                     AutomationProperties.Name="Download Wwise"

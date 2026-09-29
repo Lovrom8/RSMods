@@ -26,15 +26,14 @@ internal enum KeyCapturePhase
 }
 
 /// <summary>
-/// Settings screen driven by the declarative settings schema manifest (<see cref="SettingsCoordinator"/>).
-/// Holds editable field view models loaded from <see cref="RsModsSettings"/> and saves each change a moment
-/// after it's made, as the WinForms configurator did, preserving round-trip comments and unknown entries.
-/// Bespoke table editors for Guitar Speak and Mod/Audio keybindings are retained alongside the schema-driven fields.
+/// Settings screen driven by the declarative settings schema manifest (<see cref="SettingsCoordinator"/>): a list
+/// of mods, and the selected mod's settings, key binds and helpers beside it. Holds editable field view models
+/// loaded from <see cref="RsModsSettings"/> and saves each change a moment after it's made, as the WinForms
+/// configurator did, preserving round-trip comments and unknown entries.
 /// </summary>
 internal sealed partial class ModSettingsViewModel : ObservableObject
 {
     private readonly SettingsService _settingsService;
-    private readonly IManifestService _manifest;
     private readonly IDialogService _dialogs;
     private readonly INavigationService _navigation;
     private readonly DebouncedSaver _saver;
@@ -43,13 +42,19 @@ internal sealed partial class ModSettingsViewModel : ObservableObject
 
     public SettingsCoordinator Coordinator { get; }
 
-    public IReadOnlyList<SettingGroupViewModel> SettingGroups => Coordinator.Groups;
+    // --- Mod list ---
+    private readonly List<ModItemViewModel> _allMods = [];
+
+    /// <summary>The mods matching <see cref="Filter"/>, sorted by name.</summary>
+    public ObservableCollection<ModItemViewModel> Mods { get; } = [];
+
+    [ObservableProperty]
+    private ModItemViewModel? _selectedMod;
+
+    [ObservableProperty]
+    private string _filter = string.Empty;
 
     // --- On-screen text font preview ---
-    // Shown whenever the font setting is.
-    public bool ShowOnScreenFontPreview =>
-        Coordinator.Find("OnScreenFont")?.IsVisible ?? false;
-
     public FontFamily OnScreenFontPreview
     {
         get
@@ -58,6 +63,9 @@ internal sealed partial class ModSettingsViewModel : ObservableObject
             return string.IsNullOrWhiteSpace(fontName) ? FontFamily.Default : new FontFamily(fontName);
         }
     }
+
+    public double OnScreenFontSizePreview =>
+        Math.Clamp((double)(Coordinator.Find<NumericSettingFieldViewModel>("OnScreenFontSize")?.Value ?? 16), 8, 80);
 
     // --- Secondary monitor helper ---
     public bool ShowSecondaryMonitor =>
@@ -80,50 +88,26 @@ internal sealed partial class ModSettingsViewModel : ObservableObject
     public ObservableCollection<GuitarSpeakRowViewModel> GuitarSpeakMappings { get; } = [];
 
     [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(AssignGuitarSpeakCommand))]
-    [NotifyCanExecuteChangedFor(nameof(ClearGuitarSpeakCommand))]
-    private GuitarSpeakRowViewModel? _selectedGuitarSpeakMapping;
-
-    public static string[] GuitarSpeakNotes { get; } =
-        ["C", "C#", "D", "Eb", "E", "F", "F#", "G", "Ab", "A", "Bb", "B"];
-
-    public static string[] GuitarSpeakOctaves { get; } =
-        ["-1", "0", "1", "2", "3", "4", "5", "6"];
-
-    [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(AssignGuitarSpeakCommand))]
-    private string? _selectedGuitarSpeakNote;
-
-    [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(AssignGuitarSpeakCommand))]
-    private string? _selectedGuitarSpeakOctave;
-
-    // --- Keybindings ---
-    public ObservableCollection<KeybindRowViewModel> ModKeybinds { get; } = [];
-    public ObservableCollection<KeybindRowViewModel> AudioKeybinds { get; } = [];
-
-    [ObservableProperty] private KeybindRowViewModel? _selectedModKeybind;
-    [ObservableProperty] private KeybindRowViewModel? _selectedAudioKeybind;
-
-    [ObservableProperty]
     private string _statusMessage = string.Empty;
 
     public ModSettingsViewModel(
         SettingsCoordinator coordinator,
-        IManifestService manifest,
         SettingsService settings,
         IDialogService dialogs,
         INavigationService navigation,
         AutoSaveService autoSave)
     {
         Coordinator = coordinator;
-        _manifest = manifest;
         _settingsService = settings;
         _dialogs = dialogs;
         _navigation = navigation;
         _saver = autoSave.Create(SaveAsync, ex => StatusMessage = $"Couldn't save: {ex.Message}");
 
         WireCustomEditors();
+
+        foreach (ModEntryViewModel entry in Coordinator.Mods)
+            _allMods.Add(new ModItemViewModel(entry, []));
+        ApplyFilter();
 
         Coordinator.StateChanged += (_, _) =>
         {
@@ -161,28 +145,27 @@ internal sealed partial class ModSettingsViewModel : ObservableObject
             case "Twitch":
                 await _navigation.NavigateToAsync(NavigationTarget.Twitch);
                 break;
-
-            case "GuitarSpeak":
-                if (Coordinator.Find<BoolSettingFieldViewModel>("GuitarSpeak") is { } gsToggle && !gsToggle.Value)
-                {
-                    gsToggle.Value = true;
-                }
-                RefreshAuxiliaryProperties();
-                StatusMessage = "Guitar Speak note mappings opened below.";
-                break;
-
-            case "Midi":
-                await _dialogs.ShowInfoAsync(
-                    "Configure MIDI input and auto-tune devices in the Mod Settings toggles and pickers above.",
-                    "MIDI Setup");
-                break;
         }
+    }
+
+    partial void OnFilterChanged(string value) => ApplyFilter();
+
+    private void ApplyFilter()
+    {
+        ModItemViewModel? selected = SelectedMod;
+
+        Mods.Clear();
+        foreach (ModItemViewModel mod in _allMods.Where(m => m.Matches(Filter)))
+            Mods.Add(mod);
+
+        // Clearing the list drops the selection; keep it when the mod still shows, else show the first match.
+        SelectedMod = selected is not null && Mods.Contains(selected) ? selected : Mods.FirstOrDefault();
     }
 
     private void RefreshAuxiliaryProperties()
     {
         OnPropertyChanged(nameof(OnScreenFontPreview));
-        OnPropertyChanged(nameof(ShowOnScreenFontPreview));
+        OnPropertyChanged(nameof(OnScreenFontSizePreview));
         OnPropertyChanged(nameof(ShowSecondaryMonitor));
         OnPropertyChanged(nameof(SecondaryMonitorPositionText));
         OnPropertyChanged(nameof(ShowGuitarSpeak));
@@ -197,17 +180,12 @@ internal sealed partial class ModSettingsViewModel : ObservableObject
             if (RsModsSettings.Ini is { } ini)
                 Coordinator.Load(ini);
 
-            SelectedGuitarSpeakNote = null;
-            SelectedGuitarSpeakOctave = null;
-            SelectedGuitarSpeakMapping = null;
             LoadGuitarSpeakRows();
 
-            SelectedModKeybind = null;
-            SelectedAudioKeybind = null;
             if (RsModsSettings.Ini is { } keyIni)
             {
-                LoadKeybindRows(ModKeybinds, ManifestKeybinds.Mod(_manifest, keyIni));
-                LoadKeybindRows(AudioKeybinds, ManifestKeybinds.Audio(_manifest, keyIni));
+                foreach (ModItemViewModel mod in _allMods)
+                    LoadKeybindRows(mod.Keybinds, mod.Entry.Keybinds.Select(d => ManifestKeybinds.Create(d, keyIni)));
             }
 
             RefreshAuxiliaryProperties();
@@ -235,9 +213,7 @@ internal sealed partial class ModSettingsViewModel : ObservableObject
             // Rows write only when they changed, so they can't overwrite an edit made to the same key elsewhere.
             foreach (GuitarSpeakRowViewModel row in GuitarSpeakMappings)
                 row.WriteBack();
-            foreach (KeybindRowViewModel row in ModKeybinds)
-                row.WriteBack();
-            foreach (KeybindRowViewModel row in AudioKeybinds)
+            foreach (KeybindRowViewModel row in _allMods.SelectMany(m => m.Keybinds))
                 row.WriteBack();
         }
         finally
@@ -262,60 +238,14 @@ internal sealed partial class ModSettingsViewModel : ObservableObject
             yField.Value = position.Y;
     }
 
-    [RelayCommand]
-    private void ClearProfileSelection()
-    {
-        if (Coordinator.Find<EnumSettingFieldViewModel>("ProfileToLoad") is { } profileField)
-            profileField.SelectedValue = "";
-    }
-
-    // --- Guitar Speak commands ---
-
-    private bool CanAssignGuitarSpeak =>
-        SelectedGuitarSpeakMapping is not null &&
-        SelectedGuitarSpeakNote is not null &&
-        SelectedGuitarSpeakOctave is not null;
-
-    [RelayCommand(CanExecute = nameof(CanAssignGuitarSpeak))]
-    private void AssignGuitarSpeak()
-    {
-        if (SelectedGuitarSpeakMapping is null || SelectedGuitarSpeakNote is null || SelectedGuitarSpeakOctave is null)
-            return;
-
-        int noteIndex = Array.IndexOf(GuitarSpeakNotes, SelectedGuitarSpeakNote);
-        int octaveIndex = Array.IndexOf(GuitarSpeakOctaves, SelectedGuitarSpeakOctave);
-        if (noteIndex < 0 || octaveIndex < 0)
-            return;
-
-        int inputNote = noteIndex + 36;
-        int inputOctave = octaveIndex - 3;
-        int outputNoteOctave = inputNote + (inputOctave * 12);
-
-        SelectedGuitarSpeakMapping.Value = outputNoteOctave.ToString();
-    }
-
-    private bool CanClearGuitarSpeak => SelectedGuitarSpeakMapping is not null;
-
-    [RelayCommand(CanExecute = nameof(CanClearGuitarSpeak))]
-    private void ClearGuitarSpeak()
-    {
-        if (SelectedGuitarSpeakMapping is not null)
-            SelectedGuitarSpeakMapping.Value = string.Empty;
-    }
-
     // --- Keybinding capture ---
 
-    public Task CaptureModKeybindAsync(string frameworkKeyName, KeyCapturePhase phase) =>
-        CaptureAsync(SelectedModKeybind, frameworkKeyName, phase);
-
-    public Task CaptureAudioKeybindAsync(string frameworkKeyName, KeyCapturePhase phase) =>
-        CaptureAsync(SelectedAudioKeybind, frameworkKeyName, phase);
-
-    private async Task CaptureAsync(KeybindRowViewModel? row, string frameworkKeyName, KeyCapturePhase phase)
+    /// <summary>
+    /// Offers a captured key to a row waiting for one. Returns false when the key isn't accepted in this phase,
+    /// so the row keeps waiting.
+    /// </summary>
+    public async Task<bool> CaptureKeybindAsync(KeybindRowViewModel row, string frameworkKeyName, KeyCapturePhase phase)
     {
-        if (row is null)
-            return;
-
         RocksmithInputClassification classification = RocksmithKeys.Classify(frameworkKeyName);
 
         bool accepted = phase switch
@@ -327,7 +257,10 @@ internal sealed partial class ModSettingsViewModel : ObservableObject
         };
 
         if (!accepted)
-            return;
+            return false;
+
+        // Done waiting before the prompt, so the key that answers it isn't captured too.
+        row.IsCapturing = false;
 
         if (classification == RocksmithInputClassification.Reserved)
         {
@@ -335,24 +268,31 @@ internal sealed partial class ModSettingsViewModel : ObservableObject
                 "That key is normally used by Rocksmith and may interfere with playing the game. Use it as a keybind anyway?",
                 "Keybinding warning");
             if (!useAnyway)
-                return;
+                return true;
         }
 
         row.Vkey = KeyConversion.VirtualKey(frameworkKeyName);
+        return true;
     }
 
-    private void LoadKeybindRows(ObservableCollection<KeybindRowViewModel> target, System.Collections.Generic.IReadOnlyList<KeybindItem> source)
+    private void LoadKeybindRows(ObservableCollection<KeybindRowViewModel> target, IEnumerable<KeybindItem> source)
     {
         foreach (KeybindRowViewModel existing in target)
-            existing.PropertyChanged -= OnChildRowChanged;
+            existing.PropertyChanged -= OnKeybindRowChanged;
         target.Clear();
 
         foreach (KeybindItem item in source)
         {
             var row = new KeybindRowViewModel(item);
-            row.PropertyChanged += OnChildRowChanged;
+            row.PropertyChanged += OnKeybindRowChanged;
             target.Add(row);
         }
+    }
+
+    private void OnKeybindRowChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (!_loading && e.PropertyName == nameof(KeybindRowViewModel.Vkey))
+            _saver.Request();
     }
 
     private void LoadGuitarSpeakRows()
@@ -371,7 +311,7 @@ internal sealed partial class ModSettingsViewModel : ObservableObject
 
     private void OnChildRowChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (!_loading)
+        if (!_loading && e.PropertyName == nameof(GuitarSpeakRowViewModel.Value))
             _saver.Request();
     }
 }

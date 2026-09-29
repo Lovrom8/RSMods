@@ -5,6 +5,7 @@
     xmlns:vm="clr-namespace:RSMods.ViewModels"
     xmlns:twitch="clr-namespace:RSMods.Twitch;assembly=GUI.Core"
     xmlns:conv="clr-namespace:RSMods.Converters"
+    xmlns:views="clr-namespace:RSMods.Views"
     x:DataType="vm:TwitchViewModel">
 
     <UserControl.Styles>
@@ -18,17 +19,20 @@
             <Setter Property="FontWeight" Value="SemiBold" />
             <Setter Property="TextWrapping" Value="Wrap" />
         </Style>
+        <Style Selector="TabItem">
+            <Setter Property="FontSize" Value="15" />
+            <Setter Property="MinHeight" Value="36" />
+        </Style>
     </UserControl.Styles>
 
-    <ScrollViewer>
-        <StackPanel Classes="page">
+    <!-- The page doesn't scroll. The rules and the log are tabs that fill the rest of the height, each its own
+         single scrolling list, so there is never a scrolling list inside another. -->
+    <Grid Margin="32,28" MaxWidth="{StaticResource PageMaxWidth}" HorizontalAlignment="Stretch"
+          RowDefinitions="Auto,Auto,*" RowSpacing="18">
             <TextBlock Classes="h1" Text="Twitch" />
-            <TextBlock
-                Classes="pageintro"
-                Text="Authorize a streamer account, listen for Twitch events, monitor the Rocksmith effect connection, and configure which effects run for subscriptions, Bits, and Channel Points." />
 
             <!-- Connection: the three states at a glance, then who is authorized and the controls. -->
-            <Border Classes="card">
+            <Border Grid.Row="1" Classes="card">
                 <StackPanel Spacing="14">
                     <Grid ColumnDefinitions="*,*,*" ColumnSpacing="18">
                         <StackPanel Grid.Column="0" Spacing="3">
@@ -82,6 +86,8 @@
                 </StackPanel>
             </Border>
 
+            <TabControl Grid.Row="2" Padding="0,10,0,0">
+            <TabItem Header="Reward rules">
             <!-- Reward rules: pick from the catalog on the left, edit what's enabled on the right. -->
             <!-- The catalog gives way first on narrow windows; the rules grid scrolls sideways once Effect hits its minimum. -->
             <Grid ColumnSpacing="18">
@@ -89,22 +95,28 @@
                     <ColumnDefinition Width="*" MinWidth="250" MaxWidth="320" />
                     <ColumnDefinition Width="2*" />
                 </Grid.ColumnDefinitions>
-                <Border Grid.Column="0" Classes="card">
+                <Border Grid.Column="0" Classes="card" VerticalAlignment="Top">
                     <StackPanel Spacing="12">
                         <StackPanel Spacing="4">
-                            <TextBlock FontWeight="SemiBold" Text="Effect catalog" />
+                            <TextBlock FontWeight="SemiBold" Text="Add a rule" />
                             <TextBlock Classes="hint" Text="Pick an effect and what triggers it, then add it as a rule." />
                         </StackPanel>
-                        <ListBox Height="336" ItemsSource="{Binding CatalogEffects}" SelectedItem="{Binding SelectedCatalogEffect}">
-                            <ListBox.ItemTemplate>
+                        <ComboBox
+                            HorizontalAlignment="Stretch"
+                            PlaceholderText="Choose an effect"
+                            AutomationProperties.Name="Effect"
+                            ItemsSource="{Binding CatalogEffects}"
+                            SelectedItem="{Binding SelectedCatalogEffect}">
+                            <ComboBox.ItemTemplate>
                                 <DataTemplate DataType="twitch:TwitchReward">
-                                    <StackPanel Margin="0,3" Spacing="2">
-                                        <TextBlock FontWeight="SemiBold" Text="{Binding Name}" />
-                                        <TextBlock FontSize="11" Opacity="0.65" Text="{Binding Description}" TextWrapping="Wrap" />
-                                    </StackPanel>
+                                    <TextBlock Text="{Binding Name}" />
                                 </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                        <TextBlock
+                            Classes="hint"
+                            IsVisible="{Binding SelectedCatalogEffect, Converter={x:Static ObjectConverters.IsNotNull}}"
+                            Text="{Binding SelectedCatalogEffect.Description, FallbackValue=''}" />
                         <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
                             <ComboBox
                                 HorizontalAlignment="Stretch"
@@ -116,14 +128,14 @@
                 </Border>
 
                 <Border Grid.Column="1" Classes="card">
-                    <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto" RowSpacing="12">
+                    <Grid RowDefinitions="Auto,*,Auto,Auto,Auto" RowSpacing="12">
                         <StackPanel Spacing="4">
                             <TextBlock FontWeight="SemiBold" Text="Enabled rules" />
                             <TextBlock Classes="hint" Text="Save updates the running listener and the shared TwitchEnabledEffects.xml." />
                         </StackPanel>
                         <DataGrid
                             Grid.Row="1"
-                            Height="300"
+                            MinHeight="120"
                             AutoGenerateColumns="False"
                             GridLinesVisibility="All"
                             ItemsSource="{Binding RewardRules}"
@@ -161,7 +173,7 @@
                             CornerRadius="6"
                             IsVisible="{Binding SelectedRule.IsSolidNotes, FallbackValue=False}">
                             <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
-                                <TextBlock VerticalAlignment="Center" FontWeight="SemiBold" Text="Solid Color Notes colour" />
+                                <TextBlock VerticalAlignment="Center" FontWeight="SemiBold" Text="Solid Color Notes color" />
                                 <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10">
                                     <CheckBox Content="Random" IsChecked="{Binding SelectedRule.RandomColor}" />
                                     <TextBox
@@ -170,13 +182,12 @@
                                         Watermark="RRGGBB"
                                         IsEnabled="{Binding !SelectedRule.RandomColor}"
                                         Text="{Binding SelectedRule.HexColor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                                    <Border
+                                    <views:ColorSwatchButton
                                         Width="28"
                                         Height="28"
-                                        BorderBrush="{DynamicResource CardBorderBrush}"
-                                        BorderThickness="1"
-                                        CornerRadius="4"
-                                        Background="{Binding SelectedRule.SwatchHex, Converter={x:Static conv:HexToBrushConverter.Instance}}" />
+                                        AutomationProperties.Name="Pick the note color"
+                                        IsEnabled="{Binding !SelectedRule.RandomColor}"
+                                        Hex="{Binding SelectedRule.HexColor}" />
                                 </StackPanel>
                             </Grid>
                         </Border>
@@ -200,16 +211,19 @@
                 </Border>
             </Grid>
 
+            </TabItem>
+
+            <TabItem Header="Runtime log">
             <Border Classes="card">
-                <StackPanel Spacing="12">
+                <Grid RowDefinitions="Auto,*" RowSpacing="12">
                     <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
-                        <TextBlock VerticalAlignment="Center" FontWeight="SemiBold" Text="Runtime log" />
+                        <TextBlock VerticalAlignment="Center" Classes="hint" Text="What the listener and the Rocksmith connection did, newest last." />
                         <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
                             <Button Command="{Binding ClearLogCommand}" Content="Clear" AutomationProperties.Name="Clear log" />
                             <Button Command="{Binding SaveLogCommand}" Content="Save log…" />
                         </StackPanel>
                     </Grid>
-                    <ListBox Height="220" ItemsSource="{Binding LogEntries}" SelectedItem="{Binding SelectedLogEntry}">
+                    <ListBox Grid.Row="1" ItemsSource="{Binding LogEntries}" SelectedItem="{Binding SelectedLogEntry}">
                         <ListBox.ItemTemplate>
                             <DataTemplate DataType="twitch:TwitchLogEntry">
                                 <Grid ColumnDefinitions="80,*" Margin="0,2">
@@ -219,8 +233,9 @@
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
-                </StackPanel>
+                </Grid>
             </Border>
-        </StackPanel>
-    </ScrollViewer>
+            </TabItem>
+            </TabControl>
+    </Grid>
 </UserControl>

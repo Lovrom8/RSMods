@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:vm="clr-namespace:RSMods.ViewModels"
     xmlns:conv="clr-namespace:RSMods.Converters"
+    xmlns:views="clr-namespace:RSMods.Views"
     x:DataType="vm:ColorsViewModel">
 
     <UserControl.Styles>
@@ -15,18 +16,15 @@
         <Style Selector="WrapPanel#Columns Border.card">
             <Setter Property="Margin" Value="0,0,18,18" />
         </Style>
-        <!-- A hex field with its colour previewed inside it. -->
+        <!-- A hex field with its color inside it; clicking the color opens a color wheel. -->
         <Style Selector="TextBox.hex">
             <Setter Property="Width" Value="100" />
             <Setter Property="Watermark" Value="RRGGBB" />
         </Style>
-        <Style Selector="Border.preview">
-            <Setter Property="Width" Value="16" />
-            <Setter Property="Height" Value="16" />
-            <Setter Property="Margin" Value="8,0,0,0" />
-            <Setter Property="CornerRadius" Value="3" />
-            <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="BorderBrush" Value="{DynamicResource CardBorderBrush}" />
+        <Style Selector="Button.preview">
+            <Setter Property="Width" Value="18" />
+            <Setter Property="Height" Value="18" />
+            <Setter Property="Margin" Value="7,0,0,0" />
         </Style>
         <Style Selector="TextBlock.columnhead">
             <Setter Property="FontSize" Value="11" />
@@ -35,24 +33,24 @@
     </UserControl.Styles>
 
     <UserControl.Resources>
-        <!-- A string's colour in the normal and colour-blind palettes. -->
+        <!-- A string's color in the normal and colorblind palettes. -->
         <DataTemplate x:Key="PairRow" x:DataType="vm:ColorPairRow">
             <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8" Margin="0,0,0,6">
                 <TextBlock VerticalAlignment="Center" Text="{Binding Label}" />
                 <TextBox
                     Grid.Column="1" Classes="hex"
-                    AutomationProperties.Name="{Binding Label, StringFormat='{}{0} colour'}"
+                    AutomationProperties.Name="{Binding Label, StringFormat='{}{0} color'}"
                     Text="{Binding Normal.Hex}">
                     <TextBox.InnerLeftContent>
-                        <Border Classes="preview" Background="{Binding Normal.Hex, Converter={x:Static conv:HexToBrushConverter.Instance}}" />
+                        <views:ColorSwatchButton Classes="preview" AutomationProperties.Name="{Binding Label, StringFormat='Pick {0} color'}" Hex="{Binding Normal.Hex}" />
                     </TextBox.InnerLeftContent>
                 </TextBox>
                 <TextBox
                     Grid.Column="2" Classes="hex"
-                    AutomationProperties.Name="{Binding Label, StringFormat='{}{0} colour-blind colour'}"
+                    AutomationProperties.Name="{Binding Label, StringFormat='{}{0} colorblind color'}"
                     Text="{Binding Colorblind.Hex}">
                     <TextBox.InnerLeftContent>
-                        <Border Classes="preview" Background="{Binding Colorblind.Hex, Converter={x:Static conv:HexToBrushConverter.Instance}}" />
+                        <views:ColorSwatchButton Classes="preview" AutomationProperties.Name="{Binding Label, StringFormat='Pick {0} colorblind color'}" Hex="{Binding Colorblind.Hex}" />
                     </TextBox.InnerLeftContent>
                 </TextBox>
             </Grid>
@@ -63,10 +61,10 @@
                 <TextBlock VerticalAlignment="Center" TextWrapping="Wrap" Text="{Binding Label}" />
                 <TextBox
                     Grid.Column="1" Classes="hex"
-                    AutomationProperties.Name="{Binding Label, StringFormat='{}{0} colour'}"
+                    AutomationProperties.Name="{Binding Label, StringFormat='{}{0} color'}"
                     Text="{Binding Hex}">
                     <TextBox.InnerLeftContent>
-                        <Border Classes="preview" Background="{Binding Hex, Converter={x:Static conv:HexToBrushConverter.Instance}}" />
+                        <views:ColorSwatchButton Classes="preview" AutomationProperties.Name="{Binding Label, StringFormat='Pick {0} color'}" Hex="{Binding Hex}" />
                     </TextBox.InnerLeftContent>
                 </TextBox>
             </Grid>
@@ -80,25 +78,22 @@
             </Grid.ColumnDefinitions>
         <StackPanel Classes="page" HorizontalAlignment="Stretch">
             <TextBlock Classes="h1" Text="Custom Colors" />
-            <TextBlock
-                Classes="pageintro"
-                Text="String, note, and highway colours. Enter a 6-digit hex value (e.g. FF4F5A); the field previews it. Rocksmith uses the colour-blind set while its colour-blind mode is on. Changes are saved to RSMods.ini as you make them, and only the colours you change are written." />
 
             <TextBlock FontSize="12" Opacity="0.7" Text="{Binding StatusMessage}" IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
 
             <WrapPanel x:Name="Columns" Orientation="Horizontal">
-                <!-- String colours -->
+                <!-- String colors -->
                 <StackPanel>
                     <Border Classes="card">
                         <StackPanel Spacing="12">
                             <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
                                 <StackPanel Spacing="4">
-                                    <TextBlock FontWeight="SemiBold" Text="String colours" />
-                                    <TextBlock Classes="hint" Text="Your own colour for each string." />
+                                    <TextBlock FontWeight="SemiBold" Text="String colors" />
+                                    <TextBlock Classes="hint" Text="Your own color for each string." />
                                 </StackPanel>
                                 <CheckBox
                                     Grid.Column="1" VerticalAlignment="Top"
-                                    AutomationProperties.Name="Use custom string colours"
+                                    AutomationProperties.Name="Use custom string colors"
                                     Content="Enabled"
                                     IsChecked="{Binding UseCustomStringColors}" />
                             </Grid>
@@ -106,7 +101,7 @@
                             <StackPanel IsVisible="{Binding ShowStringColors}">
                                 <Grid ColumnDefinitions="*,100,100" ColumnSpacing="8" Margin="0,0,0,4">
                                     <TextBlock Grid.Column="1" Classes="columnhead" Text="Normal" />
-                                    <TextBlock Grid.Column="2" Classes="columnhead" Text="Colour-blind" />
+                                    <TextBlock Grid.Column="2" Classes="columnhead" Text="Colorblind" />
                                 </Grid>
                                 <ItemsControl ItemsSource="{Binding StringColorRows}" ItemTemplate="{StaticResource PairRow}" />
                             </StackPanel>
@@ -114,33 +109,33 @@
                     </Border>
                 </StackPanel>
 
-                <!-- Note colours -->
+                <!-- Note colors -->
                 <StackPanel>
                     <Border Classes="card">
                         <StackPanel Spacing="12">
                             <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
                                 <StackPanel Spacing="4">
-                                    <TextBlock FontWeight="SemiBold" Text="Note colours" />
-                                    <TextBlock Classes="hint" Text="Colour notes separately from their strings." />
+                                    <TextBlock FontWeight="SemiBold" Text="Note colors" />
+                                    <TextBlock Classes="hint" Text="Color notes separately from their strings." />
                                 </StackPanel>
                                 <CheckBox
                                     Grid.Column="1" VerticalAlignment="Top"
-                                    AutomationProperties.Name="Use separate note colours"
+                                    AutomationProperties.Name="Use separate note colors"
                                     Content="Enabled"
                                     IsChecked="{Binding UseSeparateNoteColors}" />
                             </Grid>
 
                             <StackPanel Spacing="12" IsVisible="{Binding ShowNoteColors}">
-                                <CheckBox AutomationProperties.Name="Use Rocksmith's note colours" IsChecked="{Binding UseRocksmithNoteColors}">
+                                <CheckBox AutomationProperties.Name="Use Rocksmith's note colors" IsChecked="{Binding UseRocksmithNoteColors}">
                                     <StackPanel Spacing="1">
-                                        <TextBlock Text="Use Rocksmith's note colours" />
-                                        <TextBlock Classes="hint" Text="The game's normal note colours instead of your own." />
+                                        <TextBlock Text="Use Rocksmith's note colors" />
+                                        <TextBlock Classes="hint" Text="The game's normal note colors instead of your own." />
                                     </StackPanel>
                                 </CheckBox>
                                 <StackPanel IsVisible="{Binding ShowNoteSwatches}">
                                     <Grid ColumnDefinitions="*,100,100" ColumnSpacing="8" Margin="0,0,0,4">
                                         <TextBlock Grid.Column="1" Classes="columnhead" Text="Normal" />
-                                        <TextBlock Grid.Column="2" Classes="columnhead" Text="Colour-blind" />
+                                        <TextBlock Grid.Column="2" Classes="columnhead" Text="Colorblind" />
                                     </Grid>
                                     <ItemsControl ItemsSource="{Binding NoteColorRows}" ItemTemplate="{StaticResource PairRow}" />
                                 </StackPanel>
@@ -149,18 +144,18 @@
                     </Border>
                 </StackPanel>
 
-                <!-- Highway colours -->
+                <!-- Highway colors -->
                 <StackPanel>
                     <Border Classes="card">
                         <StackPanel Spacing="12">
                             <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
                                 <StackPanel Spacing="4">
-                                    <TextBlock FontWeight="SemiBold" Text="Highway colours" />
-                                    <TextBlock Classes="hint" Text="Base colours only: Rocksmith tints them, so aim a little lighter." />
+                                    <TextBlock FontWeight="SemiBold" Text="Highway colors" />
+                                    <TextBlock Classes="hint" Text="Base colors only: Rocksmith tints them, so aim a little lighter." />
                                 </StackPanel>
                                 <CheckBox
                                     Grid.Column="1" VerticalAlignment="Top"
-                                    AutomationProperties.Name="Use custom highway colours"
+                                    AutomationProperties.Name="Use custom highway colors"
                                     Content="Enabled"
                                     IsChecked="{Binding UseCustomHighwayColors}" />
                             </Grid>

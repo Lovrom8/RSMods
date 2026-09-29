@@ -81,7 +81,7 @@ namespace RSMods
         /// Suspends disk writes until the returned scope is disposed, coalescing a burst of setter-driven
         /// <see cref="Save"/> calls into a single write on dispose. Callers that set many values at once
         /// (for example a settings screen persisting its whole snapshot) use this to avoid rewriting the
-        /// file once per property; the default per-set auto-save behaviour is unchanged for callers that
+        /// file once per property; the default per-set auto-save behavior is unchanged for callers that
         /// don't opt in. Scopes nest, and a write only happens if at least one <see cref="Save"/> was
         /// requested while suspended.
         /// </summary>
@@ -321,6 +321,9 @@ namespace RSMods
             var str = GetString(section, key, def);
             string normalized = str.Trim();
 
+            if (normalized.Length == 0)
+                return defaultValue;
+
             if (normalized.Equals("on", StringComparison.OrdinalIgnoreCase) ||
                 normalized.Equals("true", StringComparison.OrdinalIgnoreCase) ||
                 normalized.Equals("yes", StringComparison.OrdinalIgnoreCase) ||
@@ -349,6 +352,8 @@ namespace RSMods
             var str = GetString(section, key, defaultValue.ToString());
             if (int.TryParse(str, out var result))
                 return result;
+            if (string.IsNullOrWhiteSpace(str))
+                return defaultValue;
 
             ReportInvalid(section, key, str, defaultValue.ToString(), "not a valid integer");
             return defaultValue;
@@ -363,6 +368,8 @@ namespace RSMods
             string raw = GetString(section, key, defaultText);
             if (decimal.TryParse(raw, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out decimal result))
                 return result;
+            if (string.IsNullOrWhiteSpace(raw))
+                return defaultValue;
 
             ReportInvalid(section, key, raw, defaultText, "not a valid number");
             return defaultValue;
@@ -373,6 +380,8 @@ namespace RSMods
             string raw = GetString(section, key, defaultValue.ToString().ToLowerInvariant());
             if (Enum.TryParse(raw, ignoreCase: true, out T result) && Enum.IsDefined(typeof(T), result))
                 return result;
+            if (string.IsNullOrWhiteSpace(raw))
+                return defaultValue;
 
             ReportInvalid(section, key, raw, defaultValue.ToString().ToLowerInvariant(), $"not a valid {typeof(T).Name} value");
             return defaultValue;
@@ -384,6 +393,8 @@ namespace RSMods
             string raw = GetString(section, key, defaultNumber.ToString());
             if (int.TryParse(raw, out int result) && Enum.IsDefined(typeof(T), result))
                 return (T)Enum.ToObject(typeof(T), result);
+            if (string.IsNullOrWhiteSpace(raw))
+                return defaultValue;
 
             ReportInvalid(section, key, raw, defaultNumber.ToString(), $"not a valid {typeof(T).Name} value");
             return defaultValue;
@@ -443,6 +454,8 @@ namespace RSMods
             }
         }
 
+        // A blank value isn't reported: it is how RS_ASIO's own RS_ASIO.ini leaves a setting at its default, so the
+        // typed getters read it as the default and leave the file as it is.
         private void ReportInvalid(string section, string key, string rawValue, string defaultValue, string reason)
         {
             // Self-heal: overwrite the invalid raw value with the default in memory so the next

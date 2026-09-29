@@ -34,9 +34,6 @@
             </Grid.ColumnDefinitions>
         <StackPanel Classes="page" HorizontalAlignment="Stretch">
             <TextBlock Classes="h1" Text="Rocksmith settings" />
-            <TextBlock
-                Classes="pageintro"
-                Text="The game's own audio and renderer configuration. Changes are saved as you make them, Rocksmith reads them when it starts." />
 
             <TextBlock FontSize="12" Opacity="0.7" Text="{Binding StatusMessage}" IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
 
@@ -211,7 +208,7 @@
                                 <CheckBox AutomationProperties.Name="Enable post effects" IsChecked="{Binding EnablePostEffects}">
                                     <StackPanel Spacing="1">
                                         <TextBlock Text="Post effects" />
-                                        <TextBlock Classes="hint" Text="Bloom, glow and colour correction." />
+                                        <TextBlock Classes="hint" Text="Bloom, glow and color correction." />
                                     </StackPanel>
                                 </CheckBox>
                                 <CheckBox AutomationProperties.Name="Enable high-res scope" IsChecked="{Binding EnableHighResScope}">

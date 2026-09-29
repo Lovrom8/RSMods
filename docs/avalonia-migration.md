@@ -116,9 +116,9 @@ The new Avalonia 11.3.12 application targeting `net8.0-windows` and x64. It curr
   `AsioSettings` instance (built by `AsioSettingsService`), including the tri-state WASAPI output
   mode, per-channel driver selection from the shared device enumeration, and the two disable
   conventions (blank vs commented driver).
-- A `ColorsViewModel`/`ColorsView` editing the string, note, and highway colours in the shared
+- A `ColorsViewModel`/`ColorsView` editing the string, note, and highway colors in the shared
   `RsModsSettings` store (via `SettingsService`), lazily loaded on first navigation. Each string/note
-  palette keeps both a normal and a colour-blind set; the screen holds all of them and persists only
+  palette keeps both a normal and a colorblind set; the screen holds all of them and persists only
   the cells the user changed, so untouched defaults are never baked into the INI.
 - A `SoundPacksViewModel`/`SoundPacksView` driving the shared `SoundPackService`: unpack/repack
   `audio.psarc` (determinate progress), replace any of the 18 result voice lines, import/export a
@@ -129,7 +129,7 @@ The new Avalonia 11.3.12 application targeting `net8.0-windows` and x64. It curr
   restore/reset/unpack/cleanup, and importing existing settings. It is action-oriented and lazily prepares
   the stock working files on first navigation; all WMI, archive, filesystem, and process work runs off the
   UI thread behind an `IsBusy` gate. The same screen now includes the custom-tunings editor over the shared
-  `TuningDefinitionList`, with live note names and settings-aware string-colour swatches, plus an async song
+  `TuningDefinitionList`, with live note names and settings-aware string-color swatches, plus an async song
   scan that lists arrangements using the selected definition and arrangements that show as Custom Tuning.
   The final slice loads tones from Steam profiles and assigns them to the three default or ten Guitarcade
   cache slots.
@@ -217,10 +217,10 @@ The Avalonia single-file installer (`RS2014-Mod-Installer.exe`) over the headles
   toggle gating its detail controls):
   - Extended range: moved `ExtendedRangeModeAt` out of the generic numeric section into a named-tuning
     dropdown (`D`..`Octave Down`, mapped to the stored `-index - 2` offset), plus the drop-tuning
-    toggle. The WinForms UI convenience of force-enabling custom string colours when extended range is
+    toggle. The WinForms UI convenience of force-enabling custom string colors when extended range is
     turned on was deliberately not ported: the DLL reads `CustomStringColors` independently
     (`ExtendedRangeMode.cpp` handles `CustomStringColors == 0` fine during an ER song), so it is a
-    visual preference, not a domain rule. It belongs with the (not-yet-ported) colours screen, where
+    visual preference, not a domain rule. It belongs with the (not-yet-ported) colors screen, where
     the relationship is visible, rather than as a hidden side-effect on an unshown setting here.
   - Secondary monitor: the `OnOffMode` toggle plus a "set to current window position" button that
     captures the Avalonia window's on-screen position (`Window.Position`), matching the WinForms
@@ -302,34 +302,34 @@ The Avalonia single-file installer (`RS2014-Mod-Installer.exe`) over the headles
 
 ### Avalonia Custom Colors screen
 
-- Ported the WinForms colours tab into a dedicated `ColorsViewModel`/`ColorsView` navigation entry,
+- Ported the WinForms colors tab into a dedicated `ColorsViewModel`/`ColorsView` navigation entry,
   writing back through the shared `RsModsSettings` store (`SettingsService`), lazily loaded on first
   navigation like the other screens.
-- Covered all three colour groups: the six string colours, the six note colours, and the four highway
-  colours (numbered/un-numbered frets, noteway sides, fret numbers), each with an enable toggle
+- Covered all three color groups: the six string colors, the six note colors, and the four highway
+  colors (numbered/un-numbered frets, noteway sides, fret numbers), each with an enable toggle
   (`CustomStringColors`, `SeparateNoteColors`, `CustomHighwayColors`).
-- Modeled the note-colour tri-state faithfully: the master `SeparateNoteColors` toggle plus a "use
-  Rocksmith's note colours" toggle map onto `SeparateNoteColorsMode` (`Off`/`RocksmithColors`/`Custom`),
-  hiding the custom note swatches while Rocksmith's own colours are in use.
-- Kept both the normal and colour-blind palettes for strings and notes in the snapshot (the game
-  chooses between them), shown side by side as Normal and Colour-blind columns, and persisted only the cells the user
+- Modeled the note-color tri-state faithfully: the master `SeparateNoteColors` toggle plus a "use
+  Rocksmith's note colors" toggle map onto `SeparateNoteColorsMode` (`Off`/`RocksmithColors`/`Custom`),
+  hiding the custom note swatches while Rocksmith's own colors are in use.
+- Kept both the normal and colorblind palettes for strings and notes in the snapshot (the game
+  chooses between them), shown side by side as Normal and Colorblind columns, and persisted only the cells the user
   changed via a small `ColorSwatchViewModel` (loaded-value baseline) so untouched defaults are never
-  materialised into the INI — matching WinForms, which writes a colour only when it is picked.
+  materialised into the INI — matching WinForms, which writes a color only when it is picked.
 - Used a dependency-free swatch: an editable 6-digit hex field with a live preview `Border` fed by a
   one-way `HexToBrushConverter`, rather than adding the `Avalonia.Controls.ColorPicker` package (its
   control themes are not bundled with `FluentTheme` and would need separate theme wiring). A visual
-  colour-wheel picker is a possible later enhancement.
+  color-wheel picker is a possible later enhancement.
 - Did not port the WinForms convenience of force-enabling `CustomStringColors` when a swatch is edited;
   the toggle stays an explicit user choice, consistent with the extended-range decision that deferred
-  this relationship to the colours screen.
+  this relationship to the colors screen.
 
 ### Avalonia Appearance (themes) screen
 
-- Replaced the WinForms tri-colour configurator recolouring (which walked every control setting
+- Replaced the WinForms tri-color configurator recoloring (which walked every control setting
   `BackColor`/`ForeColor`) with the idiomatic FluentTheme model: a light/dark/system variant plus an
-  optional accent colour, applied live to the running `Application` by a small `ThemeService`.
+  optional accent color, applied live to the running `Application` by a small `ThemeService`.
 - Persisted two new keys in the shared `[GUI Settings]` section (`AppThemeVariant`, `AppAccentColor`),
-  kept separate from the WinForms tri-colour keys so both frontends round-trip their own appearance.
+  kept separate from the WinForms tri-color keys so both frontends round-trip their own appearance.
 - Applied the accent by overriding the seven `SystemAccentColor*` shade resources (computed by blending
   toward white/black) so FluentTheme controls pick it up; "Default" removes the overrides.
 - Made the shell header/nav chrome theme-aware via `ThemeDictionaries` brushes so a light theme does not
@@ -445,9 +445,9 @@ The Avalonia single-file installer (`RS2014-Mod-Installer.exe`) over the headles
 - Added `TuningStringViewModel` rows with the six MIDI bases (`40, 45, 50, 55, 59, 64`). Offset changes
   immediately recalculate the displayed note through `GuitarSpeakNoteOctaveMath`; the high-E label retains
   the WinForms lowercase convention.
-- Each string has a live swatch using `StringColors.GetStringColor`. It switches to the colour-blind/
+- Each string has a live swatch using `StringColors.GetStringColor`. It switches to the colorblind/
   extended-range palette when Extended Range is enabled and that string reaches
-  `ModSettings.ExtendedRangeModeAt`; revisiting the screen refreshes colours changed elsewhere.
+  `ModSettings.ExtendedRangeModeAt`; revisiting the screen refreshes colors changed elsewhere.
 - Add validates blank and duplicate internal names through `IDialogService`; Save updates the selected
   definition; Remove deletes it. Unlike WinForms' in-memory Add/Remove followed by a separate Save click,
   all three Avalonia actions call `SaveTuningsJSON` immediately and roll back the in-memory dictionary if
@@ -731,7 +731,7 @@ ms/seconds settings `CheckForNewSongsInterval`, `RewindBy`, `RewindLeadup`, `Cus
 "remove when" enums), the audio + fixes/misc plain-toggle groups, and the extended range, secondary
 monitor, and alternative-output-sample-rate groups.
 
-Custom string/note/highway colours are now covered by the dedicated Custom Colors screen (step 5), and
+Custom string/note/highway colors are now covered by the dedicated Custom Colors screen (step 5), and
 profile auto-load, the override-input-volume device, the on-screen text font, and the MIDI auto-tune &
 tuning-pedal group are covered on the Mod Settings tab (via the shared profile service, the shared
 `RSMods.Audio.InputDevices` enumeration, Avalonia's system-font enumeration, and the new shared
@@ -750,8 +750,8 @@ covered too (reusing the shared `Dictionaries` binds, `GuitarSpeak` note math, `
 
 - Added `ColorsViewModel`/`ColorsView` (plus a small `ColorSwatchViewModel` and a `HexToBrushConverter`)
   as a fourth settings navigation entry, saving through `SettingsService`/the round-trip-safe store.
-- Covered the string, note, and highway colour groups with their enable toggles, the note-colour
-  tri-state (`Off`/`RocksmithColors`/`Custom`), and both normal and colour-blind palettes.
+- Covered the string, note, and highway color groups with their enable toggles, the note-color
+  tri-state (`Off`/`RocksmithColors`/`Custom`), and both normal and colorblind palettes.
 - Persisted only user-changed cells so untouched defaults stay out of the INI, and kept the swatch UI
   dependency-free (hex entry + live preview) rather than pulling in `Avalonia.Controls.ColorPicker`.
 
@@ -782,7 +782,7 @@ list below.
 
 After the core settings screens are functional:
 
-1. Port GUI theme settings — done (see "Avalonia Appearance (themes) screen"). Custom colours and
+1. Port GUI theme settings — done (see "Avalonia Appearance (themes) screen"). Custom colors and
    keybindings are also done (see step 5 and the Mod Settings tab).
 2. Port profiles and song-list management using the shared profile services — done (see "Avalonia Profiles
    screen"): the core slice (profile selection, song-list count add/remove, rewards, backups), the

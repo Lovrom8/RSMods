@@ -57,9 +57,9 @@ initial value without a second conversion table.
 
 **Key bindings** are `Key` settings, declared with `KeyBind(key, label, defaultKey)` (section and category
 `Keybinds`; the volume keys chain `.Ini("Audio Keybindings", key).Category("Audio Keybindings")`). The
-mod binds its action to the same key with `c.Commands().BindSetting(key, ...)`. The GUI shows `Key`
-entries on the keybindings page, not the settings screen, so the page can capture key presses; the
-`Audio Keybindings` category goes to the audio list. No core file lists key bindings any more.
+mod binds its action to the same key with `c.Commands().BindSetting(key, ...)`. The GUI shows each `Key`
+entry as a capture button in its mod's pane on the Mod Settings screen rather than as a generic field, so it
+can capture key presses. No core file lists key bindings any more.
 
 ## IMod integration
 
@@ -156,8 +156,9 @@ no value. The bespoke editor it opens reads and saves its own settings, and a va
 **Avalonia mechanics.** An `ObservableCollection<SettingFieldViewModel>` in `GUI.Core` with a base VM and
 `Bool`/`Enum`/`Numeric`/`Choice` derivations, each holding the descriptor + live value + an `IsVisible`
 computed from its `visibleWhen`. An `ItemsControl` over the collection with **per-type `DataTemplate`s**
-(Avalonia matches on `DataType`) picks the control; a `category` field renders the section headers that
-replace the hand-laid group boxes. Load/save becomes **generic** — iterate the field VMs, read/write each
+(Avalonia matches on `DataType`) picks the control. The screen lists one entry per mod (`ModCatalog`): a
+setting with no `visibleWhen` starts a mod, the settings gated on it go in its pane, and each key bind goes
+to the mod declared just before it, the order the DLL emits them in. Load/save becomes **generic** — iterate the field VMs, read/write each
 key through the existing round-trip-safe `IniManager` / `FlatKeyValueSettingsStore`, which already
 preserves unknown keys, so nothing regresses.
 

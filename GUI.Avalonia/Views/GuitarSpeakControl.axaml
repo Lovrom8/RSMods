@@ -5,69 +5,40 @@
     xmlns:vm="clr-namespace:RSMods.ViewModels"
     x:DataType="vm:ModSettingsViewModel">
 
-    <Border Classes="card">
-        <StackPanel Spacing="12">
-            <StackPanel Spacing="4">
-                <TextBlock FontWeight="SemiBold" Text="Guitar Speak note mappings" />
-                <TextBlock
-                    FontSize="12"
-                    Opacity="0.7"
-                    TextWrapping="Wrap"
-                    Text="Map guitar notes to key presses so you can drive menus with your guitar. Select a key press, then pick the note and octave that trigger it." />
-            </StackPanel>
-
-            <Grid ColumnDefinitions="*,280" ColumnSpacing="18">
-                <!-- Key-press mappings -->
-                <StackPanel Grid.Column="0" Spacing="6">
-                    <TextBlock FontSize="12" FontWeight="SemiBold" Text="Key presses" />
-                    <ListBox
-                        Height="300"
-                        ItemsSource="{Binding GuitarSpeakMappings}"
-                        SelectedItem="{Binding SelectedGuitarSpeakMapping}">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate x:DataType="vm:GuitarSpeakRowViewModel">
-                                <Grid ColumnDefinitions="*,Auto">
-                                    <TextBlock Grid.Column="0" Text="{Binding DisplayName}" />
-                                    <TextBlock Grid.Column="1" Opacity="0.8" Text="{Binding NoteDisplay}" />
-                                </Grid>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
-                </StackPanel>
-
-                <!-- Mapping editor for the selected key press -->
-                <Border Grid.Column="1" Classes="tile" VerticalAlignment="Top" Margin="0,22,0,0">
-                    <StackPanel Spacing="12">
-                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
-                            <StackPanel Grid.Column="0" Spacing="4">
-                                <TextBlock FontSize="12" Opacity="0.7" Text="Note" />
-                                <ComboBox
-                                    HorizontalAlignment="Stretch"
-                                    ItemsSource="{Binding GuitarSpeakNotes}"
-                                    SelectedItem="{Binding SelectedGuitarSpeakNote}" />
-                            </StackPanel>
-                            <StackPanel Grid.Column="1" Spacing="4">
-                                <TextBlock FontSize="12" Opacity="0.7" Text="Octave" />
-                                <ComboBox
-                                    HorizontalAlignment="Stretch"
-                                    ItemsSource="{Binding GuitarSpeakOctaves}"
-                                    SelectedItem="{Binding SelectedGuitarSpeakOctave}" />
-                            </StackPanel>
-                        </Grid>
-                        <Button
-                            Classes="accent"
-                            HorizontalAlignment="Stretch"
-                            HorizontalContentAlignment="Center"
-                            Content="Assign to selected key"
-                            Command="{Binding AssignGuitarSpeakCommand}" />
-                        <Button
-                            HorizontalAlignment="Stretch"
-                            HorizontalContentAlignment="Center"
-                            Content="Clear selected mapping"
-                            Command="{Binding ClearGuitarSpeakCommand}" />
-                    </StackPanel>
-                </Border>
-            </Grid>
+    <StackPanel Spacing="10">
+        <StackPanel Spacing="2">
+            <TextBlock Classes="h3" Text="Note mappings" />
+            <TextBlock Classes="hint" Text="Pick the note and octave that press each key, so you can drive menus with your guitar." />
         </StackPanel>
-    </Border>
+
+        <!-- Every mapping at once, in rows rather than a scrolling list, so the pane's own scroll is the only one. -->
+        <ItemsControl ItemsSource="{Binding GuitarSpeakMappings}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="vm:GuitarSpeakRowViewModel">
+                    <Grid ColumnDefinitions="*,96,84,Auto" ColumnSpacing="8" Margin="0,0,0,6">
+                        <TextBlock VerticalAlignment="Center" Text="{Binding DisplayName}" />
+                        <ComboBox
+                            Grid.Column="1"
+                            HorizontalAlignment="Stretch"
+                            PlaceholderText="Note"
+                            AutomationProperties.Name="{Binding DisplayName, StringFormat='{}{0} note'}"
+                            ItemsSource="{x:Static vm:GuitarSpeakRowViewModel.Notes}"
+                            SelectedItem="{Binding Note}" />
+                        <ComboBox
+                            Grid.Column="2"
+                            HorizontalAlignment="Stretch"
+                            PlaceholderText="Octave"
+                            AutomationProperties.Name="{Binding DisplayName, StringFormat='{}{0} octave'}"
+                            ItemsSource="{x:Static vm:GuitarSpeakRowViewModel.Octaves}"
+                            SelectedItem="{Binding Octave}" />
+                        <Button
+                            Grid.Column="3"
+                            Content="Clear"
+                            AutomationProperties.Name="{Binding DisplayName, StringFormat='Clear {0}'}"
+                            Command="{Binding ClearCommand}" />
+                    </Grid>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </StackPanel>
 </UserControl>

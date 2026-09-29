@@ -20,7 +20,7 @@ namespace RSMods.Util
                 .Select(d => Create(d, ini))
                 .ToList();
 
-        private static KeybindItem Create(SettingDescriptor descriptor, IniManager ini)
+        public static KeybindItem Create(SettingDescriptor descriptor, IniManager ini)
         {
             string section = SettingFieldViewModel.NormalizeSection(descriptor.Ini.Section);
             string name = descriptor.Ini.Name;

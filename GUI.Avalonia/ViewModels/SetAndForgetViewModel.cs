@@ -10,6 +10,8 @@ using CommunityToolkit.Mvvm.Input;
 using RSMods.Core;
 using RSMods.SetAndForget;
 using RSMods.SetAndForget.Models;
+using RSMods.Services;
+using RSMods.Util;
 
 namespace RSMods.ViewModels;
 
@@ -23,7 +25,9 @@ internal sealed partial class SetAndForgetViewModel(
     CachePsarcService cache,
     TuningService tuning,
     ProfileToneService profileTones,
-    FastLoadService fastLoad) : ObservableObject
+    FastLoadService fastLoad,
+    SettingsService settings,
+    AutoSaveService autoSave) : ObservableObject
 {
     private const string NewTuningName = "<New>";
     private readonly TuningService _tuning = tuning;
@@ -33,6 +37,9 @@ internal sealed partial class SetAndForgetViewModel(
 
     public ObservableCollection<string> TuningNames { get; } = [];
     public ObservableCollection<string> SongsWithSelectedTuning { get; } = [];
+
+    /// <summary>The song count shown on the collapsed list; raised whenever the list is refilled.</summary>
+    public string SongsWithSelectedTuningHeader => SongsWithSelectedTuning.Count == 1 ? "1 song" : $"{SongsWithSelectedTuning.Count} songs";
     public ObservableCollection<string> UnknownTuningKeys { get; } = [];
     public ObservableCollection<string> ProfileTones { get; } = [];
     public static IReadOnlyList<ToneTargetOption> DefaultToneTargets { get; } =
@@ -132,6 +139,7 @@ internal sealed partial class SetAndForgetViewModel(
         }
 
         _initialized = true;
+        WireStringColorPicking();
         IsBusy = true;
         StatusMessage = "Preparing Set-and-Forget files...";
         try
@@ -273,6 +281,7 @@ internal sealed partial class SetAndForgetViewModel(
             _songs = [];
             HasLoadedSongs = false;
             SongsWithSelectedTuning.Clear();
+            OnPropertyChanged(nameof(SongsWithSelectedTuningHeader));
             UnknownTuningKeys.Clear();
             SelectedUnknownTuningKey = null;
 
@@ -309,9 +318,10 @@ internal sealed partial class SetAndForgetViewModel(
     private void RefreshSongsWithSelectedTuning()
     {
         SongsWithSelectedTuning.Clear();
-        if (!HasLoadedSongs || string.IsNullOrEmpty(SelectedTuningName) || IsNewTuning) return;
+        if (HasLoadedSongs && !string.IsNullOrEmpty(SelectedTuningName) && !IsNewTuning)
+            _tuning.GetSongsWithSelectedTuning(SelectedTuningName, _songs).ForEach(SongsWithSelectedTuning.Add);
 
-        _tuning.GetSongsWithSelectedTuning(SelectedTuningName, _songs).ForEach(SongsWithSelectedTuning.Add);
+        OnPropertyChanged(nameof(SongsWithSelectedTuningHeader));
     }
 
     [RelayCommand(CanExecute = nameof(CanLoadCustomTuningFromSong))]
@@ -482,29 +492,29 @@ internal sealed partial class SetAndForgetViewModel(
     private Task AddCustomTuningsAsync() => RunModActionAsync(
         () => cache.AddCustomTunings(_tuning),
         "Adding custom tunings...",
-        "cache.psarc repackaged successfully.",
+        "Game files updated successfully.",
         "Unable to add custom tunings");
 
     [RelayCommand(CanExecute = nameof(CanRun))]
     private Task IncreaseVolumeAsync() => RunModActionAsync(
         cache.AddIncreasedVolumeWwiseBank,
         "Increasing game volume...",
-        "cache.psarc repackaged successfully.",
-        "Unable to repack cache.psarc");
+        "Game files updated successfully.",
+        "Unable to update the game's files");
 
     [RelayCommand(CanExecute = nameof(CanRun))]
     private Task AddExitGameAsync() => RunModActionAsync(
         cache.AddExitGameMenuOption,
         "Adding the Exit Game menu option...",
-        "cache.psarc repackaged successfully.",
-        "Unable to repack cache.psarc");
+        "Game files updated successfully.",
+        "Unable to update the game's files");
 
     [RelayCommand(CanExecute = nameof(CanRun))]
     private Task AddDirectConnectAsync() => RunModActionAsync(
         cache.AddDirectConnectModeOption,
         "Adding Direct Connect mode...",
-        "cache.psarc repackaged successfully.",
-        "Unable to repack cache.psarc");
+        "Game files updated successfully.",
+        "Unable to update the game's files");
 
     [RelayCommand(CanExecute = nameof(CanRun))]
     private async Task ApplyFastLoadAsync()
@@ -517,7 +527,7 @@ internal sealed partial class SetAndForgetViewModel(
             bool? useNvmeFastLoad = await ResolveFastLoadChoiceAsync();
             if (useNvmeFastLoad is null)
             {
-                StatusMessage = "Fast Load cancelled.";
+                StatusMessage = "Fast Load canceled.";
                 return;
             }
 
@@ -525,7 +535,7 @@ internal sealed partial class SetAndForgetViewModel(
             await Task.Run(() => fastLoad.Apply(useNvmeFastLoad.Value));
 
             StatusMessage = "Fast Load applied.";
-            await dialogs.ShowInfoAsync("cache.psarc repackaged successfully.", "Success");
+            await dialogs.ShowInfoAsync("Game files updated successfully.", "Success");
         }
         catch (Exception ex)
         {
@@ -540,7 +550,7 @@ internal sealed partial class SetAndForgetViewModel(
 
     /// <summary>
     /// Detects the Rocksmith drive and asks for whatever confirmation the drive type warrants.
-    /// Returns whether to use the fastest (NVMe) path, or <c>null</c> if the user cancelled.
+    /// Returns whether to use the fastest (NVMe) path, or <c>null</c> if the user canceled.
     /// </summary>
     private async Task<bool?> ResolveFastLoadChoiceAsync()
     {
@@ -573,7 +583,7 @@ internal sealed partial class SetAndForgetViewModel(
     [RelayCommand(CanExecute = nameof(CanRun))]
     private async Task RestoreDefaultsAsync()
     {
-        if (!await dialogs.ShowConfirmAsync("Do you wish to restore your cache.psarc to its original state?", "Restore cache.psarc?"))
+        if (!await dialogs.ShowConfirmAsync("Do you wish to restore the game's files to their original state?", "Restore original files?"))
         {
             return;
         }
@@ -582,12 +592,12 @@ internal sealed partial class SetAndForgetViewModel(
             () =>
             {
                 if (!cache.RestoreDefaults())
-                    throw new FileNotFoundException("No cache backup was found.");
+                    throw new FileNotFoundException("No backup of the game's files was found.");
 
                 _tuning.Load();
             },
-            "Restoring the cache backup...",
-            "Cache backup was restored!",
+            "Restoring the original files...",
+            "Original files restored!",
             "Problems restoring backup",
             () => ReloadTuningNames());
     }
@@ -596,7 +606,7 @@ internal sealed partial class SetAndForgetViewModel(
     private async Task ResetCacheAsync()
     {
         if (!await dialogs.ShowConfirmAsync(
-                "Woah, hang on there!\nHave you tried Restore Cache Backup first? This should be a last " +
+                "Woah, hang on there!\nHave you tried Restore original files first? This should be a last " +
                 "resort. Steam will redownload all modified game files. This only removes mods from this " +
                 "section; your other RSMods settings are unaffected.",
                 "Verify game files with Steam?"))
@@ -627,13 +637,34 @@ internal sealed partial class SetAndForgetViewModel(
         () =>
         {
             if (!cache.ImportExistingSettings())
-                throw new IOException("Could not import existing settings from cache.psarc.");
+                throw new IOException("Could not import the game's existing settings.");
             _tuning.Load();
         },
-        "Importing settings from cache.psarc...",
-        "Existing cache settings imported.",
+        "Importing the game's existing settings...",
+        "Existing settings imported.",
         "Unable to import existing settings",
         () => ReloadTuningNames());
+
+    // A string's swatch in the tuning editor edits that string's color, like the Custom Colors page does.
+    private DebouncedSaver? _colorSaver;
+
+    private void WireStringColorPicking()
+    {
+        _colorSaver = autoSave.Create(settings.SaveAsync, ex => StatusMessage = $"Couldn't save the string color: {ex.Message}");
+
+        foreach (TuningStringViewModel tuningString in TuningStrings)
+        {
+            tuningString.ColorPicked += (index, normal, hex) =>
+            {
+                string color = (hex ?? string.Empty).Trim().TrimStart('#').ToUpperInvariant();
+                if (color.Length != 6 || !color.All(Uri.IsHexDigit))
+                    return;
+
+                RsModsSettings.StringColors.SetStringColor(index, normal, color);
+                _colorSaver.Request();
+            };
+        }
+    }
 
     /// <summary>
     /// Applies an in-memory change to the tuning set and persists it, rolling the change back

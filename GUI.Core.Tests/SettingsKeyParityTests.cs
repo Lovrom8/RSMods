@@ -15,7 +15,7 @@ namespace RSMods.Core.Tests;
 /// </para>
 /// <para>
 /// Scope: declarative keys only. Keys either side builds at runtime - the DLL's <c>string{n}_N</c> /
-/// <c>note{n}_CB</c> colours and <c>SongListTitle_{i}</c> - are invisible to both halves of this test
+/// <c>note{n}_CB</c> colors and <c>SongListTitle_{i}</c> - are invisible to both halves of this test
 /// (the GUI exposes them as methods rather than properties), so they drop out symmetrically rather than
 /// producing false failures.
 /// </para>

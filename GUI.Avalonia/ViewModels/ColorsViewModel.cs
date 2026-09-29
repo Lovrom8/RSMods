@@ -9,12 +9,12 @@ using RSMods.Util;
 
 namespace RSMods.ViewModels;
 
-/// <summary>One string's colour in both palettes, shown side by side.</summary>
+/// <summary>One string's color in both palettes, shown side by side.</summary>
 internal sealed record ColorPairRow(string Label, ColorSwatchViewModel Normal, ColorSwatchViewModel Colorblind);
 
 /// <summary>
-/// The Custom Colors screen: the string, note, and highway colours that live in the shared
-/// <see cref="RsModsSettings"/> store. Each palette keeps both a normal and a colour-blind set (the game
+/// The Custom Colors screen: the string, note, and highway colors that live in the shared
+/// <see cref="RsModsSettings"/> store. Each palette keeps both a normal and a colorblind set (the game
 /// picks between them), so both are held in the snapshot and only the cells the user changes are written back,
 /// a moment after each change.
 /// </summary>
@@ -25,7 +25,7 @@ internal sealed partial class ColorsViewModel : ObservableObject
     private bool _loading;
     private bool _initialized;
 
-    // Low E through high e; the store keys colours by string index 0..5 in this order.
+    // Low E through high e; the store keys colors by string index 0..5 in this order.
     private static readonly string[] StringLabels = ["E (low)", "A", "D", "G", "B", "e (high)"];
 
     public ColorSwatchViewModel[] StringColorsNormal { get; }
@@ -41,12 +41,12 @@ internal sealed partial class ColorsViewModel : ObservableObject
     public ColorSwatchViewModel HighwayFretNumbers { get; } = new("Fret numbers");
     public ColorSwatchViewModel[] HighwaySwatches { get; }
 
-    // --- String colours ---
+    // --- String colors ---
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ShowStringColors))]
     private bool _useCustomStringColors;
 
-    // --- Note colours ---
+    // --- Note colors ---
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ShowNoteColors), nameof(ShowNoteSwatches))]
     private bool _useSeparateNoteColors;
@@ -55,14 +55,14 @@ internal sealed partial class ColorsViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(ShowNoteSwatches))]
     private bool _useRocksmithNoteColors;
 
-    // --- Highway colours ---
+    // --- Highway colors ---
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ShowHighwayColors))]
     private bool _useCustomHighwayColors;
 
     public bool ShowStringColors => UseCustomStringColors;
     public bool ShowNoteColors => UseSeparateNoteColors;
-    // Rocksmith's own note colours mean the custom swatches don't apply, so hide them.
+    // Rocksmith's own note colors mean the custom swatches don't apply, so hide them.
     public bool ShowNoteSwatches => UseSeparateNoteColors && !UseRocksmithNoteColors;
     public bool ShowHighwayColors => UseCustomHighwayColors;
 
@@ -99,12 +99,14 @@ internal sealed partial class ColorsViewModel : ObservableObject
             .Concat(HighwaySwatches);
 
     /// <summary>
-    /// Loads the snapshot on first navigation. The store is already populated by startup, so this only
-    /// reads it; it is idempotent, mirroring the other lazily-loaded settings screens.
+    /// Loads the snapshot when the screen is shown. The store is already populated by startup, so this only
+    /// reads it.
     /// </summary>
     public Task InitializeAsync()
     {
-        if (_initialized)
+        // Re-read on each visit (unless an edit here is still waiting to save), so a color changed elsewhere, like a
+        // string's swatch in the Set & Forget tuning editor, shows up.
+        if (_initialized && _saver.HasUnsavedChanges)
             return Task.CompletedTask;
         _initialized = true;
 
@@ -153,7 +155,7 @@ internal sealed partial class ColorsViewModel : ObservableObject
             : UseRocksmithNoteColors ? NoteColorMode.RocksmithColors : NoteColorMode.Custom;
         RsModsSettings.HighwayColors.CustomHighwayColors = UseCustomHighwayColors;
 
-        // Write only complete colours the user changed, so untouched defaults aren't baked into the INI and a
+        // Write only complete colors the user changed, so untouched defaults aren't baked into the INI and a
         // half-typed hex waits until it's finished. Each is re-baselined as it's written, before the await, so
         // an edit made while the file is being saved still counts as a change next time.
         for (int i = 0; i < StringLabels.Length; i++)
@@ -205,7 +207,7 @@ internal sealed partial class ColorsViewModel : ObservableObject
             _saver.Request();
     }
 
-    /// <summary>Stores colours as the store expects: 6 upper-case hex digits with no leading #.</summary>
+    /// <summary>Stores colors as the store expects: 6 upper-case hex digits with no leading #.</summary>
     private static string Normalize(string? hex)
     {
         string trimmed = (hex ?? string.Empty).Trim();

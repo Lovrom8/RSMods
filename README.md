@@ -342,7 +342,7 @@ Mostly GUI-only; the game DLL reads only `BackupProfile`.
 | Key | Default | Values | Info |
 | --- | ------- | ------ | ---- |
 | `AppThemeVariant` | `System` | `System` / `Light` / `Dark` | GUI theme. |
-| `AppAccentColor` | _(empty)_ | hex | GUI accent colour; empty uses the theme's default. |
+| `AppAccentColor` | _(empty)_ | hex | GUI accent color; empty uses the theme's default. |
 | `BackupProfile` | `on` | on/off | Profile backups (the GUI's on launch, the DLL's in game). |
 | `NumberOfBackups` | `50` | int | Max backups to keep. |
 

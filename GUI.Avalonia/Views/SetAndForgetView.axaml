@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:converters="clr-namespace:RSMods.Converters"
     xmlns:vm="clr-namespace:RSMods.ViewModels"
+    xmlns:views="clr-namespace:RSMods.Views"
     x:DataType="vm:SetAndForgetViewModel">
 
     <UserControl.Styles>
@@ -15,9 +16,6 @@
     <ScrollViewer>
         <StackPanel Classes="page">
             <TextBlock Classes="h1" Text="Set &amp; Forget" />
-            <TextBlock
-                Classes="pageintro"
-                Text="Apply one-click changes to Rocksmith's cache.psarc. Each mod keeps a backup of the original cache and repacks the archive immediately, so wait for an operation to finish before starting another." />
 
             <StackPanel Orientation="Horizontal" Spacing="10" IsVisible="{Binding ShowIndeterminateBusy}">
                 <ProgressBar Width="120" IsIndeterminate="True" />
@@ -30,15 +28,15 @@
                 IsVisible="{Binding !IsBusy}"
                 Text="{Binding StatusMessage}" />
 
-            <!-- Quick actions: the one-click mods and the cache tools that undo them. -->
+            <!-- Quick actions: the one-click mods and the tools that undo them. -->
             <Grid ColumnDefinitions="*,*" ColumnSpacing="18">
                 <Border Grid.Column="0" Classes="card">
                     <StackPanel Spacing="12">
                         <StackPanel Spacing="4">
-                            <TextBlock FontWeight="SemiBold" Text="One-click cache mods" />
+                            <TextBlock FontWeight="SemiBold" Text="One-click mods" />
                             <TextBlock
                                 Classes="hint"
-                                Text="Each one repacks the game's current cache.psarc, so applied mods combine. Removing them takes Restore cache backup or a Steam verify." />
+                                Text="Each one changes the game's current files, so applied mods combine. Removing them takes Restore original files or a Steam verify." />
                         </StackPanel>
 
                         <Grid Classes="action" ColumnDefinitions="*,Auto">
@@ -59,9 +57,9 @@
                                 <TextBlock Classes="hint" Text="Replaces the Uplay button in the main menu with EXIT GAME." />
                             </StackPanel>
                             <Button
-                                AutomationProperties.Name="Add Exit Game menu option"
+                                AutomationProperties.Name="Apply Exit Game menu option"
                                 Command="{Binding AddExitGameCommand}"
-                                Content="Add" />
+                                Content="Apply" />
                         </Grid>
                         <Border Classes="divider" />
 
@@ -71,9 +69,9 @@
                                 <TextBlock Classes="hint" Text="Unlocks the hidden input mode: Microphone Mode with tone simulation on." />
                             </StackPanel>
                             <Button
-                                AutomationProperties.Name="Add Direct Connect mode"
+                                AutomationProperties.Name="Apply Direct Connect mode"
                                 Command="{Binding AddDirectConnectCommand}"
-                                Content="Add" />
+                                Content="Apply" />
                         </Grid>
                         <Border Classes="divider" />
 
@@ -83,9 +81,9 @@
                                 <TextBlock Classes="hint" Text="Skips the intro screens. Checks your drive first: HDDs and unknown drives ask for confirmation, NVMe can opt into the fastest variant." />
                             </StackPanel>
                             <Button
-                                AutomationProperties.Name="Enable Fast Load"
+                                AutomationProperties.Name="Apply Fast Load"
                                 Command="{Binding ApplyFastLoadCommand}"
-                                Content="Enable" />
+                                Content="Apply" />
                         </Grid>
                     </StackPanel>
                 </Border>
@@ -93,19 +91,19 @@
                 <Border Grid.Column="1" Classes="card">
                     <StackPanel Spacing="12">
                         <StackPanel Spacing="4">
-                            <TextBlock FontWeight="SemiBold" Text="Cache management" />
+                            <TextBlock FontWeight="SemiBold" Text="Game files" />
                             <TextBlock
                                 Classes="hint"
-                                Text="The backup is the cache.psarc from before the first mod was applied." />
+                                Text="The backup holds the game's files from before the first mod here was applied." />
                         </StackPanel>
 
                         <Grid Classes="action" ColumnDefinitions="*,Auto">
                             <StackPanel Spacing="2">
-                                <TextBlock Classes="actionname" Text="Restore cache backup" />
+                                <TextBlock Classes="actionname" Text="Restore original files" />
                                 <TextBlock Classes="hint" Text="Removes every mod applied here by putting the backup back." />
                             </StackPanel>
                             <Button
-                                AutomationProperties.Name="Restore cache backup"
+                                AutomationProperties.Name="Restore original files"
                                 Command="{Binding RestoreDefaultsCommand}"
                                 Content="Restore" />
                         </Grid>
@@ -114,7 +112,7 @@
                         <Grid Classes="action" ColumnDefinitions="*,Auto">
                             <StackPanel Spacing="2">
                                 <TextBlock Classes="actionname" Text="Import existing settings" />
-                                <TextBlock Classes="hint" Text="Loads the tunings already in the game's cache.psarc into the editor below." />
+                                <TextBlock Classes="hint" Text="Loads the tunings already in the game into the editor below." />
                             </StackPanel>
                             <Button
                                 AutomationProperties.Name="Import existing settings"
@@ -126,7 +124,7 @@
                         <Grid Classes="action" ColumnDefinitions="*,Auto">
                             <StackPanel Spacing="2">
                                 <TextBlock Classes="actionname" Text="Remove temporary folders" />
-                                <TextBlock Classes="hint" Text="Frees space left over from older versions. cache.psarc is not changed." />
+                                <TextBlock Classes="hint" Text="Frees space left over from older versions. The game's files are not changed." />
                             </StackPanel>
                             <Button
                                 AutomationProperties.Name="Remove temporary folders"
@@ -134,7 +132,7 @@
                                 Content="Remove" />
                         </Grid>
 
-                        <Border Padding="12" Background="#22D98B2B" BorderBrush="#9A6B25" BorderThickness="1" CornerRadius="6">
+                        <Border Classes="warning" Padding="12">
                             <Grid Classes="action" ColumnDefinitions="*,Auto">
                                 <StackPanel Spacing="2">
                                     <TextBlock Classes="actionname" Text="Last resort: verify with Steam" />
@@ -161,7 +159,7 @@
                                 Classes="hint"
                                 MaxWidth="{StaticResource PageProseMaxWidth}"
                                 HorizontalAlignment="Left"
-                                Text="Pick a tuning to edit it, or &lt;New&gt; to create one. Offsets are semitones from standard tuning. Add, Save and Remove change the local tuning list; Add to game injects it into cache.psarc." />
+                                Text="Pick a tuning to edit it, or &lt;New&gt; to create one. Offsets are semitones from standard tuning. Add, Save and Remove change the local tuning list; Add to game puts it in the game." />
                         </StackPanel>
                         <Button
                             Grid.Column="1"
@@ -180,9 +178,11 @@
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.RowSpan="2" Grid.Column="0" Spacing="6">
-                            <TextBlock Classes="fieldlabel" FontWeight="SemiBold" Text="Tunings" />
-                            <ListBox
-                                Height="300"
+                            <TextBlock Classes="fieldlabel" FontWeight="SemiBold" Text="Tuning" />
+                            <ComboBox
+                                HorizontalAlignment="Stretch"
+                                PlaceholderText="Choose a tuning"
+                                AutomationProperties.Name="Tuning"
                                 ItemsSource="{Binding TuningNames}"
                                 SelectedItem="{Binding SelectedTuningName}" />
                         </StackPanel>
@@ -221,15 +221,12 @@
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate x:DataType="vm:TuningStringViewModel">
                                         <Grid ColumnDefinitions="22,64,110,*" ColumnSpacing="8" Margin="0,2">
-                                            <Border
+                                            <views:ColorSwatchButton
                                                 Grid.Column="0"
-                                                Width="16"
-                                                Height="16"
-                                                VerticalAlignment="Center"
-                                                Background="{Binding ColorHex, Converter={x:Static converters:HexToBrushConverter.Instance}}"
-                                                BorderBrush="{DynamicResource CardBorderBrush}"
-                                                BorderThickness="1"
-                                                CornerRadius="3" />
+                                                Width="18"
+                                                Height="18"
+                                                AutomationProperties.Name="{Binding Label, StringFormat='Pick the {0} string color'}"
+                                                Hex="{Binding ColorHex}" />
                                             <TextBlock Grid.Column="1" VerticalAlignment="Center" Text="{Binding Label}" />
                                             <NumericUpDown
                                                 Grid.Column="2"
@@ -291,11 +288,15 @@
                             <TextBlock FontWeight="SemiBold" Text="Songs with selected tuning" />
                             <TextBlock FontSize="11" Opacity="0.65" Text="{Binding SelectedTuningName}" />
                         </StackPanel>
-                        <ListBox
+                        <Expander
                             Grid.Row="1"
                             Grid.Column="0"
-                            Height="230"
-                            ItemsSource="{Binding SongsWithSelectedTuning}" />
+                            Grid.RowSpan="2"
+                            VerticalAlignment="Top"
+                            HorizontalAlignment="Stretch"
+                            Header="{Binding SongsWithSelectedTuningHeader}">
+                            <ItemsControl ItemsSource="{Binding SongsWithSelectedTuning}" />
+                        </Expander>
 
                         <StackPanel Grid.Row="0" Grid.Column="1" Spacing="2">
                             <TextBlock FontWeight="SemiBold" Text="Shows as Custom Tuning" />
@@ -305,10 +306,12 @@
                                 TextWrapping="Wrap"
                                 Text="Select an arrangement to copy its six offsets into the &lt;New&gt; editor." />
                         </StackPanel>
-                        <ListBox
+                        <ComboBox
                             Grid.Row="1"
                             Grid.Column="1"
-                            Height="230"
+                            HorizontalAlignment="Stretch"
+                            PlaceholderText="Choose an arrangement"
+                            AutomationProperties.Name="Arrangement with a custom tuning"
                             ItemsSource="{Binding UnknownTuningKeys}"
                             SelectedItem="{Binding SelectedUnknownTuningKey}" />
                         <Button
@@ -327,7 +330,7 @@
                             <TextBlock FontWeight="SemiBold" Text="Default &amp; Guitarcade tones" />
                             <TextBlock
                                 Classes="hint"
-                                Text="Pick a tone saved in your Rocksmith profiles and assign it to a default instrument slot or one of the ten Guitarcade games. Each assignment repacks cache.psarc immediately." />
+                                Text="Pick a tone saved in your Rocksmith profiles and assign it to a default instrument slot or one of the ten Guitarcade games. Each assignment changes the game's files immediately." />
                         </StackPanel>
                         <Button
                             Grid.Column="1"
@@ -338,9 +341,11 @@
 
                     <Grid ColumnDefinitions="*,360" ColumnSpacing="18">
                         <StackPanel Grid.Column="0" Spacing="6">
-                            <TextBlock Classes="fieldlabel" FontWeight="SemiBold" Text="Profile tones" />
-                            <ListBox
-                                Height="240"
+                            <TextBlock Classes="fieldlabel" FontWeight="SemiBold" Text="Profile tone" />
+                            <ComboBox
+                                HorizontalAlignment="Stretch"
+                                PlaceholderText="Load profile tones, then choose one"
+                                AutomationProperties.Name="Profile tone"
                                 ItemsSource="{Binding ProfileTones}"
                                 SelectedItem="{Binding SelectedProfileTone}" />
                         </StackPanel>

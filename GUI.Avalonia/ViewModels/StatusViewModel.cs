@@ -38,6 +38,7 @@ internal sealed partial class StatusViewModel : ObservableObject
     private string? _rocksmithFolder;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(SavePathDisplay))]
     private string? _savePath;
 
     [ObservableProperty]
@@ -95,14 +96,18 @@ internal sealed partial class StatusViewModel : ObservableObject
     [RelayCommand(CanExecute = nameof(IsReady))]
     private async Task SetSavePathAsync()
     {
-        // Force the prompt even if a previous run recorded that the user declined.
-        string picked = await RSLocationResolver.ResolveSaveFolderAsync(_dialogs, forcePrompt: true);
+        string? picked = await RSLocationResolver.ChangeSaveFolderAsync(_dialogs);
+        if (picked is null)
+        {
+            StatusMessage = "Save folder unchanged.";
+            return;
+        }
 
         SavePath = picked;
-        SavePathAvailable = !string.IsNullOrEmpty(picked);
+        SavePathAvailable = true;
         Constants.SaveBaseSettings();
 
-        StatusMessage = SavePathAvailable ? "Save folder updated." : "Save folder selection cancelled.";
+        StatusMessage = "Save folder updated.";
     }
 
     [RelayCommand]
