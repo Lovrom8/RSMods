@@ -7,12 +7,12 @@ void Offsets::Initialize() {
 	baseEnd = { {0x04F80000, baseHandle + MemUtil::GetTextSectionLength()  } };			// End of Rocksmith /* or close enough */
 	ptr_loft = { {0x00F5F56C, 0x00F6056C} };											// Memory | Scan for a float, rounded (default), of 10000. Grab all of them. Then in chunks set them to 1. Once the loft turns off, narrow down to the specific one. Pointer map to far offsets.
 	ptr_tuning = { {0x00F5F62C, 0x00F6062C} };											// Memory | Interpolated from Loft. +0x1000.
-	// LoftManager::SetLoftState (0x00775370) dispatches the selected state to the lights manager
+	// The loft manager's "set state" (0x00775370) dispatches the selected state to the lights manager
 	// and then, at this site, to the post-effects manager. The site is +0x7A into the
 	// function on both builds.
 	// Code | 8b 4d 0c 8b 53 0c 8b 42 20 51 50 8b c7 e8 51 17 00 00 (the e8 is the site)
 	hook_loftPostFxSetState = { {0x007753EA, baseHandle + 0x00375B5A} };
-	// LoftPostEffectsManager::SetLoftState. EAX = requested state, [esp+4] = manager,
+	// The loft post-effects manager's "set state". EAX = requested state, [esp+4] = manager,
 	// [esp+8] = immediate flag, RET 8.
 	// Code | 55 8b ec 53 8b 5d 08 83 7b 0c 00 56 57 8b f0
 	func_loftPostFxSetState = { {0x00776B40, baseHandle + 0x00377360} };
@@ -94,6 +94,10 @@ void Offsets::Initialize() {
 	ptr_InvalidInputTreeRootCheck = { {0x0092DB50, baseHandle + 0x00570130} };
 	ptr_InvalidInputTreeRootJmpBck = { {0x0092DB58, baseHandle + 0x00570138} };
 	ptr_InvalidInputTreeRootEmptyJmpBck = { {0x0092DBF0, baseHandle + 0x005701D0} };
+	// Input manager "lost focus" event. Tells the menus the game lost focus, and a song pauses on it.
+	// Every automatic pause goes through here: the window losing focus, and a Real Tone Cable being added or removed.
+	// Pausing by hand doesn't.
+	func_FocusLostEvent = { {0x005E2D60, baseHandle + 0x001E3D50} };				// Code | 55 8b ec 8b 55 08 8b 82 0c 01 00 00 83 ec 14 81 c2 08 01 00 00 (start of function)
 	ptr_IsWindowInFocus = { {0x1251A78, baseHandle + 0x00E52A78} };						// Static Memory | 00 00 00 80 01 00 00 00 04 00 00 00 01 00 00 00 (second variable)
 	ptr_WindowNotInFocusValue = { {0xEC5D46, baseHandle + 0x00AC5496} };    // Code | c6 05 78 2a 02 01 00 (we want to change that 00 to an 01).
 

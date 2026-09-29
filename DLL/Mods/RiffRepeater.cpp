@@ -83,7 +83,7 @@ void RiffRepeater::DisableTimeStretch() {
 }
 
 /// <summary>
-/// Mirrors what the game does for Riff Repeater (RSAudioService::SetTimeStretchName):
+/// Mirrors what the game's audio service does when it sets the Riff Repeater time stretch:
 /// the Time Stretch effect is only in the chain while the song isn't playing at 100%.
 /// Even at 100% the effect still runs the audio through its phase vocoder, which colours the sound.
 /// </summary>

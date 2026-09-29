@@ -6,7 +6,7 @@
 // darkening covers the whole screen; at ultrawide it blacks out the side extensions the
 // correction has just revealed. Rather than reshape the render passes that apply it, this
 // substitutes the post-effects state at the point where the game selects it: the CALL from
-// LoftManager::SetLoftState into LoftPostEffectsManager::SetLoftState. While the correction
+// the loft manager's "set state" into the loft post-effects manager's "set state". While the correction
 // is active and the requested state is 0x13, the thunk hands the manager its previous state
 // instead, so the post-effects transition becomes "previous to previous" and nothing
 // darkens. The original function still runs, so lighting, audio and the manager's own

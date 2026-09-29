@@ -17,8 +17,8 @@ namespace Offsets {
 	inline VersioningStruct<uintptr_t> ptr_tuning;
 
 	// Ultrawide: Riff Repeater post-effects state substitution (Mods/UltrawideRRDim.cpp).
-	inline VersioningStruct<uintptr_t> hook_loftPostFxSetState;   // CALL rel32 inside LoftManager::SetLoftState
-	inline VersioningStruct<uintptr_t> func_loftPostFxSetState;   // LoftPostEffectsManager::SetLoftState, the call's target
+	inline VersioningStruct<uintptr_t> hook_loftPostFxSetState;   // CALL rel32 inside the loft manager's "set state"
+	inline VersioningStruct<uintptr_t> func_loftPostFxSetState;   // The loft post-effects manager's "set state", the call's target
 	extern std::vector<unsigned int> ptr_tuningOffsets;
 
 	// True Tuning
@@ -189,6 +189,7 @@ namespace Offsets {
 	inline VersioningStruct<uintptr_t> ptr_InvalidInputTreeRootEmptyJmpBck;
 
 	// Audio In Background
+	inline VersioningStruct<uintptr_t> func_FocusLostEvent;
 	inline VersioningStruct<uintptr_t> ptr_IsWindowInFocus;
 	inline VersioningStruct<uintptr_t> ptr_WindowNotInFocusValue;
 

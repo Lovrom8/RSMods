@@ -124,13 +124,14 @@ void VolumeControl::EnableSongPreviewAudio() {
 }
 
 /// <summary>
-/// Allows the user to play music in game while Alt+Tabbed.
+/// Keeps the song playing, with audio, while the user is Alt+Tabbed.
 /// </summary>
 void VolumeControl::AllowAltTabbingWithAudio() {
 	char patch[] = { 0x1 };
 
 	MemUtil::PatchAdr(Offsets::ptr_WindowNotInFocusValue, patch, 1); // Return with the value of 1, "window in focus", every time you alt+tab.
 	MemUtil::PatchAdr(Offsets::ptr_IsWindowInFocus, "\x01", 1);
+	MemUtil::PatchAdr(Offsets::func_FocusLostEvent, "\xC2\x04\x00", 3); // Return right away, so losing focus never pauses the song.
 
 	LOG_INFO("Allowed audio to be played in the background!" << std::endl);
 	allowedAltTabbingWithAudio = true;
@@ -138,13 +139,14 @@ void VolumeControl::AllowAltTabbingWithAudio() {
 
 
 /// <summary>
-/// Pauses the audio when the user Alt+Tabs. This is the standard behavior of Rocksmith 2014.
+/// Pauses the audio and the song when the user Alt+Tabs. This is the standard behavior of Rocksmith 2014.
 /// </summary>
 void VolumeControl::DisableAltTabbingWithAudio() {
 	char patch[] = { 0x0 };
 
 	MemUtil::PatchAdr(Offsets::ptr_WindowNotInFocusValue, patch, 1);  // Return with the value of 0, "window out of focus", every time you alt+tab.
 	MemUtil::PatchAdr(Offsets::ptr_IsWindowInFocus, "\x00", 1);
+	MemUtil::PatchAdr(Offsets::func_FocusLostEvent, "\x55\x8B\xEC", 3); // Original bytes.
 
 	LOG_INFO("Stopped audio from being played in the background!" << std::endl);
 	allowedAltTabbingWithAudio = false;
