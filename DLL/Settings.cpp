@@ -105,6 +105,7 @@ void Settings::Initialize()
 		{Setting::ExtendedRangeDropTuning, "off"},
 		{Setting::ExtendedRangeFixBassTuning, "off"},
 		{Setting::SeparateNoteColors, "off"},
+		{Setting::UseExactColors, "off"},
 		{Setting::DiscoModeEnabled, "off"},
 		{Setting::RemoveHeadstockEnabled, "off"},
 		{Setting::RemoveSkylineEnabled, "off"},
@@ -325,6 +326,7 @@ void Settings::ReadModSettings() {
 	modSettings[Setting::ExtendedRangeDropTuning] = reader.GetValue("Toggle Switches", "ExtendedRangeDropTuning", "off");
 	modSettings[Setting::ExtendedRangeFixBassTuning] = reader.GetValue("Toggle Switches", "ExtendedRangeFixBassTuning", "off");
 	modSettings[Setting::SeparateNoteColors] = reader.GetValue("Toggle Switches", "SeparateNoteColors", "off");
+	modSettings[Setting::UseExactColors] = reader.GetValue("Toggle Switches", "UseExactColors", "off");
 	modSettings[Setting::DiscoModeEnabled] = reader.GetValue("Toggle Switches", "DiscoMode", "off");
 	modSettings[Setting::RemoveHeadstockEnabled] = reader.GetValue("Toggle Switches", "Headstock", "off");
 	modSettings[Setting::RemoveSkylineEnabled] = reader.GetValue("Toggle Switches", "Skyline", "off");

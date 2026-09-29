@@ -29,4 +29,17 @@ namespace CollectColors {
 	RSColor GetColor();
 	inline int H;
 	inline float S, L, R, G, B;
+
+	// Use Exact Colors. These work on their own values (no shared H / S / L state) and keep the hue wrapped into [0, 360).
+	struct HSLColor {
+		float h = 0.0f; // Degrees, [0, 360)
+		float s = 0.0f; // [0, 1]
+		float l = 0.0f; // [0, 1]
+	};
+
+	HSLColor ToHSL(const RSColor& color);
+	RSColor FromHSL(const HSLColor& color);
+	RSColor Recolor(const RSColor& pixel, const RSColor& anchor, const RSColor& target);
+	float ColorDistance(const RSColor& a, const RSColor& b);
+	size_t NearestColor(const RSColor& target, const ColorList& candidates, size_t preferred);
 };

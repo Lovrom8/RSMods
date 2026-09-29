@@ -19,6 +19,8 @@ namespace ERMode {
 	void InitStrings(std::vector<uintptr_t>& strings, int state);
 	void SetColors(std::vector<uintptr_t> strings, std::vector<RSColor> colors);
 	void SetColors(std::vector<uintptr_t> strings, const std::string& colorType);
+	void SaveGameStringColors();
+	void SetExactColors(bool colorBlind);
 
 	inline bool Is7StringSong = false;
 

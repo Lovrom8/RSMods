@@ -782,6 +782,7 @@ namespace RSMods
                 RsModsLimits.OverrideInputVolumeMin, RsModsLimits.OverrideInputVolumeMax,
                 src, ReadSettings.OverrideInputVolumeIdentifier);
             checkBox_ER_SeparateNoteColors.Checked = ReadSettings.ProcessSettings(ReadSettings.SeparateNoteColorsIdentifier) == "on";
+            checkBox_UseExactColors.Checked = ReadSettings.ProcessSettings(ReadSettings.UseExactColorsIdentifier) == "on";
             groupBox_NoteColors.Visible = checkBox_ER_SeparateNoteColors.Checked;
             checkBox_BackupProfile.Checked = ReadSettings.ProcessSettings(ReadSettings.BackupProfileIdentifier) == "on";
             checkBox_ModsLog.Checked = File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "RSMods_debug.txt"));
@@ -2802,6 +2803,7 @@ namespace RSMods
 
         private void Save_DisplaySongAccuracy(object sender, EventArgs e) => SaveSettings_Save(ReadSettings.DisplayCurrentAccuracyIdentifier, checkBox_DisplayCurrentAccuracy.Checked.ToString().ToLower());
         private void Save_PreventMidSongPause(object sender, EventArgs e) => SaveSettings_Save(ReadSettings.PreventMidSongPauseIdentifier, checkBox_PreventMidSongPause.Checked.ToString().ToLower());
+        private void Save_UseExactColors(object sender, EventArgs e) => SaveSettings_Save(ReadSettings.UseExactColorsIdentifier, checkBox_UseExactColors.Checked.ToString().ToLower());
         private void Save_Ultrawide(object sender, EventArgs e) => SaveSettings_Save(ReadSettings.UltrawideIdentifier, checkBox_Ultrawide.Checked.ToString().ToLower());
 
         private void Save_NSPTimer(object sender, EventArgs e) => SaveSettings_Save(ReadSettings.CustomNSPTimeLimitIdentifier, ((int)(nUpDown_NSPTimer.Value * 1000)).ToString());

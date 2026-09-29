@@ -83,6 +83,7 @@ namespace Settings {
 		inline constexpr char CustomStringColors[]     = "CustomStringColors";
 		inline constexpr char SeparateNoteColors[]     = "SeparateNoteColors";
 		inline constexpr char SeparateNoteColorsMode[] = "SeparateNoteColorsMode";
+		inline constexpr char UseExactColors[]         = "UseExactColors";
 		inline constexpr char ExtendedRangeMode[]          = "ExtendedRangeMode";
 		inline constexpr char ExtendedRangeDropTuning[]    = "ExtendedRangeDropTuning";
 		inline constexpr char ExtendedRangeFixBassTuning[] = "ExtendedRangeFixBassTuning";

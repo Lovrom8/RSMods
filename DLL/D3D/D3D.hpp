@@ -28,6 +28,10 @@ namespace D3D {
 	void GenerateTexture(IDirect3DDevice9* pDevice, IDirect3DTexture9** ppTexture, ColorList colorSet, UINT in_width = 256, UINT in_height = 128, int in_lineHeight = 8, int howManyLines = 16);
 	void GenerateTextures(IDirect3DDevice9* pDevice, TextureType type);
 	bool CRCForTexture(LPDIRECT3DTEXTURE9 texture, IDirect3DDevice9* pDevice, DWORD& o_crc);
+
+	// Use Exact Colors
+	void GenerateExactColorTexture(IDirect3DDevice9* pDevice, IDirect3DTexture9** ppTexture, const ColorList& colorSet);
+	bool CaptureNoteColorRamp(IDirect3DDevice9* pDevice);
 };
 
 inline Gdiplus::GdiplusStartupInput inp;
@@ -58,6 +62,13 @@ inline LPDIRECT3DBASETEXTURE9 pBaseChordPanelTexture;
 inline std::vector<LPDIRECT3DTEXTURE9> randomTextures(randomTextureCount);
 inline std::vector<LPDIRECT3DTEXTURE9> rainbowTextures((const unsigned int)(360.0f / rainbowSpeed));
 inline ColorList randomTextureColors;
+
+// Use Exact Colors: the game's own note color ramp (one row of texels per string / colorblind string), read from the first note it draws.
+// Empty until then. Only touched on the render thread.
+inline constexpr UINT noteColorRampWidth = 256, noteColorRampHeight = 128;
+inline constexpr int noteColorRampRows = 16, noteColorRampRowHeight = 8;
+inline ColorList noteColorRamp;
+inline bool noteColorRampUnsupported = false;
 
 inline int selectedIdx = 0, counter = 0, currentRandomTexture = 0;
 inline unsigned int currIdx = 0;

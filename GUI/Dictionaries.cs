@@ -29,6 +29,7 @@ namespace RSMods
             TooltipDictionary.Add(checkBox_RainbowStrings, "Experimental.\nHow Pro are you? This makes the players guitar strings constantly cycling through colors.");
             TooltipDictionary.Add(checkBox_RainbowNotes, "Experimental.\nHow Pro are you? This makes all the notes constantly cycle through colors.");
             TooltipDictionary.Add(checkBox_CustomColors, "Lets you define the string / note colors you want.\nSaves a normal set and a Colorblind mode set.");
+            TooltipDictionary.Add(checkBox_UseExactColors, "Off (default): custom string / note colors are shaded the way RSMods always has, which can look lighter / washed out.\nOn: custom colors are shaded the way Rocksmith shades its own colors, so they keep their full color.\nPicking Rocksmith's own colors then looks exactly like the game.");
             TooltipDictionary.Add(checkBox_RemoveLaneMarkers, "Removes the additional lane marker lines seen in the display.\nWhen used with No Loft, provides a cleaner Luma Key.");
             TooltipDictionary.Add(checkBox_ScreenShotScores, "We will automatically take a steam screenshot whenever you finish a song");
             TooltipDictionary.Add(checkBox_RiffRepeaterSpeedAboveOneHundred, "Allow you to play a song faster than 100% speed in Riff Repeater.\nPress keybinding for the speed to go up.\nPress Control + keybinding for the speed to go down.");

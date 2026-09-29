@@ -121,6 +121,7 @@ namespace RSMods
             this.groupBox_StringColors = new System.Windows.Forms.GroupBox();
             this.radio_colorBlindERStringColors = new System.Windows.Forms.RadioButton();
             this.radio_DefaultStringColors = new System.Windows.Forms.RadioButton();
+            this.checkBox_UseExactColors = new System.Windows.Forms.CheckBox();
             this.groupBox_SetAndForget = new System.Windows.Forms.GroupBox();
             this.tabControl_SetAndForget = new System.Windows.Forms.TabControl();
             this.tabPage_SetAndForget_CustomTunings = new System.Windows.Forms.TabPage();
@@ -1769,6 +1770,7 @@ namespace RSMods
             // 
             // groupBox_StringColors
             // 
+            this.groupBox_StringColors.Controls.Add(this.checkBox_UseExactColors);
             this.groupBox_StringColors.Controls.Add(this.radio_colorBlindERStringColors);
             this.groupBox_StringColors.Controls.Add(this.radio_DefaultStringColors);
             this.groupBox_StringColors.Controls.Add(this.textBox_String5Color);
@@ -1817,6 +1819,19 @@ namespace RSMods
             this.radio_DefaultStringColors.Text = "Default Colors";
             this.radio_DefaultStringColors.UseVisualStyleBackColor = true;
             this.radio_DefaultStringColors.CheckedChanged += new System.EventHandler(this.StringColors_DefaultStringColors);
+            // 
+            // checkBox_UseExactColors
+            // 
+            this.checkBox_UseExactColors.AutoSize = true;
+            this.checkBox_UseExactColors.Location = new System.Drawing.Point(76, 245);
+            this.checkBox_UseExactColors.Name = "checkBox_UseExactColors";
+            this.checkBox_UseExactColors.Size = new System.Drawing.Size(106, 17);
+            this.checkBox_UseExactColors.TabIndex = 67;
+            this.checkBox_UseExactColors.Text = "Use Exact Colors";
+            this.checkBox_UseExactColors.UseVisualStyleBackColor = true;
+            this.checkBox_UseExactColors.CheckedChanged += new System.EventHandler(this.Save_UseExactColors);
+            this.checkBox_UseExactColors.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.checkBox_UseExactColors.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // groupBox_SetAndForget
             // 
@@ -7180,6 +7195,7 @@ namespace RSMods
         private System.Windows.Forms.GroupBox groupBox_StringColors;
         private System.Windows.Forms.RadioButton radio_colorBlindERStringColors;
         private System.Windows.Forms.RadioButton radio_DefaultStringColors;
+        private System.Windows.Forms.CheckBox checkBox_UseExactColors;
         private System.Windows.Forms.NumericUpDown nUpDown_ForceEnumerationXMS;
         private System.Windows.Forms.Label label_ForceEnumerationXMS;
         private System.Windows.Forms.CheckBox checkBox_CustomColors;

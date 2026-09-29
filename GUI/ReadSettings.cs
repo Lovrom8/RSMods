@@ -26,7 +26,7 @@ namespace RSMods
 
                              // Mod On / Off
                              ToggleLoftEnabled, VolumeControlEnabled, ShowSongTimerEnabled, ForceReEnumerationEnabled, RainbowStringsEnabled, RainbowNotesEnabled,
-                             ExtendedRangeEnabled, ExtendedRangeDropTuning, ExtendedRangeFixBassTuning, CustomStringColorsNumber, SeparateNoteColors,
+                             ExtendedRangeEnabled, ExtendedRangeDropTuning, ExtendedRangeFixBassTuning, CustomStringColorsNumber, SeparateNoteColors, UseExactColors,
                              DiscoModeEnabled, RemoveHeadstockEnabled, RemoveSkylineEnabled, GreenscreenWallEnabled, ForceProfileEnabled, FretlessEnabled, RemoveInlaysEnabled, ToggleLoftWhen,
                              ToggleSkylineWhen, RemoveLaneMarkersEnabled, RemoveLyricsEnabled, RemoveLyricsWhen, GuitarSpeakEnabled, RemoveHeadstockWhen, ScreenShotScores,
                              MidiAutoTuning, MidiAutoTuningDevice, MidiInDevice, MidiAutoTuningWhen, MidiSoftwareSemitoneTriggers, MidiSoftwareSemitoneSettings, MidiSoftwareTrueTuningTriggers, MidiSoftwareTrueTuningSettings, ChordsMode,
@@ -120,6 +120,7 @@ namespace RSMods
             ExtendedRangeFixBassTuningIdentifier        = "ExtendedRangeFixBassTuning = ",
             CustomStringColorNumberIndetifier           = "CustomStringColors = ",
             SeparateNoteColorsIdentifier                = "SeparateNoteColors = ",
+            UseExactColorsIdentifier                    = "UseExactColors = ",
             DiscoModeIdentifier                         = "DiscoMode = ",
             RemoveHeadstockIdentifier                   = "Headstock = ",
             RemoveSkylineIdentifier                     = "Skyline = ",
@@ -422,6 +423,8 @@ namespace RSMods
                     return FillSettingVariable(CustomStringColorNumberIndetifier, SettingType.STRING, currentLine, out CustomStringColorsNumber);
                 if (IdentifierIsFound(currentLine, SeparateNoteColorsIdentifier, identifierToGrab))
                     return FillSettingVariable(SeparateNoteColorsIdentifier, SettingType.STRING, currentLine, out SeparateNoteColors);
+                if (IdentifierIsFound(currentLine, UseExactColorsIdentifier, identifierToGrab))
+                    return FillSettingVariable(UseExactColorsIdentifier, SettingType.ON_OFF, currentLine, out UseExactColors);
                 if (IdentifierIsFound(currentLine, DiscoModeIdentifier, identifierToGrab))
                     return FillSettingVariable(DiscoModeIdentifier, SettingType.ON_OFF, currentLine, out DiscoModeEnabled);
                 if (IdentifierIsFound(currentLine, RemoveHeadstockIdentifier, identifierToGrab))
