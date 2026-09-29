@@ -14,6 +14,7 @@ namespace RSMods.ASIO
     /// Reads and writes one RS_ASIO.ini file. The host supplies the path so this settings model has no
     /// dependency on install-location discovery or a particular UI framework. Booleans are written as 1/0,
     /// the format RS_ASIO's own default file uses and the WinForms configurator always wrote.
+    /// RS_ASIO forks add keys of their own, so an existing file is only changed where a setting is.
     /// </summary>
     public sealed class AsioSettings
     {
@@ -27,7 +28,8 @@ namespace RSMods.ASIO
                 throw new ArgumentException("An RS_ASIO.ini path is required.", nameof(filePath));
 
             FilePath = filePath;
-            _ini = new IniManager(filePath);
+            // A missing file is created whole; an existing one isn't filled with our defaults, which a fork may not share.
+            _ini = new IniManager(filePath, fillDefaults: !File.Exists(filePath));
             _ini.Load();
             _ini.SetSectionComments("[Asio]",
             [
@@ -67,11 +69,33 @@ namespace RSMods.ASIO
 
         public sealed class ConfigSettings
         {
+            private const string SectionName = "[Config]";
+
+            // Earlier builds of this GUI wrote the setting under this name, which RS_ASIO never read.
+            private const string LegacyWasapiOutputsKey = "WasapiOutputs";
+
+            private readonly IniManager _ini;
             private readonly IniSection _section;
 
-            internal ConfigSettings(IniManager ini) => _section = new IniSection(ini, "[Config]", numericBools: true);
+            internal ConfigSettings(IniManager ini)
+            {
+                _ini = ini;
+                _section = new IniSection(ini, SectionName, numericBools: true);
+            }
 
-            public WasapiOutputMode WasapiOutputs { get => _section.GetEnumInt(WasapiOutputMode.Off); set { _section.SetEnumInt(value); _section.Save(); } }
+            public WasapiOutputMode EnableWasapiOutputs
+            {
+                get => !_ini.TryGetString(SectionName, nameof(EnableWasapiOutputs), out _) && _ini.TryGetString(SectionName, LegacyWasapiOutputsKey, out _)
+                    ? _section.GetEnumInt(WasapiOutputMode.Off, LegacyWasapiOutputsKey)
+                    : _section.GetEnumInt(WasapiOutputMode.Off);
+                set
+                {
+                    _section.SetEnumInt(value);
+                    _ini.RemoveKey(SectionName, LegacyWasapiOutputsKey);
+                    _section.Save();
+                }
+            }
+
             public bool EnableWasapiInputs { get => _section.GetBool(); set { _section.SetBool(value); _section.Save(); } }
             public bool EnableAsio { get => _section.GetBool(true); set { _section.SetBool(value); _section.Save(); } }
         }
@@ -141,10 +165,9 @@ namespace RSMods.ASIO
                 get => _ini.IsCommented(SectionName, "Driver");
                 set
                 {
-                    string currentDriver = value
-                        ? _ini.GetCommentedString(SectionName, "Driver", _ini.GetString(SectionName, "Driver"))
-                        : _ini.GetCommentedString(SectionName, "Driver", "");
-                    _ini.SetCommentedString(SectionName, "Driver", currentDriver, value);
+                    if (value == Disabled)
+                        return;
+                    _ini.SetCommentedString(SectionName, "Driver", Driver, value);
                     _ini.Save();
                 }
             }
@@ -154,7 +177,15 @@ namespace RSMods.ASIO
                 get => _ini.IsCommented(SectionName, "Driver")
                     ? _ini.GetCommentedString(SectionName, "Driver")
                     : _section.GetString();
-                set { _section.SetString(value); _section.Save(); }
+                set
+                {
+                    // Setting a disabled input's driver keeps it disabled.
+                    if (Disabled)
+                        _ini.SetCommentedString(SectionName, "Driver", value, commented: true);
+                    else
+                        _section.SetString(value);
+                    _section.Save();
+                }
             }
 
             public int Channel { get => _section.GetInt(1); set { _section.SetInt(value); _section.Save(); } }
