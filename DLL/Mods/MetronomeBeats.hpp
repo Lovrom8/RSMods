@@ -1,6 +1,8 @@
 #pragma once
 
-#include <string_view>
+#include <filesystem>
+#include <string>
+#include <unordered_set>
 #include <vector>
 
 namespace Metronome {
@@ -13,10 +15,24 @@ namespace Metronome {
 	// Beats in chart order, ascending by time.
 	using BeatMap = std::vector<Beat>;
 
-	// Reads the beat grid of a song.
-	class BeatMapLoader {
+	// Song beats, extracted from the song's archive by RSMods.exe ("--extract-beats", see the GUI's
+	// ExtractBeatsCommand) into RSMods\MetronomeBeats\<songKey>.beats, where Load reads them.
+	class BeatMapSource {
 	public:
-		// Empty when the song's beats aren't available (yet). Runs on MainThread, so it must not block.
-		BeatMap Load(std::string_view songKey) const;
+		BeatMapSource();
+
+		// Starts the extraction in the background, once per song per session. Doesn't wait for it.
+		void Request(const std::string& songKey);
+
+		// Empty while the song's beats haven't been extracted (yet).
+		BeatMap Load(const std::string& songKey) const;
+
+	private:
+		std::filesystem::path gameFolder;
+		std::filesystem::path rsModsFolder;
+		std::unordered_set<std::string> requestedSongKeys;
+
+		std::filesystem::path BeatsFile(const std::string& songKey) const;
+		void StartExtraction(const std::string& songKey) const;
 	};
 }

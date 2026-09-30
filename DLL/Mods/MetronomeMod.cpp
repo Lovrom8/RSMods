@@ -105,19 +105,41 @@ void MetronomeMod::ToggleClicks() {
 	songIndicatorHideTime = std::chrono::steady_clock::now() + kSongIndicatorDuration;
 }
 
+// The pre-song tuner is the earliest point that names the song for sure, and the extraction (a second or two)
+// usually finishes while the player tunes. OnSongEnter requests it too, for songs started without the tuner.
 void MetronomeMod::OnSongEnter(ModContext&) {
-	clickMixer.SetBeats(beatMapLoader.Load(GameState::GetSongKey()));
+	pendingSongKey = GameState::GetSongKey();
+	beatMapSource.Request(pendingSongKey);
+	TryLoadPendingBeats();
 }
 
 void MetronomeMod::OnSongExit(ModContext&) {
+	pendingSongKey.clear();
 	clickMixer.ClearBeats();
 }
 
 void MetronomeMod::OnMenuTick(ModContext& c) {
+	if (GameState::Menus::IsInPreSongTuner())
+		beatMapSource.Request(GameState::GetSongKey());
+
 	ShowIndicator(c);
 }
 
+// Retried every tick while the extraction runs; a song's first play may start before its beats are ready.
+void MetronomeMod::TryLoadPendingBeats() {
+	if (pendingSongKey.empty()) return;
+
+	Metronome::BeatMap beats = beatMapSource.Load(pendingSongKey);
+	if (beats.empty()) return;
+
+	LOG_INFO("(Metronome) Loaded " << beats.size() << " beats of " << pendingSongKey << std::endl);
+	clickMixer.SetBeats(std::move(beats));
+	pendingSongKey.clear();
+}
+
 void MetronomeMod::OnSongTick(ModContext& c) {
+	TryLoadPendingBeats();
+
 	if (std::chrono::steady_clock::now() < songIndicatorHideTime)
 		ShowIndicator(c);
 	else

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <chrono>
+#include <string>
 
 #include "../Framework/Framework.hpp"
 #include "MetronomeBeats.hpp"
@@ -23,11 +24,13 @@ public:
 	void OnSongTick(Framework::ModContext& c) override;
 
 private:
-	Metronome::BeatMapLoader beatMapLoader;
+	Metronome::BeatMapSource beatMapSource;
 	Metronome::ClickMixer clickMixer;
+	std::string pendingSongKey; // Song whose beats are awaited from the extraction; empty once they're loaded.
 	std::chrono::steady_clock::time_point songIndicatorHideTime;
 
 	void ApplySettings(const Framework::ModContext& c);
+	void TryLoadPendingBeats();
 	void ToggleClicks();
 	void ShowIndicator(Framework::ModContext& c) const;
 	void HideIndicator(Framework::ModContext& c) const;
