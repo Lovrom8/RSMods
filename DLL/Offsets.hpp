@@ -274,6 +274,15 @@ namespace Offsets {
 	inline VersioningStruct<uintptr_t> ptr_renderer;
 	inline constexpr unsigned int rendererDisplayFlagsOffset = 0x910;
 
+	// MonoToStereoChannel: the audio input's stereo to mono conversions (used when a stereo input device is opened as mono, they keep the left channel),
+	// and the Rocksmith.ini settings as the game loaded them (MonoToStereoChannel at +0x10)
+	inline VersioningStruct<uintptr_t> func_stereoToMono8;
+	inline VersioningStruct<uintptr_t> func_stereoToMono16;
+	inline VersioningStruct<uintptr_t> func_stereoToMono32;
+	inline VersioningStruct<uintptr_t> func_stereoToMonoFloat;
+	inline VersioningStruct<uintptr_t> ptr_iniSettings;
+	inline constexpr unsigned int iniSettingsMonoToStereoChannelOffset = 0x10;
+
 	// Runtime data.
 	inline uintptr_t runtimeVersionStructValue;
 

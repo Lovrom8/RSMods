@@ -1049,6 +1049,9 @@ namespace RSMods
             checkBox_Rocksmith_RTCOnly.Checked = SettingsSanitizer.SanitizeBool01(
                 Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.RealToneCableOnlyIdentifier),
                 false, src, Rocksmith.ReadSettings.RealToneCableOnlyIdentifier);
+            checkBox_Rocksmith_RightInputChannel.Checked = SettingsSanitizer.SanitizeBool01(
+                Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.MonoToStereoChannelIdentifier),
+                false, src, Rocksmith.ReadSettings.MonoToStereoChannelIdentifier);
             checkBox_Rocksmith_LowLatencyMode.Checked = SettingsSanitizer.SanitizeBool01(
                 Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.Win32UltraLowLatencyModeIdentifier),
                 true, src, Rocksmith.ReadSettings.Win32UltraLowLatencyModeIdentifier);
@@ -3573,6 +3576,7 @@ namespace RSMods
                 checkBox_Rocksmith_Override_MaxOutputBufferSize.Checked = true;
         }
         private void Rocksmith_RTCOnly(object sender, EventArgs e) => SaveSettings_Rocksmith_Middleware(Rocksmith.ReadSettings.RealToneCableOnlyIdentifier, checkBox_Rocksmith_RTCOnly.Checked.ToString().ToLower());
+        private void Rocksmith_RightInputChannel(object sender, EventArgs e) => SaveSettings_Rocksmith_Middleware(Rocksmith.ReadSettings.MonoToStereoChannelIdentifier, checkBox_Rocksmith_RightInputChannel.Checked.ToString().ToLower());
         private void Rocksmith_LowLatencyMode(object sender, EventArgs e) => SaveSettings_Rocksmith_Middleware(Rocksmith.ReadSettings.Win32UltraLowLatencyModeIdentifier, checkBox_Rocksmith_LowLatencyMode.Checked.ToString().ToLower());
 
         private void Rocksmith_AutomateMaxBufferSize(object sender, EventArgs e)

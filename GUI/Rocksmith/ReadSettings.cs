@@ -8,7 +8,7 @@ namespace RSMods.Rocksmith
     class ReadSettings
     {
         private static string
-            EnableMicrophone, ExclusiveMode, LatencyBuffer, ForceDefaultPlaybackDevice, ForceWDM, ForceDirectXSink, DumpAudioLog, MaxOutputBufferSize, RealToneCableOnly, Win32UltraLowLatencyMode,
+            EnableMicrophone, ExclusiveMode, LatencyBuffer, ForceDefaultPlaybackDevice, ForceWDM, ForceDirectXSink, DumpAudioLog, MaxOutputBufferSize, RealToneCableOnly, MonoToStereoChannel, Win32UltraLowLatencyMode,
             ShowGamepadUI, ScreenWidth, ScreenHeight, Fullscreen, VisualQuality, RenderingWidth, RenderingHeight, EnablePostEffects, EnableShadows, EnableHighResScope, EnableDepthOfField, EnablePerPixelLighting, MsaaSamples, DisableBrowser,
             UseProxy;
 
@@ -22,6 +22,7 @@ namespace RSMods.Rocksmith
             DumpAudioLogIdentifier = "DumpAudioLog=",
             MaxOutputBufferSizeIdentifier = "MaxOutputBufferSize=",
             RealToneCableOnlyIdentifier = "RealToneCableOnly=",
+            MonoToStereoChannelIdentifier = "MonoToStereoChannel=",
             Win32UltraLowLatencyModeIdentifier = "Win32UltraLowLatencyMode=",
 
             ShowGamepadUIIdentifier = "ShowGamepadUI=",
@@ -84,6 +85,8 @@ namespace RSMods.Rocksmith
                     return FillSettingVariable(MaxOutputBufferSizeIdentifier, currentLine, out MaxOutputBufferSize);
                 if (IdentifierIsFound(currentLine, RealToneCableOnlyIdentifier, identifierToGrab))
                     return FillSettingVariable(RealToneCableOnlyIdentifier, currentLine, out RealToneCableOnly);
+                if (IdentifierIsFound(currentLine, MonoToStereoChannelIdentifier, identifierToGrab))
+                    return FillSettingVariable(MonoToStereoChannelIdentifier, currentLine, out MonoToStereoChannel);
                 if (IdentifierIsFound(currentLine, Win32UltraLowLatencyModeIdentifier, identifierToGrab))
                     return FillSettingVariable(Win32UltraLowLatencyModeIdentifier, currentLine, out Win32UltraLowLatencyMode);
                 #endregion

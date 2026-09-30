@@ -164,6 +164,7 @@ namespace ModManager {
 		ApplyAlwaysOnBugPrevention();
 		QualityOfLife::LowerNoteDetectionFloor(); // Before note detection starts
 		QualityOfLife::RetryFastLoadUponSoftLock(); // Before the first menu loads
+		QualityOfLife::SupportMonoToStereoChannel(); // Before the guitar input starts
 		ExtraSongLists::Install(); // Before Non-Stop Play builds its menu or song pool
 		Settings::Initialize();
 		UpdateSettings();

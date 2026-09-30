@@ -394,6 +394,7 @@ namespace RSMods
             this.groupBox_Rocksmith_AudioSettings = new System.Windows.Forms.GroupBox();
             this.checkBox_Rocksmith_LowLatencyMode = new System.Windows.Forms.CheckBox();
             this.checkBox_Rocksmith_RTCOnly = new System.Windows.Forms.CheckBox();
+            this.checkBox_Rocksmith_RightInputChannel = new System.Windows.Forms.CheckBox();
             this.checkBox_Rocksmith_DumpAudioLog = new System.Windows.Forms.CheckBox();
             this.checkBox_Rocksmith_ForceDirextXSink = new System.Windows.Forms.CheckBox();
             this.checkBox_Rocksmith_ForceWDM = new System.Windows.Forms.CheckBox();
@@ -5154,6 +5155,7 @@ namespace RSMods
             // 
             this.groupBox_Rocksmith_AudioSettings.Controls.Add(this.checkBox_Rocksmith_LowLatencyMode);
             this.groupBox_Rocksmith_AudioSettings.Controls.Add(this.checkBox_Rocksmith_RTCOnly);
+            this.groupBox_Rocksmith_AudioSettings.Controls.Add(this.checkBox_Rocksmith_RightInputChannel);
             this.groupBox_Rocksmith_AudioSettings.Controls.Add(this.checkBox_Rocksmith_DumpAudioLog);
             this.groupBox_Rocksmith_AudioSettings.Controls.Add(this.checkBox_Rocksmith_ForceDirextXSink);
             this.groupBox_Rocksmith_AudioSettings.Controls.Add(this.checkBox_Rocksmith_ForceWDM);
@@ -5194,6 +5196,18 @@ namespace RSMods
             this.checkBox_Rocksmith_RTCOnly.UseVisualStyleBackColor = true;
             this.checkBox_Rocksmith_RTCOnly.CheckedChanged += new System.EventHandler(this.Rocksmith_RTCOnly);
             this.checkBox_Rocksmith_RTCOnly.MouseHover += new System.EventHandler(this.ToolTips_Show);
+            // 
+            // checkBox_Rocksmith_RightInputChannel
+            // 
+            this.checkBox_Rocksmith_RightInputChannel.AutoSize = true;
+            this.checkBox_Rocksmith_RightInputChannel.Location = new System.Drawing.Point(156, 189);
+            this.checkBox_Rocksmith_RightInputChannel.Name = "checkBox_Rocksmith_RightInputChannel";
+            this.checkBox_Rocksmith_RightInputChannel.Size = new System.Drawing.Size(122, 17);
+            this.checkBox_Rocksmith_RightInputChannel.TabIndex = 16;
+            this.checkBox_Rocksmith_RightInputChannel.Text = "Right Input Channel";
+            this.checkBox_Rocksmith_RightInputChannel.UseVisualStyleBackColor = true;
+            this.checkBox_Rocksmith_RightInputChannel.CheckedChanged += new System.EventHandler(this.Rocksmith_RightInputChannel);
+            this.checkBox_Rocksmith_RightInputChannel.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // checkBox_Rocksmith_DumpAudioLog
             // 
@@ -7427,6 +7441,7 @@ namespace RSMods
         private System.Windows.Forms.CheckBox checkBox_Rocksmith_ForceWDM;
         private System.Windows.Forms.CheckBox checkBox_Rocksmith_ExclusiveMode;
         private System.Windows.Forms.CheckBox checkBox_Rocksmith_RTCOnly;
+        private System.Windows.Forms.CheckBox checkBox_Rocksmith_RightInputChannel;
         private System.Windows.Forms.CheckBox checkBox_Rocksmith_DumpAudioLog;
         private System.Windows.Forms.CheckBox checkBox_Rocksmith_LowLatencyMode;
         private System.Windows.Forms.CheckBox checkBox_Rocksmith_EnableRenderRes;

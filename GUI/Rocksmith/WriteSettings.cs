@@ -20,6 +20,7 @@ namespace RSMods.Rocksmith
                 { ReadSettings.DumpAudioLogIdentifier, CreateDefaultOnOldINI(ReadSettings.DumpAudioLogIdentifier, "0") },
                 { ReadSettings.MaxOutputBufferSizeIdentifier, CreateDefaultOnOldINI(ReadSettings.MaxOutputBufferSizeIdentifier, "0") },
                 { ReadSettings.RealToneCableOnlyIdentifier, CreateDefaultOnOldINI(ReadSettings.RealToneCableOnlyIdentifier, "0") },
+                { ReadSettings.MonoToStereoChannelIdentifier, CreateDefaultOnOldINI(ReadSettings.MonoToStereoChannelIdentifier, "0") },
                 { ReadSettings.Win32UltraLowLatencyModeIdentifier, CreateDefaultOnOldINI(ReadSettings.Win32UltraLowLatencyModeIdentifier, "1") },
             }},
             {"[Renderer.Win32]", new Dictionary<string, string>

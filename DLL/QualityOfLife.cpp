@@ -254,6 +254,24 @@ namespace {
 			SWP_FRAMECHANGED | SWP_NOZORDER | SWP_NOACTIVATE);
 		borderlessApplied = false;
 	}
+
+	// MonoToStereoChannel. Resolved once when the conversions are replaced; read on every call, as the game may load the ini later.
+	uintptr_t monoToStereoChannelAddress = 0;
+
+	// Rocksmith.ini's MonoToStereoChannel: 1 takes the right channel, anything else the left one.
+	bool UseRightInputChannel() {
+		return monoToStereoChannelAddress && *reinterpret_cast<volatile const uint32_t*>(monoToStereoChannelAddress) == 1;
+	}
+
+	// Keeps one channel of interleaved stereo frames. Samples are copied as raw bits, so floats go through uint32_t.
+	template <typename T>
+	void __cdecl StereoToMono(void* to, void* from, UINT32 frames) {
+		T* out = static_cast<T*>(to);
+		const T* in = static_cast<const T*>(from) + (UseRightInputChannel() ? 1 : 0);
+
+		for (UINT32 frame = 0; frame < frames; ++frame, in += 2)
+			out[frame] = *in;
+	}
 }
 
 namespace QualityOfLife {
@@ -404,5 +422,36 @@ namespace QualityOfLife {
 				// back once the game is windowed again.
 				break;
 		}
+	}
+
+	/// <summary>
+	/// Rocksmith.ini's MonoToStereoChannel only does something on Mac. When the guitar input device is stereo, the game opens it as
+	/// mono and always keeps the left channel, so a guitar plugged into the second (right) input of an audio interface can't be heard.
+	/// Replace the stereo to mono conversions with ones that keep the channel MonoToStereoChannel asks for, like the Mac version does:
+	/// 1 = right, anything else = left (the game's own behavior). Has to be in place before the guitar input starts.
+	/// </summary>
+	void SupportMonoToStereoChannel() {
+		const uintptr_t iniSettings = Offsets::ptr_iniSettings.GetValue();
+		if (!iniSettings || !Offsets::func_stereoToMono8.GetValue() || !Offsets::func_stereoToMono16.GetValue() ||
+			!Offsets::func_stereoToMono32.GetValue() || !Offsets::func_stereoToMonoFloat.GetValue()) {
+			LOG_INFO("(QOL) MonoToStereoChannel not supported on this game version" << std::endl);
+			return;
+		}
+
+		monoToStereoChannelAddress = iniSettings + Offsets::iniSettingsMonoToStereoChannelOffset;
+
+		// The first 6 bytes of each are whole instructions (push ebp / mov ebp, esp / mov eax, [ebp+8]). Nothing jumps back.
+		const bool hooked =
+			MemUtil::PlaceHook(Offsets::func_stereoToMono8, reinterpret_cast<void*>(&StereoToMono<uint8_t>), 6) &&
+			MemUtil::PlaceHook(Offsets::func_stereoToMono16, reinterpret_cast<void*>(&StereoToMono<uint16_t>), 6) &&
+			MemUtil::PlaceHook(Offsets::func_stereoToMono32, reinterpret_cast<void*>(&StereoToMono<uint32_t>), 6) &&
+			MemUtil::PlaceHook(Offsets::func_stereoToMonoFloat, reinterpret_cast<void*>(&StereoToMono<uint32_t>), 6);
+
+		if (!hooked) {
+			LOG_ERROR("(QOL) MonoToStereoChannel: failed to replace the stereo to mono conversions" << std::endl);
+			return;
+		}
+
+		LOG_INFO("(QOL) MonoToStereoChannel support installed" << std::endl);
 	}
 }

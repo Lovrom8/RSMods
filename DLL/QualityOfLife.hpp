@@ -7,4 +7,5 @@ namespace QualityOfLife {
 	void LowerNoteDetectionFloor();
 	void RetryFastLoadUponSoftLock();
 	void FixNonExclusiveFullscreen();
+	void SupportMonoToStereoChannel();
 }

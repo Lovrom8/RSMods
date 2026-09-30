@@ -178,6 +178,12 @@ void Offsets::Initialize() {
 	func_playnextTrim = { {0x0056DF00, baseHandle + 0x0016F690} };	// Code | 55 8b ec 83 ec 18 53 56 8d 45 f8 57 50 8b 45 08 e8 (start of function - the PlaynextStats trim)
 	func_profileSongs = { {0x0056D9D0, baseHandle + 0x0016F170} };			// Code | The e8 at the end of the pattern above (finds the profile's songs - profile id in EAX, out pointer on the stack)
 	ptr_renderer = { {0x01360AF0, baseHandle + 0x00F61AF0} };				// Static Memory | a1 ? ? ? ? 8d 4e 3c 51 (the a1, in the display settings getter; flags at +0x910)
+	// Four stereo to mono conversions in a row, 0x30 apart: 8 bit, 16 bit, 32 bit (and 24 bit), 32 bit float. cdecl (to, from, frames)
+	func_stereoToMono8 = { {0x00E712F0, baseHandle + 0x00A70320} };		// Code | 8a 11 88 10 40 83 c1 02 (function starts 0x14 before)
+	func_stereoToMono16 = { {0x00E71320, baseHandle + 0x00A70350} };		// Code | 66 8b 31 66 89 30 83 c0 02 (function starts 0x14 before)
+	func_stereoToMono32 = { {0x00E71350, baseHandle + 0x00A70380} };		// Code | 8b 31 89 30 83 c0 04 83 c1 08 (function starts 0x14 before)
+	func_stereoToMonoFloat = { {0x00E71380, baseHandle + 0x00A703B0} };	// Code | d9 01 83 c0 04 d9 58 fc (function starts 0x13 before)
+	ptr_iniSettings = { {0x0138ABF0, baseHandle + 0x00F8BBF0} };			// Static Memory | c7 05 ? ? ? ? 01 01 00 00 66 89 0d (the c7 05's address, in the settings getter)
 }
 
 namespace Offsets { // Addresses for pre-2021 patch are in the comments
