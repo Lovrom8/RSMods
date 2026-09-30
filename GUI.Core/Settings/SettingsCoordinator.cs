@@ -8,7 +8,7 @@ namespace RSMods.Core.Settings;
 
 /// <summary>
 /// Coordinates manifest-driven setting field view models, their grouping into mods,
-/// reactive visibility conditions, and INI load/save orchestration.
+/// reactive enable conditions, and INI load/save orchestration.
 /// </summary>
 public sealed partial class SettingsCoordinator : ObservableObject
 {
@@ -17,7 +17,7 @@ public sealed partial class SettingsCoordinator : ObservableObject
 
     public IReadOnlyList<SettingFieldViewModel> AllFields => _allFields;
 
-    /// <summary>One entry per mod, sorted by name.</summary>
+    /// <summary>One entry per mod, grouped by <see cref="ModEntryViewModel.Category"/> and sorted by name within each.</summary>
     public IReadOnlyList<ModEntryViewModel> Mods { get; }
 
     public bool IsDirty => _allFields.Any(f => f.IsDirty);
@@ -27,7 +27,7 @@ public sealed partial class SettingsCoordinator : ObservableObject
     public SettingsCoordinator(IManifestService manifestService, IChoicesProvider? choicesProvider = null)
     {
         InitializeFields(manifestService, choicesProvider);
-        WireVisibilityConditions();
+        WireEnableConditions();
         WireDirtyTracking();
         Mods = ModCatalog.Build(manifestService.AllSettings, _fieldsByKey);
     }
@@ -41,7 +41,7 @@ public sealed partial class SettingsCoordinator : ObservableObject
         foreach (var field in _allFields)
             field.Load(ini);
 
-        ReevaluateAllVisibilities();
+        ReevaluateAllConditions();
 
         OnPropertyChanged(nameof(IsDirty));
         StateChanged?.Invoke(this, EventArgs.Empty);
@@ -72,23 +72,23 @@ public sealed partial class SettingsCoordinator : ObservableObject
         }
     }
 
-    private void WireVisibilityConditions()
+    private void WireEnableConditions()
     {
         foreach (var field in _allFields)
         {
             if (field.Descriptor.VisibleWhen is { } cond &&
                 _fieldsByKey.TryGetValue(cond.Key, out var parentField))
             {
-                parentField.ValueChanged += (_, _) => UpdateVisibility(field, parentField, cond);
+                parentField.ValueChanged += (_, _) => UpdateEnabled(field, parentField, cond);
                 parentField.PropertyChanged += (_, e) =>
                 {
-                    if (e.PropertyName == nameof(SettingFieldViewModel.IsVisible))
-                        UpdateVisibility(field, parentField, cond);
+                    if (e.PropertyName == nameof(SettingFieldViewModel.IsEnabled))
+                        UpdateEnabled(field, parentField, cond);
                 };
             }
         }
 
-        ReevaluateAllVisibilities();
+        ReevaluateAllConditions();
     }
 
     private void WireDirtyTracking()
@@ -106,21 +106,22 @@ public sealed partial class SettingsCoordinator : ObservableObject
         }
     }
 
-    private void ReevaluateAllVisibilities()
+    private void ReevaluateAllConditions()
     {
         foreach (var field in _allFields)
         {
             if (field.Descriptor.VisibleWhen is { } cond &&
                 _fieldsByKey.TryGetValue(cond.Key, out var parent))
             {
-                UpdateVisibility(field, parent, cond);
+                UpdateEnabled(field, parent, cond);
             }
         }
     }
 
-    private static void UpdateVisibility(SettingFieldViewModel field, SettingFieldViewModel parent, SettingVisibilityCondition condition)
+    // The manifest calls the condition visibleWhen; the GUI shows the setting either way and only greys it out.
+    private static void UpdateEnabled(SettingFieldViewModel field, SettingFieldViewModel parent, SettingVisibilityCondition condition)
     {
-        field.IsVisible = parent.IsVisible && parent.MatchesCondition(condition.ExpectedValue);
+        field.IsEnabled = parent.IsEnabled && parent.MatchesCondition(condition.ExpectedValue);
     }
 
     private static SettingFieldViewModel CreateField(SettingDescriptor desc, IChoicesProvider? choicesProvider)

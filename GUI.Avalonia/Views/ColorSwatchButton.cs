@@ -1,10 +1,13 @@
 using System;
+using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Data;
+using Avalonia.Input;
 using Avalonia.Layout;
 using Avalonia.Media;
+using Avalonia.VisualTree;
 
 namespace RSMods.Views;
 
@@ -47,6 +50,8 @@ internal sealed class ColorSwatchButton : Button
             IsAlphaEnabled = false,
             IsAlphaVisible = false,
             IsColorPaletteVisible = false,
+            // Just the preview: the lighter / darker shade buttons beside it are more clutter than shortcut.
+            IsAccentColorsVisible = false,
         };
         _picker.TemplateApplied += (_, e) =>
         {
@@ -63,7 +68,19 @@ internal sealed class ColorSwatchButton : Button
         // (Avalonia's own ColorPicker drops it the same way).
         var flyout = new Flyout { Content = _picker, Placement = PlacementMode.BottomEdgeAlignedLeft };
         flyout.FlyoutPresenterClasses.Add("nopadding");
+        flyout.Opened += (_, _) => MarkPreviewClickable();
         Flyout = flyout;
+
+        // Clicking the preview takes its color and closes the picker. The color is already applied as it changes, so
+        // this is the "done" click. handledEventsToo, in case the previewer marks its own taps handled.
+        _picker.AddHandler(Gestures.TappedEvent, (_, e) =>
+        {
+            if (e.Source is not Visual source || source.FindAncestorOfType<ColorPreviewer>(includeSelf: true) is null)
+                return;
+
+            Hex = ToHex(_picker.Color);
+            flyout.Hide();
+        }, handledEventsToo: true);
         UpdateFromHex();
     }
 
@@ -79,6 +96,16 @@ internal sealed class ColorSwatchButton : Button
 
         if (change.Property == HexProperty)
             UpdateFromHex();
+    }
+
+    // The preview is part of the picker's template, so it's found once the flyout has built it.
+    private void MarkPreviewClickable()
+    {
+        foreach (ColorPreviewer preview in _picker.GetVisualDescendants().OfType<ColorPreviewer>())
+        {
+            preview.Cursor = new Cursor(StandardCursorType.Hand);
+            ToolTip.SetTip(preview, "Use this color");
+        }
     }
 
     // The wheel clips to its own square, cutting the selection ring in half at the wheel's edge. The template sets the

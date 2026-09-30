@@ -21,8 +21,12 @@ public abstract partial class SettingFieldViewModel(SettingDescriptor descriptor
     public string IniSection { get; } = NormalizeSection(descriptor.Ini.Section);
     public string IniKey => Descriptor.Ini.Name;
 
+    /// <summary>
+    /// False while the setting its <c>visibleWhen</c> names doesn't hold (e.g. its mod is off). The setting stays on
+    /// screen, greyed out, so the user can see what a mod offers before turning it on.
+    /// </summary>
     [ObservableProperty]
-    private bool _isVisible = true;
+    private bool _isEnabled = true;
 
     [ObservableProperty]
     private bool _isDirty;

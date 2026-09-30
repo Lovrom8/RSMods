@@ -38,6 +38,7 @@
                     <SolidColorBrush x:Key="NavCaptionBrush" Color="#7C838D" />
                     <SolidColorBrush x:Key="WarningBackgroundBrush" Color="#3A2F14" />
                     <SolidColorBrush x:Key="WarningBorderBrush" Color="#C7952B" />
+                    <SolidColorBrush x:Key="DisabledTextBrush" Color="#5DFFFFFF" />
                 </ResourceDictionary>
                 <ResourceDictionary x:Key="Light">
                     <SolidColorBrush x:Key="ShellHeaderBrush" Color="#ECEEF1" />
@@ -51,6 +52,7 @@
                     <SolidColorBrush x:Key="NavCaptionBrush" Color="#8A9099" />
                     <SolidColorBrush x:Key="WarningBackgroundBrush" Color="#FFF4CE" />
                     <SolidColorBrush x:Key="WarningBorderBrush" Color="#D9A400" />
+                    <SolidColorBrush x:Key="DisabledTextBrush" Color="#5C000000" />
                 </ResourceDictionary>
             </ResourceDictionary.ThemeDictionaries>
         </ResourceDictionary>
@@ -156,6 +158,11 @@
             <Setter Property="FontSize" Value="12" />
             <Setter Property="Opacity" Value="0.7" />
             <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+        <!-- Settings that are switched off stay on screen, greyed out. Fluent greys the controls; this greys the
+             labels beside them to match, so the page doesn't change shape when a switch is flipped. -->
+        <Style Selector="TextBlock[IsEffectivelyEnabled=False]">
+            <Setter Property="Foreground" Value="{DynamicResource DisabledTextBrush}" />
         </Style>
         <Style Selector="Border.divider">
             <Setter Property="Height" Value="1" />

@@ -68,18 +68,22 @@ internal sealed class StartupService(IDialogService dialogs, IAppEnvironment env
     /// <summary>
     /// Backs up the profiles into "Before GUI" before any screen can edit them, so a profile changed here while the
     /// game is closed always has a backup. The DLL makes the in-game backups; both are governed by BackupProfile.
+    /// As the old GUI did, the "Before GUI" backups are trimmed to NumberOfBackups on every open, with BackupProfile
+    /// off too, so turning backups off doesn't leave an old pile behind.
     /// </summary>
     private async Task BackUpProfilesAsync(string rsFolder, string savePath)
     {
-        if (string.IsNullOrEmpty(savePath) || !RsModsSettings.GUISettings.BackupProfile)
+        if (string.IsNullOrEmpty(savePath))
             return;
 
         try
         {
+            bool backUp = RsModsSettings.GUISettings.BackupProfile;
             int keep = RsModsSettings.GUISettings.NumberOfBackups;
             await Task.Run(() =>
             {
-                ProfileBackupService.CreateBackup(savePath, rsFolder);
+                if (backUp)
+                    ProfileBackupService.CreateBackup(savePath, rsFolder);
                 ProfileBackupService.DeleteOldBackups(rsFolder, savePath, keep);
             });
         }

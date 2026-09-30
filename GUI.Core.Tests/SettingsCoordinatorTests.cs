@@ -26,7 +26,7 @@ public sealed class SettingsCoordinatorTests
     }
 
     [Fact]
-    public void ReactiveVisibilityGatingWorks()
+    public void ReactiveEnableGatingWorks()
     {
         var manifest = new ManifestService();
         var coordinator = new SettingsCoordinator(manifest);
@@ -37,17 +37,17 @@ public sealed class SettingsCoordinatorTests
         Assert.NotNull(volumeControl);
         Assert.NotNull(volumeInterval);
 
-        // Initially volumeControl is false (default is "off"), so volumeInterval should be invisible
+        // Initially volumeControl is false (default is "off"), so volumeInterval should be greyed out
         volumeControl.Value = false;
-        Assert.False(volumeInterval.IsVisible);
+        Assert.False(volumeInterval.IsEnabled);
 
-        // Turn on volume control -> interval should reactively become visible
+        // Turn on volume control -> interval should reactively become editable
         volumeControl.Value = true;
-        Assert.True(volumeInterval.IsVisible);
+        Assert.True(volumeInterval.IsEnabled);
 
-        // Turn off again -> interval should become invisible
+        // Turn off again -> interval should be greyed out again
         volumeControl.Value = false;
-        Assert.False(volumeInterval.IsVisible);
+        Assert.False(volumeInterval.IsEnabled);
     }
 
     [Fact]

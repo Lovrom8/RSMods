@@ -68,10 +68,42 @@ public sealed class ModCatalogTests
     }
 
     [Fact]
-    public void ModsAreSortedByTitle()
+    public void ModsAreGroupedByCategoryThenSortedByTitle()
     {
-        var titles = Coordinator.Mods.Select(m => m.Title).ToList();
+        var categories = Coordinator.Mods.Select(m => m.Category).Distinct().ToList();
+        Assert.Equal(ModCatalog.Categories.Where(categories.Contains), categories);
 
-        Assert.Equal(titles.OrderBy(t => t, StringComparer.CurrentCultureIgnoreCase), titles);
+        foreach (var group in Coordinator.Mods.GroupBy(m => m.Category))
+        {
+            var titles = group.Select(m => m.Title).ToList();
+            Assert.Equal(titles.OrderBy(t => t, StringComparer.CurrentCultureIgnoreCase), titles);
+        }
+    }
+
+    [Fact]
+    public void EveryCurrentModHasItsOwnCategory()
+    {
+        // "Other" catches mods added to the DLL later; today's mods should each have a real heading.
+        Assert.DoesNotContain(Coordinator.Mods, m => m.Category == ModCatalog.Categories[^1]);
+    }
+
+    [Fact]
+    public void GatedSettingsGreyOutWithTheirModAndTheHintKeepsItsPlace()
+    {
+        var coordinator = new SettingsCoordinator(new ManifestService());
+        ModEntryViewModel looping = coordinator.Mods.Single(m => m.Key == "AllowLooping");
+        SettingFieldViewModel leadUp = looping.Fields.Single(f => f.Key == "LoopingLeadUp");
+
+        looping.Toggle!.Value = false;
+        Assert.False(looping.IsOn);
+        Assert.False(leadUp.IsEnabled);
+        Assert.True(looping.HasEnableHint);
+        Assert.NotEmpty(looping.EnableHint);
+
+        looping.Toggle.Value = true;
+        Assert.True(looping.IsOn);
+        Assert.True(leadUp.IsEnabled);
+        Assert.True(looping.HasEnableHint);
+        Assert.Empty(looping.EnableHint);
     }
 }

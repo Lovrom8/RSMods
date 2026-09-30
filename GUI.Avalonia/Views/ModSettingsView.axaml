@@ -9,19 +9,27 @@
     x:DataType="vm:ModSettingsViewModel">
 
     <UserControl.Styles>
-        <!-- A hidden setting hides its whole row, so the panel doesn't space an empty one. -->
+        <!-- A setting whose mod is off stays in place, greyed out, so the pane doesn't change shape when the mod is
+             switched on and the user can see what it offers first. -->
         <Style Selector="ItemsControl.fields > ContentPresenter" x:DataType="settings:SettingFieldViewModel">
-            <Setter Property="IsVisible" Value="{Binding IsVisible}" />
+            <Setter Property="IsEnabled" Value="{Binding IsEnabled}" />
         </Style>
         <Style Selector="Grid.field > NumericUpDown, Grid.field > ComboBox, Grid.field > TextBox">
             <Setter Property="Width" Value="260" />
         </Style>
-        <Style Selector="ListBox.mods > ListBoxItem" x:DataType="vm:ModItemViewModel">
-            <Setter Property="AutomationProperties.Name" Value="{Binding Entry.Title}" />
+        <Style Selector="ListBox.mods > ListBoxItem" x:DataType="vm:ModListRow">
+            <Setter Property="IsEnabled" Value="{Binding IsSelectable}" />
+            <Setter Property="AutomationProperties.Name" Value="{Binding Title}" />
+            <Setter Property="AutomationProperties.ItemStatus" Value="{Binding Status}" />
             <Setter Property="MinHeight" Value="40" />
             <Setter Property="Padding" Value="12,6" />
             <Setter Property="CornerRadius" Value="6" />
             <Setter Property="Margin" Value="6,1" />
+        </Style>
+        <!-- Category headings are the list's only disabled rows. -->
+        <Style Selector="ListBox.mods > ListBoxItem:disabled">
+            <Setter Property="MinHeight" Value="0" />
+            <Setter Property="Padding" Value="12,16,12,4" />
         </Style>
     </UserControl.Styles>
 
@@ -50,22 +58,31 @@
                         Classes="mods"
                         Background="Transparent"
                         AutomationProperties.Name="Mods"
-                        ItemsSource="{Binding Mods}"
-                        SelectedItem="{Binding SelectedMod}">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate x:DataType="vm:ModItemViewModel">
+                        ItemsSource="{Binding Rows}"
+                        SelectedItem="{Binding SelectedRow}">
+                        <ListBox.DataTemplates>
+                            <DataTemplate DataType="vm:ModCategoryHeader">
+                                <TextBlock
+                                    FontSize="11" FontWeight="SemiBold"
+                                    Foreground="{DynamicResource NavCaptionBrush}"
+                                    Text="{Binding DisplayTitle}" />
+                            </DataTemplate>
+                            <!-- The switch is in the mod's pane, beside its description; the list only shows whether it's on. -->
+                            <DataTemplate DataType="vm:ModItemViewModel">
                                 <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
                                     <TextBlock VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Text="{Binding Entry.Title}" />
-                                    <CheckBox
+                                    <!-- CheckMark from the Windows icon font, in the row's text color. -->
+                                    <TextBlock
                                         Grid.Column="1"
-                                        MinWidth="0"
-                                        Padding="0"
-                                        IsVisible="{Binding Entry.HasToggle}"
-                                        AutomationProperties.Name="{Binding Entry.Title, StringFormat='Enable {0}'}"
-                                        IsChecked="{Binding Entry.Toggle.Value, FallbackValue=False}" />
+                                        VerticalAlignment="Center"
+                                        Margin="0,0,4,0"
+                                        FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                        FontSize="14"
+                                        Text="&#xE73E;"
+                                        IsVisible="{Binding Entry.IsOn}" />
                                 </Grid>
                             </DataTemplate>
-                        </ListBox.ItemTemplate>
+                        </ListBox.DataTemplates>
                     </ListBox>
                 </Grid>
             </Border>
@@ -81,6 +98,11 @@
                                     Classes="hint" FontSize="13"
                                     IsVisible="{Binding SelectedMod.Entry.HasDescription, FallbackValue=False}"
                                     Text="{Binding SelectedMod.Entry.Description, FallbackValue=''}" />
+                                <!-- Holds its line while the mod is on too, so the settings below don't move when it's switched. -->
+                                <TextBlock
+                                    Classes="hint" FontStyle="Italic" MinHeight="16"
+                                    IsVisible="{Binding SelectedMod.Entry.HasEnableHint, FallbackValue=False}"
+                                    Text="{Binding SelectedMod.Entry.EnableHint, FallbackValue=''}" />
                             </StackPanel>
                             <ToggleSwitch
                                 Grid.Column="1" VerticalAlignment="Top"
@@ -89,11 +111,6 @@
                                 IsVisible="{Binding SelectedMod.Entry.HasToggle, FallbackValue=False}"
                                 IsChecked="{Binding SelectedMod.Entry.Toggle.Value, FallbackValue=False}" />
                         </Grid>
-
-                        <TextBlock
-                            Classes="hint"
-                            IsVisible="{Binding SelectedMod.Entry.ShowEnableHint, FallbackValue=False}"
-                            Text="Turn this mod on to change its settings." />
 
                         <!-- Settings -->
                         <ItemsControl Classes="fields" ItemsSource="{Binding SelectedMod.Entry.Fields, FallbackValue={x:Null}}">
@@ -207,13 +224,10 @@
                         </Border>
 
                         <!-- Secondary monitor: capture where the game should start. -->
-                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
-                            <Grid.IsVisible>
-                                <MultiBinding Converter="{x:Static BoolConverters.And}">
-                                    <Binding Path="SelectedMod.IsSecondaryMonitor" FallbackValue="False" />
-                                    <Binding Path="ShowSecondaryMonitor" />
-                                </MultiBinding>
-                            </Grid.IsVisible>
+                        <Grid
+                            ColumnDefinitions="*,Auto" ColumnSpacing="12"
+                            IsVisible="{Binding SelectedMod.IsSecondaryMonitor, FallbackValue=False}"
+                            IsEnabled="{Binding SecondaryMonitorEnabled}">
                             <StackPanel Spacing="2" VerticalAlignment="Center">
                                 <TextBlock Text="{Binding SecondaryMonitorPositionText}" />
                                 <TextBlock Classes="hint" Text="Drag this window to the monitor and spot you want the game to start on, then capture its position." />
@@ -227,14 +241,9 @@
                         </Grid>
 
                         <!-- Guitar Speak note mappings -->
-                        <views:GuitarSpeakControl>
-                            <views:GuitarSpeakControl.IsVisible>
-                                <MultiBinding Converter="{x:Static BoolConverters.And}">
-                                    <Binding Path="SelectedMod.IsGuitarSpeak" FallbackValue="False" />
-                                    <Binding Path="ShowGuitarSpeak" />
-                                </MultiBinding>
-                            </views:GuitarSpeakControl.IsVisible>
-                        </views:GuitarSpeakControl>
+                        <views:GuitarSpeakControl
+                            IsVisible="{Binding SelectedMod.IsGuitarSpeak, FallbackValue=False}"
+                            IsEnabled="{Binding GuitarSpeakEnabled}" />
 
                         <!-- Key binds -->
                         <StackPanel Spacing="10" IsVisible="{Binding SelectedMod.HasKeybinds, FallbackValue=False}">

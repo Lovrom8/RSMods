@@ -114,40 +114,17 @@ namespace RSMods.SetAndForget
             return Tunings.Values.Select(ToArrangementTuning);
         }
 
-        public SortedDictionary<string, ArrangementTuning> GetUnknownTunings(IEnumerable<SongData> songs)
-        {
-            List<ArrangementTuning> definedTunings = GetDefinedTunings().ToList();
-            var result = new SortedDictionary<string, ArrangementTuning>();
-
-            foreach (SongData song in songs)
-            {
-                foreach (SongArrangement arrangement in song.Arrangements)
-                {
-                    if (definedTunings.Contains(arrangement.Attributes.Tuning))
-                        continue;
-
-                    string label = FormatArrangementLabel(song, arrangement);
-                    if (!result.ContainsKey(label))
-                        result.Add(label, arrangement.Attributes.Tuning);
-                }
-            }
-
-            return result;
-        }
-
         public List<string> GetSongsWithTuning(IEnumerable<SongData> songs, ArrangementTuning tuning)
         {
+            // One entry per song, naming every part in the tuning. The catalog is already in artist/title order.
             var result = new List<string>();
             foreach (SongData song in songs)
             {
-                foreach (SongArrangement arrangement in song.Arrangements)
-                {
-                    if (arrangement.Attributes.Tuning.Equals(tuning))
-                        result.Add(FormatArrangementLabel(song, arrangement));
-                }
+                List<SongArrangement> parts = InstrumentArrangements(song).Where(a => a.Attributes.Tuning.Equals(tuning)).ToList();
+                if (parts.Count > 0)
+                    result.Add(FormatSongLabel(song, parts));
             }
 
-            result.Sort();
             return result;
         }
 
@@ -161,22 +138,129 @@ namespace RSMods.SetAndForget
         }
 
         /// <summary>
-        /// Builds an immutable lookup of the "shows up as Custom" tunings found in the scanned songs. Replaces
-        /// the former shared mutable dictionary: the caller holds the result for as long as it needs it.
+        /// The tunings in the scanned songs that Rocksmith would show as Custom Tuning (none of the defined tunings),
+        /// sorted by tuning, each with its songs, one entry per song naming its parts
+        /// in the tuning: "Artist - Title (Lead &amp; Alt Bass)". A bass only tunes four strings, so a bass part joins the
+        /// tuning whose first four strings match it: the song's guitar parts' tuning, or failing that another song's.
         /// </summary>
-        public UnknownTuningLookup GetUnknownTuningLookup(IEnumerable<SongData> songs)
+        public IReadOnlyList<TuningSongGroup> GetCustomTuningGroups(IEnumerable<SongData> songs)
         {
-            SortedDictionary<string, ArrangementTuning> unknown = GetUnknownTunings(songs);
+            List<ArrangementTuning> defined = GetDefinedTunings().ToList();
+            var groups = new List<(ArrangementTuning Tuning, bool BassOnly, List<(string Song, int Parts)> Songs)>();
+            var bassOnly = new List<(ArrangementTuning Tuning, string Song, int Parts)>();
 
-            var keys = new List<string>(unknown.Count);
-            var stringsByKey = new Dictionary<string, TuningStrings>(unknown.Count);
-            foreach (KeyValuePair<string, ArrangementTuning> entry in unknown)
+            foreach (SongData song in songs)
             {
-                keys.Add(entry.Key);
-                stringsByKey[entry.Key] = ToTuningStrings(entry.Value);
+                var byTuning = new List<(ArrangementTuning Tuning, List<SongArrangement> Parts)>();
+                List<SongArrangement> custom = InstrumentArrangements(song)
+                    .Where(a => !defined.Contains(a.Attributes.Tuning))
+                    .ToList();
+
+                foreach (SongArrangement guitar in custom.Where(a => !IsBass(a)))
+                {
+                    int at = byTuning.FindIndex(entry => entry.Tuning.Equals(guitar.Attributes.Tuning));
+                    if (at < 0)
+                        byTuning.Add((guitar.Attributes.Tuning, [guitar]));
+                    else
+                        byTuning[at].Parts.Add(guitar);
+                }
+
+                var basses = new List<(ArrangementTuning Tuning, List<SongArrangement> Parts)>();
+                foreach (SongArrangement bass in custom.Where(IsBass))
+                {
+                    int at = FindBassTuning(byTuning.Select(entry => entry.Tuning).ToList(), bass.Attributes.Tuning);
+                    if (at >= 0)
+                    {
+                        byTuning[at].Parts.Add(bass);
+                        continue;
+                    }
+
+                    int own = basses.FindIndex(entry => SameBassStrings(entry.Tuning, bass.Attributes.Tuning));
+                    if (own < 0)
+                        basses.Add((bass.Attributes.Tuning, [bass]));
+                    else
+                        basses[own].Parts.Add(bass);
+                }
+
+                foreach ((ArrangementTuning tuning, List<SongArrangement> parts) in byTuning)
+                {
+                    int at = groups.FindIndex(group => group.Tuning.Equals(tuning));
+                    if (at < 0)
+                        groups.Add((tuning, false, [(FormatSongLabel(song, parts), parts.Count)]));
+                    else
+                        groups[at].Songs.Add((FormatSongLabel(song, parts), parts.Count));
+                }
+
+                foreach ((ArrangementTuning tuning, List<SongArrangement> parts) in basses)
+                    bassOnly.Add((tuning, FormatSongLabel(song, parts), parts.Count));
             }
 
-            return new UnknownTuningLookup(keys, stringsByKey);
+            // Placed once every guitar tuning is known, so a bass-only song lands with the guitar songs it matches.
+            foreach ((ArrangementTuning tuning, string song, int parts) in bassOnly)
+            {
+                int at = FindBassTuning(groups.Select(group => group.Tuning).ToList(), tuning);
+                if (at < 0)
+                    groups.Add((tuning, true, [(song, parts)]));
+                else
+                    groups[at].Songs.Add((song, parts));
+            }
+
+            // Highest to lowest, string by string from the low E, so tunings a step apart sit next to each other.
+            return groups
+                .OrderByDescending(group => group.Tuning.String0)
+                .ThenByDescending(group => group.Tuning.String1)
+                .ThenByDescending(group => group.Tuning.String2)
+                .ThenByDescending(group => group.Tuning.String3)
+                .ThenByDescending(group => group.Tuning.String4)
+                .ThenByDescending(group => group.Tuning.String5)
+                .Select(group => new TuningSongGroup(
+                    FormatTuning(group.Tuning, group.BassOnly),
+                    ToTuningStrings(group.Tuning),
+                    group.BassOnly,
+                    group.Songs.Select(entry => entry.Song).OrderBy(song => song, StringComparer.OrdinalIgnoreCase).ToList()))
+                .ToList();
+        }
+
+        // A bass part's tuning: the exact tuning when there is one, else the first whose four bass strings match.
+        private static int FindBassTuning(List<ArrangementTuning> tunings, ArrangementTuning bass)
+        {
+            int exact = tunings.FindIndex(tuning => tuning.Equals(bass));
+            return exact >= 0 ? exact : tunings.FindIndex(tuning => SameBassStrings(tuning, bass));
+        }
+
+        private static bool SameBassStrings(ArrangementTuning a, ArrangementTuning b) =>
+            a.String0 == b.String0 && a.String1 == b.String1 && a.String2 == b.String2 && a.String3 == b.String3;
+
+        private static bool IsBass(SongArrangement arrangement) =>
+            arrangement.Attributes.ArrangementProperties?.PathBass == 1 ||
+            (arrangement.Attributes.ArrangementName ?? string.Empty).IndexOf("bass", StringComparison.OrdinalIgnoreCase) >= 0;
+
+        // Vocals and show lights have no tuning to speak of.
+        private static IEnumerable<SongArrangement> InstrumentArrangements(SongData song) =>
+            song.Arrangements.Where(a =>
+                a.Attributes.Tuning is not null &&
+                (a.Attributes.ArrangementName ?? string.Empty).IndexOf("vocal", StringComparison.OrdinalIgnoreCase) < 0 &&
+                !string.Equals(a.Attributes.ArrangementName, "ShowLights", StringComparison.OrdinalIgnoreCase));
+
+        // Standard tuning's open strings as MIDI notes, low E to high E.
+        private static readonly int[] StandardMidi = [40, 45, 50, 55, 59, 64];
+
+        // Flats throughout, so a tuning a half step down reads Eb Ab Db Gb Bb Eb rather than a mix.
+        private static readonly string[] NoteNames = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
+
+        /// <summary>
+        /// A tuning's open notes and offsets, e.g. "D A D G A D (-2 0 0 0 -2 -2)". A tuning only bass parts use names just
+        /// the four strings a bass has, e.g. "Bass: D A D G (-2 0 0 0)".
+        /// </summary>
+        public static string FormatTuning(ArrangementTuning tuning, bool bassOnly = false)
+        {
+            int[] offsets = [tuning.String0, tuning.String1, tuning.String2, tuning.String3, tuning.String4, tuning.String5];
+            if (bassOnly)
+                offsets = offsets[..4];
+
+            IEnumerable<string> notes = offsets.Select((offset, i) => NoteNames[((StandardMidi[i] + offset) % 12 + 12) % 12]);
+            string label = $"{string.Join(" ", notes)} ({string.Join(" ", offsets)})";
+            return bassOnly ? "Bass: " + label : label;
         }
 
         private static TuningStrings ToTuningStrings(ArrangementTuning tuning) => new()
@@ -251,7 +335,10 @@ namespace RSMods.SetAndForget
             writer.Write($"{Environment.NewLine}{index},{repeatedNames}");
         }
 
-        private static string FormatArrangementLabel(SongData song, SongArrangement arrangement)
+        private static string FormatArrangementLabel(SongData song, SongArrangement arrangement) =>
+            FormatArrangementName(arrangement) + " for " + song.Artist + " - " + song.Title;
+
+        private static string FormatArrangementName(SongArrangement arrangement)
         {
             string prefix = string.Empty;
             if (arrangement.Attributes.ArrangementProperties.Represent == 0)
@@ -259,7 +346,44 @@ namespace RSMods.SetAndForget
             else if (arrangement.Attributes.ArrangementProperties.BonusArr == 1)
                 prefix = "Bonus ";
 
-            return prefix + arrangement.Attributes.ArrangementName + " for " + song.Artist + " - " + song.Title;
+            return prefix + arrangement.Attributes.ArrangementName;
+        }
+
+        /// <summary>
+        /// A song and its parts, lead to bass with each main part before its alternates: "Artist - Title (Lead &amp; Alt
+        /// Bass)". When the parts are all of the song's, and more than one, it's "Artist - Title (All)"; a single part keeps
+        /// its name, so a bass-only song still says so.
+        /// </summary>
+        private static string FormatSongLabel(SongData song, IReadOnlyCollection<SongArrangement> parts)
+        {
+            if (parts.Count > 1 && parts.Count == InstrumentArrangements(song).Count())
+                return $"{song.Artist} - {song.Title} (All)";
+
+            IEnumerable<string> names = parts
+                .OrderBy(PathOrder)
+                .ThenBy(a => a.Attributes.ArrangementProperties.Represent == 0 ? 1 : a.Attributes.ArrangementProperties.BonusArr == 1 ? 2 : 0)
+                .Select(FormatArrangementName)
+                .Distinct(StringComparer.OrdinalIgnoreCase);
+
+            return $"{song.Artist} - {song.Title} ({string.Join(" & ", names)})";
+        }
+
+        // Lead, Rhythm, Combo, Bass. By name first: some custom songs set the path flags wrongly, which put a Rhythm
+        // before its Lead.
+        private static int PathOrder(SongArrangement arrangement)
+        {
+            string name = arrangement.Attributes.ArrangementName ?? string.Empty;
+            if (name.IndexOf("lead", StringComparison.OrdinalIgnoreCase) >= 0)
+                return 0;
+            if (name.IndexOf("rhythm", StringComparison.OrdinalIgnoreCase) >= 0)
+                return 1;
+            if (name.IndexOf("combo", StringComparison.OrdinalIgnoreCase) >= 0)
+                return 2;
+            if (IsBass(arrangement))
+                return 3;
+
+            var properties = arrangement.Attributes.ArrangementProperties;
+            return properties.PathLead == 1 ? 0 : properties.PathRhythm == 1 ? 1 : 4;
         }
     }
 }

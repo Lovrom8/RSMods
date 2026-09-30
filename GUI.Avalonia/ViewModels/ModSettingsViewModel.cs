@@ -45,8 +45,12 @@ internal sealed partial class ModSettingsViewModel : ObservableObject
     // --- Mod list ---
     private readonly List<ModItemViewModel> _allMods = [];
 
-    /// <summary>The mods matching <see cref="Filter"/>, sorted by name.</summary>
-    public ObservableCollection<ModItemViewModel> Mods { get; } = [];
+    /// <summary>The mods matching <see cref="Filter"/>, under their category headings.</summary>
+    public ObservableCollection<ModListRow> Rows { get; } = [];
+
+    /// <summary>The list's selection; headings can't be selected, so this is a mod or nothing.</summary>
+    [ObservableProperty]
+    private ModListRow? _selectedRow;
 
     [ObservableProperty]
     private ModItemViewModel? _selectedMod;
@@ -68,7 +72,7 @@ internal sealed partial class ModSettingsViewModel : ObservableObject
         Math.Clamp((double)(Coordinator.Find<NumericSettingFieldViewModel>("OnScreenFontSize")?.Value ?? 16), 8, 80);
 
     // --- Secondary monitor helper ---
-    public bool ShowSecondaryMonitor =>
+    public bool SecondaryMonitorEnabled =>
         Coordinator.Find<BoolSettingFieldViewModel>("SecondaryMonitor")?.Value ?? false;
 
     public string SecondaryMonitorPositionText
@@ -82,7 +86,7 @@ internal sealed partial class ModSettingsViewModel : ObservableObject
     }
 
     // --- Guitar Speak ---
-    public bool ShowGuitarSpeak =>
+    public bool GuitarSpeakEnabled =>
         Coordinator.Find<BoolSettingFieldViewModel>("GuitarSpeak")?.Value ?? false;
 
     public ObservableCollection<GuitarSpeakRowViewModel> GuitarSpeakMappings { get; } = [];
@@ -150,25 +154,42 @@ internal sealed partial class ModSettingsViewModel : ObservableObject
 
     partial void OnFilterChanged(string value) => ApplyFilter();
 
+    partial void OnSelectedRowChanged(ModListRow? value)
+    {
+        if (value is ModItemViewModel mod)
+            SelectedMod = mod;
+    }
+
     private void ApplyFilter()
     {
         ModItemViewModel? selected = SelectedMod;
 
-        Mods.Clear();
+        Rows.Clear();
+        // _allMods is already in category order (see ModCatalog), so a heading goes wherever the category changes.
+        string? category = null;
         foreach (ModItemViewModel mod in _allMods.Where(m => m.Matches(Filter)))
-            Mods.Add(mod);
+        {
+            if (mod.Entry.Category != category)
+            {
+                category = mod.Entry.Category;
+                Rows.Add(new ModCategoryHeader(category));
+            }
+            Rows.Add(mod);
+        }
 
         // Clearing the list drops the selection; keep it when the mod still shows, else show the first match.
-        SelectedMod = selected is not null && Mods.Contains(selected) ? selected : Mods.FirstOrDefault();
+        SelectedRow = selected is not null && Rows.Contains(selected) ? selected : Rows.OfType<ModItemViewModel>().FirstOrDefault();
+        if (SelectedRow is null)
+            SelectedMod = null;
     }
 
     private void RefreshAuxiliaryProperties()
     {
         OnPropertyChanged(nameof(OnScreenFontPreview));
         OnPropertyChanged(nameof(OnScreenFontSizePreview));
-        OnPropertyChanged(nameof(ShowSecondaryMonitor));
+        OnPropertyChanged(nameof(SecondaryMonitorEnabled));
         OnPropertyChanged(nameof(SecondaryMonitorPositionText));
-        OnPropertyChanged(nameof(ShowGuitarSpeak));
+        OnPropertyChanged(nameof(GuitarSpeakEnabled));
     }
 
     /// <summary>Loads the editable snapshot from the settings store. Call after settings are loaded.</summary>
@@ -262,6 +283,10 @@ internal sealed partial class ModSettingsViewModel : ObservableObject
         // Done waiting before the prompt, so the key that answers it isn't captured too.
         row.IsCapturing = false;
 
+        string vkey = KeyConversion.VirtualKey(frameworkKeyName);
+        if (string.Equals(vkey, row.Vkey, StringComparison.OrdinalIgnoreCase))
+            return true;
+
         if (classification == RocksmithInputClassification.Reserved)
         {
             bool useAnyway = await _dialogs.ShowConfirmAsync(
@@ -271,9 +296,33 @@ internal sealed partial class ModSettingsViewModel : ObservableObject
                 return true;
         }
 
-        row.Vkey = KeyConversion.VirtualKey(frameworkKeyName);
+        // A key bound twice triggers both mods, which is rarely what's meant; the other bind keeps its key either way.
+        List<string> sharing = BindsUsing(vkey, except: row);
+        if (sharing.Count > 0)
+        {
+            bool useAnyway = await _dialogs.ShowChoiceAsync(
+                $"{KeyConversion.VKeyToUI(vkey)} is already the keybind for:\n{string.Join("\n", sharing)}\n\n" +
+                $"Pressing it will trigger both. Use it for {row.DisplayName} too?",
+                "Key already in use",
+                "Use anyway",
+                "Cancel");
+            if (!useAnyway)
+                return true;
+        }
+
+        row.Vkey = vkey;
         return true;
     }
+
+    /// <summary>The other binds set to <paramref name="vkey"/>, named by their mod, e.g. "• Loop (Loop Start)".</summary>
+    private List<string> BindsUsing(string vkey, KeybindRowViewModel except) =>
+        string.IsNullOrEmpty(vkey) ? [] : _allMods
+            .SelectMany(mod => mod.Keybinds
+                .Where(other => other != except && string.Equals(other.Vkey, vkey, StringComparison.OrdinalIgnoreCase))
+                .Select(other => string.Equals(other.DisplayName, mod.Title, StringComparison.OrdinalIgnoreCase)
+                    ? $"• {mod.Title}"
+                    : $"• {mod.Title} ({other.DisplayName})"))
+            .ToList();
 
     private void LoadKeybindRows(ObservableCollection<KeybindRowViewModel> target, IEnumerable<KeybindItem> source)
     {

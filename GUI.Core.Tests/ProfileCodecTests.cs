@@ -16,4 +16,17 @@ public sealed class ProfileCodecTests
         Assert.Equal(json, decoded.Json);
         Assert.Equal(userId, decoded.UserId);
     }
+
+    [Fact]
+    public void Decode_ReadsDefaultCompressionProfiles()
+    {
+        // Other tools save profiles at zlib's default level (header 78 9C) rather than the game's best (78 DA).
+        using var temporary = new TemporaryDirectory();
+        string profilePath = temporary.File("profile_PRFLDB");
+        const string json = "{\"CustomTones\":[]}";
+
+        ProfileCodec.Encode(json, profilePath, [1, 2, 3, 4], compressionLevel: 6);
+
+        Assert.Equal(json, ProfileCodec.Decode(profilePath).Json);
+    }
 }

@@ -29,7 +29,7 @@ namespace RSMods
                 "It looks like your current Rocksmith2014 install folder cannot be found. Please tell us where it is located!",
                 "Error: Rocksmith Location Not Found");
 
-            string picked = await PromptForRSFolderAsync(dialogs);
+            string picked = await PickRSFolderAsync(dialogs, startPath: null);
             if (string.IsNullOrEmpty(picked))
             {
                 await dialogs.ShowErrorAsync(
@@ -74,6 +74,18 @@ namespace RSMods
         }
 
         /// <summary>
+        /// Lets the user pick a different install folder (the Home tab's Change button), starting from the current
+        /// one. Only a folder with Rocksmith2014.exe and cache.psarc is accepted. Returns the picked folder, or null
+        /// when they cancel. It doesn't switch to it: settings from the current folder are already loaded, so the
+        /// caller decides when to.
+        /// </summary>
+        public static async Task<string?> ChooseRSFolderAsync(IDialogService dialogs)
+        {
+            string picked = await PickRSFolderAsync(dialogs, Constants.RSFolder);
+            return string.IsNullOrEmpty(picked) ? null : GenUtil.NormalizePath(picked);
+        }
+
+        /// <summary>
         /// Lets the user pick a different save folder (the Home tab's Change button), starting from the current
         /// one. Returns the new folder, or null when they cancel, which keeps the current one.
         /// </summary>
@@ -90,11 +102,11 @@ namespace RSMods
             return Constants.SavePath;
         }
 
-        private static async Task<string> PromptForRSFolderAsync(IDialogService dialogs)
+        private static async Task<string> PickRSFolderAsync(IDialogService dialogs, string? startPath)
         {
             while (true)
             {
-                string? picked = await dialogs.PickFolderAsync("Select your Rocksmith 2014 installation folder");
+                string? picked = await dialogs.PickFolderAsync("Select your Rocksmith 2014 installation folder", startPath);
 
                 if (string.IsNullOrEmpty(picked)) // user canceled
                     return string.Empty;
@@ -103,7 +115,7 @@ namespace RSMods
                     return picked!;
 
                 await dialogs.ShowErrorAsync(
-                    "We cannot verify your installation of Rocksmith 2014. The folder you selected doesn't contain a cache.psarc, which is REQUIRED for Rocksmith 2014 to boot. Please select the correct folder.",
+                    "We cannot verify your installation of Rocksmith 2014. The folder you selected doesn't contain both Rocksmith2014.exe and cache.psarc, which Rocksmith 2014 needs to boot. Please select the folder that has them.",
                     "Invalid Rocksmith Folder");
             }
         }

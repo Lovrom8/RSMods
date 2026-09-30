@@ -7,5 +7,8 @@ namespace RSMods.Core
     {
         /// <summary>Requests an orderly application shutdown.</summary>
         void RequestShutdown();
+
+        /// <summary>Starts a fresh instance of the app, then shuts this one down.</summary>
+        void RequestRestart();
     }
 }

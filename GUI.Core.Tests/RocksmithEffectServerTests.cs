@@ -41,7 +41,7 @@ public sealed class RocksmithEffectServerTests
         {
             Port = 0,
             MaximumRetryCount = 2,
-            RetryDelay = TimeSpan.FromMilliseconds(10)
+            FirstRetryDelay = TimeSpan.FromMilliseconds(10)
         };
         await using var server = new RocksmithEffectServer(options);
         var enabled = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -92,6 +92,79 @@ public sealed class RocksmithEffectServerTests
         await server.StopAsync();
         Assert.False(server.IsRunning);
         Assert.False(server.IsConnected);
+    }
+
+    [Fact]
+    public void Retries_BackOffFromHalfASecondDoublingEachTime()
+    {
+        var options = new RocksmithEffectServerOptions();
+
+        Assert.Equal(5, options.MaximumRetryCount);
+        Assert.Equal(
+            [0.5, 1, 2, 4, 8],
+            Enumerable.Range(1, options.MaximumRetryCount).Select(attempt => RocksmithEffectServer.RetryDelay(options.FirstRetryDelay, attempt).TotalSeconds));
+    }
+
+    [Fact]
+    public async Task Server_DropsAnEffectAfterItsLastRetry()
+    {
+        var options = new RocksmithEffectServerOptions { Port = 0, FirstRetryDelay = TimeSpan.FromMilliseconds(1) };
+        await using var server = new RocksmithEffectServer(options);
+        var dropped = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
+        server.LogMessage += message =>
+        {
+            if (message.StartsWith("Dropped", StringComparison.Ordinal))
+                dropped.TrySetResult(message);
+        };
+        await server.StartAsync();
+
+        using var client = new TcpClient();
+        await client.ConnectAsync("127.0.0.1", server.ListeningPort);
+        NetworkStream stream = client.GetStream();
+        Assert.True(server.TryQueueEffect(new TwitchReward { Name = "Rainbow Strings", InternalMsgEnable = "rainbowstrings", Length = 3 }));
+
+        // The first try and five retries, each answered "retry".
+        for (int request = 0; request < 1 + options.MaximumRetryCount; request++)
+            await AnswerRetryAsync(stream);
+
+        Assert.Contains("after 5 retries", await dropped.Task.WaitAsync(TimeSpan.FromSeconds(5)));
+        await server.StopAsync();
+    }
+
+    [Fact]
+    public async Task Server_SendsOtherEffectsWhileOneWaitsToRetry()
+    {
+        // A long wait: if it blocked the queue, the second effect couldn't arrive before the retry.
+        var options = new RocksmithEffectServerOptions { Port = 0, FirstRetryDelay = TimeSpan.FromSeconds(30) };
+        await using var server = new RocksmithEffectServer(options);
+        await server.StartAsync();
+
+        using var client = new TcpClient();
+        await client.ConnectAsync("127.0.0.1", server.ListeningPort);
+        NetworkStream stream = client.GetStream();
+        Assert.True(server.TryQueueEffect(new TwitchReward { Name = "Rainbow Strings", InternalMsgEnable = "rainbowstrings", Length = 3 }));
+        Assert.True(server.TryQueueEffect(new TwitchReward { Name = "Rainbow Notes", InternalMsgEnable = "rainbownotes", Length = 3 }));
+
+        Assert.Equal("rainbowstrings", await AnswerRetryAsync(stream));
+        string next = (await ReadFrameAsync(stream).WaitAsync(TimeSpan.FromSeconds(5)));
+        Assert.Equal("rainbownotes", JsonConvert.DeserializeObject<RocksmithEffectRequest>(next)!.Code);
+
+        await server.StopAsync().WaitAsync(TimeSpan.FromSeconds(5));
+    }
+
+    // Reads the next request and answers it with status 3 (retry); returns the request's effect code.
+    private static async Task<string> AnswerRetryAsync(Stream stream)
+    {
+        RocksmithEffectRequest request = JsonConvert.DeserializeObject<RocksmithEffectRequest>(
+            await ReadFrameAsync(stream).WaitAsync(TimeSpan.FromSeconds(5)))!;
+        await WriteFrameFragmentedAsync(stream, JsonConvert.SerializeObject(new RocksmithEffectResponse
+        {
+            Id = request.Id,
+            Code = request.Code,
+            Status = 3,
+            Type = 0
+        }));
+        return request.Code;
     }
 
     [Fact]

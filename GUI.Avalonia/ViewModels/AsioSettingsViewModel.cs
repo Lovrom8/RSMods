@@ -319,7 +319,8 @@ internal sealed partial class AsioSettingsViewModel : ObservableObject
 
     private void OnChildChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (!_loading)
+        // DriverNotInstalled is re-raised on every visit; saving on it rewrote RS_ASIO.ini just by opening the page.
+        if (!_loading && e.PropertyName is not null && SavedInputProperties.Contains(e.PropertyName))
             _saver.Request();
     }
 
@@ -339,5 +340,12 @@ internal sealed partial class AsioSettingsViewModel : ObservableObject
         nameof(OutputEnabled), nameof(OutputDriver), nameof(OutputBaseChannel), nameof(OutputAltBaseChannel),
         nameof(OutputEnableEndpointVolume), nameof(OutputEnableMasterVolume), nameof(OutputMasterVolumePercent),
         nameof(OutputRefCountHack),
+    ];
+
+    private static readonly HashSet<string> SavedInputProperties =
+    [
+        nameof(AsioInputViewModel.Enabled), nameof(AsioInputViewModel.Driver), nameof(AsioInputViewModel.Channel),
+        nameof(AsioInputViewModel.EnableEndpointVolume), nameof(AsioInputViewModel.EnableMasterVolume),
+        nameof(AsioInputViewModel.MasterVolumePercent), nameof(AsioInputViewModel.RefCountHack),
     ];
 }

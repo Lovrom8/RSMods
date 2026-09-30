@@ -41,7 +41,11 @@ namespace RSMods.Twitch
         public TwitchLogLevel Level { get; } = level;
         public string Message { get; } = message ?? string.Empty;
 
-        public override string ToString() => $"[{Timestamp:HH:mm:ss}] {Message}";
+        /// <summary>When it happened in the user's own time zone; <see cref="Timestamp"/> comes from a UTC clock.</summary>
+        public DateTimeOffset LocalTimestamp => Timestamp.ToLocalTime();
+
+        // The shown and saved log both read in local time.
+        public override string ToString() => $"[{LocalTimestamp:HH:mm:ss}] {Message}";
     }
 
     public sealed class TwitchStateChangedEventArgs(

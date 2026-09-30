@@ -21,6 +21,10 @@
                             <TextBlock Classes="actionname" Text="Rocksmith folder" />
                             <TextBlock TextWrapping="Wrap" Text="{Binding RocksmithFolder, TargetNullValue='Resolving…'}" />
                         </StackPanel>
+                        <Button
+                            AutomationProperties.Name="Set Rocksmith folder"
+                            Command="{Binding SetRocksmithFolderCommand}"
+                            Content="Change…" />
                     </Grid>
                     <Border Classes="divider" />
                     <Grid Classes="action" ColumnDefinitions="*,Auto">

@@ -13,8 +13,15 @@ namespace RSMods.Twitch.EffectServer
     {
         public int Port { get; set; } = 45659;
         public int MaximumQueuedEffects { get; set; } = 256;
-        public int MaximumRetryCount { get; set; } = 30;
-        public TimeSpan RetryDelay { get; set; } = TimeSpan.FromSeconds(1);
+
+        /// <summary>How many times an effect Rocksmith can't take yet is retried before it's dropped.</summary>
+        public int MaximumRetryCount { get; set; } = 5;
+
+        /// <summary>The wait before the first retry; each later retry waits twice as long (0.5, 1, 2, 4, 8 seconds).</summary>
+        public TimeSpan FirstRetryDelay { get; set; } = TimeSpan.FromMilliseconds(500);
+
+        /// <summary>The wait before accepting connections again after the listener fails.</summary>
+        public TimeSpan ListenerRetryDelay { get; set; } = TimeSpan.FromSeconds(1);
     }
 
     /// <summary>
@@ -67,6 +74,8 @@ namespace RSMods.Twitch.EffectServer
                 throw new ArgumentOutOfRangeException(nameof(options), "MaximumQueuedEffects must be positive.");
             if (_options.MaximumRetryCount < 0)
                 throw new ArgumentOutOfRangeException(nameof(options), "MaximumRetryCount cannot be negative.");
+            if (_options.FirstRetryDelay < TimeSpan.Zero)
+                throw new ArgumentOutOfRangeException(nameof(options), "FirstRetryDelay cannot be negative.");
         }
 
         public event Action<string> LogMessage;
@@ -193,7 +202,7 @@ namespace RSMods.Twitch.EffectServer
                 catch (SocketException ex)
                 {
                     Log($"The Rocksmith effect listener failed: {ex.Message}");
-                    await Task.Delay(_options.RetryDelay, cancellationToken).ConfigureAwait(false);
+                    await Task.Delay(_options.ListenerRetryDelay, cancellationToken).ConfigureAwait(false);
                     continue;
                 }
 
@@ -242,7 +251,7 @@ namespace RSMods.Twitch.EffectServer
 
                     if (response.Status == 3)
                     {
-                        await RetryAsync(queuedEffect, "Rocksmith asked to retry the effect.", cancellationToken).ConfigureAwait(false);
+                        ScheduleRetry(queuedEffect, "Rocksmith asked to retry the effect.", cancellationToken);
                     }
                     else if (response.Status == 0)
                     {
@@ -263,7 +272,7 @@ namespace RSMods.Twitch.EffectServer
                                               ex is JsonException)
                 {
                     RemoveConnection(connection);
-                    await RetryAsync(queuedEffect, $"The Rocksmith effect exchange failed: {ex.Message}", cancellationToken).ConfigureAwait(false);
+                    ScheduleRetry(queuedEffect, $"The Rocksmith effect exchange failed: {ex.Message}", cancellationToken);
                 }
                 catch (Exception ex) when (ex is ArgumentException || ex is OverflowException)
                 {
@@ -286,7 +295,12 @@ namespace RSMods.Twitch.EffectServer
             }
         }
 
-        private async Task RetryAsync(QueuedEffect queuedEffect, string reason, CancellationToken cancellationToken)
+        /// <summary>
+        /// Puts an effect Rocksmith couldn't take yet back in the queue after a wait that doubles with each retry, and
+        /// drops it after <see cref="RocksmithEffectServerOptions.MaximumRetryCount"/> retries. The wait runs beside the
+        /// queue rather than in it, so other viewers' effects aren't held up behind one that has to wait.
+        /// </summary>
+        private void ScheduleRetry(QueuedEffect queuedEffect, string reason, CancellationToken cancellationToken)
         {
             queuedEffect.Attempts++;
             if (queuedEffect.Attempts > _options.MaximumRetryCount)
@@ -295,8 +309,24 @@ namespace RSMods.Twitch.EffectServer
                 return;
             }
 
-            Log($"Retrying '{queuedEffect.Reward.Name}' ({queuedEffect.Attempts}/{_options.MaximumRetryCount}). {reason}");
-            await Task.Delay(_options.RetryDelay, cancellationToken).ConfigureAwait(false);
+            TimeSpan delay = RetryDelay(_options.FirstRetryDelay, queuedEffect.Attempts);
+            Log($"Retrying '{queuedEffect.Reward.Name}' ({queuedEffect.Attempts}/{_options.MaximumRetryCount}) in {delay.TotalSeconds:0.##} s. {reason}");
+            _ = RequeueAfterAsync(queuedEffect, delay, cancellationToken);
+        }
+
+        /// <summary>The wait before retry <paramref name="attempt"/> (from 1): <paramref name="firstDelay"/>, doubling each retry.</summary>
+        internal static TimeSpan RetryDelay(TimeSpan firstDelay, int attempt) => firstDelay * Math.Pow(2, attempt - 1);
+
+        private async Task RequeueAfterAsync(QueuedEffect queuedEffect, TimeSpan delay, CancellationToken cancellationToken)
+        {
+            try
+            {
+                await Task.Delay(delay, cancellationToken).ConfigureAwait(false);
+            }
+            catch (OperationCanceledException)
+            {
+                return; // The server stopped; the effect goes with the rest of the queue.
+            }
 
             int queued = Interlocked.Increment(ref _queuedCount);
             if (queued > _options.MaximumQueuedEffects)
@@ -307,7 +337,14 @@ namespace RSMods.Twitch.EffectServer
             }
 
             _queue.Enqueue(queuedEffect);
-            _queueSignal.Release();
+            try
+            {
+                _queueSignal.Release();
+            }
+            catch (ObjectDisposedException)
+            {
+                // Disposed while this retry waited; nothing is left to send it.
+            }
         }
 
         private void RemoveConnection(ConnectionContext connection)

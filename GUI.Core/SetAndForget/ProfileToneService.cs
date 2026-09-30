@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RocksmithToolkitLib.DLCPackage.Manifest2014.Tone;
 using RSMods.Data;
@@ -5,6 +6,7 @@ using RSMods.Util;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace RSMods.SetAndForget
 {
@@ -14,6 +16,9 @@ namespace RSMods.SetAndForget
     /// writing a chosen tone into the cache's tone manager. The tone cache belongs to this instance rather
     /// than a static dictionary, so it lives and dies with the service.
     /// </summary>
+    /// <summary>The tones found in the profiles, and the profiles that couldn't be read (their file names).</summary>
+    public sealed record ProfileToneScan(List<string> ToneNames, List<string> UnreadableProfiles);
+
     public sealed class ProfileToneService(CachePsarcService cache)
     {
         private const int GuitarcadeToneOffset = 8;
@@ -22,24 +27,38 @@ namespace RSMods.SetAndForget
         private readonly Dictionary<string, Tone2014> _tonesByName = [];
 
         /// <summary>
-        /// Rescans the available Steam profiles, refreshing the tone cache, and returns the distinct tone
-        /// names in the order first seen.
+        /// Rescans the available Steam profiles, refreshing the tone cache. Returns the distinct tone names in the order
+        /// first seen, and any profile that couldn't be read, which is skipped rather than failing the rest.
         /// </summary>
-        public List<string> LoadProfileTones()
+        // Same folder as the Profiles tab: the configured save path or the Steam user in the registry. The userdata
+        // probe alone takes whichever account it meets first, which may not be the one playing.
+        public ProfileToneScan LoadProfileTones() => LoadProfileTones(GenUtil.GetSaveDirectory());
+
+        public ProfileToneScan LoadProfileTones(string userProfileFolder)
         {
             var toneNames = new List<string>();
-            // Same folder as the Profiles tab: the configured save path or the Steam user in the registry. The
-            // userdata probe alone takes whichever account it meets first, which may not be the one playing.
-            string userProfileFolder = GenUtil.GetSaveDirectory();
+            var unreadable = new List<string>();
 
             _tonesByName.Clear();
 
             if (!Directory.Exists(userProfileFolder))
-                return toneNames;
+                return new ProfileToneScan(toneNames, unreadable);
 
             foreach (string profile in Directory.EnumerateFiles(userProfileFolder, "*_PRFLDB", SearchOption.AllDirectories))
             {
-                foreach (Tone2014 tone in Tone2014.Import(profile))
+                List<Tone2014> tones;
+                try
+                {
+                    tones = ReadCustomTones(profile);
+                }
+                catch (Exception ex) when (ex is IOException or InvalidDataException or JsonException or UnauthorizedAccessException or
+                                           System.Security.Cryptography.CryptographicException or zlib.ZStreamException)
+                {
+                    unreadable.Add(Path.GetFileName(profile));
+                    continue;
+                }
+
+                foreach (Tone2014 tone in tones)
                 {
                     if (_tonesByName.ContainsKey(tone.Name))
                         continue;
@@ -49,7 +68,34 @@ namespace RSMods.SetAndForget
                 }
             }
 
-            return toneNames;
+            return new ProfileToneScan(toneNames, unreadable);
+        }
+
+        /// <summary>
+        /// The tones a profile saves (its CustomTones), read with RSMods' own profile codec. The toolkit's reader only
+        /// accepts the compression header the game writes, not the one other tools write. Only the tone list is
+        /// parsed, so a large profile isn't held as a whole JSON tree.
+        /// </summary>
+        private static List<Tone2014> ReadCustomTones(string profile)
+        {
+            string json = ProfileCodec.Decode(profile).Json;
+            using var reader = new JsonTextReader(new StringReader(json));
+            while (reader.Read())
+            {
+                if (reader.TokenType != JsonToken.PropertyName || reader.Depth != 1 || (string)reader.Value != "CustomTones")
+                    continue;
+
+                if (!reader.Read() || reader.TokenType != JsonToken.StartArray)
+                    return [];
+
+                return JArray.Load(reader)
+                    .OfType<JObject>()
+                    .Select(tone => tone.ToObject<Tone2014>())
+                    .Where(tone => !string.IsNullOrEmpty(tone?.Name))
+                    .ToList();
+            }
+
+            return [];
         }
 
         public (bool IsSuccess, string Message) SetDefaultTone(string selectedToneName, int selectedToneType)

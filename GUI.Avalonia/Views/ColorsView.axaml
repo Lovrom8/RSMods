@@ -77,9 +77,14 @@
                 <ColumnDefinition Width="*" MaxWidth="{StaticResource PageOuterMaxWidth}" />
             </Grid.ColumnDefinitions>
         <StackPanel Classes="page" HorizontalAlignment="Stretch">
-            <TextBlock Classes="h1" Text="Custom Colors" />
-
-            <TextBlock FontSize="12" Opacity="0.7" Text="{Binding StatusMessage}" IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+            <!-- The save status sits beside the title, so it appearing doesn't push the page down. -->
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
+                <TextBlock Classes="h1" Text="Custom Colors" />
+                <TextBlock
+                    Grid.Column="1" VerticalAlignment="Bottom" Margin="0,0,18,0"
+                    FontSize="12" Opacity="0.7" TextTrimming="CharacterEllipsis"
+                    Text="{Binding StatusMessage}" />
+            </Grid>
 
             <WrapPanel x:Name="Columns" Orientation="Horizontal">
                 <!-- String colors -->
@@ -98,7 +103,7 @@
                                     IsChecked="{Binding UseCustomStringColors}" />
                             </Grid>
 
-                            <StackPanel IsVisible="{Binding ShowStringColors}">
+                            <StackPanel IsEnabled="{Binding CanEditStringColors}">
                                 <Grid ColumnDefinitions="*,100,100" ColumnSpacing="8" Margin="0,0,0,4">
                                     <TextBlock Grid.Column="1" Classes="columnhead" Text="Normal" />
                                     <TextBlock Grid.Column="2" Classes="columnhead" Text="Colorblind" />
@@ -125,14 +130,14 @@
                                     IsChecked="{Binding UseSeparateNoteColors}" />
                             </Grid>
 
-                            <StackPanel Spacing="12" IsVisible="{Binding ShowNoteColors}">
+                            <StackPanel Spacing="12" IsEnabled="{Binding CanEditNoteColors}">
                                 <CheckBox AutomationProperties.Name="Use Rocksmith's note colors" IsChecked="{Binding UseRocksmithNoteColors}">
                                     <StackPanel Spacing="1">
                                         <TextBlock Text="Use Rocksmith's note colors" />
                                         <TextBlock Classes="hint" Text="The game's normal note colors instead of your own." />
                                     </StackPanel>
                                 </CheckBox>
-                                <StackPanel IsVisible="{Binding ShowNoteSwatches}">
+                                <StackPanel IsEnabled="{Binding CanEditNoteSwatches}">
                                     <Grid ColumnDefinitions="*,100,100" ColumnSpacing="8" Margin="0,0,0,4">
                                         <TextBlock Grid.Column="1" Classes="columnhead" Text="Normal" />
                                         <TextBlock Grid.Column="2" Classes="columnhead" Text="Colorblind" />
@@ -161,7 +166,7 @@
                             </Grid>
 
                             <ItemsControl
-                                IsVisible="{Binding ShowHighwayColors}"
+                                IsEnabled="{Binding CanEditHighwayColors}"
                                 ItemsSource="{Binding HighwaySwatches}"
                                 ItemTemplate="{StaticResource SingleRow}" />
                         </StackPanel>

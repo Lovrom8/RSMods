@@ -68,7 +68,8 @@ namespace RSMods
             Encode(profileJson, fileName, source.UserId);
         }
 
-        internal static void Encode(string profileJson, string fileName, byte[] userId)
+        /// <param name="compressionLevel">zlib level; the game writes 9. Tests write others to check they still read.</param>
+        internal static void Encode(string profileJson, string fileName, byte[] userId, int compressionLevel = 9)
         {
             if (userId == null || userId.Length != 4)
                 throw new InvalidDataException("Rocksmith profile user id must contain four bytes.");
@@ -87,7 +88,7 @@ namespace RSMods
             writer.Write(EndOfSaveHeader, 0, EndOfSaveHeader.Length);
             writer.Write((uint)profileBytes.Length);
 
-            Zip(profileBytes, compressed, profileBytes.Length);
+            Zip(profileBytes, compressed, profileBytes.Length, compressionLevel);
             Encrypt(compressed, encrypted, PcSaveKey);
             writer.Write(encrypted.ToArray());
             writer.Flush();
@@ -113,9 +114,11 @@ namespace RSMods
             reader.ReadUInt32(); // uncompressed length
             Decrypt(reader.BaseStream, decrypted, PcSaveKey);
 
+            // Any valid zlib header: deflate with a 32K window (0x78) and the header's check bits set. The game writes
+            // best-compression streams (78 DA), but other tools write default-compression ones (78 9C), which read the same.
             ushort zlibHeader = decryptedReader.ReadUInt16();
             decryptedReader.BaseStream.Position -= sizeof(ushort);
-            if (zlibHeader != 30938)
+            if ((zlibHeader >> 8) != 0x78 || zlibHeader % 31 != 0)
                 throw new InvalidDataException("Profile payload does not contain the expected zlib header.");
 
             Unzip(decryptedReader.BaseStream, output);
@@ -206,11 +209,11 @@ namespace RSMods
             output.Flush();
         }
 
-        private static long Zip(byte[] bytes, Stream output, long plainLength)
+        private static long Zip(byte[] bytes, Stream output, long plainLength, int level)
         {
             using var input = new MemoryStream(bytes);
             var buffer = new byte[65536];
-            var zlibOutput = new ZOutputStream(output, 9);
+            var zlibOutput = new ZOutputStream(output, level);
             long totalRead = 0;
 
             while (totalRead < plainLength)

@@ -7,6 +7,7 @@ using CommunityToolkit.Mvvm.Input;
 using RSMods.Core;
 using RSMods.Core.Update;
 using RSMods.Data;
+using RSMods.Services;
 
 namespace RSMods.ViewModels;
 
@@ -18,11 +19,15 @@ internal sealed partial class StatusViewModel : ObservableObject
 {
     private readonly IDialogService _dialogs;
     private readonly IGitHubReleaseService _releases;
+    private readonly IAppEnvironment _environment;
+    private readonly AutoSaveService _autoSave;
 
-    public StatusViewModel(IDialogService dialogs, IGitHubReleaseService releases)
+    public StatusViewModel(IDialogService dialogs, IGitHubReleaseService releases, IAppEnvironment environment, AutoSaveService autoSave)
     {
         _dialogs = dialogs;
         _releases = releases;
+        _environment = environment;
+        _autoSave = autoSave;
 
         Version? running = Assembly.GetExecutingAssembly().GetName().Version;
         CurrentVersion = running is null ? null : running.ToString();
@@ -46,7 +51,7 @@ internal sealed partial class StatusViewModel : ObservableObject
     private bool _savePathAvailable;
 
     [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(SetSavePathCommand))]
+    [NotifyCanExecuteChangedFor(nameof(SetSavePathCommand), nameof(SetRocksmithFolderCommand))]
     private bool _isReady;
 
     public string SavePathDisplay => SavePathAvailable ? SavePath! : "No save folder set. Profile Edits stays disabled until one is selected.";
@@ -92,6 +97,40 @@ internal sealed partial class StatusViewModel : ObservableObject
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(OpenReleaseCommand))]
     private string? _releaseUrl;
+
+    /// <summary>
+    /// Points RSMods at a different Rocksmith install. Every screen has already loaded its settings from the current
+    /// one, so the app restarts to load the new one's, after writing any change still waiting to save.
+    /// </summary>
+    [RelayCommand(CanExecute = nameof(IsReady))]
+    private async Task SetRocksmithFolderAsync()
+    {
+        string? picked = await RSLocationResolver.ChooseRSFolderAsync(_dialogs);
+        if (picked is null || string.Equals(picked, RocksmithFolder, StringComparison.OrdinalIgnoreCase))
+        {
+            StatusMessage = "Rocksmith folder unchanged.";
+            return;
+        }
+
+        bool restart = await _dialogs.ShowChoiceAsync(
+            $"RSMods will restart to load your settings from\n{picked}",
+            "Change Rocksmith folder",
+            "Restart",
+            "Cancel");
+        if (!restart)
+        {
+            StatusMessage = "Rocksmith folder unchanged.";
+            return;
+        }
+
+        // Pending changes belong to the current folder, so they're written there before it's switched.
+        await _autoSave.FlushAllAsync();
+        Constants.RSFolder = picked;
+        Constants.SaveBaseSettings();
+
+        StatusMessage = "Restarting…";
+        _environment.RequestRestart();
+    }
 
     [RelayCommand(CanExecute = nameof(IsReady))]
     private async Task SetSavePathAsync()

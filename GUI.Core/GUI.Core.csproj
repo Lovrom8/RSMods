@@ -38,6 +38,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- RocksmithToolkitLib is a .NET Framework library whose psarc unpack (Packer.ExtractPSARC, used by every Set &
+         Forget cache mod) loads System.Windows.Forms. .NET 8 only has it with the Windows Desktop framework, so reference
+         that framework (the app publishes self-contained, so it ships along). A FrameworkReference rather than
+         UseWindowsForms: this adds no WinForms global usings to clash with Avalonia's names in the projects above. -->
+    <FrameworkReference Include="Microsoft.WindowsDesktop.App.WindowsForms" />
+  </ItemGroup>
+
+  <ItemGroup>
     <!-- Shared song/profile services consume the bundled Rocksmith archive model. -->
     <Reference Include="Rocksmith2014PsarcLib">
       <HintPath>..\RuntimeAssets\Rocksmith2014PsarcLib.dll</HintPath>

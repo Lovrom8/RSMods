@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using RSMods.Core.Settings;
 using RSMods.Services;
 
 namespace RSMods.ViewModels;
@@ -35,7 +36,22 @@ internal sealed partial class MainWindowViewModel : ObservableObject
         nameof(ShowModSettingsCommand), nameof(ShowColorsCommand), nameof(ShowRocksmithCommand),
         nameof(ShowAsioCommand), nameof(ShowThemesCommand), nameof(ShowProfilesCommand),
         nameof(ShowSoundPacksCommand), nameof(ShowSetAndForgetCommand), nameof(ShowTwitchCommand))]
+    [NotifyPropertyChangedFor(nameof(ProfilesLockedReason))]
     private bool _sectionsEnabled;
+
+    private BoolSettingFieldViewModel? _backupProfile;
+
+    /// <summary>
+    /// As in the old GUI, profiles can only be edited with a backup to fall back on: the Profiles page opens only while
+    /// Backup Profile is on and a save folder is set. Null when it's open, else why it's locked (the nav button's tip).
+    /// </summary>
+    public string? ProfilesLockedReason =>
+        !SectionsEnabled ? null
+        : !_status.SavePathAvailable ? "Choose your save folder on the Home page to edit profiles."
+        : _backupProfile is { Value: false } ? "Turn on Backup Profile in Mod Settings to edit profiles. Edits need a backup to fall back on."
+        : null;
+
+    private bool CanShowProfiles => SectionsEnabled && ProfilesLockedReason is null;
 
     public MainWindowViewModel(
         StartupService startup,
@@ -70,6 +86,17 @@ internal sealed partial class MainWindowViewModel : ObservableObject
         _currentPage = status;
 
         _navigation.RegisterHandler(HandleNavigationAsync);
+        _status.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == nameof(StatusViewModel.SavePathAvailable))
+                ProfilesLockChanged();
+        };
+    }
+
+    private void ProfilesLockChanged()
+    {
+        OnPropertyChanged(nameof(ProfilesLockedReason));
+        ShowProfilesCommand.NotifyCanExecuteChanged();
     }
 
     private async Task HandleNavigationAsync(NavigationTarget target, object? parameter)
@@ -98,7 +125,8 @@ internal sealed partial class MainWindowViewModel : ObservableObject
                 await ShowThemesAsync();
                 break;
             case NavigationTarget.Profiles:
-                await ShowProfilesAsync();
+                if (CanShowProfiles)
+                    await ShowProfilesAsync();
                 break;
             case NavigationTarget.SoundPacks:
                 await ShowSoundPacksAsync();
@@ -140,6 +168,18 @@ internal sealed partial class MainWindowViewModel : ObservableObject
 
         // Settings are loaded now, so the settings screens can build their snapshots.
         _modSettings.Load();
+
+        // Switching Backup Profile in Mod Settings locks or unlocks the Profiles page straight away.
+        _backupProfile = _modSettings.Coordinator.Find<BoolSettingFieldViewModel>("BackupProfile");
+        if (_backupProfile is not null)
+        {
+            _backupProfile.PropertyChanged += (_, e) =>
+            {
+                if (e.PropertyName == nameof(BoolSettingFieldViewModel.Value))
+                    ProfilesLockChanged();
+            };
+        }
+
         SectionsEnabled = true;
 
         // Twitch is application-scoped and starts whether or not its page is opened.
@@ -198,7 +238,7 @@ internal sealed partial class MainWindowViewModel : ObservableObject
         ActiveSection = "Themes";
     }
 
-    [RelayCommand(CanExecute = nameof(SectionsEnabled))]
+    [RelayCommand(CanExecute = nameof(CanShowProfiles))]
     private async Task ShowProfilesAsync()
     {
         // Profiles enumerate from the resolved save folder; the lists are built on first navigation.

@@ -11,6 +11,14 @@
         <Style Selector="TextBlock.fieldlabel">
             <Setter Property="FontSize" Value="12" />
         </Style>
+        <!-- Tuning headings in the Custom Tuning list can't be picked; they only group the songs under them. -->
+        <Style Selector="ComboBox.customtunings > ComboBoxItem" x:DataType="vm:CustomTuningRow">
+            <Setter Property="IsEnabled" Value="{Binding IsSelectable}" />
+            <Setter Property="AutomationProperties.Name" Value="{Binding Text}" />
+        </Style>
+        <Style Selector="ComboBox.customtunings > ComboBoxItem:disabled">
+            <Setter Property="Padding" Value="11,12,11,2" />
+        </Style>
     </UserControl.Styles>
 
     <ScrollViewer>
@@ -221,12 +229,16 @@
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate x:DataType="vm:TuningStringViewModel">
                                         <Grid ColumnDefinitions="22,64,110,*" ColumnSpacing="8" Margin="0,2">
-                                            <views:ColorSwatchButton
+                                            <!-- Shows the string's color only; colors are edited on the Custom Colors page. -->
+                                            <Border
                                                 Grid.Column="0"
                                                 Width="18"
                                                 Height="18"
-                                                AutomationProperties.Name="{Binding Label, StringFormat='Pick the {0} string color'}"
-                                                Hex="{Binding ColorHex}" />
+                                                VerticalAlignment="Center"
+                                                CornerRadius="3"
+                                                BorderThickness="1"
+                                                BorderBrush="{DynamicResource CardBorderBrush}"
+                                                Background="{Binding ColorHex, Converter={x:Static converters:HexToBrushConverter.Instance}}" />
                                             <TextBlock Grid.Column="1" VerticalAlignment="Center" Text="{Binding Label}" />
                                             <NumericUpDown
                                                 Grid.Column="2"
@@ -286,7 +298,7 @@
                         IsVisible="{Binding HasLoadedSongs}">
                         <StackPanel Grid.Row="0" Grid.Column="0" Spacing="2">
                             <TextBlock FontWeight="SemiBold" Text="Songs with selected tuning" />
-                            <TextBlock FontSize="11" Opacity="0.65" Text="{Binding SelectedTuningName}" />
+                            <TextBlock FontSize="11" Opacity="0.65" Text="{Binding SongListTuning}" />
                         </StackPanel>
                         <Expander
                             Grid.Row="1"
@@ -295,7 +307,22 @@
                             VerticalAlignment="Top"
                             HorizontalAlignment="Stretch"
                             Header="{Binding SongsWithSelectedTuningHeader}">
-                            <ItemsControl ItemsSource="{Binding SongsWithSelectedTuning}" />
+                            <!-- A common tuning can match hundreds of songs: the list scrolls in place, and only builds
+                                 the rows in view. -->
+                            <ItemsControl MaxHeight="280" ItemsSource="{Binding SongsWithSelectedTuning}">
+                                <ItemsControl.Template>
+                                    <ControlTemplate>
+                                        <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+                                            <ItemsPresenter Name="PART_ItemsPresenter" ItemsPanel="{TemplateBinding ItemsPanel}" />
+                                        </ScrollViewer>
+                                    </ControlTemplate>
+                                </ItemsControl.Template>
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <VirtualizingStackPanel />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                            </ItemsControl>
                         </Expander>
 
                         <StackPanel Grid.Row="0" Grid.Column="1" Spacing="2">
@@ -304,16 +331,29 @@
                                 FontSize="11"
                                 Opacity="0.65"
                                 TextWrapping="Wrap"
-                                Text="Select an arrangement to copy its six offsets into the &lt;New&gt; editor." />
+                                Text="Pick a song to list the others in its tuning, and to copy the tuning's six offsets into the &lt;New&gt; editor." />
                         </StackPanel>
                         <ComboBox
                             Grid.Row="1"
                             Grid.Column="1"
+                            Classes="customtunings"
                             HorizontalAlignment="Stretch"
-                            PlaceholderText="Choose an arrangement"
-                            AutomationProperties.Name="Arrangement with a custom tuning"
-                            ItemsSource="{Binding UnknownTuningKeys}"
-                            SelectedItem="{Binding SelectedUnknownTuningKey}" />
+                            PlaceholderText="Choose a song"
+                            AutomationProperties.Name="Song with a custom tuning"
+                            ItemsSource="{Binding CustomTuningRows}"
+                            SelectedItem="{Binding SelectedCustomTuningRow}">
+                            <ComboBox.DataTemplates>
+                                <DataTemplate DataType="vm:CustomTuningHeaderRow">
+                                    <TextBlock
+                                        FontSize="11" FontWeight="SemiBold"
+                                        Foreground="{DynamicResource NavCaptionBrush}"
+                                        Text="{Binding Text}" />
+                                </DataTemplate>
+                                <DataTemplate DataType="vm:CustomTuningSongRow">
+                                    <TextBlock TextTrimming="CharacterEllipsis" Text="{Binding Text}" />
+                                </DataTemplate>
+                            </ComboBox.DataTemplates>
+                        </ComboBox>
                         <Button
                             Grid.Row="2"
                             Grid.Column="1"

@@ -43,28 +43,28 @@ internal sealed partial class ColorsViewModel : ObservableObject
 
     // --- String colors ---
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(ShowStringColors))]
+    [NotifyPropertyChangedFor(nameof(CanEditStringColors))]
     private bool _useCustomStringColors;
 
     // --- Note colors ---
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(ShowNoteColors), nameof(ShowNoteSwatches))]
+    [NotifyPropertyChangedFor(nameof(CanEditNoteColors), nameof(CanEditNoteSwatches))]
     private bool _useSeparateNoteColors;
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(ShowNoteSwatches))]
+    [NotifyPropertyChangedFor(nameof(CanEditNoteSwatches))]
     private bool _useRocksmithNoteColors;
 
     // --- Highway colors ---
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(ShowHighwayColors))]
+    [NotifyPropertyChangedFor(nameof(CanEditHighwayColors))]
     private bool _useCustomHighwayColors;
 
-    public bool ShowStringColors => UseCustomStringColors;
-    public bool ShowNoteColors => UseSeparateNoteColors;
-    // Rocksmith's own note colors mean the custom swatches don't apply, so hide them.
-    public bool ShowNoteSwatches => UseSeparateNoteColors && !UseRocksmithNoteColors;
-    public bool ShowHighwayColors => UseCustomHighwayColors;
+    public bool CanEditStringColors => UseCustomStringColors;
+    public bool CanEditNoteColors => UseSeparateNoteColors;
+    // Rocksmith's own note colors mean the custom swatches don't apply, so they grey out.
+    public bool CanEditNoteSwatches => UseSeparateNoteColors && !UseRocksmithNoteColors;
+    public bool CanEditHighwayColors => UseCustomHighwayColors;
 
     [ObservableProperty]
     private string _statusMessage = string.Empty;
@@ -104,8 +104,7 @@ internal sealed partial class ColorsViewModel : ObservableObject
     /// </summary>
     public Task InitializeAsync()
     {
-        // Re-read on each visit (unless an edit here is still waiting to save), so a color changed elsewhere, like a
-        // string's swatch in the Set & Forget tuning editor, shows up.
+        // Re-read on each visit (unless an edit here is still waiting to save), so a color changed elsewhere shows up.
         if (_initialized && _saver.HasUnsavedChanges)
             return Task.CompletedTask;
         _initialized = true;

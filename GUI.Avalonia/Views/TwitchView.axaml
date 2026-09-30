@@ -141,7 +141,18 @@
                             ItemsSource="{Binding RewardRules}"
                             SelectedItem="{Binding SelectedRule}">
                             <DataGrid.Columns>
-                                <DataGridCheckBoxColumn Header="On" Binding="{Binding Enabled, Mode=TwoWay}" Width="64" />
+                                <!-- A real checkbox in every row: the grid's checkbox column only makes the selected row's live,
+                                     drawing the rest greyed out and needing a click to select the row before one to toggle. -->
+                                <DataGridTemplateColumn Header="On" Width="64">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate DataType="vm:TwitchRewardRuleViewModel">
+                                            <CheckBox
+                                                HorizontalAlignment="Center"
+                                                AutomationProperties.Name="{Binding Name, StringFormat='{}{0} on'}"
+                                                IsChecked="{Binding Enabled, Mode=TwoWay}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
                                 <DataGridTextColumn Header="Effect" Binding="{Binding Name}" IsReadOnly="True" Width="*" MinWidth="150" />
                                 <DataGridTextColumn Header="Seconds" Binding="{Binding DurationText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="100" />
                                 <DataGridTextColumn Header="Trigger" Binding="{Binding TriggerLabel}" IsReadOnly="True" Width="120" />
@@ -227,7 +238,7 @@
                         <ListBox.ItemTemplate>
                             <DataTemplate DataType="twitch:TwitchLogEntry">
                                 <Grid ColumnDefinitions="80,*" Margin="0,2">
-                                    <TextBlock Opacity="0.65" Text="{Binding Timestamp, StringFormat='{}{0:HH:mm:ss}'}" />
+                                    <TextBlock Opacity="0.65" Text="{Binding LocalTimestamp, StringFormat='{}{0:HH:mm:ss}'}" />
                                     <TextBlock Grid.Column="1" Text="{Binding Message}" TextWrapping="Wrap" />
                                 </Grid>
                             </DataTemplate>

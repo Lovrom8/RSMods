@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Threading;
@@ -19,5 +20,15 @@ internal sealed class AvaloniaAppEnvironment : IAppEnvironment
             Shutdown();
         else
             Dispatcher.UIThread.Post(Shutdown);
+    }
+
+    public void RequestRestart()
+    {
+        // The new instance only reads settings files, which this one has finished writing by the time it's asked
+        // to restart, so the two can overlap while this one closes.
+        if (Environment.ProcessPath is { } exe)
+            Process.Start(new ProcessStartInfo(exe) { WorkingDirectory = AppContext.BaseDirectory });
+
+        RequestShutdown();
     }
 }

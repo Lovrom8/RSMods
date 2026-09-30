@@ -55,10 +55,7 @@
                         <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center"
                                    FontSize="18" FontWeight="Bold" Foreground="White" Text="RS" />
                     </Border>
-                    <StackPanel VerticalAlignment="Center" Spacing="1">
-                        <TextBlock FontSize="22" FontWeight="SemiBold" Text="RSMods" />
-                        <TextBlock Opacity="0.65" FontSize="12" Text="Rocksmith 2014 Mod Configurator" />
-                    </StackPanel>
+                    <TextBlock VerticalAlignment="Center" FontSize="22" FontWeight="SemiBold" Text="RSMods" />
                 </StackPanel>
                 <Border Grid.Row="1" Height="2" Background="{DynamicResource AccentBrush}" Opacity="0.85" />
             </Grid>
@@ -79,6 +76,7 @@
                         <Button Classes="nav" Command="{Binding ShowRocksmithCommand}" Content="Rocksmith"
                                 Classes.active="{Binding ActiveSection, Converter={x:Static conv:StringEqualsConverter.Instance}, ConverterParameter=Rocksmith}" />
                         <Button Classes="nav" Command="{Binding ShowProfilesCommand}" Content="Profiles"
+                                ToolTip.Tip="{Binding ProfilesLockedReason}" ToolTip.ShowOnDisabled="True"
                                 Classes.active="{Binding ActiveSection, Converter={x:Static conv:StringEqualsConverter.Instance}, ConverterParameter=Profiles}" />
                         <Button Classes="nav" Command="{Binding ShowSetAndForgetCommand}" Content="Set &amp; Forget"
                                 Classes.active="{Binding ActiveSection, Converter={x:Static conv:StringEqualsConverter.Instance}, ConverterParameter=SetAndForget}" />

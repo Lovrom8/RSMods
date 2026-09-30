@@ -23,4 +23,11 @@
     <ProjectReference Include="..\GUI.Core\GUI.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- The tuning song-list tests build scanned arrangements from the archive library's manifest model. -->
+    <Reference Include="Rocksmith2014PsarcLib">
+      <HintPath>..\RuntimeAssets\Rocksmith2014PsarcLib.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

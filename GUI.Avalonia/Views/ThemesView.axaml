@@ -34,9 +34,14 @@
 
     <ScrollViewer>
         <StackPanel Classes="page">
-            <TextBlock Classes="h1" Text="Appearance" />
-
-            <TextBlock FontSize="12" Opacity="0.7" Text="{Binding StatusMessage}" IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+            <!-- The save status sits beside the title, so it appearing doesn't push the page down. -->
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
+                <TextBlock Classes="h1" Text="Appearance" />
+                <TextBlock
+                    Grid.Column="1" VerticalAlignment="Bottom"
+                    FontSize="12" Opacity="0.7" TextTrimming="CharacterEllipsis"
+                    Text="{Binding StatusMessage}" />
+            </Grid>
 
             <Border Classes="card" MaxWidth="{StaticResource PageProseMaxWidth}" HorizontalAlignment="Left">
                 <StackPanel Spacing="14">

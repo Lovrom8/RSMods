@@ -25,22 +25,27 @@ internal sealed partial class SetAndForgetViewModel(
     CachePsarcService cache,
     TuningService tuning,
     ProfileToneService profileTones,
-    FastLoadService fastLoad,
-    SettingsService settings,
-    AutoSaveService autoSave) : ObservableObject
+    FastLoadService fastLoad) : ObservableObject
 {
     private const string NewTuningName = "<New>";
     private readonly TuningService _tuning = tuning;
     private bool _initialized;
     private IReadOnlyList<SongData> _songs = [];
-    private UnknownTuningLookup? _unknownTunings;
 
     public ObservableCollection<string> TuningNames { get; } = [];
     public ObservableCollection<string> SongsWithSelectedTuning { get; } = [];
 
     /// <summary>The song count shown on the collapsed list; raised whenever the list is refilled.</summary>
     public string SongsWithSelectedTuningHeader => SongsWithSelectedTuning.Count == 1 ? "1 song" : $"{SongsWithSelectedTuning.Count} songs";
-    public ObservableCollection<string> UnknownTuningKeys { get; } = [];
+
+    /// <summary>The tuning the song list is showing: the custom tuning picked last, or the editor's defined tuning.</summary>
+    public string? SongListTuning => SelectedCustomTuning?.Label ?? (IsNewTuning ? null : SelectedTuningName);
+
+    /// <summary>The songs Rocksmith would show as Custom Tuning, under a heading for each tuning.</summary>
+    public ObservableCollection<CustomTuningRow> CustomTuningRows { get; } = [];
+
+    /// <summary>The tuning of the song picked in the Custom Tuning list, if any.</summary>
+    private TuningSongGroup? SelectedCustomTuning => (SelectedCustomTuningRow as CustomTuningSongRow)?.Group;
     public ObservableCollection<string> ProfileTones { get; } = [];
     public static IReadOnlyList<ToneTargetOption> DefaultToneTargets { get; } =
     [
@@ -95,7 +100,7 @@ internal sealed partial class SetAndForgetViewModel(
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(LoadCustomTuningFromSongCommand))]
-    private string? _selectedUnknownTuningKey;
+    private CustomTuningRow? _selectedCustomTuningRow;
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(AssignDefaultToneCommand), nameof(AssignGuitarcadeToneCommand))]
@@ -139,7 +144,6 @@ internal sealed partial class SetAndForgetViewModel(
         }
 
         _initialized = true;
-        WireStringColorPicking();
         IsBusy = true;
         StatusMessage = "Preparing Set-and-Forget files...";
         try
@@ -168,15 +172,22 @@ internal sealed partial class SetAndForgetViewModel(
     private bool CanRun => !IsBusy && _initialized;
     private bool CanAddTuning => CanRun && IsNewTuning;
     private bool CanModifyTuning => CanRun && SelectedTuningName is not null && !IsNewTuning;
-    private bool CanLoadCustomTuningFromSong => CanRun && HasLoadedSongs && !string.IsNullOrEmpty(SelectedUnknownTuningKey);
+    private bool CanLoadCustomTuningFromSong => CanRun && HasLoadedSongs && SelectedCustomTuning is not null;
     private bool CanAssignDefaultTone => CanRun && !string.IsNullOrEmpty(SelectedProfileTone) && SelectedDefaultToneTarget is not null;
     private bool CanAssignGuitarcadeTone => CanRun && !string.IsNullOrEmpty(SelectedProfileTone) && SelectedGuitarcadeToneTarget is not null;
 
     partial void OnSelectedTuningNameChanged(string? value)
     {
         LoadSelectedTuning(value);
+
+        // Picking a defined tuning shows its songs instead of the custom tuning's. <New> doesn't, so loading a custom
+        // tuning into the editor keeps its songs listed.
+        if (!string.IsNullOrEmpty(value) && !IsNewTuning)
+            SelectedCustomTuningRow = null;
         RefreshSongsWithSelectedTuning();
     }
+
+    partial void OnSelectedCustomTuningRowChanged(CustomTuningRow? value) => RefreshSongsWithSelectedTuning();
 
     private void ClearCurrentTuning()
     {
@@ -235,7 +246,7 @@ internal sealed partial class SetAndForgetViewModel(
 
         // Unknown-tuning keys are derived from the tuning set, so recompute them whenever it reloads.
         if (HasLoadedSongs)
-            RefreshUnknownTuningKeys();
+            RefreshCustomTuningRows();
     }
 
     private void RefreshTuningStringPresentations()
@@ -282,8 +293,8 @@ internal sealed partial class SetAndForgetViewModel(
             HasLoadedSongs = false;
             SongsWithSelectedTuning.Clear();
             OnPropertyChanged(nameof(SongsWithSelectedTuningHeader));
-            UnknownTuningKeys.Clear();
-            SelectedUnknownTuningKey = null;
+            CustomTuningRows.Clear();
+            SelectedCustomTuningRow = null;
 
             StatusMessage = "Failed to load songs.";
             await dialogs.ShowErrorAsync($"Failed to load songs:{Environment.NewLine}{ex.Message}");
@@ -297,31 +308,41 @@ internal sealed partial class SetAndForgetViewModel(
 
     private void RefreshSongTuningLists()
     {
-        RefreshUnknownTuningKeys();
+        RefreshCustomTuningRows();
         RefreshSongsWithSelectedTuning();
     }
 
-    private void RefreshUnknownTuningKeys()
+    private void RefreshCustomTuningRows()
     {
-        UnknownTuningKeys.Clear();
-        SelectedUnknownTuningKey = null;
-        _unknownTunings = null;
+        CustomTuningRows.Clear();
+        SelectedCustomTuningRow = null;
 
         if (!HasLoadedSongs)
             return;
 
-        _unknownTunings = _tuning.GetUnknownTuningLookup(_songs);
-        foreach (string key in _unknownTunings.Keys)
-            UnknownTuningKeys.Add(key);
+        foreach (TuningSongGroup group in _tuning.GetCustomTuningGroups(_songs))
+        {
+            CustomTuningRows.Add(new CustomTuningHeaderRow(group.Label));
+            foreach (string song in group.Songs)
+                CustomTuningRows.Add(new CustomTuningSongRow(song, group));
+        }
     }
 
     private void RefreshSongsWithSelectedTuning()
     {
         SongsWithSelectedTuning.Clear();
-        if (HasLoadedSongs && !string.IsNullOrEmpty(SelectedTuningName) && !IsNewTuning)
-            _tuning.GetSongsWithSelectedTuning(SelectedTuningName, _songs).ForEach(SongsWithSelectedTuning.Add);
+        if (HasLoadedSongs)
+        {
+            IEnumerable<string> songs =
+                SelectedCustomTuning is { } custom ? custom.Songs
+                : !string.IsNullOrEmpty(SelectedTuningName) && !IsNewTuning ? _tuning.GetSongsWithSelectedTuning(SelectedTuningName, _songs)
+                : [];
+            foreach (string song in songs)
+                SongsWithSelectedTuning.Add(song);
+        }
 
         OnPropertyChanged(nameof(SongsWithSelectedTuningHeader));
+        OnPropertyChanged(nameof(SongListTuning));
     }
 
     [RelayCommand(CanExecute = nameof(CanLoadCustomTuningFromSong))]
@@ -331,7 +352,7 @@ internal sealed partial class SetAndForgetViewModel(
         {
             SelectedTuningName = NewTuningName;
 
-            var strings = _unknownTunings!.GetStrings(SelectedUnknownTuningKey!);
+            TuningStrings strings = SelectedCustomTuning!.Strings;
             TuningStrings[0].Offset = strings.String0;
             TuningStrings[1].Offset = strings.String1;
             TuningStrings[2].Offset = strings.String2;
@@ -339,7 +360,7 @@ internal sealed partial class SetAndForgetViewModel(
             TuningStrings[4].Offset = strings.String4;
             TuningStrings[5].Offset = strings.String5;
 
-            StatusMessage = "Loaded the selected song tuning into a new tuning.";
+            StatusMessage = "Loaded the selected custom tuning into a new tuning.";
         }
         catch (Exception ex)
         {
@@ -354,16 +375,22 @@ internal sealed partial class SetAndForgetViewModel(
         StatusMessage = "Loading tones from Steam profiles...";
         try
         {
-            List<string> tones = await Task.Run(profileTones.LoadProfileTones);
+            ProfileToneScan scan = await Task.Run(() => profileTones.LoadProfileTones());
 
             ProfileTones.Clear();
-            foreach (string tone in tones.OrderBy(tone => tone, StringComparer.OrdinalIgnoreCase))
+            foreach (string tone in scan.ToneNames.OrderBy(tone => tone, StringComparer.OrdinalIgnoreCase))
             {
                 ProfileTones.Add(tone);
             }
 
             SelectedProfileTone = ProfileTones.FirstOrDefault();
-            StatusMessage = ProfileTones.Count == 0 ? "No profile tones were found." : $"Loaded {ProfileTones.Count} profile tones.";
+            string skipped = scan.UnreadableProfiles.Count switch
+            {
+                0 => string.Empty,
+                1 => " One profile couldn't be read and was skipped.",
+                int count => $" {count} profiles couldn't be read and were skipped.",
+            };
+            StatusMessage = (ProfileTones.Count == 0 ? "No profile tones were found." : $"Loaded {ProfileTones.Count} profile tones.") + skipped;
 
             if (ProfileTones.Count == 0)
             {
@@ -644,27 +671,6 @@ internal sealed partial class SetAndForgetViewModel(
         "Existing settings imported.",
         "Unable to import existing settings",
         () => ReloadTuningNames());
-
-    // A string's swatch in the tuning editor edits that string's color, like the Custom Colors page does.
-    private DebouncedSaver? _colorSaver;
-
-    private void WireStringColorPicking()
-    {
-        _colorSaver = autoSave.Create(settings.SaveAsync, ex => StatusMessage = $"Couldn't save the string color: {ex.Message}");
-
-        foreach (TuningStringViewModel tuningString in TuningStrings)
-        {
-            tuningString.ColorPicked += (index, normal, hex) =>
-            {
-                string color = (hex ?? string.Empty).Trim().TrimStart('#').ToUpperInvariant();
-                if (color.Length != 6 || !color.All(Uri.IsHexDigit))
-                    return;
-
-                RsModsSettings.StringColors.SetStringColor(index, normal, color);
-                _colorSaver.Request();
-            };
-        }
-    }
 
     /// <summary>
     /// Applies an in-memory change to the tuning set and persists it, rolling the change back

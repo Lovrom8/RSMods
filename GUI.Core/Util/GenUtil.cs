@@ -112,14 +112,17 @@ namespace RSMods.Util
             return target;
         }
 
+        /// <summary>
+        /// A Rocksmith 2014 install has the game itself and its cache.psarc, which it needs to boot. Checking both
+        /// rules out Steam's leftovers from an uninstall and folders that only hold a copied cache.psarc.
+        /// </summary>
         public static bool IsRSFolder(this string folderPath)
         {
             if (!Directory.Exists(folderPath))
                 return false;
 
-            string cachePsarcPath = Path.Combine(folderPath, "cache.psarc");
-
-            return File.Exists(cachePsarcPath);
+            return File.Exists(Path.Combine(folderPath, "Rocksmith2014.exe"))
+                && File.Exists(Path.Combine(folderPath, "cache.psarc"));
         }
 
         public static bool IsSavePath(this string savePath)
@@ -323,7 +326,7 @@ namespace RSMods.Util
                         if (string.IsNullOrEmpty(rs2RootDir) || !rs2RootDir.IsRSFolder()) // Nothing valid detected — the resolver prompts.
                             return string.Empty;
                     }
-                    else if (!rs2RootDir.IsRSFolder()) // Folder exists but cache.psarc doesn't (old install / steam left-overs) — the resolver prompts.
+                    else if (!rs2RootDir.IsRSFolder()) // Folder exists but the game or its cache.psarc doesn't (old install / steam left-overs) — the resolver prompts.
                     {
                         return string.Empty;
                     }

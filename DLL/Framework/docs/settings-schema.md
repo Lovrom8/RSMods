@@ -154,11 +154,14 @@ no value. The bespoke editor it opens reads and saves its own settings, and a va
 `editedBy` so the generic form doesn't render a second, competing field for it.
 
 **Avalonia mechanics.** An `ObservableCollection<SettingFieldViewModel>` in `GUI.Core` with a base VM and
-`Bool`/`Enum`/`Numeric`/`Choice` derivations, each holding the descriptor + live value + an `IsVisible`
-computed from its `visibleWhen`. An `ItemsControl` over the collection with **per-type `DataTemplate`s**
-(Avalonia matches on `DataType`) picks the control. The screen lists one entry per mod (`ModCatalog`): a
-setting with no `visibleWhen` starts a mod, the settings gated on it go in its pane, and each key bind goes
-to the mod declared just before it, the order the DLL emits them in. Load/save becomes **generic** — iterate the field VMs, read/write each
+`Bool`/`Enum`/`Numeric`/`Choice` derivations, each holding the descriptor + live value + an `IsEnabled`
+computed from its `visibleWhen`. Despite the key's name, the GUI shows a gated setting either way and greys
+it out while the condition doesn't hold, so a mod's pane doesn't change shape when it's switched on. An
+`ItemsControl` over the collection with **per-type `DataTemplate`s** (Avalonia matches on `DataType`) picks
+the control. The screen lists one entry per mod (`ModCatalog`): a setting with no `visibleWhen` starts a
+mod, the settings gated on it go in its pane, and each key bind goes to the mod declared just before it,
+the order the DLL emits them in. The list groups mods under headings (Practice, Tuning, Audio, ...) that
+`ModCatalog` assigns by root key; a mod it doesn't know yet goes under "Other". Load/save becomes **generic** — iterate the field VMs, read/write each
 key through the existing round-trip-safe `IniManager` / `FlatKeyValueSettingsStore`, which already
 preserves unknown keys, so nothing regresses.
 
