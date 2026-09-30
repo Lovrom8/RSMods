@@ -177,6 +177,7 @@ void Offsets::Initialize() {
 	func_getAllocatorOwner = { {0x0091FFA0, baseHandle + 0x0051E770} };				// Code | 80 3d ? ? ? ? 00 74 06 a1 ? ? ? ? c3 f6 05 (start of function - returns the allocator owner in EAX)
 	func_playnextTrim = { {0x0056DF00, baseHandle + 0x0016F690} };	// Code | 55 8b ec 83 ec 18 53 56 8d 45 f8 57 50 8b 45 08 e8 (start of function - the PlaynextStats trim)
 	func_profileSongs = { {0x0056D9D0, baseHandle + 0x0016F170} };			// Code | The e8 at the end of the pattern above (finds the profile's songs - profile id in EAX, out pointer on the stack)
+	ptr_renderer = { {0x01360AF0, baseHandle + 0x00F61AF0} };				// Static Memory | a1 ? ? ? ? 8d 4e 3c 51 (the a1, in the display settings getter; flags at +0x910)
 }
 
 namespace Offsets { // Addresses for pre-2021 patch are in the comments

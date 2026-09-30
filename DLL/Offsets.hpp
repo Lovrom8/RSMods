@@ -270,6 +270,10 @@ namespace Offsets {
 	inline VersioningStruct<uintptr_t> func_playnextTrim;
 	inline VersioningStruct<uintptr_t> func_profileSongs;
 
+	// Non-Exclusive Fullscreen: the renderer, and its current display flags (0x80 non-exclusive fullscreen, 0x04 exclusive fullscreen)
+	inline VersioningStruct<uintptr_t> ptr_renderer;
+	inline constexpr unsigned int rendererDisplayFlagsOffset = 0x910;
+
 	// Runtime data.
 	inline uintptr_t runtimeVersionStructValue;
 

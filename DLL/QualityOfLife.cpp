@@ -177,6 +177,83 @@ namespace {
 			jmp MemUtil::JumpToVersioned
 		}
 	}
+
+	// Non-Exclusive Fullscreen. The game's display flags: 0x80 non-exclusive fullscreen, 0x04 exclusive fullscreen.
+	constexpr uint32_t displayFlagNonExclusive = 0x80;
+	constexpr uint32_t displayFlagExclusive = 0x04;
+
+	constexpr LONG_PTR windowFrameStyles = WS_CAPTION | WS_THICKFRAME | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
+	constexpr LONG_PTR windowFrameExStyles = WS_EX_DLGMODALFRAME | WS_EX_WINDOWEDGE | WS_EX_CLIENTEDGE | WS_EX_STATICEDGE;
+
+	// The mode is read every frame, but the window is only re-checked this often while nothing changes
+	// (something else, like Launch On External Monitor, may move or resize it).
+	constexpr ULONGLONG displayRecheckIntervalMs = 250;
+
+	enum class DisplayMode { Unknown, Windowed, NonExclusive, Exclusive };
+
+	DisplayMode lastDisplayMode = DisplayMode::Unknown;
+	ULONGLONG nextDisplayCheck = 0;
+
+	// Set once we've stripped the window's frame. The saved values are what windowed mode gets back.
+	bool borderlessApplied = false;
+	LONG_PTR savedWindowStyle = 0;
+	LONG_PTR savedWindowExStyle = 0;
+	RECT savedWindowRect{};
+
+	DisplayMode ReadDisplayMode() {
+		uintptr_t renderer = 0;
+		uint32_t flags = 0;
+
+		if (!MemUtil::TryRead(Offsets::ptr_renderer, renderer) || !renderer)
+			return DisplayMode::Unknown;
+		if (!MemUtil::TryRead(renderer + Offsets::rendererDisplayFlagsOffset, flags))
+			return DisplayMode::Unknown;
+
+		if (flags & displayFlagNonExclusive)
+			return DisplayMode::NonExclusive;
+		if (flags & displayFlagExclusive)
+			return DisplayMode::Exclusive;
+		return DisplayMode::Windowed;
+	}
+
+	void MakeWindowBorderless(HWND hWnd) {
+		const LONG_PTR style = GetWindowLongPtr(hWnd, GWL_STYLE);
+		const LONG_PTR exStyle = GetWindowLongPtr(hWnd, GWL_EXSTYLE);
+
+		RECT windowRect{};
+		MONITORINFO monitor{ sizeof(monitor) };
+		if (!GetWindowRect(hWnd, &windowRect) || !GetMonitorInfo(MonitorFromWindow(hWnd, MONITOR_DEFAULTTONEAREST), &monitor))
+			return;
+
+		const bool framed = (style & windowFrameStyles) || (exStyle & windowFrameExStyles);
+		if (!framed && EqualRect(&windowRect, &monitor.rcMonitor))
+			return;
+
+		if (!borderlessApplied) {
+			savedWindowStyle = style;
+			savedWindowExStyle = exStyle;
+			savedWindowRect = windowRect;
+			borderlessApplied = true;
+		}
+
+		if (framed) {
+			SetWindowLongPtr(hWnd, GWL_STYLE, (style & ~windowFrameStyles) | WS_POPUP);
+			SetWindowLongPtr(hWnd, GWL_EXSTYLE, exStyle & ~windowFrameExStyles);
+		}
+
+		const RECT& screen = monitor.rcMonitor;
+		SetWindowPos(hWnd, nullptr, screen.left, screen.top, screen.right - screen.left, screen.bottom - screen.top,
+			SWP_FRAMECHANGED | SWP_NOZORDER | SWP_NOACTIVATE);
+	}
+
+	void RestoreWindowFrame(HWND hWnd) {
+		SetWindowLongPtr(hWnd, GWL_STYLE, savedWindowStyle);
+		SetWindowLongPtr(hWnd, GWL_EXSTYLE, savedWindowExStyle);
+		SetWindowPos(hWnd, nullptr, savedWindowRect.left, savedWindowRect.top,
+			savedWindowRect.right - savedWindowRect.left, savedWindowRect.bottom - savedWindowRect.top,
+			SWP_FRAMECHANGED | SWP_NOZORDER | SWP_NOACTIVATE);
+		borderlessApplied = false;
+	}
 }
 
 namespace QualityOfLife {
@@ -291,5 +368,41 @@ namespace QualityOfLife {
 		FlushInstructionCache(GetCurrentProcess(), reinterpret_cast<void*>(menuLoadUpdate), 6);
 
 		LOG_INFO("(QOL) Fast Load soft lock retry installed" << std::endl);
+	}
+
+	/// <summary>
+	/// Makes the game's "Non-Exclusive Fullscreen" mode (Fullscreen=1 in Rocksmith.ini) fill the screen.
+	/// In that mode the game only renders into a desktop sized back buffer. The window keeps its title bar and its windowed
+	/// size, so it looks just like windowed mode. While the mode is active, strip the window's frame and stretch it over the
+	/// monitor it's on. Going back to windowed mode puts the frame and the old size back.
+	/// Call once per EndScene from the render thread.
+	/// </summary>
+	void FixNonExclusiveFullscreen() {
+		const DisplayMode mode = ReadDisplayMode();
+		const ULONGLONG now = GetTickCount64();
+
+		if (mode == lastDisplayMode && now < nextDisplayCheck)
+			return;
+
+		lastDisplayMode = mode;
+		nextDisplayCheck = now + displayRecheckIntervalMs;
+
+		HWND hWnd = D3DHooks::GetGameWindow();
+		if (!hWnd || IsIconic(hWnd))
+			return;
+
+		switch (mode) {
+			case DisplayMode::NonExclusive:
+				MakeWindowBorderless(hWnd);
+				break;
+			case DisplayMode::Windowed:
+				if (borderlessApplied)
+					RestoreWindowFrame(hWnd);
+				break;
+			default:
+				// Exclusive fullscreen owns the screen, so leave the window alone. If we stripped the frame, it comes
+				// back once the game is windowed again.
+				break;
+		}
 	}
 }

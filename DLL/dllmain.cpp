@@ -188,6 +188,7 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 	Menu::RenderImGuiMenu();
 	Menu::UpdateStringTextures(pDevice);
 	UpdateGameWindowStacking();
+	QualityOfLife::FixNonExclusiveFullscreen();
 	D3DHooks::UpdateUltrawideState(pDevice);
 	GameOverlay::RenderOverlay(pDevice);
 	D3DHooks::RegenerateTwitchNoteColors(pDevice);
