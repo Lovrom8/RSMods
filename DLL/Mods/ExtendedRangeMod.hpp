@@ -14,7 +14,10 @@ class ExtendedRangeMod : public Framework::IMod {
 public:
 	MOD_ID(ExtendedRangeMod)
 
-	std::vector<std::string_view> ClaimsExclusive() const override { return { "string-colors" }; }
+	// No exclusive claim on "string-colors": this mod is always active, so holding it would block every
+	// CrowdControl effect that takes it (rainbow strings, inverted strings, remove instrument) forever.
+	// Rainbow strings takes priority over the ER colors inside ApplyColors, and those effects still
+	// exclude each other through their own claims.
 
 	Framework::SettingDefs Settings() const override;
 
