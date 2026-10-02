@@ -1,6 +1,9 @@
 #include "../stdafx.h"
 #include "MetronomeMod.hpp"
 
+#include "../SongTimer.hpp"
+#include "MetronomeAudioHook.hpp"
+
 using Framework::ModContext;
 using Framework::SettingDef;
 using Framework::SettingDefs;
@@ -24,11 +27,14 @@ namespace {
 
 	constexpr char kIndicatorId[] = "metronome";
 	constexpr int kIndicatorOrder = 100; // Below the volume popup and mixer, which share the top-left anchor.
-	constexpr int kClicksOnColor = static_cast<int>(0xFF66DD66);
+	constexpr int kClicksOnColor = static_cast<int>(0xFFFFFFFF);
 	constexpr int kClicksOffColor = static_cast<int>(0xFF9E9E9E);
 
 	// In a song the indicator only appears briefly after a toggle, to keep the highway clear.
 	constexpr auto kSongIndicatorDuration = 3s;
+
+	// TEMPORARY: how often to log the audio position against the song timer, to check they line up.
+	constexpr auto kAudioReportInterval = 5s;
 
 	SettingDef Volume(std::string_view key, std::string_view label) {
 		return SettingDef::Numeric(key, label)
@@ -54,7 +60,8 @@ SettingDefs MetronomeMod::Settings() const {
 	return {
 		SettingDef::Toggle(kEnabled, "Metronome")
 			.Hint("Plays a click on every beat of the song, with a different sound on the first beat of each measure.\n"
-				"Toggle the clicks in game with the Metronome key; the top left corner shows whether they're on."),
+				"Toggle the clicks in game with the Metronome key; the top left corner shows whether they're on.\n"
+				"Turning this on takes effect after restarting the game."),
 		Volume(kAccentVolume, "Metronome Accent Volume")
 			.Hint("Volume of the click on the first beat of each measure."),
 		Volume(kBeatVolume, "Metronome Beat Volume")
@@ -74,8 +81,11 @@ bool MetronomeMod::IsEnabled(const ModContext& c) const {
 	return c.IsOn(kEnabled);
 }
 
+// The audio hook has to be in place before the game sets up its audio, which happens once, at startup.
 void MetronomeMod::OnInitialize(ModContext& c) {
 	ApplySettings(c);
+	if (c.IsOn(kEnabled))
+		Metronome::AudioHook::Install(clickMixer);
 
 	c.Commands().BindSetting(
 		kToggleKey,
@@ -109,6 +119,7 @@ void MetronomeMod::ToggleClicks() {
 void MetronomeMod::OnSongEnter(ModContext&) {
 	beatMapSource.Forget();
 	RefreshBeats();
+	WarnIfAudioUnhooked();
 }
 
 void MetronomeMod::OnSongExit(ModContext&) {
@@ -117,7 +128,30 @@ void MetronomeMod::OnSongExit(ModContext&) {
 }
 
 void MetronomeMod::OnMenuTick(ModContext& c) {
+	Metronome::AudioHook::LogStatus();
 	ShowIndicator(c);
+}
+
+void MetronomeMod::WarnIfAudioUnhooked() {
+	if (Metronome::AudioHook::IsHooked() || warnedAudioUnhooked) return;
+
+	LOG_WARNING("(Metronome) No music decoder hooked yet, so no clicks. If this persists, the game set up its audio "
+		"before the metronome could hook it." << std::endl);
+	warnedAudioUnhooked = true;
+}
+
+void MetronomeMod::ReportAudioActivity() {
+	const auto now = std::chrono::steady_clock::now();
+	if (now < nextAudioReportTime) return;
+	nextAudioReportTime = now + kAudioReportInterval;
+
+	const Metronome::AudioActivity activity = clickMixer.Activity();
+	if (activity.lastSampleRate == 0) return;
+
+	LOG_INFO("(Metronome) Audio at " << static_cast<double>(activity.lastFirstFrame) / activity.lastSampleRate
+		<< " s of a " << static_cast<double>(activity.lastTotalFrames) / activity.lastSampleRate << " s stream ("
+		<< activity.lastSampleRate << " Hz), song timer " << SongTimer::SongTimer() << " s, "
+		<< activity.blocksWithClicks << " blocks with clicks" << std::endl);
 }
 
 void MetronomeMod::RefreshBeats() {
@@ -131,6 +165,8 @@ void MetronomeMod::RefreshBeats() {
 
 void MetronomeMod::OnSongTick(ModContext& c) {
 	RefreshBeats();
+	Metronome::AudioHook::LogStatus();
+	ReportAudioActivity();
 
 	if (std::chrono::steady_clock::now() < songIndicatorHideTime)
 		ShowIndicator(c);

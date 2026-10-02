@@ -26,9 +26,13 @@ private:
 	Metronome::BeatMapSource beatMapSource;
 	Metronome::ClickMixer clickMixer;
 	std::chrono::steady_clock::time_point songIndicatorHideTime;
+	std::chrono::steady_clock::time_point nextAudioReportTime;
+	bool warnedAudioUnhooked = false;
 
 	void ApplySettings(const Framework::ModContext& c);
 	void RefreshBeats();
+	void WarnIfAudioUnhooked();
+	void ReportAudioActivity();
 	void ToggleClicks();
 	void ShowIndicator(Framework::ModContext& c) const;
 	void HideIndicator(Framework::ModContext& c) const;

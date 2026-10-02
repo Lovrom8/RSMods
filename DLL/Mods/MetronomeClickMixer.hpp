@@ -4,6 +4,7 @@
 #include <chrono>
 #include <cstdint>
 #include <memory>
+#include <vector>
 
 #include "MetronomeBeats.hpp"
 
@@ -14,13 +15,32 @@ namespace Metronome {
 		float beat = 1.f;   // Every other beat.
 	};
 
+	// One decoded block of a music stream, as the decoder hands it over.
+	struct AudioBlock {
+		int16_t* interleavedStereo = nullptr;
+		uint32_t frameCount = 0;
+		uint32_t firstFrame = 0;  // Absolute position in the stream, so seeks, loops and rewinds need no special handling.
+		uint32_t totalFrames = 0; // Length of the whole stream.
+		uint32_t sampleRate = 0;
+	};
+
+	// What the audio thread last saw, for MainThread to log. Plain counters, no locks.
+	struct AudioActivity {
+		uint32_t lastTotalFrames = 0;
+		uint32_t lastSampleRate = 0;
+		uint32_t lastFirstFrame = 0;
+		uint32_t blocksWithClicks = 0;
+	};
+
 	// Adds a click at each beat of the current song into the song's decoded audio.
 	//
-	// Configured from MainThread; MixInto runs on the audio thread, which must never block, lock or log
-	// (a lock there has deadlocked the game before, see RSModsPlus docs/wwise-plugin-internals.md).
-	// Hence every shared field is an atomic.
+	// Configured from MainThread; MixInto runs on the audio thread, which must never block, lock, allocate
+	// or log (a lock there has deadlocked the game before, see RSModsPlus docs/wwise-plugin-internals.md).
 	class ClickMixer {
 	public:
+		ClickMixer();
+		~ClickMixer();
+
 		void SetBeats(BeatMap beats);
 		void ClearBeats();
 		void SetLevels(ClickLevels levels);
@@ -30,16 +50,38 @@ namespace Metronome {
 		void Unmute();
 		bool IsMuted() const;
 
-		// Audio thread. `firstFrame` is the block's absolute position in the song, so seeks, loops and
-		// rewinds need no special handling.
-		void MixInto(int16_t* interleavedStereo, uint32_t frameCount, uint32_t firstFrame, uint32_t sampleRate) const;
+		// Audio thread.
+		void MixInto(const AudioBlock& block);
+
+		AudioActivity Activity() const;
 
 	private:
-		// TODO: The last reference to an old beat map must not be released on the audio thread (it frees memory).
-		std::atomic<std::shared_ptr<const BeatMap>> beats;
+		struct ClickSounds {
+			uint32_t sampleRate = 0;
+			std::vector<float> accent;
+			std::vector<float> beat;
+		};
+
+		std::vector<ClickSounds> clickSounds; // One set per supported sample rate, built up front.
+
+		// The audio thread reads `published` without a lock. A replaced map is kept as `retired` until the next
+		// replacement, at least a MainThread tick later, by which time the audio thread is done with it.
+		std::atomic<const BeatMap*> published = nullptr;
+		std::unique_ptr<const BeatMap> current;
+		std::unique_ptr<const BeatMap> retired;
+
 		std::atomic<float> accentLevel = 1.f;
 		std::atomic<float> beatLevel = 1.f;
 		std::atomic<int> offsetMs = 0;
 		std::atomic<bool> muted = false;
+
+		std::atomic<uint32_t> lastTotalFrames = 0;
+		std::atomic<uint32_t> lastSampleRate = 0;
+		std::atomic<uint32_t> lastFirstFrame = 0;
+		std::atomic<uint32_t> blocksWithClicks = 0;
+
+		void Publish(std::unique_ptr<const BeatMap> beats);
+		const ClickSounds* SoundsFor(uint32_t sampleRate) const;
+		void RecordActivity(const AudioBlock& block);
 	};
 }
