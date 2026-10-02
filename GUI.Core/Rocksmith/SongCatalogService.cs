@@ -93,7 +93,7 @@ namespace RSMods
         private static SongCatalogResult ScanSongs(string rocksmithFolder, IProgress<int> progress, CancellationToken cancellationToken)
         {
             progress?.Report(0);
-            IReadOnlyList<string> archivePaths = SongArchives.Enumerate(rocksmithFolder);
+            IReadOnlyList<string> archivePaths = EnumerateArchivePaths(rocksmithFolder);
             if (archivePaths.Count == 0)
             {
                 progress?.Report(100);
@@ -137,6 +137,28 @@ namespace RSMods
                 .ToArray();
 
             return new SongCatalogResult(songs, orderedWarnings);
+        }
+
+        private static IReadOnlyList<string> EnumerateArchivePaths(string rocksmithFolder)
+        {
+            var paths = new List<string>();
+
+            string dlcFolder = Path.Combine(rocksmithFolder, "dlc");
+            if (Directory.Exists(dlcFolder))
+            {
+                paths.AddRange(Directory.EnumerateFiles(dlcFolder, "*_p.psarc", SearchOption.AllDirectories));
+            }
+
+            string builtInSongs = Path.Combine(rocksmithFolder, "songs.psarc");
+            if (File.Exists(builtInSongs))
+            {
+                paths.Add(builtInSongs);
+            }
+
+            return paths
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .OrderBy(path => path, StringComparer.OrdinalIgnoreCase)
+                .ToArray();
         }
 
         private static ArchiveContents ReadArchive(string archivePath, CancellationToken cancellationToken)

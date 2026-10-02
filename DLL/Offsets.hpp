@@ -263,4 +263,8 @@ namespace Offsets {
 
 	inline VersioningStruct<uintptr_t> ptr_noteData;
 	inline VersioningStruct<uintptr_t> ptr_scoreAttackNoteData;
+
+	// The playing arrangement's beat grid: a std::vector of SNG BPM records in the chart object.
+	inline VersioningStruct<uintptr_t> ptr_chartBeats;
+	extern std::vector<unsigned int> ptr_chartBeatsOffsets;
 };

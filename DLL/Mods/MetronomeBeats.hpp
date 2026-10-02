@@ -1,8 +1,7 @@
 #pragma once
 
-#include <filesystem>
-#include <string>
-#include <unordered_set>
+#include <cstdint>
+#include <optional>
 #include <vector>
 
 namespace Metronome {
@@ -15,24 +14,25 @@ namespace Metronome {
 	// Beats in chart order, ascending by time.
 	using BeatMap = std::vector<Beat>;
 
-	// Song beats, extracted from the song's archive by RSMods.exe ("--extract-beats", see the GUI's
-	// ExtractBeatsCommand) into RSMods\MetronomeBeats\<songKey>.beats, where Load reads them.
+	// Where the game keeps a chart's beat records; another chart's live somewhere else.
+	struct BeatVectorBounds {
+		uintptr_t begin = 0;
+		uintptr_t end = 0;
+		bool operator==(const BeatVectorBounds&) const = default;
+	};
+
+	// Reads the beat grid of the arrangement being played from the game's chart object, which holds the SNG's
+	// BPM records as loaded (Offsets::ptr_chartBeats).
 	class BeatMapSource {
 	public:
-		BeatMapSource();
+		// A new beat map when the playing chart's beats differ from the last ones returned, so a chart that
+		// loads a tick late, or replaces the previous one, is picked up. Nothing while no chart is loaded.
+		std::optional<BeatMap> PollChanges();
 
-		// Starts the extraction in the background, once per song per session. Doesn't wait for it.
-		void Request(const std::string& songKey);
-
-		// Empty while the song's beats haven't been extracted (yet).
-		BeatMap Load(const std::string& songKey) const;
+		// The next poll returns the playing chart's beats again, even if they haven't moved.
+		void Forget();
 
 	private:
-		std::filesystem::path gameFolder;
-		std::filesystem::path rsModsFolder;
-		std::unordered_set<std::string> requestedSongKeys;
-
-		std::filesystem::path BeatsFile(const std::string& songKey) const;
-		void StartExtraction(const std::string& songKey) const;
+		BeatVectorBounds lastBounds;
 	};
 }

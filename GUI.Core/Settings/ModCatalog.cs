@@ -61,6 +61,7 @@ public static class ModCatalog
         ["RRSpeedAboveOneHundred"] = "Practice",
         ["LinearRiffRepeater"] = "Practice",
         ["UseCustomNSPTimer"] = "Practice",
+        ["MetronomeEnabled"] = "Practice",
 
         ["AutoTuneForSong"] = "Tuning",
         ["ExtendedRangeEnabled"] = "Tuning",

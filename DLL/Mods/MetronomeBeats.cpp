@@ -1,95 +1,73 @@
 #include "../stdafx.h"
 #include "MetronomeBeats.hpp"
 
-#include <charconv>
-#include <optional>
+#include "../MemUtil.hpp"
+#include "../Offsets.hpp"
 
 using Metronome::Beat;
 using Metronome::BeatMap;
 using Metronome::BeatMapSource;
+using Metronome::BeatVectorBounds;
 
 namespace {
-	constexpr wchar_t kExtractBeatsCommand[] = L"--extract-beats";
-	constexpr char kBeatsExtension[] = ".beats";
-	constexpr char kHeaderMarker = '#';
+	// The SNG's BPM record, which the game keeps unchanged in memory.
+	struct BpmRecord {
+		float time;
+		int16_t measure;
+		int16_t beat; // 0 on the first beat of a measure.
+		int32_t phraseIteration;
+		int32_t mask;
+	};
+	static_assert(sizeof(BpmRecord) == 16);
 
-	// The key goes into a file name and a command line. Song keys are letters, digits, underscores and the odd
-	// hyphen, so anything else is refused rather than escaped.
-	bool IsUsableSongKey(const std::string& songKey) {
-		auto isKeyCharacter = [](unsigned char c) { return std::isalnum(c) || c == '_' || c == '-'; };
-		return !songKey.empty() && std::ranges::all_of(songKey, isKeyCharacter);
+	// Far above any real song (a 10-minute song at 300 BPM has 3000 beats); more means the pointers are garbage.
+	constexpr size_t kMaxBeats = 20000;
+
+	std::optional<BeatVectorBounds> ReadBeatVectorBounds() {
+		const uintptr_t vector = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_chartBeats, Offsets::ptr_chartBeatsOffsets, true);
+
+		BeatVectorBounds bounds;
+		if (!MemUtil::TryRead(vector, bounds.begin) || !MemUtil::TryRead(vector + sizeof(uintptr_t), bounds.end))
+			return std::nullopt;
+		return bounds;
 	}
 
-	std::wstring Quoted(const std::wstring& text) {
-		return L"\"" + text + L"\"";
+	bool LooksLikeBeatVector(const BeatVectorBounds& bounds) {
+		if (bounds.begin == 0 || bounds.end <= bounds.begin) return false;
+
+		const uintptr_t byteCount = bounds.end - bounds.begin;
+		return byteCount % sizeof(BpmRecord) == 0 && byteCount / sizeof(BpmRecord) <= kMaxBeats;
 	}
 
-	std::filesystem::path GameFolder() {
-		wchar_t exePath[MAX_PATH] = {};
-		GetModuleFileNameW(nullptr, exePath, MAX_PATH);
-		return std::filesystem::path(exePath).parent_path();
-	}
+	// Empty if any record can't be read or the times don't ascend, which means the chart is being torn down.
+	BeatMap CopyBeats(const BeatVectorBounds& bounds) {
+		BeatMap beats;
+		beats.reserve((bounds.end - bounds.begin) / sizeof(BpmRecord));
 
-	// "<seconds> <1 if the beat starts a measure, else 0>", as the GUI's BeatMapFile writes it.
-	std::optional<Beat> ParseBeat(std::string_view line) {
-		const char* end = line.data() + line.size();
+		for (uintptr_t address = bounds.begin; address < bounds.end; address += sizeof(BpmRecord)) {
+			BpmRecord record;
+			if (!MemUtil::TryRead(address, record)) return {};
+			if (!beats.empty() && record.time < beats.back().seconds) return {};
 
-		Beat beat;
-		auto [afterSeconds, secondsError] = std::from_chars(line.data(), end, beat.seconds);
-		if (secondsError != std::errc() || afterSeconds == end) return std::nullopt;
-
-		int measureFlag = 0;
-		auto [afterFlag, flagError] = std::from_chars(afterSeconds + 1, end, measureFlag);
-		if (flagError != std::errc()) return std::nullopt;
-
-		beat.startsMeasure = measureFlag == 1;
-		return beat;
+			beats.push_back({ record.time, record.beat == 0 });
+		}
+		return beats;
 	}
 }
 
-BeatMapSource::BeatMapSource()
-	: gameFolder(GameFolder()), rsModsFolder(gameFolder / "RSMods") {}
+std::optional<BeatMap> BeatMapSource::PollChanges() {
+	const std::optional<BeatVectorBounds> bounds = ReadBeatVectorBounds();
+	if (!bounds || !LooksLikeBeatVector(*bounds)) return std::nullopt;
 
-void BeatMapSource::Request(const std::string& songKey) {
-	if (!IsUsableSongKey(songKey)) return;
+	if (*bounds == lastBounds) return std::nullopt;
 
-	const bool firstRequest = requestedSongKeys.insert(songKey).second;
-	if (firstRequest) StartExtraction(songKey);
-}
+	BeatMap beats = CopyBeats(*bounds);
+	if (beats.empty()) return std::nullopt;
 
-BeatMap BeatMapSource::Load(const std::string& songKey) const {
-	if (!IsUsableSongKey(songKey)) return {};
-
-	BeatMap beats;
-	std::ifstream file(BeatsFile(songKey));
-	for (std::string line; std::getline(file, line);) {
-		if (line.empty() || line.front() == kHeaderMarker) continue;
-		if (auto beat = ParseBeat(line)) beats.push_back(*beat);
-	}
+	lastBounds = *bounds;
 	return beats;
 }
 
-std::filesystem::path BeatMapSource::BeatsFile(const std::string& songKey) const {
-	return rsModsFolder / "MetronomeBeats" / (songKey + kBeatsExtension);
-}
-
-void BeatMapSource::StartExtraction(const std::string& songKey) const {
-	const std::filesystem::path helper = rsModsFolder / "RSMods.exe";
-	const std::wstring wideSongKey(songKey.begin(), songKey.end()); // ASCII only, see IsUsableSongKey.
-
-	std::wstring commandLine = Quoted(helper.wstring()) + L" " + kExtractBeatsCommand
-		+ L" " + Quoted(gameFolder.wstring())
-		+ L" " + Quoted(wideSongKey)
-		+ L" " + Quoted(BeatsFile(songKey).wstring());
-
-	STARTUPINFOW startupInfo = { sizeof(startupInfo) };
-	PROCESS_INFORMATION process = {};
-	if (!CreateProcessW(nullptr, commandLine.data(), nullptr, nullptr, FALSE, CREATE_NO_WINDOW, nullptr, nullptr, &startupInfo, &process)) {
-		LOG_ERROR("(Metronome) Couldn't start " << helper.string() << " to extract the beats of " << songKey
-			<< " (error " << GetLastError() << ")" << std::endl);
-		return;
-	}
-
-	CloseHandle(process.hThread);
-	CloseHandle(process.hProcess);
+void BeatMapSource::Forget() {
+	lastBounds = {};
 }
