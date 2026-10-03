@@ -1,7 +1,8 @@
-#include "../stdafx.h"
 #include "MetronomeClickMixer.hpp"
 
 #include <algorithm>
+#include <cmath>
+#include <limits>
 #include <numbers>
 
 using Metronome::Beat;
@@ -21,7 +22,7 @@ namespace {
 	constexpr double kDecaySeconds = 0.006;
 	constexpr double kAccentHz = 1760.0;
 	constexpr double kBeatHz = 1320.0;
-	constexpr float kClickPeak = 0.3f; // Of full scale at 100% volume; as loud as the old in-song click at 220%.
+	constexpr float kClickPeak = 0.3f; // Envelope scale at 100% volume; as loud as the old in-song click at 220%.
 
 	// Custom sounds are cut to this length, so a long file picked by mistake can't flood the mix.
 	constexpr double kMaxCustomSoundSeconds = 1.0;
@@ -50,23 +51,29 @@ namespace {
 		return samples[index] + (samples[index + 1] - samples[index]) * fraction;
 	}
 
+	float Peak(const std::vector<float>& samples) {
+		float peak = 0.f;
+		for (float sample : samples) peak = std::max(peak, std::fabs(sample));
+		return peak;
+	}
+
 	// Resampled to the output rate and scaled to the built-in click's peak, so 100% sounds alike whatever the file.
-	std::vector<float> PrepareCustomSound(const Metronome::MonoSound& sound, uint32_t sampleRate) {
+	std::vector<float> PrepareCustomSound(const Metronome::MonoSound& sound, uint32_t sampleRate, float targetPeak) {
 		const double step = static_cast<double>(sound.sampleRate) / sampleRate;
 		const size_t length = std::min(static_cast<size_t>(sound.samples.size() / step), static_cast<size_t>(kMaxCustomSoundSeconds * sampleRate));
 
 		std::vector<float> samples(length);
 		for (size_t i = 0; i < length; ++i) samples[i] = LinearSample(sound.samples, i * step);
 
-		float peak = 0.f;
-		for (float sample : samples) peak = std::max(peak, std::fabs(sample));
+		const float peak = Peak(samples);
 		if (peak > 0.f)
-			for (float& sample : samples) sample *= kClickPeak / peak;
+			for (float& sample : samples) sample *= targetPeak / peak;
 		return samples;
 	}
 
 	std::vector<float> SoundFor(const std::optional<Metronome::MonoSound>& custom, double builtInHz, uint32_t sampleRate) {
-		return custom ? PrepareCustomSound(*custom, sampleRate) : SynthesizeClick(builtInHz, sampleRate);
+		std::vector<float> builtIn = SynthesizeClick(builtInHz, sampleRate);
+		return custom ? PrepareCustomSound(*custom, sampleRate, Peak(builtIn)) : builtIn;
 	}
 
 	template <typename Integer>

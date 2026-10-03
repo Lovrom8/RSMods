@@ -1,7 +1,10 @@
-#include "../stdafx.h"
 #include "MetronomeWav.hpp"
 
+#include <algorithm>
 #include <cstring>
+#include <fstream>
+#include <iterator>
+#include <optional>
 
 using Metronome::MonoSound;
 

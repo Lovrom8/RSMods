@@ -296,16 +296,19 @@
       <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="Mods\MetronomeClickMixer.cpp">
-      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Mods\MetronomeAudioHook.cpp">
       <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="Mods\MetronomeSongClock.cpp">
-      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Mods\MetronomeWav.cpp">
-      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Mods\MetronomeCountIn.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="ObjectUtil.cpp" />
     <ClCompile Include="CC\Effects\ShuffleTonesEffect.cpp">
@@ -488,6 +491,7 @@
     <ClInclude Include="Mods\MetronomeAudioHook.hpp" />
     <ClInclude Include="Mods\MetronomeSongClock.hpp" />
     <ClInclude Include="Mods\MetronomeWav.hpp" />
+    <ClInclude Include="Mods\MetronomeCountIn.hpp" />
     <ClInclude Include="Framework\GamePhase.hpp" />
     <ClInclude Include="Framework\CommandCollisionDiagnostics.hpp" />
     <ClInclude Include="Framework\CommandRouter.hpp" />

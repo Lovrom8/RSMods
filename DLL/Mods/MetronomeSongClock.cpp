@@ -1,5 +1,7 @@
-#include "../stdafx.h"
 #include "MetronomeSongClock.hpp"
+
+#include <algorithm>
+#include <cmath>
 
 using Metronome::ClockReading;
 using Metronome::SongClock;

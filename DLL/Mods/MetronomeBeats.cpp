@@ -54,9 +54,6 @@ namespace {
 	// Far above any real chart (a 10-minute song at 300 BPM has 3000 beats); more means the pointers are garbage.
 	constexpr size_t kMaxRecords = 20000;
 
-	constexpr char kCountInPhrase[] = "COUNT";
-	constexpr const char* kCountInEvents[] = { "B0", "B1" }; // The game's own count-in click, plain and accented.
-
 	uintptr_t ChartObject() {
 		return MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_chart, Offsets::ptr_chartOffsets, true);
 	}
@@ -88,9 +85,10 @@ namespace {
 		return records;
 	}
 
+	// SNG names are fixed-size and NUL-padded, but a full-length one has no terminator.
 	template <size_t Size>
-	bool NameIs(const char (&name)[Size], const char* expected) {
-		return strncmp(name, expected, Size) == 0;
+	std::string Name(const char (&name)[Size]) {
+		return std::string(name, strnlen(name, Size));
 	}
 
 	// Empty if the times don't ascend, which means the chart is being torn down.
@@ -104,29 +102,20 @@ namespace {
 		return beats;
 	}
 
-	std::optional<TimeRange> CountInPhrase(uintptr_t chart) {
-		const std::vector<PhraseRecord> phrases = ReadRecords<PhraseRecord>(chart, kPhrasesVector);
-		const auto countIn = std::ranges::find_if(phrases, [](const PhraseRecord& p) { return NameIs(p.name, kCountInPhrase); });
-		if (countIn == phrases.end()) return std::nullopt;
+	std::optional<TimeRange> GameCountInOf(uintptr_t chart) {
+		std::vector<std::string> phraseNames;
+		for (const PhraseRecord& phrase : ReadRecords<PhraseRecord>(chart, kPhrasesVector))
+			phraseNames.push_back(Name(phrase.name));
 
-		const int32_t countInId = static_cast<int32_t>(countIn - phrases.begin());
+		std::vector<Metronome::PhraseIteration> iterations;
 		for (const PhraseIterationRecord& iteration : ReadRecords<PhraseIterationRecord>(chart, kPhraseIterationsVector))
-			if (iteration.phraseId == countInId) return TimeRange{ iteration.startTime, iteration.nextPhraseTime };
-		return std::nullopt;
-	}
+			iterations.push_back({ iteration.phraseId, iteration.startTime, iteration.nextPhraseTime });
 
-	bool HasCountInClicks(uintptr_t chart, const TimeRange& range) {
-		auto isCountInClick = [&](const EventRecord& event) {
-			const bool countInName = std::ranges::any_of(kCountInEvents, [&](const char* name) { return NameIs(event.name, name); });
-			return countInName && event.time >= range.start && event.time < range.end;
-		};
-		return std::ranges::any_of(ReadRecords<EventRecord>(chart, kEventsVector), isCountInClick);
-	}
+		std::vector<Metronome::ChartEvent> events;
+		for (const EventRecord& event : ReadRecords<EventRecord>(chart, kEventsVector))
+			events.push_back({ event.time, Name(event.name) });
 
-	// The game clicks its own count-in only where a COUNT phrase holds B0/B1 events; anywhere else the metronome plays.
-	std::optional<TimeRange> SilencedCountIn(uintptr_t chart) {
-		const std::optional<TimeRange> countIn = CountInPhrase(chart);
-		return countIn && HasCountInClicks(chart, *countIn) ? countIn : std::nullopt;
+		return Metronome::GameCountIn(phraseNames, iterations, events);
 	}
 
 	void RemoveBeatsIn(BeatMap& beats, const TimeRange& range) {
@@ -140,7 +129,7 @@ std::optional<ChartBeats> BeatMapSource::PollChanges() {
 	if (!bounds || !HoldsRecords<BpmRecord>(*bounds) || bounds->begin == bounds->end) return std::nullopt;
 	if (*bounds == lastBounds) return std::nullopt;
 
-	ChartBeats chartBeats{ ToBeats(ReadRecords<BpmRecord>(chart, kBeatsVector)), SilencedCountIn(chart) };
+	ChartBeats chartBeats{ ToBeats(ReadRecords<BpmRecord>(chart, kBeatsVector)), GameCountInOf(chart) };
 	if (chartBeats.beats.empty()) return std::nullopt;
 
 	if (chartBeats.countIn) RemoveBeatsIn(chartBeats.beats, *chartBeats.countIn);

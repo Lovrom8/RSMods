@@ -4,6 +4,8 @@
 #include <optional>
 #include <vector>
 
+#include "MetronomeCountIn.hpp"
+
 namespace Metronome {
 	// One beat of the chart's beat grid (the SNG "ebeats").
 	struct Beat {
@@ -13,12 +15,6 @@ namespace Metronome {
 
 	// Beats in chart order, ascending by time.
 	using BeatMap = std::vector<Beat>;
-
-	// Chart time range, start included, end excluded.
-	struct TimeRange {
-		double start = 0.0;
-		double end = 0.0;
-	};
 
 	struct ChartBeats {
 		BeatMap beats;                    // Without the beats of a silenced count-in.
