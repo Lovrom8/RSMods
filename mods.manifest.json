@@ -28,7 +28,7 @@
     "type": "Int",
     "default": "100",
     "label": "Metronome Accent Volume",
-    "hint": "Volume of the click on the first beat of each measure. Above 100 the click gets louder but harder.",
+    "hint": "Volume of the click on the first beat of each measure. 100 is the normal level; up to 300 for loud songs.",
     "category": "Mod Settings",
     "min": 0,
     "max": 300,
@@ -51,33 +51,10 @@
     "type": "Int",
     "default": "100",
     "label": "Metronome Beat Volume",
-    "hint": "Volume of the click on every other beat. Above 100 the click gets louder but harder.",
+    "hint": "Volume of the click on every other beat. 100 is the normal level; up to 300 for loud songs.",
     "category": "Mod Settings",
     "min": 0,
     "max": 300,
-    "scale": null,
-    "choices": [],
-    "choicesSource": null,
-    "visibleWhen": {
-      "key": "MetronomeEnabled",
-      "equals": "on"
-    },
-    "editor": null,
-    "editedBy": null
-  },
-  {
-    "key": "MetronomeSongDucking",
-    "ini": {
-      "section": "Mod Settings",
-      "name": "MetronomeSongDucking"
-    },
-    "type": "Int",
-    "default": "50",
-    "label": "Metronome Song Ducking",
-    "hint": "Briefly lowers the song under each click so the click cuts through loud songs. 0 leaves the song alone.",
-    "category": "Mod Settings",
-    "min": 0,
-    "max": 100,
     "scale": null,
     "choices": [],
     "choicesSource": null,

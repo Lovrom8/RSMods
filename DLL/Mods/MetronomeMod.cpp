@@ -18,14 +18,11 @@ namespace {
 	constexpr char kBeatVolume[] = "MetronomeBeatVolume";
 	constexpr char kAccentSound[] = "MetronomeAccentSound";
 	constexpr char kBeatSound[] = "MetronomeBeatSound";
-	constexpr char kDucking[] = "MetronomeSongDucking";
 	constexpr char kOffset[] = "MetronomeOffsetMs";
 	constexpr char kToggleKey[] = "MetronomeToggleKey";
 
 	constexpr int kFullVolume = 100;
-	constexpr int kMaxVolume = 300; // Past full volume the click clips, which helps it cut through loud songs.
-	constexpr int kMaxDucking = 100;
-	constexpr int kDefaultDucking = 50;
+	constexpr int kMaxVolume = 300;
 	constexpr int kMaxOffsetMs = 500;
 
 	constexpr char kIndicatorId[] = "metronome";
@@ -55,9 +52,6 @@ namespace {
 		return static_cast<float>(c.Int(key)) / kFullVolume;
 	}
 
-	float DuckingDepth(const ModContext& c) {
-		return static_cast<float>(c.Int(kDucking)) / kMaxDucking;
-	}
 }
 
 SettingDefs MetronomeMod::Settings() const {
@@ -67,14 +61,9 @@ SettingDefs MetronomeMod::Settings() const {
 				"Toggle the clicks in game with the Metronome key; the top left corner shows whether they're on.\n"
 				"Turning this on takes effect after restarting the game."),
 		Volume(kAccentVolume, "Metronome Accent Volume")
-			.Hint("Volume of the click on the first beat of each measure. Above 100 the click gets louder but harder."),
+			.Hint("Volume of the click on the first beat of each measure. 100 is the normal level; up to 300 for loud songs."),
 		Volume(kBeatVolume, "Metronome Beat Volume")
-			.Hint("Volume of the click on every other beat. Above 100 the click gets louder but harder."),
-		SettingDef::Numeric(kDucking, "Metronome Song Ducking")
-			.Range(0, kMaxDucking)
-			.Default(std::to_string(kDefaultDucking))
-			.Hint("Briefly lowers the song under each click so the click cuts through loud songs. 0 leaves the song alone.")
-			.WithVisibleWhen(kEnabled),
+			.Hint("Volume of the click on every other beat. 100 is the normal level; up to 300 for loud songs."),
 		SoundFile(kAccentSound, "Metronome Accent Sound"),
 		SoundFile(kBeatSound, "Metronome Beat Sound"),
 		SettingDef::Numeric(kOffset, "Metronome Offset (ms)")
@@ -111,7 +100,6 @@ void MetronomeMod::OnSettingsChanged(ModContext& c) {
 
 void MetronomeMod::ApplySettings(const ModContext& c) {
 	clickMixer.SetLevels({ VolumeToLevel(c, kAccentVolume), VolumeToLevel(c, kBeatVolume) });
-	clickMixer.SetDucking(DuckingDepth(c));
 	clickMixer.SetOffset(std::chrono::milliseconds(c.Int(kOffset)));
 	// TODO: Load the kAccentSound / kBeatSound WAVs (off the audio thread) and hand them to the mixer.
 }

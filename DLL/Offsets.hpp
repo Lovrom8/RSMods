@@ -267,4 +267,7 @@ namespace Offsets {
 	// The playing arrangement's beat grid: a std::vector of SNG BPM records in the chart object.
 	inline VersioningStruct<uintptr_t> ptr_chartBeats;
 	extern std::vector<unsigned int> ptr_chartBeatsOffsets;
+
+	// Wwise's PortAudio output callback: copies the next rendered slot of Wwise's output ring into the device buffer.
+	inline VersioningStruct<uintptr_t> func_wwiseOutputCallback;
 };
