@@ -124,7 +124,7 @@ void Offsets::Initialize() {
 	ptr_noteData = { {0x00F5F62C, 0x00F6062C} };
 	ptr_scoreAttackNoteData = { {0x00F5F62C, 0x00F6062C} };
 	func_wwiseOutputCallback = { {0x00EF6A80, 0} };											// Code | 55 8b ec 56 8b 75 1c 57 8d 7e 10 57 ff 15 (callback of the PortAudio output stream, stream+0xC). Learn & Play not found yet.
-	ptr_chartBeats = { {0x00F5F62C, 0x00F6062C} };							// Memory | Scan for the first two beats (10.0, then the second beat's time 16 bytes later), pointer map the vector. Learn & Play untested.
+	ptr_chart = { {0x00F5F62C, 0x00F6062C} };							// Memory | Scan for the first two beats (10.0, then the second beat's time 16 bytes later), pointer map the vector. Learn & Play untested.
 
 	// Calibration meter volume sample count. Both sit in the block that sizes the volume-averaging ring
 	// buffer to the current framerate, even though the buffer is a fixed 100 floats per player.
@@ -263,7 +263,7 @@ namespace Offsets { // Addresses for pre-2021 patch are in the comments
 
 	std::vector<unsigned int> ptr_noteDataOffsets{ 0xB0, 0x18, 0x4, 0x84, 0x0 };
 	std::vector<unsigned int> ptr_scoreAttackNoteDataOffsets{ 0xB0, 0x18, 0x4, 0x4C, 0x0 };
-	std::vector<unsigned int> ptr_chartBeatsOffsets{ 0xB0, 0x78, 0x34 }; // Song object, chart object, the vector's begin pointer (end follows it).
+	std::vector<unsigned int> ptr_chartOffsets{ 0xB0, 0x78, 0x0 }; // Song object, then the chart object it points to.
 }
 
 

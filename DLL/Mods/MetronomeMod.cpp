@@ -139,12 +139,14 @@ void MetronomeMod::WarnIfAudioUnhooked() {
 }
 
 void MetronomeMod::RefreshBeats() {
-	std::optional<Metronome::BeatMap> beats = beatMapSource.PollChanges();
-	if (!beats) return;
+	std::optional<Metronome::ChartBeats> chart = beatMapSource.PollChanges();
+	if (!chart) return;
 
-	LOG_INFO("(Metronome) Loaded " << beats->size() << " beats of " << GameState::GetSongKey()
-		<< ", " << beats->front().seconds << " s to " << beats->back().seconds << " s" << std::endl);
-	clickMixer.SetBeats(std::move(*beats));
+	std::ostringstream countIn;
+	if (chart->countIn)
+		countIn << ", silent through the chart's own count-in (" << chart->countIn->start << " s to " << chart->countIn->end << " s)";
+	LOG_INFO("(Metronome) Loaded " << chart->beats.size() << " beats of " << GameState::GetSongKey() << countIn.str() << std::endl);
+	clickMixer.SetBeats(std::move(chart->beats));
 }
 
 void MetronomeMod::OnSongTick(ModContext& c) {

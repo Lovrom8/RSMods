@@ -264,9 +264,9 @@ namespace Offsets {
 	inline VersioningStruct<uintptr_t> ptr_noteData;
 	inline VersioningStruct<uintptr_t> ptr_scoreAttackNoteData;
 
-	// The playing arrangement's beat grid: a std::vector of SNG BPM records in the chart object.
-	inline VersioningStruct<uintptr_t> ptr_chartBeats;
-	extern std::vector<unsigned int> ptr_chartBeatsOffsets;
+	// The playing arrangement's chart object, which keeps each SNG section (beats, phrases, events...) as a std::vector.
+	inline VersioningStruct<uintptr_t> ptr_chart;
+	extern std::vector<unsigned int> ptr_chartOffsets;
 
 	// Wwise's PortAudio output callback: copies the next rendered slot of Wwise's output ring into the device buffer.
 	inline VersioningStruct<uintptr_t> func_wwiseOutputCallback;
