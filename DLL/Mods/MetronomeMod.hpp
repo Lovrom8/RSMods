@@ -27,8 +27,12 @@ private:
 	Metronome::ClickMixer clickMixer;
 	std::chrono::steady_clock::time_point songIndicatorHideTime;
 	bool warnedAudioUnhooked = false;
+	std::string loadedAccentPath;
+	std::string loadedBeatPath;
+	bool soundsLoaded = false;
 
 	void ApplySettings(const Framework::ModContext& c);
+	void ApplySounds(const Framework::ModContext& c);
 	void RefreshBeats();
 	void WarnIfAudioUnhooked();
 	void ToggleClicks();

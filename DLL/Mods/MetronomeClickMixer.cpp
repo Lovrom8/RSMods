@@ -23,6 +23,9 @@ namespace {
 	constexpr double kBeatHz = 1320.0;
 	constexpr float kClickPeak = 0.3f; // Of full scale at 100% volume; as loud as the old in-song click at 220%.
 
+	// Custom sounds are cut to this length, so a long file picked by mistake can't flood the mix.
+	constexpr double kMaxCustomSoundSeconds = 1.0;
+
 	// A song stream reaches its last beat; shorter streams (ambience, crowd loops) are left alone.
 	constexpr double kStreamLengthToleranceSeconds = 1.0;
 
@@ -38,6 +41,32 @@ namespace {
 			samples[i] = static_cast<float>(kClickPeak * envelope * std::sin(2.0 * std::numbers::pi * frequencyHz * t));
 		}
 		return samples;
+	}
+
+	float LinearSample(const std::vector<float>& samples, double position) {
+		const size_t index = static_cast<size_t>(position);
+		if (index + 1 >= samples.size()) return index < samples.size() ? samples[index] : 0.f;
+		const float fraction = static_cast<float>(position - index);
+		return samples[index] + (samples[index + 1] - samples[index]) * fraction;
+	}
+
+	// Resampled to the output rate and scaled to the built-in click's peak, so 100% sounds alike whatever the file.
+	std::vector<float> PrepareCustomSound(const Metronome::MonoSound& sound, uint32_t sampleRate) {
+		const double step = static_cast<double>(sound.sampleRate) / sampleRate;
+		const size_t length = std::min(static_cast<size_t>(sound.samples.size() / step), static_cast<size_t>(kMaxCustomSoundSeconds * sampleRate));
+
+		std::vector<float> samples(length);
+		for (size_t i = 0; i < length; ++i) samples[i] = LinearSample(sound.samples, i * step);
+
+		float peak = 0.f;
+		for (float sample : samples) peak = std::max(peak, std::fabs(sample));
+		if (peak > 0.f)
+			for (float& sample : samples) sample *= kClickPeak / peak;
+		return samples;
+	}
+
+	std::vector<float> SoundFor(const std::optional<Metronome::MonoSound>& custom, double builtInHz, uint32_t sampleRate) {
+		return custom ? PrepareCustomSound(*custom, sampleRate) : SynthesizeClick(builtInHz, sampleRate);
 	}
 
 	template <typename Integer>
@@ -69,8 +98,7 @@ namespace {
 }
 
 ClickMixer::ClickMixer() {
-	for (uint32_t sampleRate : kSupportedSampleRates)
-		clickSounds.push_back({ sampleRate, SynthesizeClick(kAccentHz, sampleRate), SynthesizeClick(kBeatHz, sampleRate) });
+	SetSounds(std::nullopt, std::nullopt);
 }
 
 ClickMixer::~ClickMixer() = default;
@@ -98,6 +126,16 @@ void ClickMixer::SetOffset(std::chrono::milliseconds offset) {
 	offsetMs.store(static_cast<int>(offset.count()));
 }
 
+void ClickMixer::SetSounds(const std::optional<MonoSound>& accent, const std::optional<MonoSound>& beat) {
+	auto set = std::make_unique<ClickSoundSet>();
+	for (uint32_t sampleRate : kSupportedSampleRates)
+		set->push_back({ sampleRate, SoundFor(accent, kAccentHz, sampleRate), SoundFor(beat, kBeatHz, sampleRate) });
+
+	publishedSounds.store(set.get());
+	retiredSounds = std::move(currentSounds);
+	currentSounds = std::move(set);
+}
+
 void ClickMixer::Mute() {
 	muted.store(true);
 }
@@ -118,28 +156,29 @@ bool ClickMixer::IsSongStream(uint32_t totalFrames, uint32_t sampleRate) const {
 	return streamSeconds >= beats->back().seconds - kStreamLengthToleranceSeconds;
 }
 
-const ClickMixer::ClickSounds* ClickMixer::SoundsFor(uint32_t sampleRate) const {
-	for (const ClickSounds& sounds : clickSounds)
+const ClickMixer::ClickSounds* ClickMixer::SoundsFor(const ClickSoundSet& set, uint32_t sampleRate) {
+	for (const ClickSounds& sounds : set)
 		if (sounds.sampleRate == sampleRate) return &sounds;
 	return nullptr;
 }
 
 void ClickMixer::MixInto(const OutputBuffer& buffer, const ClockReading& clock) {
-	const ClickSounds* sounds = SoundsFor(buffer.sampleRate);
+	const ClickSoundSet* set = publishedSounds.load();
+	const ClickSounds* sounds = set ? SoundsFor(*set, buffer.sampleRate) : nullptr;
 	if (sounds == nullptr) return;
 
 	const BeatMap* beats = published.load();
 	const bool playing = clock.song && clock.song->songSampleRate > 0 && beats != nullptr && !beats->empty() && !muted.load();
 	if (playing)
-		ScheduleClicks(*beats, *sounds, *clock.song, clock.outputFrame, buffer.frameCount);
+		ScheduleClicks(*beats, *set, *sounds, *clock.song, clock.outputFrame, buffer.frameCount);
 	else
 		scheduling = false;
 
 	// A click already sounding finishes even if the song pauses or the clicks are switched off.
-	RenderActiveClicks(buffer, clock.outputFrame);
+	RenderActiveClicks(buffer, clock.outputFrame, set);
 }
 
-void ClickMixer::ScheduleClicks(const BeatMap& beats, const ClickSounds& sounds, const SongPosition& song, int64_t bufferStart, uint32_t frameCount) {
+void ClickMixer::ScheduleClicks(const BeatMap& beats, const ClickSoundSet& set, const ClickSounds& sounds, const SongPosition& song, int64_t bufferStart, uint32_t frameCount) {
 	const double bufferSongFrames = frameCount * song.songFramesPerOutputFrame;
 	const double fromSongFrame = ScheduleFrom(song, bufferSongFrames);
 	const double toSongFrame = song.songFrame + bufferSongFrames;
@@ -157,7 +196,7 @@ void ClickMixer::ScheduleClicks(const BeatMap& beats, const ClickSounds& sounds,
 		// Converted at the output rate, so the click itself is never stretched; a late beat from a catch-up gap starts now.
 		const double outputFramesIn = std::max(0.0, (beatSongFrame - song.songFrame) / song.songFramesPerOutputFrame);
 		const bool accent = beat->startsMeasure;
-		Start({ bufferStart + std::llround(outputFramesIn), accent ? &sounds.accent : &sounds.beat,
+		Start({ bufferStart + std::llround(outputFramesIn), &set, accent ? &sounds.accent : &sounds.beat,
 			accent ? accentLevel.load() : beatLevel.load() });
 	}
 }
@@ -179,12 +218,13 @@ void ClickMixer::Start(const ActiveClick& click) {
 	activeClicks[activeClickCount++] = click;
 }
 
-void ClickMixer::RenderActiveClicks(const OutputBuffer& buffer, int64_t bufferStart) {
+void ClickMixer::RenderActiveClicks(const OutputBuffer& buffer, int64_t bufferStart, const ClickSoundSet* soundSet) {
 	const int64_t bufferEnd = bufferStart + buffer.frameCount;
 	int stillActive = 0;
 
 	for (int i = 0; i < activeClickCount; ++i) {
 		const ActiveClick& click = activeClicks[i];
+		if (click.soundSet != soundSet) continue;
 		const int64_t clickEnd = click.startFrame + static_cast<int64_t>(click.sound->size());
 		const int64_t from = std::max(click.startFrame, bufferStart);
 		const int64_t to = std::min(clickEnd, bufferEnd);

@@ -3,6 +3,7 @@
 
 #include "../SongTimer.hpp"
 #include "MetronomeAudioHook.hpp"
+#include "MetronomeWav.hpp"
 
 using Framework::ModContext;
 using Framework::SettingDef;
@@ -47,6 +48,40 @@ namespace {
 			.Category("Mod Settings")
 			.Hint("Path to a WAV file. Leave empty for the built-in click.")
 			.WithVisibleWhen(kEnabled);
+	}
+
+	// Pasted paths often keep their quotes. Relative paths are relative to the game folder.
+	std::filesystem::path SoundPath(std::string path) {
+		std::erase(path, '"');
+		const auto first = path.find_first_not_of(" 	");
+		const auto last = path.find_last_not_of(" 	");
+		if (first == std::string::npos) return {};
+
+		std::filesystem::path soundPath = std::filesystem::path(path.substr(first, last - first + 1));
+		if (soundPath.is_relative()) {
+			wchar_t exePath[MAX_PATH] = {};
+			GetModuleFileNameW(nullptr, exePath, MAX_PATH);
+			soundPath = std::filesystem::path(exePath).parent_path() / soundPath;
+		}
+		return soundPath;
+	}
+
+	// Empty when the setting is empty or the file can't be used; either way the built-in click plays.
+	std::optional<Metronome::MonoSound> LoadCustomSound(const std::string& setting, std::string_view which) {
+		const std::filesystem::path path = SoundPath(setting);
+		if (path.empty()) return std::nullopt;
+
+		auto loaded = Metronome::LoadWav(path);
+		if (auto* error = std::get_if<std::string>(&loaded)) {
+			LOG_ERROR("(Metronome) Couldn't use " << path.string() << " as the " << which << " sound (" << *error
+				<< "); playing the built-in click" << std::endl);
+			return std::nullopt;
+		}
+
+		const auto& sound = std::get<Metronome::MonoSound>(loaded);
+		LOG_INFO("(Metronome) Using " << path.string() << " as the " << which << " sound (" << sound.samples.size()
+			<< " samples at " << sound.sampleRate << " Hz)" << std::endl);
+		return sound;
 	}
 
 	float VolumeToLevel(const ModContext& c, std::string_view key) {
@@ -102,7 +137,19 @@ void MetronomeMod::OnSettingsChanged(ModContext& c) {
 void MetronomeMod::ApplySettings(const ModContext& c) {
 	clickMixer.SetLevels({ VolumeToLevel(c, kAccentVolume), VolumeToLevel(c, kBeatVolume) });
 	clickMixer.SetOffset(std::chrono::milliseconds(c.Int(kOffset)));
-	// TODO: Load the kAccentSound / kBeatSound WAVs (off the audio thread) and hand them to the mixer.
+	ApplySounds(c);
+}
+
+// Only reloads when a path changes: settings changes of any kind land here.
+void MetronomeMod::ApplySounds(const ModContext& c) {
+	const std::string accentPath = c.Value(kAccentSound);
+	const std::string beatPath = c.Value(kBeatSound);
+	if (accentPath == loadedAccentPath && beatPath == loadedBeatPath && soundsLoaded) return;
+
+	clickMixer.SetSounds(LoadCustomSound(accentPath, "accent"), LoadCustomSound(beatPath, "beat"));
+	loadedAccentPath = accentPath;
+	loadedBeatPath = beatPath;
+	soundsLoaded = true;
 }
 
 void MetronomeMod::ToggleClicks() {

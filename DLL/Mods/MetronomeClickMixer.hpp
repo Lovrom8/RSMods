@@ -4,10 +4,12 @@
 #include <chrono>
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "MetronomeBeats.hpp"
 #include "MetronomeSongClock.hpp"
+#include "MetronomeWav.hpp"
 
 namespace Metronome {
 	// Linear gains: 0 is silent, 1 the click at its normal level, up to 3.
@@ -41,6 +43,8 @@ namespace Metronome {
 		void ClearBeats();
 		void SetLevels(ClickLevels levels);
 		void SetOffset(std::chrono::milliseconds offset);
+		// A custom sound replaces the built-in click; empty keeps it. Prepared here, not on the audio thread.
+		void SetSounds(const std::optional<MonoSound>& accent, const std::optional<MonoSound>& beat);
 
 		void Mute();
 		void Unmute();
@@ -59,15 +63,23 @@ namespace Metronome {
 			std::vector<float> beat;
 		};
 
+		// One ClickSounds per supported output rate.
+		using ClickSoundSet = std::vector<ClickSounds>;
+
 		struct ActiveClick {
 			int64_t startFrame = 0; // Output frame.
+			const ClickSoundSet* soundSet = nullptr;
 			const std::vector<float>* sound = nullptr;
 			float level = 0.f;
 		};
 
 		static constexpr int kMaxActiveClicks = 4;
 
-		std::vector<ClickSounds> clickSounds; // One set per supported output rate, built up front.
+		// Swapped like the beat map. A click still sounding from a replaced set is cut off, so the audio thread lets go
+		// of a set within a buffer, long before the next swap frees it.
+		std::atomic<const ClickSoundSet*> publishedSounds = nullptr;
+		std::unique_ptr<const ClickSoundSet> currentSounds;
+		std::unique_ptr<const ClickSoundSet> retiredSounds;
 
 		// The audio threads read `published` without a lock. A replaced map is kept as `retired` until the next
 		// replacement, at least a MainThread tick later, by which time the audio threads are done with it.
@@ -87,10 +99,10 @@ namespace Metronome {
 		double scheduledUpToSongFrame = 0.0;
 
 		void Publish(std::unique_ptr<const BeatMap> beats);
-		const ClickSounds* SoundsFor(uint32_t sampleRate) const;
-		void ScheduleClicks(const BeatMap& beats, const ClickSounds& sounds, const SongPosition& song, int64_t bufferStart, uint32_t frameCount);
+		static const ClickSounds* SoundsFor(const ClickSoundSet& set, uint32_t sampleRate);
+		void ScheduleClicks(const BeatMap& beats, const ClickSoundSet& set, const ClickSounds& sounds, const SongPosition& song, int64_t bufferStart, uint32_t frameCount);
 		double ScheduleFrom(const SongPosition& song, double bufferSongFrames);
 		void Start(const ActiveClick& click);
-		void RenderActiveClicks(const OutputBuffer& buffer, int64_t bufferStart);
+		void RenderActiveClicks(const OutputBuffer& buffer, int64_t bufferStart, const ClickSoundSet* soundSet);
 	};
 }

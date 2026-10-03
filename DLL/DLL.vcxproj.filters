@@ -255,6 +255,9 @@
     <ClCompile Include="Mods\MetronomeSongClock.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
+    <ClCompile Include="Mods\MetronomeWav.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
     <ClCompile Include="MemUtil.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -768,6 +771,9 @@
       <Filter>Mods\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Mods\MetronomeSongClock.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\MetronomeWav.hpp">
       <Filter>Mods\Headers</Filter>
     </ClInclude>
     <ClInclude Include="CC\CCEffect.hpp">
