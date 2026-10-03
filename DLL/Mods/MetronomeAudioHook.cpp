@@ -43,6 +43,20 @@ namespace {
 
 	constexpr unsigned char kOutputCallbackPrologue[] = { 0x55, 0x8B, 0xEC, 0x56, 0x8B, 0x75, 0x1C, 0x57, 0x8D, 0x7E, 0x10, 0x57, 0xFF, 0x15 };
 
+	// The callback's code up to its copy, with the import and jump addresses masked. Finds it in game versions whose
+	// address isn't known (Learn & Play). The ring offsets stay literal: a differently laid out ring doesn't match.
+	constexpr unsigned char kOutputCallbackSignature[] = {
+		0x55, 0x8B, 0xEC, 0x56, 0x8B, 0x75, 0x1C, 0x57, 0x8D, 0x7E, 0x10, 0x57, 0xFF, 0x15, 0x00, 0x00, 0x00, 0x00, // EnterCriticalSection
+		0x8B, 0x86, 0xAC, 0x00, 0x00, 0x00,       // read slot
+		0x80, 0x7C, 0xC6, 0x2C, 0x00, 0x74, 0x00, // slot ready?
+		0x8B, 0x44, 0xC6, 0x28, 0x85, 0xC0, 0x74, 0x00,
+		0x8B, 0x4D, 0x0C, 0x85, 0xC9, 0x74, 0x00,
+		0x0F, 0xB7, 0x96, 0xC6, 0x00, 0x00, 0x00, // block align
+		0x0F, 0xAF, 0x15,
+	};
+	constexpr char kOutputCallbackMask[] = "xxxxxxxxxxxxxx????xxxxxxxxxxxx?xxxxxxx?xxxxxx?xxxxxxxxxx";
+	static_assert(sizeof(kOutputCallbackMask) - 1 == sizeof(kOutputCallbackSignature));
+
 	// Wwise's output ring, the output callback's userData. Read from the callback's code: it copies slot [+0xAC] of
 	// the ring to the device and advances it; Wwise renders into slot [+0xA8].
 	constexpr uintptr_t kRingWriteSlot = 0xA8;
@@ -63,6 +77,7 @@ namespace {
 		kOutputHookFailed = 1 << 6,
 		kOutputFormatUnsupported = 1 << 7,
 		kOutputFaulted = 1 << 8,
+		kOutputFoundBySignature = 1 << 9,
 	};
 
 	ClickMixer* mixer = nullptr;
@@ -163,9 +178,19 @@ namespace {
 		return result;
 	}
 
+	uintptr_t FindOutputCallback() {
+		const uintptr_t known = Offsets::func_wwiseOutputCallback.Get();
+		if (known != 0 && MemUtil::MatchesBytes(known, kOutputCallbackPrologue)) return known;
+
+		const uintptr_t found = MemUtil::FindPattern<uintptr_t>(MemUtil::GetTextSectionAddress(), MemUtil::GetTextSectionLength(),
+			const_cast<PBYTE>(kOutputCallbackSignature), kOutputCallbackMask);
+		if (found != 0) pendingStatus.fetch_or(kOutputFoundBySignature);
+		return found;
+	}
+
 	void HookOutputCallback() {
-		const uintptr_t target = Offsets::func_wwiseOutputCallback.Get();
-		if (target == 0 || !MemUtil::MatchesBytes(target, kOutputCallbackPrologue)) {
+		const uintptr_t target = FindOutputCallback();
+		if (target == 0) {
 			pendingStatus.fetch_or(kOutputHookFailed);
 			return;
 		}
@@ -260,7 +285,8 @@ void Metronome::AudioHook::LogStatus() {
 	if (status & kFactoryHookFailed) LOG_ERROR("(Metronome) Couldn't hook the Vorbis file-source factory" << std::endl);
 	if (status & kDecoderHooked) LOG_INFO("(Metronome) Hooked the Vorbis decoder output" << std::endl);
 	if (status & kDecoderHookFailed) LOG_ERROR("(Metronome) Couldn't hook the Vorbis decoder output" << std::endl);
-	if (status & kOutputHookInstalled) LOG_INFO("(Metronome) Hooked Wwise's output callback" << std::endl);
+	if (status & kOutputHookInstalled)
+		LOG_INFO("(Metronome) Hooked Wwise's output callback" << (status & kOutputFoundBySignature ? ", found by its signature" : "") << std::endl);
 	if (status & kOutputHookFailed) LOG_ERROR("(Metronome) Couldn't find Wwise's output callback in this game version; the metronome will be silent" << std::endl);
 	if (status & kOutputFormatUnsupported) LOG_ERROR("(Metronome) The game's output format isn't supported; the metronome will be silent" << std::endl);
 	if (status & kOutputFaulted) LOG_ERROR("(Metronome) Mixing the clicks failed and was switched off; the game's audio is unaffected" << std::endl);

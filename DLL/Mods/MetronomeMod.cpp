@@ -95,7 +95,8 @@ SettingDefs MetronomeMod::Settings() const {
 		SettingDef::Toggle(kEnabled, "Metronome")
 			.Hint("Plays a click on every beat of the song, with a different sound on the first beat of each measure.\n"
 				"Toggle the clicks in game with the Metronome key; the top left corner shows whether they're on.\n"
-				"Turning this on takes effect after restarting the game."),
+				"Turning this on takes effect after restarting the game.\n"
+				"Untested on the Learn & Play edition."),
 		Volume(kAccentVolume, "Metronome Accent Volume")
 			.Hint("Volume of the click on the first beat of each measure. 100 is the normal level; up to 300 for loud songs."),
 		Volume(kBeatVolume, "Metronome Beat Volume")

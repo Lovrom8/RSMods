@@ -8,7 +8,7 @@
     "type": "Bool",
     "default": "off",
     "label": "Metronome",
-    "hint": "Plays a click on every beat of the song, with a different sound on the first beat of each measure.\nToggle the clicks in game with the Metronome key; the top left corner shows whether they're on.\nTurning this on takes effect after restarting the game.",
+    "hint": "Plays a click on every beat of the song, with a different sound on the first beat of each measure.\nToggle the clicks in game with the Metronome key; the top left corner shows whether they're on.\nTurning this on takes effect after restarting the game.\nUntested on the Learn & Play edition.",
     "category": "Toggle Switches",
     "min": null,
     "max": null,

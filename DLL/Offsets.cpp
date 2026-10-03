@@ -123,7 +123,7 @@ void Offsets::Initialize() {
 
 	ptr_noteData = { {0x00F5F62C, 0x00F6062C} };
 	ptr_scoreAttackNoteData = { {0x00F5F62C, 0x00F6062C} };
-	func_wwiseOutputCallback = { {0x00EF6A80, 0} };											// Code | 55 8b ec 56 8b 75 1c 57 8d 7e 10 57 ff 15 (callback of the PortAudio output stream, stream+0xC). Learn & Play not found yet.
+	func_wwiseOutputCallback = { {0x00EF6A80, 0} };											// Code | 55 8b ec 56 8b 75 1c 57 8d 7e 10 57 ff 15 (callback of the PortAudio output stream, stream+0xC). Learn & Play: found by signature at startup, untested.
 	ptr_chart = { {0x00F5F62C, 0x00F6062C} };							// Memory | Scan for the first two beats (10.0, then the second beat's time 16 bytes later), pointer map the vector. Learn & Play untested.
 
 	// Calibration meter volume sample count. Both sit in the block that sizes the volume-averaging ring
