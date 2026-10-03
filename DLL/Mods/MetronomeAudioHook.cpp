@@ -76,6 +76,9 @@ namespace {
 	std::atomic<bool> decoderHookAttempted = false;
 	std::atomic<bool> decoderHooked = false;
 	std::atomic<uintptr_t> outputRing = 0;
+	constexpr float kNoChartTime = -1e9f;
+	constexpr double kChartTimeToleranceSeconds = 1.0; // The timer is read every 250 ms; the audio runs on meanwhile.
+	std::atomic<float> chartTime = kNoChartTime;
 	std::atomic<bool> outputFaulted = false;
 	std::atomic<bool> unsupportedFormatReported = false;
 	std::atomic<int> pendingStatus = 0;
@@ -89,11 +92,17 @@ namespace {
 			&& output->sampleRate > 0;
 	}
 
+	bool AgreesWithChartTime(const DecoderOutput* output) {
+		const double blockSeconds = static_cast<double>(output->positionStart) / output->sampleRate;
+		return std::abs(blockSeconds - chartTime.load()) <= kChartTimeToleranceSeconds;
+	}
+
 	// Wwise's render thread: no locks, allocations or logging. Tags the ring slot being rendered with the song position.
 	void __fastcall DecoderOutputHook(void* decoder, void* unusedEdx, DecoderOutput* output) {
 		originalDecoderOutput(decoder, unusedEdx, output);
 
 		if (!IsStereoMusicBlock(output) || !mixer->IsSongStream(output->totalFrames, output->sampleRate)) return;
+		if (!AgreesWithChartTime(output)) return;
 
 		uint32_t slot = 0;
 		if (MemUtil::TryRead(outputRing.load() + kRingWriteSlot, slot))
@@ -234,6 +243,14 @@ void Metronome::AudioHook::Install(ClickMixer& clickMixer) {
 
 bool Metronome::AudioHook::IsHooked() {
 	return decoderHooked.load() && originalOutputCallback != nullptr;
+}
+
+void Metronome::AudioHook::SetChartTime(float seconds) {
+	chartTime.store(seconds);
+}
+
+void Metronome::AudioHook::ClearChartTime() {
+	chartTime.store(kNoChartTime);
 }
 
 void Metronome::AudioHook::LogStatus() {

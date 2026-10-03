@@ -1,6 +1,7 @@
 #include "../stdafx.h"
 #include "MetronomeMod.hpp"
 
+#include "../SongTimer.hpp"
 #include "MetronomeAudioHook.hpp"
 
 using Framework::ModContext;
@@ -121,6 +122,7 @@ void MetronomeMod::OnSongEnter(ModContext&) {
 }
 
 void MetronomeMod::OnSongExit(ModContext&) {
+	Metronome::AudioHook::ClearChartTime();
 	beatMapSource.Forget();
 	clickMixer.ClearBeats();
 }
@@ -151,6 +153,7 @@ void MetronomeMod::RefreshBeats() {
 
 void MetronomeMod::OnSongTick(ModContext& c) {
 	RefreshBeats();
+	Metronome::AudioHook::SetChartTime(SongTimer::SongTimer());
 	Metronome::AudioHook::LogStatus();
 
 	if (std::chrono::steady_clock::now() < songIndicatorHideTime)

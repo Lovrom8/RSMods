@@ -18,6 +18,11 @@ namespace Metronome::AudioHook {
 	// False until both the music decoder and the output callback are hooked.
 	bool IsHooked();
 
+	// MainThread: the game's chart timer, while a song plays. Song audio more than a second away from it isn't clicked
+	// along to: while a song loads, the game sometimes plays its audio silently from another point, timer still at 0.
+	void SetChartTime(float seconds);
+	void ClearChartTime();
+
 	// MainThread. Logs what the hooks reported since the last call; the audio thread can't log.
 	void LogStatus();
 }
