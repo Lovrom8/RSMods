@@ -18,7 +18,7 @@ namespace {
 	constexpr double kDecaySeconds = 0.006;
 	constexpr double kAccentHz = 1760.0;
 	constexpr double kBeatHz = 1320.0;
-	constexpr float kClickPeak = 0.9f; // Of full scale. Songs are mastered near full scale, so ducking makes the room.
+	constexpr float kClickPeak = 1.f; // Full scale at 100% volume; above that the click clips, which only makes it louder.
 
 	// A song stream reaches its last beat; shorter streams (ambience, crowd loops) are left alone.
 	constexpr double kStreamLengthToleranceSeconds = 1.0;

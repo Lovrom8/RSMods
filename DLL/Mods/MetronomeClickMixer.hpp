@@ -9,7 +9,7 @@
 #include "MetronomeBeats.hpp"
 
 namespace Metronome {
-	// Linear gains, 0 (silent) to 1 (the click at its recorded level).
+	// Linear gains: 0 is silent, 1 the click at full scale. Above 1 the click clips, making it louder still.
 	struct ClickLevels {
 		float accent = 1.f; // First beat of a measure.
 		float beat = 1.f;   // Every other beat.

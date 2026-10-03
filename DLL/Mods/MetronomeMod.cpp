@@ -22,7 +22,8 @@ namespace {
 	constexpr char kOffset[] = "MetronomeOffsetMs";
 	constexpr char kToggleKey[] = "MetronomeToggleKey";
 
-	constexpr int kMaxVolume = 100;
+	constexpr int kFullVolume = 100;
+	constexpr int kMaxVolume = 300; // Past full volume the click clips, which helps it cut through loud songs.
 	constexpr int kMaxDucking = 100;
 	constexpr int kDefaultDucking = 50;
 	constexpr int kMaxOffsetMs = 500;
@@ -38,7 +39,7 @@ namespace {
 	SettingDef Volume(std::string_view key, std::string_view label) {
 		return SettingDef::Numeric(key, label)
 			.Range(0, kMaxVolume)
-			.Default(std::to_string(kMaxVolume))
+			.Default(std::to_string(kFullVolume))
 			.WithVisibleWhen(kEnabled);
 	}
 
@@ -51,7 +52,7 @@ namespace {
 	}
 
 	float VolumeToLevel(const ModContext& c, std::string_view key) {
-		return static_cast<float>(c.Int(key)) / kMaxVolume;
+		return static_cast<float>(c.Int(key)) / kFullVolume;
 	}
 
 	float DuckingDepth(const ModContext& c) {
@@ -66,9 +67,9 @@ SettingDefs MetronomeMod::Settings() const {
 				"Toggle the clicks in game with the Metronome key; the top left corner shows whether they're on.\n"
 				"Turning this on takes effect after restarting the game."),
 		Volume(kAccentVolume, "Metronome Accent Volume")
-			.Hint("Volume of the click on the first beat of each measure."),
+			.Hint("Volume of the click on the first beat of each measure. Above 100 the click gets louder but harder."),
 		Volume(kBeatVolume, "Metronome Beat Volume")
-			.Hint("Volume of the click on every other beat."),
+			.Hint("Volume of the click on every other beat. Above 100 the click gets louder but harder."),
 		SettingDef::Numeric(kDucking, "Metronome Song Ducking")
 			.Range(0, kMaxDucking)
 			.Default(std::to_string(kDefaultDucking))
