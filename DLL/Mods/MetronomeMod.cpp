@@ -1,7 +1,6 @@
 #include "../stdafx.h"
 #include "MetronomeMod.hpp"
 
-#include "../SongTimer.hpp"
 #include "MetronomeAudioHook.hpp"
 
 using Framework::ModContext;
@@ -19,10 +18,13 @@ namespace {
 	constexpr char kBeatVolume[] = "MetronomeBeatVolume";
 	constexpr char kAccentSound[] = "MetronomeAccentSound";
 	constexpr char kBeatSound[] = "MetronomeBeatSound";
+	constexpr char kDucking[] = "MetronomeSongDucking";
 	constexpr char kOffset[] = "MetronomeOffsetMs";
 	constexpr char kToggleKey[] = "MetronomeToggleKey";
 
 	constexpr int kMaxVolume = 100;
+	constexpr int kMaxDucking = 100;
+	constexpr int kDefaultDucking = 50;
 	constexpr int kMaxOffsetMs = 500;
 
 	constexpr char kIndicatorId[] = "metronome";
@@ -32,9 +34,6 @@ namespace {
 
 	// In a song the indicator only appears briefly after a toggle, to keep the highway clear.
 	constexpr auto kSongIndicatorDuration = 3s;
-
-	// TEMPORARY: how often to log the audio position against the song timer, to check they line up.
-	constexpr auto kAudioReportInterval = 5s;
 
 	SettingDef Volume(std::string_view key, std::string_view label) {
 		return SettingDef::Numeric(key, label)
@@ -54,6 +53,10 @@ namespace {
 	float VolumeToLevel(const ModContext& c, std::string_view key) {
 		return static_cast<float>(c.Int(key)) / kMaxVolume;
 	}
+
+	float DuckingDepth(const ModContext& c) {
+		return static_cast<float>(c.Int(kDucking)) / kMaxDucking;
+	}
 }
 
 SettingDefs MetronomeMod::Settings() const {
@@ -66,6 +69,11 @@ SettingDefs MetronomeMod::Settings() const {
 			.Hint("Volume of the click on the first beat of each measure."),
 		Volume(kBeatVolume, "Metronome Beat Volume")
 			.Hint("Volume of the click on every other beat."),
+		SettingDef::Numeric(kDucking, "Metronome Song Ducking")
+			.Range(0, kMaxDucking)
+			.Default(std::to_string(kDefaultDucking))
+			.Hint("Briefly lowers the song under each click so the click cuts through loud songs. 0 leaves the song alone.")
+			.WithVisibleWhen(kEnabled),
 		SoundFile(kAccentSound, "Metronome Accent Sound"),
 		SoundFile(kBeatSound, "Metronome Beat Sound"),
 		SettingDef::Numeric(kOffset, "Metronome Offset (ms)")
@@ -102,6 +110,7 @@ void MetronomeMod::OnSettingsChanged(ModContext& c) {
 
 void MetronomeMod::ApplySettings(const ModContext& c) {
 	clickMixer.SetLevels({ VolumeToLevel(c, kAccentVolume), VolumeToLevel(c, kBeatVolume) });
+	clickMixer.SetDucking(DuckingDepth(c));
 	clickMixer.SetOffset(std::chrono::milliseconds(c.Int(kOffset)));
 	// TODO: Load the kAccentSound / kBeatSound WAVs (off the audio thread) and hand them to the mixer.
 }
@@ -140,20 +149,6 @@ void MetronomeMod::WarnIfAudioUnhooked() {
 	warnedAudioUnhooked = true;
 }
 
-void MetronomeMod::ReportAudioActivity() {
-	const auto now = std::chrono::steady_clock::now();
-	if (now < nextAudioReportTime) return;
-	nextAudioReportTime = now + kAudioReportInterval;
-
-	const Metronome::AudioActivity activity = clickMixer.Activity();
-	if (activity.lastSampleRate == 0) return;
-
-	LOG_INFO("(Metronome) Audio at " << static_cast<double>(activity.lastFirstFrame) / activity.lastSampleRate
-		<< " s of a " << static_cast<double>(activity.lastTotalFrames) / activity.lastSampleRate << " s stream ("
-		<< activity.lastSampleRate << " Hz), song timer " << SongTimer::SongTimer() << " s, "
-		<< activity.blocksWithClicks << " blocks with clicks" << std::endl);
-}
-
 void MetronomeMod::RefreshBeats() {
 	std::optional<Metronome::BeatMap> beats = beatMapSource.PollChanges();
 	if (!beats) return;
@@ -166,7 +161,6 @@ void MetronomeMod::RefreshBeats() {
 void MetronomeMod::OnSongTick(ModContext& c) {
 	RefreshBeats();
 	Metronome::AudioHook::LogStatus();
-	ReportAudioActivity();
 
 	if (std::chrono::steady_clock::now() < songIndicatorHideTime)
 		ShowIndicator(c);

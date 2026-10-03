@@ -24,14 +24,6 @@ namespace Metronome {
 		uint32_t sampleRate = 0;
 	};
 
-	// What the audio thread last saw, for MainThread to log. Plain counters, no locks.
-	struct AudioActivity {
-		uint32_t lastTotalFrames = 0;
-		uint32_t lastSampleRate = 0;
-		uint32_t lastFirstFrame = 0;
-		uint32_t blocksWithClicks = 0;
-	};
-
 	// Adds a click at each beat of the current song into the song's decoded audio.
 	//
 	// Configured from MainThread; MixInto runs on the audio thread, which must never block, lock, allocate
@@ -45,6 +37,8 @@ namespace Metronome {
 		void ClearBeats();
 		void SetLevels(ClickLevels levels);
 		void SetOffset(std::chrono::milliseconds offset);
+		// How far the song dips under each click so it cuts through: 0 (not at all) to 1 (silent).
+		void SetDucking(float depth);
 
 		void Mute();
 		void Unmute();
@@ -53,13 +47,12 @@ namespace Metronome {
 		// Audio thread.
 		void MixInto(const AudioBlock& block);
 
-		AudioActivity Activity() const;
-
 	private:
 		struct ClickSounds {
 			uint32_t sampleRate = 0;
 			std::vector<float> accent;
 			std::vector<float> beat;
+			std::vector<float> duckingEnvelope;
 		};
 
 		std::vector<ClickSounds> clickSounds; // One set per supported sample rate, built up front.
@@ -72,16 +65,11 @@ namespace Metronome {
 
 		std::atomic<float> accentLevel = 1.f;
 		std::atomic<float> beatLevel = 1.f;
+		std::atomic<float> ducking = 0.f;
 		std::atomic<int> offsetMs = 0;
 		std::atomic<bool> muted = false;
 
-		std::atomic<uint32_t> lastTotalFrames = 0;
-		std::atomic<uint32_t> lastSampleRate = 0;
-		std::atomic<uint32_t> lastFirstFrame = 0;
-		std::atomic<uint32_t> blocksWithClicks = 0;
-
 		void Publish(std::unique_ptr<const BeatMap> beats);
 		const ClickSounds* SoundsFor(uint32_t sampleRate) const;
-		void RecordActivity(const AudioBlock& block);
 	};
 }

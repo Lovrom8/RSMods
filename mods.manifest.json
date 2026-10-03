@@ -66,6 +66,29 @@
     "editedBy": null
   },
   {
+    "key": "MetronomeSongDucking",
+    "ini": {
+      "section": "Mod Settings",
+      "name": "MetronomeSongDucking"
+    },
+    "type": "Int",
+    "default": "50",
+    "label": "Metronome Song Ducking",
+    "hint": "Briefly lowers the song under each click so the click cuts through loud songs. 0 leaves the song alone.",
+    "category": "Mod Settings",
+    "min": 0,
+    "max": 100,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": {
+      "key": "MetronomeEnabled",
+      "equals": "on"
+    },
+    "editor": null,
+    "editedBy": null
+  },
+  {
     "key": "MetronomeAccentSound",
     "ini": {
       "section": "Mod Settings",
