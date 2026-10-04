@@ -27,8 +27,9 @@ namespace {
 	// Custom sounds are cut to this length, so a long file picked by mistake can't flood the mix.
 	constexpr double kMaxCustomSoundSeconds = 1.0;
 
-	// A song stream reaches its last beat; shorter streams (ambience, crowd loops) are left alone.
-	constexpr double kStreamLengthToleranceSeconds = 1.0;
+	// Charts often put beats past the end of their audio, some by minutes, so the song stream only has to cover part of
+	// the beat map. Much shorter streams (ambience loops) are left alone.
+	constexpr double kMinSongStreamCoverage = 0.5;
 
 	// Song position gaps up to this many buffers are the clock's estimate catching up, not a seek: beats inside are still played.
 	constexpr double kContinuousGapBuffers = 4.0;
@@ -160,7 +161,7 @@ bool ClickMixer::IsSongStream(uint32_t totalFrames, uint32_t sampleRate) const {
 	if (beats == nullptr || beats->empty() || sampleRate == 0) return false;
 
 	const double streamSeconds = static_cast<double>(totalFrames) / sampleRate;
-	return streamSeconds >= beats->back().seconds - kStreamLengthToleranceSeconds;
+	return streamSeconds >= beats->back().seconds * kMinSongStreamCoverage;
 }
 
 const ClickMixer::ClickSounds* ClickMixer::SoundsFor(const ClickSoundSet& set, uint32_t sampleRate) {

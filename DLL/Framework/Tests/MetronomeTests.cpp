@@ -214,11 +214,19 @@ namespace {
 		Check("a long custom sound stops after a second", Peak(std::vector<float>(samples.begin() + kRate + 1000, samples.end())) == 0.f);
 	}
 
-	void TestIsSongStream() {
+	// Whether audio of the given length counts as the song of a beat map ending at `lastBeatSeconds`
+	bool CountsAsSong(double audioSeconds, double lastBeatSeconds, uint32_t sampleRate = kRate) {
 		ClickMixer mixer;
-		mixer.SetBeats(Beats({ 10.0, 200.0 }));
-		Check("a stream reaching the last beat is the song", mixer.IsSongStream(201 * kRate, kRate));
-		Check("a short stream (preview, ambience) is not the song", !mixer.IsSongStream(30 * kRate, kRate));
+		mixer.SetBeats(Beats({ 0.0, lastBeatSeconds }));
+		return mixer.IsSongStream(static_cast<uint32_t>(audioSeconds * sampleRate), sampleRate);
+	}
+
+	void TestIsSongStream() {
+		Check("audio reaching the last beat is the song", CountsAsSong(100.0, 100.0));
+		Check("audio ending before the last beat is still the song", CountsAsSong(90.0, 100.0));
+		Check("audio covering half the beat map is still the song", CountsAsSong(50.0, 100.0));
+		Check("audio covering less than half the beat map is not the song (ambience loops)", !CountsAsSong(49.0, 100.0));
+		Check("the audio's length is measured at its own sample rate", CountsAsSong(90.0, 100.0, 44100));
 	}
 
 	// Song clock
@@ -279,30 +287,35 @@ namespace {
 
 	// Count-in
 
-	const std::vector<std::string> kPhrases{ "COUNT", "p0", "END" };
-	const std::vector<PhraseIteration> kIterations{ { 0, 8.922, 10.351 }, { 1, 10.351, 21.779 }, { 2, 21.779, 30.0 } };
+	const std::vector<std::string> kPhrases{ "COUNT", "verse", "END" };
+	const std::vector<PhraseIteration> kIterations{ { 0, 2.0, 4.0 }, { 1, 4.0, 20.0 }, { 2, 20.0, 30.0 } };
 
 	void TestCountInWithClicksIsSilenced() {
-		const auto range = Metronome::GameCountIn(kPhrases, kIterations, { { 8.922, "B0" }, { 9.398, "B0" }, { 9.874, "B0" } });
-		Check("COUNT with B0 events is the game's count-in", range && range->start == 8.922 && range->end == 10.351);
-		Check("B1 events count too", Metronome::GameCountIn(kPhrases, kIterations, { { 9.0, "B1" } }).has_value());
+		const auto range = Metronome::GameCountIn(kPhrases, kIterations, { { 2.0, "B0" }, { 2.5, "B0" }, { 3.0, "B0" } });
+		Check("COUNT with B0 events is the game's count-in", range && range->start == 2.0 && range->end == 4.0);
+		Check("B1 events count too", Metronome::GameCountIn(kPhrases, kIterations, { { 3.0, "B1" } }).has_value());
 	}
 
 	void TestCountInWithoutClicksPlays() {
-		Check("COUNT without B0/B1 events leaves the metronome on", !Metronome::GameCountIn(kPhrases, kIterations, { { 8.922, "TS:6/8" } }));
+		Check("COUNT without B0/B1 events leaves the metronome on", !Metronome::GameCountIn(kPhrases, kIterations, { { 2.0, "TS:4/4" } }));
 	}
 
 	void TestClicksWithoutCountInPlay() {
-		const std::vector<std::string> noCount{ "intro", "p0" };
-		Check("B0 events without a COUNT phrase leave the metronome on", !Metronome::GameCountIn(noCount, kIterations, { { 8.922, "B0" } }));
+		const std::vector<std::string> noCount{ "intro", "verse" };
+		Check("B0 events without a COUNT phrase leave the metronome on", !Metronome::GameCountIn(noCount, kIterations, { { 2.0, "B0" } }));
 	}
 
 	void TestClicksOutsideCountInDontCount() {
-		Check("B0 events outside COUNT don't make it a count-in", !Metronome::GameCountIn(kPhrases, kIterations, { { 12.0, "B0" } }));
+		Check("B0 events outside COUNT don't make it a count-in", !Metronome::GameCountIn(kPhrases, kIterations, { { 10.0, "B0" } }));
+	}
+
+	void TestCountInRangeExcludesItsEnd() {
+		Check("a B0 event on the COUNT phrase's first beat counts", Metronome::GameCountIn(kPhrases, kIterations, { { 2.0, "B0" } }).has_value());
+		Check("a B0 event where the next phrase starts doesn't count", !Metronome::GameCountIn(kPhrases, kIterations, { { 4.0, "B0" } }));
 	}
 
 	void TestCountInWithoutIterationPlays() {
-		Check("a COUNT phrase never placed in the chart is ignored", !Metronome::GameCountIn(kPhrases, { { 1, 10.351, 21.779 } }, { { 9.0, "B0" } }));
+		Check("a COUNT phrase never placed in the chart is ignored", !Metronome::GameCountIn(kPhrases, { { 1, 4.0, 20.0 } }, { { 3.0, "B0" } }));
 	}
 }
 
@@ -336,6 +349,7 @@ int main() {
 	TestCountInWithoutClicksPlays();
 	TestClicksWithoutCountInPlay();
 	TestClicksOutsideCountInDontCount();
+	TestCountInRangeExcludesItsEnd();
 	TestCountInWithoutIterationPlays();
 
 	if (g_failures > 0) {
