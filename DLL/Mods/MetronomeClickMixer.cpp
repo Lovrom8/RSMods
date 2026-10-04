@@ -22,7 +22,7 @@ namespace {
 	constexpr double kDecaySeconds = 0.006;
 	constexpr double kAccentHz = 1760.0;
 	constexpr double kBeatHz = 1320.0;
-	constexpr float kClickPeak = 0.3f; // Envelope scale at 100% volume; as loud as the old in-song click at 220%.
+	constexpr float kClickPeak = 0.4f; // Envelope scale at 100% volume; loud enough to cut through distorted guitars.
 
 	// Custom sounds are cut to this length, so a long file picked by mistake can't flood the mix.
 	constexpr double kMaxCustomSoundSeconds = 1.0;
