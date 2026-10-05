@@ -85,6 +85,7 @@ $Tests = @(
     @{ Name = 'MenuRegistryTests';      Sources = @('MenuRegistry.cpp') },
     @{ Name = 'DrawRegistryTests';      Sources = @('DrawRegistry.cpp') },
     @{ Name = 'SettingsSchemaTests';    Sources = @('SettingsSchema.cpp') },
+    @{ Name = 'IniPatchTests';          Sources = @() },  # header-only DLL/IniPatch.hpp
     @{ Name = 'StateMachineTests';      Sources = @('ModRegistry.cpp', 'ResourceLedger.cpp', 'HookWatchdog.cpp', 'StallMonitor.cpp', 'CommandRouter.cpp', 'MainThreadInbox.cpp', 'CommandCollisionDiagnostics.cpp', 'HudRegistry.cpp', 'MenuRegistry.cpp', 'DrawRegistry.cpp', 'SettingsSchema.cpp') }
 )
 
