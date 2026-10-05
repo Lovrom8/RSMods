@@ -70,6 +70,8 @@ namespace RSMods
         private bool _changedSinceSave; // A value was set to something new; reading or seeding a default doesn't count.
         private bool _fileOutOfDate;    // Anything the file on disk lacks, seeded defaults and corrections included.
 
+        public string FilePath => filePath;
+
         public void Load()
         {
             lock (_gate)
@@ -426,6 +428,32 @@ namespace RSMods
                     MarkChanged();
                 }
                 _shownDefaults.Remove(ShownDefaultId(section, key));
+            }
+        }
+
+        /// <summary>
+        /// Sets a value the game already applied (an edit from its in-game settings window): the next <see cref="Save"/>
+        /// writes it, but it doesn't count as a change the game has to reload.
+        /// </summary>
+        public void SetStringFromGame(string section, string key, string value)
+        {
+            lock (_gate)
+            {
+                // The file now holds the game's value, so a screen saving back its shown default is a real change.
+                _shownDefaults.Remove(ShownDefaultId(section, key));
+
+                var line = Find(_data, section, key);
+                if (line == null)
+                {
+                    AddLine(section, key, value, commented: false);
+                    _fileOutOfDate = true;
+                }
+                else if (line.Value != value)
+                {
+                    line.Value = value;
+                    line.Raw = null;
+                    _fileOutOfDate = true;
+                }
             }
         }
 

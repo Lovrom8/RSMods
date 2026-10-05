@@ -36,6 +36,7 @@ public sealed class App : Application
             services.AddSingleton<IChoicesProvider, AvaloniaChoicesProvider>();
             services.AddSingleton<SettingsCoordinator>();
             services.AddSingleton<SettingsService>();
+            services.AddSingleton<GameSettingsReceiver>();
             services.AddSingleton<AutoSaveService>();
             services.AddSingleton<RocksmithSettingsService>();
             services.AddSingleton<AsioSettingsService>();
@@ -89,6 +90,7 @@ public sealed class App : Application
             TryApplySavedAppearanceEarly();
 
             desktop.MainWindow = _services.GetRequiredService<MainWindow>();
+            _services.GetRequiredService<GameSettingsReceiver>().Attach(desktop.MainWindow);
             desktop.Exit += (_, _) => _services.Dispose();
         }
 
