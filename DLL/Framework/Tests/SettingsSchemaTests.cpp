@@ -77,6 +77,8 @@ int main() {
 		Check("Has('RRSpeed')", reg.Has("RRSpeed"));
 		Check("Has('Theme')", reg.Has("Theme"));
 		Check("!Has('NonExistent')", !reg.Has("NonExistent"));
+		Check("OwnerOf('RRSpeed') is its registrant", reg.OwnerOf("RRSpeed") == Owner(1));
+		Check("OwnerOf('NonExistent') is null", reg.OwnerOf("NonExistent") == nullptr);
 
 		const auto* s1 = reg.Find("AllowRewind");
 		Check("Find('AllowRewind') not null", s1 != nullptr);

@@ -21,7 +21,7 @@ namespace Framework {
 	MenuRegistry::~MenuRegistry() = default;
 
 	void MenuRegistry::Register(const IMod* owner, std::string id, std::string title, int order,
-		MenuDrawFn drawFn, Availability availability, bool standaloneWindow) {
+		MenuDrawFn drawFn, Availability availability, bool standaloneWindow, bool playerFacing) {
 		std::lock_guard<std::mutex> lock(impl->mutex);
 
 		auto it = impl->Find(owner, id);
@@ -33,7 +33,8 @@ namespace Framework {
 				order,
 				availability,
 				std::move(drawFn),
-				standaloneWindow
+				standaloneWindow,
+				playerFacing
 			});
 		}
 		else {
@@ -42,6 +43,7 @@ namespace Framework {
 			it->availability = availability;
 			it->drawFn = std::move(drawFn);
 			it->standaloneWindow = standaloneWindow;
+			it->playerFacing = playerFacing;
 		}
 	}
 

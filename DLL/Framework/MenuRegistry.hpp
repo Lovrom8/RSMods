@@ -21,6 +21,7 @@ namespace Framework {
 		Availability availability = Availability::Active;
 		MenuDrawFn drawFn;
 		bool standaloneWindow = false; // true = drawFn manages its own window; false = rendered as collapsible header in RS Mods window
+		bool playerFacing = false;     // Standalone windows only: shown in release builds too; everything else is a debug tool
 	};
 
 	class MenuRegistry {
@@ -34,7 +35,7 @@ namespace Framework {
 		// MainThread / initialization: register or update a menu entry.
 		void Register(const IMod* owner, std::string id, std::string title, int order,
 			MenuDrawFn drawFn, Availability availability = Availability::Active,
-			bool standaloneWindow = false);
+			bool standaloneWindow = false, bool playerFacing = false);
 
 		// Drop all menu entries owned by this mod (e.g. on mod teardown or fault).
 		void RemoveMod(const IMod* owner);

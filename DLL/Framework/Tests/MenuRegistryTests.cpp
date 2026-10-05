@@ -54,7 +54,7 @@ int main() {
 	{
 		MenuRegistry menus;
 		menus.Register(Owner(1), "settings", "Old Title", 5, [] {});
-		menus.Register(Owner(1), "settings", "New Title", 15, [] {}, Availability::Initialized, true);
+		menus.Register(Owner(1), "settings", "New Title", 15, [] {}, Availability::Initialized, true, true);
 
 		const auto all = menus.GetEntries();
 		Check("upsert replaces in place",
@@ -62,7 +62,8 @@ int main() {
 			all[0].title == "New Title" &&
 			all[0].order == 15 &&
 			all[0].availability == Availability::Initialized &&
-			all[0].standaloneWindow == true);
+			all[0].standaloneWindow == true &&
+			all[0].playerFacing == true);
 	}
 
 	// Id is scoped per owner.

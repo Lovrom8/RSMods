@@ -372,6 +372,7 @@ namespace Framework {
 		// Queries
 		const SettingDef* Find(std::string_view key) const;
 		bool Has(std::string_view key) const;
+		const IMod* OwnerOf(std::string_view key) const; // nullptr if undeclared
 		size_t Size() const { return entries.size(); }
 
 		// Returns all registered setting declarations in registration order

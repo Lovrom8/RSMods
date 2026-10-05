@@ -57,6 +57,11 @@ namespace Framework {
 		return keyToIndex.find(std::string(key)) != keyToIndex.end();
 	}
 
+	const IMod* SettingsSchemaRegistry::OwnerOf(std::string_view key) const {
+		auto it = keyToIndex.find(std::string(key));
+		return it != keyToIndex.end() ? entries[it->second].owner : nullptr;
+	}
+
 	SettingDefs SettingsSchemaRegistry::GetAll() const {
 		SettingDefs result;
 		result.reserve(entries.size());
