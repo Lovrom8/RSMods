@@ -99,6 +99,7 @@ public static class ModCatalog
         ["SecondaryMonitor"] = "Game & Window",
         ["Ultrawide"] = "Game & Window",
         ["GuitarSpeak"] = "Game & Window",
+        ["SettingsMenuEnabled"] = "Game & Window",
     };
 
     private static readonly Dictionary<string, string> Titles = new(StringComparer.OrdinalIgnoreCase)

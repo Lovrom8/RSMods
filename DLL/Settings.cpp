@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Settings.hpp"
 #include "Framework/SettingsSchema.hpp"
+#include "SettingEdits.hpp"
 
 #include <mutex>
 #include <shared_mutex>
@@ -497,6 +498,7 @@ void Settings::SetNoteColors(int strIndex, RSColor c, bool CB) {
 /// </summary>
 void Settings::UpdateSettings() {
 	ReadModSettings();
+	SettingEdits::ReapplyPending(); // In-game edits the file doesn't have yet
 	ReadStringColors();
 	ReadNotewayColors();
 

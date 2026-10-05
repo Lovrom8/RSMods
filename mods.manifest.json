@@ -741,6 +741,46 @@
     "editedBy": null
   },
   {
+    "key": "SettingsMenuEnabled",
+    "ini": {
+      "section": "Toggle Switches",
+      "name": "SettingsMenuEnabled"
+    },
+    "type": "Bool",
+    "default": "on",
+    "label": "In-Game Settings Window",
+    "hint": "Press the key below in game to change mod settings without leaving Rocksmith.\nChanges made there apply right away and are saved like changes made here.",
+    "category": "Toggle Switches",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null,
+    "editedBy": null
+  },
+  {
+    "key": "ToggleSettingsMenuKey",
+    "ini": {
+      "section": "Keybinds",
+      "name": "ToggleSettingsMenuKey"
+    },
+    "type": "Key",
+    "default": "VK_F9",
+    "label": "Show In-Game Settings",
+    "hint": "",
+    "category": "Keybinds",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null,
+    "editedBy": null
+  },
+  {
     "key": "RemoveSkylineEnabled",
     "ini": {
       "section": "Toggle Switches",

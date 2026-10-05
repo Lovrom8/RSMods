@@ -195,6 +195,9 @@
     <ClCompile Include="Mods\RemoveLyricsMod.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
+    <ClCompile Include="Mods\SettingsMenuMod.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
     <ClCompile Include="Mods\RemoveSkylineMod.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
@@ -394,6 +397,12 @@
       <Filter>D3D</Filter>
     </ClCompile>
     <ClCompile Include="Menu.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SettingsMenu.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SettingEdits.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="DirectInputCapture.cpp">
@@ -695,6 +704,9 @@
     <ClInclude Include="Mods\RemoveLyricsMod.hpp">
       <Filter>Mods\Headers</Filter>
     </ClInclude>
+    <ClInclude Include="Mods\SettingsMenuMod.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
     <ClInclude Include="Mods\RemoveSkylineMod.hpp">
       <Filter>Mods\Headers</Filter>
     </ClInclude>
@@ -921,6 +933,15 @@
       <Filter>Main Headers</Filter>
     </ClInclude>
     <ClInclude Include="Menu.hpp">
+      <Filter>Main Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="SettingsMenu.hpp">
+      <Filter>Main Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="SettingEdits.hpp">
+      <Filter>Main Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="IniPatch.hpp">
       <Filter>Main Headers</Filter>
     </ClInclude>
     <ClInclude Include="QualityOfLife.hpp">

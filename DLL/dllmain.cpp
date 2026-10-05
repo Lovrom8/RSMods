@@ -2,6 +2,7 @@
 #include "Proxy.hpp"
 #include "DirectInputCapture.hpp"
 #include "ModManager.hpp"
+#include "SettingsMenu.hpp"
 #include "Framework/Framework.hpp"
 #include "Mods/Midi.hpp"
 #include "Mods/TwitchMod.hpp"
@@ -266,6 +267,7 @@ unsigned WINAPI MainThread() {
 	ModManager::InitializeMods(debug);
 	ModManager::ApplyStartupMods();
 	Framework::Registry().DispatchInitialize();
+	SettingsMenu::Register();
 
 	auto nextModTick = std::chrono::steady_clock::now() + std::chrono::milliseconds(250);
 	while (!GameState::GameClosing) {

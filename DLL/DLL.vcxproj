@@ -113,6 +113,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Menu.cpp" />
+    <ClCompile Include="SettingsMenu.cpp" />
+    <ClCompile Include="SettingEdits.cpp" />
     <ClCompile Include="DirectInputCapture.cpp" />
     <ClCompile Include="ModManager.cpp" />
     <ClCompile Include="Framework\CommandCollisionDiagnostics.cpp">
@@ -245,6 +247,9 @@
       <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="Mods\RemoveSkylineMod.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\SettingsMenuMod.cpp">
       <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="Mods\RiffRepeater.cpp">
@@ -415,6 +420,9 @@
     <ClInclude Include="Lib\Midi\RtMidi.h" />
     <ClInclude Include="Log.hpp" />
     <ClInclude Include="Menu.hpp" />
+    <ClInclude Include="SettingsMenu.hpp" />
+    <ClInclude Include="SettingEdits.hpp" />
+    <ClInclude Include="IniPatch.hpp" />
     <ClInclude Include="MidiPedal.h" />
     <ClInclude Include="ModManager.hpp" />
     <ClInclude Include="Mods\AllowAudioInBackgroundMod.hpp" />
@@ -450,6 +458,7 @@
     <ClInclude Include="Mods\RemoveLaneMarkersMod.hpp" />
     <ClInclude Include="Mods\RemoveLyricsMod.hpp" />
     <ClInclude Include="Mods\RemoveSkylineMod.hpp" />
+    <ClInclude Include="Mods\SettingsMenuMod.hpp" />
     <ClInclude Include="Mods\RiffRepeater.hpp" />
     <ClInclude Include="Mods\RiffRepeaterMod.hpp" />
     <ClInclude Include="Mods\ScreenShotScoresMod.hpp" />
