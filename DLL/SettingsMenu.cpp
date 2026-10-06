@@ -16,6 +16,8 @@ namespace SettingsMenu {
 	namespace {
 		struct Group {
 			std::string title;
+			std::optional<Framework::SettingHeading> heading;  // None goes last, as "Other"
+			std::string headingName;
 			std::vector<SettingDef> settings;
 		};
 
@@ -31,26 +33,16 @@ namespace SettingsMenu {
 		std::string g_editingText;                                  // Key of the text field being typed into
 		char g_filter[64] = {};
 
-		// "TwoRTCBypassMod" -> "Two RTC Bypass"
-		std::string TitleFromId(std::string_view id) {
-			if (id.ends_with("Mod")) id.remove_suffix(3);
-
-			std::string out;
-			for (size_t i = 0; i < id.size(); ++i) {
-				const bool upper = std::isupper(static_cast<unsigned char>(id[i]));
-				const bool prevLower = i > 0 && std::islower(static_cast<unsigned char>(id[i - 1]));
-				const bool acronymEnd = i > 0 && std::isupper(static_cast<unsigned char>(id[i - 1]))
-					&& i + 1 < id.size() && std::islower(static_cast<unsigned char>(id[i + 1]));
-				if (upper && (prevLower || acronymEnd)) out += ' ';
-				out += id[i];
-			}
-			return out;
-		}
-
 		bool ContainsNoCase(std::string_view haystack, std::string_view needle) {
 			return std::ranges::search(haystack, needle, [](char a, char b) {
 				return std::tolower(static_cast<unsigned char>(a)) == std::tolower(static_cast<unsigned char>(b));
 			}).begin() != haystack.end();
+		}
+
+		bool LessNoCase(std::string_view a, std::string_view b) {
+			return std::ranges::lexicographical_compare(a, b, {}, [](char c) {
+				return std::tolower(static_cast<unsigned char>(c));
+			});
 		}
 
 		std::string CurrentValue(const SettingDef& def) {
@@ -197,8 +189,9 @@ namespace SettingsMenu {
 			const std::string_view filter = g_filter;
 			ImGui::Separator();
 
+			const Group* lastShown = nullptr;
 			for (const auto& group : g_groups) {
-				const bool titleMatches = filter.empty() || ContainsNoCase(group.title, filter);
+				const bool titleMatches = filter.empty() || ContainsNoCase(group.title, filter) || ContainsNoCase(group.headingName, filter);
 
 				std::vector<const SettingDef*> shown;
 				for (const auto& def : group.settings) {
@@ -207,6 +200,14 @@ namespace SettingsMenu {
 				}
 				if (shown.empty())
 					continue;
+
+				if (!lastShown || lastShown->heading != group.heading) {
+					if (lastShown)
+						ImGui::Spacing();
+					ImGui::TextDisabled("%s", group.headingName.c_str());
+					ImGui::Separator();
+				}
+				lastShown = &group;
 
 				if (!filter.empty())
 					ImGui::SetNextItemOpen(true, ImGuiCond_Always);
@@ -223,19 +224,22 @@ namespace SettingsMenu {
 	void Register() {
 		const auto& schema = Framework::SettingsSchema();
 
-		std::unordered_map<const Framework::IMod*, size_t> groupIndex;
-		for (auto& def : schema.GetAll()) {
-			if (!def.editedBy.empty()) continue;                                 // A bespoke GUI editor owns the value
-			if (!def.editor.empty() && def.type != SettingType::Bool) continue;  // Placeholder for that editor's button
-
-			const auto* owner = schema.OwnerOf(def.key);
-			auto [it, inserted] = groupIndex.try_emplace(owner, g_groups.size());
-			if (inserted)
-				g_groups.push_back(Group{ owner ? TitleFromId(owner->Id()) : "Other", {} });
-			g_groups[it->second].settings.push_back(std::move(def));
+		for (const auto& entry : schema.Entries()) {
+			Group group{ entry.title, entry.heading, entry.heading ? Framework::SettingHeadingName(*entry.heading) : "Other", {} };
+			for (const auto& key : entry.keys) {
+				const auto& def = *schema.Find(key);
+				if (!def.editor.empty() && def.type != SettingType::Bool) continue;  // Placeholder for that editor's button
+				group.settings.push_back(def);
+			}
+			if (!group.settings.empty())
+				g_groups.push_back(std::move(group));
 		}
 
-		std::ranges::sort(g_groups, {}, &Group::title);
+		std::ranges::sort(g_groups, [](const Group& a, const Group& b) {
+			if (a.heading != b.heading)
+				return a.heading && (!b.heading || *a.heading < *b.heading);  // No heading sorts last
+			return LessNoCase(a.title, b.title);
+		});
 		for (const auto& group : g_groups) {
 			for (const auto& def : group.settings)
 				g_byKey.emplace(def.key, &def);

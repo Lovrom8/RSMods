@@ -16,6 +16,7 @@ SettingDefs GreenScreenWallMod::Settings() const {
 	return {
 		SettingDef::Toggle(Setting::GreenScreenWallEnabled, "GreenScreenWall", "Green Screen Wall")
 			.Hint("Changes just a section of the game background to all black, amusing for a selective \"green screen\" stream experience.\nInvalidated by No Loft.")
+			.Heading(Framework::SettingHeading::HighwayAndScenery)
 	};
 }
 

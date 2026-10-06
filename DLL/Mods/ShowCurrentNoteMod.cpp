@@ -10,18 +10,22 @@ namespace Setting = Settings::Setting;
 SettingDefs ShowCurrentNoteMod::Settings() const {
 	return {
 		SettingDef::Toggle(Setting::ShowCurrentNoteOnScreen, "ShowCurrentNoteOnScreen", "Show Current Note")
-			.Hint("Shows the note you are currently playing on screen."),
+			.Hint("Shows the note you are currently playing on screen.")
+			.Heading(Framework::SettingHeading::OnScreenInfo),
 		// The overlay draws every mod's HUD text with these, so they aren't gated on this toggle.
 		SettingDef::String(Setting::OnScreenFont, "On-Screen Font")
 			.Hint("If RSMods needs to show text in game, what font should we use?")
 			.Default("Arial")
 			.ChoicesSource("SystemFonts")
-			.Category("Mod Settings"),
+			.Category("Mod Settings")
+			.Heading(Framework::SettingHeading::OnScreenInfo)
+			.EntryTitle("On-Screen Text"),
 		SettingDef::Numeric(Setting::OnScreenFontSize, "On-Screen Font Size")
 			.Hint("Size of the on-screen text RSMods draws in game.")
 			.Ini("Mod Settings", "OnScreenFontSize")
 			.Default("24")
 			.Range(8, 80)
+			.ListedUnder(Setting::OnScreenFont)
 	};
 }
 

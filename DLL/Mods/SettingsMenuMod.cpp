@@ -15,7 +15,8 @@ SettingDefs SettingsMenuMod::Settings() const {
 		SettingDef::Toggle(Setting::SettingsMenuEnabled, Setting::SettingsMenuEnabled, "In-Game Settings Window",
 			"Toggle Switches", "Toggle Switches", "on",
 			"Press the key below in game to change mod settings without leaving Rocksmith.\n"
-			"Changes made there apply right away and are saved like changes made here."),
+			"Changes made there apply right away and are saved like changes made here.")
+			.Heading(Framework::SettingHeading::GameAndWindow),
 		// F7/F8 are debug mesh-logging keys and F10 is the Windows menu key.
 		Framework::KeyBind(Setting::Key::ToggleSettingsMenu, "Show In-Game Settings", "VK_F9"),
 	};

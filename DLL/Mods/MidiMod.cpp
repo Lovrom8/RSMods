@@ -19,7 +19,8 @@ namespace Setting = Settings::Setting;
 SettingDefs MidiMod::Settings() const {
 	return {
 		Toggle(Setting::AutoTuneForSong, "AutoTuneForSong", "Auto Tune For Song")
-			.Hint("If you have a drop tuning pedal with a MIDI port, we will attempt to automatically tune."),
+			.Hint("If you have a drop tuning pedal with a MIDI port, we will attempt to automatically tune.")
+			.Heading(Framework::SettingHeading::Tuning),
 		String(Setting::AutoTuneForSongDevice, "Auto Tune MIDI Output Device")
 			.Hint("Select the MIDI device that goes to your drop tuning pedal.\nWe will send a signal to the pedal to try to automatically tune it.")
 			.Ini("Toggle Switches", "AutoTuneForSongDevice")
@@ -39,12 +40,14 @@ SettingDefs MidiMod::Settings() const {
 			.Hint("Which drop-tuning pedal you are using.")
 			.Ini("Mod Settings", "TuningPedal")
 			.Default("0")
-			.Range(0, 5),
+			.Range(0, 5)
+			.ListedUnder(Setting::AutoTuneForSong),
 		Numeric(Setting::TuningOffset, "Tuning Offset")
 			.Hint("What tuning is your guitar / bass set to?\nWe can adjust how we auto tune based on what you specify here.\nThis value can be changed in game by setting the \"Change Tuning Offset\" keybind.\nPress the keybind to go down in tuning; hold Shift while pressing it to go up.")
 			.Ini("Mod Settings", "TuningOffset")
 			.Default("0")
-			.Range(-3, 12),
+			.Range(-3, 12)
+			.ListedUnder(Setting::AutoTuneForSong),
 		Toggle(Setting::ChordsMode, "ChordsMode", "Chords Mode")
 			.Hint("If you are using the Whammy or Whammy Bass, are you using the pedal in Chords Mode or Classic Mode?\nClassic Mode = unchecked, Chords Mode = checked.")
 			.WithVisibleWhen(Setting::AutoTuneForSong),

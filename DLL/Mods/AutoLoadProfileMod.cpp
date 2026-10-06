@@ -11,7 +11,8 @@ namespace Setting = Settings::Setting;
 SettingDefs AutoLoadProfileMod::Settings() const {
 	return {
 		SettingDef::Toggle(Setting::ForceProfileEnabled, "ForceProfileLoad", "Auto Load Profile")
-			.Hint("Essentially holds down the ENTER key until the game reaches the main menu.\nLets you auto-load the last used profile without needing to interact with the game at all.\nAlso allows you to specify which profile you want to always load."),
+			.Hint("Essentially holds down the ENTER key until the game reaches the main menu.\nLets you auto-load the last used profile without needing to interact with the game at all.\nAlso allows you to specify which profile you want to always load.")
+			.Heading(Framework::SettingHeading::SongsAndProfiles),
 		SettingDef::String(Setting::ProfileToLoad, "Profile to Load")
 			.Hint("If you play with another person but want to always load into your account, this is for you.\nGets the same benefits as auto-loading the last used profile, but lets you pick which profile always loads first.")
 			.WithVisibleWhen(Setting::ForceProfileEnabled)

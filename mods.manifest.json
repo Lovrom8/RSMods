@@ -17,7 +17,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "VolumeDisplayMod",
+    "entry": "VolumeControlEnabled",
+    "heading": "Audio",
+    "entryTitle": "Volume Control"
   },
   {
     "key": "VolumeControlInterval",
@@ -40,7 +44,11 @@
       "equals": "on"
     },
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "VolumeDisplayMod",
+    "entry": "VolumeControlEnabled",
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "MasterVolumeKey",
@@ -60,7 +68,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "VolumeDisplayMod",
+    "entry": "VolumeControlEnabled",
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "SongVolumeKey",
@@ -80,7 +92,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "VolumeDisplayMod",
+    "entry": "VolumeControlEnabled",
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "Player1VolumeKey",
@@ -100,7 +116,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "VolumeDisplayMod",
+    "entry": "VolumeControlEnabled",
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "Player2VolumeKey",
@@ -120,7 +140,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "VolumeDisplayMod",
+    "entry": "VolumeControlEnabled",
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "MicrophoneVolumeKey",
@@ -140,7 +164,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "VolumeDisplayMod",
+    "entry": "VolumeControlEnabled",
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "VoiceOverVolumeKey",
@@ -160,7 +188,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "VolumeDisplayMod",
+    "entry": "VolumeControlEnabled",
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "SFXVolumeKey",
@@ -180,7 +212,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "VolumeDisplayMod",
+    "entry": "VolumeControlEnabled",
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "DisplayMixerKey",
@@ -200,7 +236,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "VolumeDisplayMod",
+    "entry": "VolumeControlEnabled",
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "MutePlayer1Key",
@@ -220,7 +260,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "VolumeDisplayMod",
+    "entry": "VolumeControlEnabled",
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "MutePlayer2Key",
@@ -240,7 +284,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "VolumeDisplayMod",
+    "entry": "VolumeControlEnabled",
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "ChangedSelectedVolumeKey",
@@ -260,7 +308,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "VolumeDisplayMod",
+    "entry": "VolumeControlEnabled",
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "BypassTwoRTCMessageBox",
@@ -280,7 +332,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "TwoRTCBypassMod",
+    "entry": "BypassTwoRTCMessageBox",
+    "heading": "Game & Window",
+    "entryTitle": "Bypass Two Real Tone Cables Warning"
   },
   {
     "key": "TwitchSettings",
@@ -300,7 +356,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": "Twitch",
-    "editedBy": null
+    "editedBy": null,
+    "mod": "TwitchMod",
+    "entry": "TwitchSettings",
+    "heading": null,
+    "entryTitle": "Twitch Integration"
   },
   {
     "key": "SongPreviews",
@@ -320,7 +380,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "SongPreviewsMod",
+    "entry": "SongPreviews",
+    "heading": "Audio",
+    "entryTitle": "Song Previews"
   },
   {
     "key": "DisplayCurrentAccuracy",
@@ -340,7 +404,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "SongAccuracyMod",
+    "entry": "DisplayCurrentAccuracy",
+    "heading": "On-Screen Info",
+    "entryTitle": "Display Current Accuracy"
   },
   {
     "key": "ShowSongTimerEnabled",
@@ -360,7 +428,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "ShowSongTimerMod",
+    "entry": "ShowSongTimerEnabled",
+    "heading": "On-Screen Info",
+    "entryTitle": "Show Song Timer"
   },
   {
     "key": "ShowSongTimerWhen",
@@ -386,7 +458,11 @@
       "equals": "on"
     },
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "ShowSongTimerMod",
+    "entry": "ShowSongTimerEnabled",
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "ShowSongTimerKey",
@@ -406,7 +482,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "ShowSongTimerMod",
+    "entry": "ShowSongTimerEnabled",
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "ShowCurrentNoteOnScreen",
@@ -426,7 +506,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "ShowCurrentNoteMod",
+    "entry": "ShowCurrentNoteOnScreen",
+    "heading": "On-Screen Info",
+    "entryTitle": "Show Current Note"
   },
   {
     "key": "OnScreenFont",
@@ -446,7 +530,11 @@
     "choicesSource": "SystemFonts",
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "ShowCurrentNoteMod",
+    "entry": "OnScreenFont",
+    "heading": "On-Screen Info",
+    "entryTitle": "On-Screen Text"
   },
   {
     "key": "OnScreenFontSize",
@@ -466,7 +554,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "ShowCurrentNoteMod",
+    "entry": "OnScreenFont",
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "ScreenShotScores",
@@ -486,7 +578,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "ScreenShotScoresMod",
+    "entry": "ScreenShotScores",
+    "heading": "Songs & Profiles",
+    "entryTitle": "Screenshot Scores"
   },
   {
     "key": "LinearRiffRepeater",
@@ -506,7 +602,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "RiffRepeaterMod",
+    "entry": "LinearRiffRepeater",
+    "heading": "Practice",
+    "entryTitle": "Linear Riff Repeater"
   },
   {
     "key": "AllowRewind",
@@ -526,7 +626,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "RiffRepeaterMod",
+    "entry": "AllowRewind",
+    "heading": "Practice",
+    "entryTitle": "Allow Rewind"
   },
   {
     "key": "RewindBy",
@@ -549,7 +653,11 @@
       "equals": "on"
     },
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "RiffRepeaterMod",
+    "entry": "AllowRewind",
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "RewindLeadup",
@@ -572,7 +680,11 @@
       "equals": "on"
     },
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "RiffRepeaterMod",
+    "entry": "AllowRewind",
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "AllowLooping",
@@ -592,7 +704,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "RiffRepeaterMod",
+    "entry": "AllowLooping",
+    "heading": "Practice",
+    "entryTitle": "Allow Looping"
   },
   {
     "key": "LoopingLeadUp",
@@ -615,7 +731,11 @@
       "equals": "on"
     },
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "RiffRepeaterMod",
+    "entry": "AllowLooping",
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "RRSpeedAboveOneHundred",
@@ -635,7 +755,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "RiffRepeaterMod",
+    "entry": "RRSpeedAboveOneHundred",
+    "heading": "Practice",
+    "entryTitle": "Riff Repeater Speed Above 100%"
   },
   {
     "key": "RRSpeedInterval",
@@ -658,7 +782,11 @@
       "equals": "on"
     },
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "RiffRepeaterMod",
+    "entry": "RRSpeedAboveOneHundred",
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "RRSpeedKey",
@@ -678,7 +806,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "RiffRepeaterMod",
+    "entry": "RRSpeedAboveOneHundred",
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "LoopStartKey",
@@ -698,7 +830,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "RiffRepeaterMod",
+    "entry": "AllowLooping",
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "LoopEndKey",
@@ -718,7 +854,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "RiffRepeaterMod",
+    "entry": "AllowLooping",
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "RewindKey",
@@ -738,7 +878,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "RiffRepeaterMod",
+    "entry": "AllowRewind",
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "SettingsMenuEnabled",
@@ -758,7 +902,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "SettingsMenuMod",
+    "entry": "SettingsMenuEnabled",
+    "heading": "Game & Window",
+    "entryTitle": "In-Game Settings Window"
   },
   {
     "key": "ToggleSettingsMenuKey",
@@ -778,7 +926,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "SettingsMenuMod",
+    "entry": "SettingsMenuEnabled",
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "RemoveSkylineEnabled",
@@ -798,7 +950,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "RemoveSkylineMod",
+    "entry": "RemoveSkylineEnabled",
+    "heading": "Highway & Scenery",
+    "entryTitle": "Remove Skyline"
   },
   {
     "key": "ToggleSkylineWhen",
@@ -824,7 +980,11 @@
       "equals": "on"
     },
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "RemoveSkylineMod",
+    "entry": "RemoveSkylineEnabled",
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "RemoveLyrics",
@@ -844,7 +1004,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "RemoveLyricsMod",
+    "entry": "RemoveLyrics",
+    "heading": "Highway & Scenery",
+    "entryTitle": "Remove Lyrics"
   },
   {
     "key": "RemoveLyricsWhen",
@@ -870,7 +1034,11 @@
       "equals": "on"
     },
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "RemoveLyricsMod",
+    "entry": "RemoveLyrics",
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "RemoveLyricsKey",
@@ -890,7 +1058,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "RemoveLyricsMod",
+    "entry": "RemoveLyrics",
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "RemoveLaneMarkersEnabled",
@@ -910,7 +1082,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "RemoveLaneMarkersMod",
+    "entry": "RemoveLaneMarkersEnabled",
+    "heading": "Highway & Scenery",
+    "entryTitle": "Remove Lane Markers"
   },
   {
     "key": "RemoveInlaysEnabled",
@@ -930,7 +1106,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "RemoveInlaysMod",
+    "entry": "RemoveInlaysEnabled",
+    "heading": "Highway & Scenery",
+    "entryTitle": "Remove Inlays"
   },
   {
     "key": "RemoveHeadstockEnabled",
@@ -950,7 +1130,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "RemoveHeadstockMod",
+    "entry": "RemoveHeadstockEnabled",
+    "heading": "Highway & Scenery",
+    "entryTitle": "Remove Headstock"
   },
   {
     "key": "RemoveHeadstockWhen",
@@ -976,7 +1160,11 @@
       "equals": "on"
     },
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "RemoveHeadstockMod",
+    "entry": "RemoveHeadstockEnabled",
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "RemoveFingerprints",
@@ -996,7 +1184,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "RemoveFingerprintsMod",
+    "entry": "RemoveFingerprints",
+    "heading": "Highway & Scenery",
+    "entryTitle": "Remove Fingerprints"
   },
   {
     "key": "RainbowNotesEnabled",
@@ -1016,7 +1208,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "RainbowNotesMod",
+    "entry": "RainbowNotesEnabled",
+    "heading": "Colors",
+    "entryTitle": "Rainbow Notes"
   },
   {
     "key": "RainbowNotesKey",
@@ -1036,7 +1232,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "RainbowNotesMod",
+    "entry": "RainbowNotesEnabled",
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "UseCustomNSPTimer",
@@ -1056,7 +1256,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "NonStopPlayTimerMod",
+    "entry": "UseCustomNSPTimer",
+    "heading": "Practice",
+    "entryTitle": "Use Custom Non-Stop Play Timer"
   },
   {
     "key": "CustomNSPTimeLimit",
@@ -1079,7 +1283,11 @@
       "equals": "on"
     },
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "NonStopPlayTimerMod",
+    "entry": "UseCustomNSPTimer",
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "AutoTuneForSong",
@@ -1099,7 +1307,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "MidiMod",
+    "entry": "AutoTuneForSong",
+    "heading": "Tuning",
+    "entryTitle": "Auto Tune For Song"
   },
   {
     "key": "AutoTuneForSongDevice",
@@ -1122,7 +1334,11 @@
       "equals": "on"
     },
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "MidiMod",
+    "entry": "AutoTuneForSong",
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "MidiInDevice",
@@ -1145,7 +1361,11 @@
       "equals": "on"
     },
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "MidiMod",
+    "entry": "AutoTuneForSong",
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "AutoTuneForSongWhen",
@@ -1171,7 +1391,11 @@
       "equals": "on"
     },
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "MidiMod",
+    "entry": "AutoTuneForSong",
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "TuningPedal",
@@ -1191,7 +1415,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "MidiMod",
+    "entry": "AutoTuneForSong",
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "TuningOffset",
@@ -1211,7 +1439,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "MidiMod",
+    "entry": "AutoTuneForSong",
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "ChordsMode",
@@ -1234,7 +1466,11 @@
       "equals": "on"
     },
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "MidiMod",
+    "entry": "AutoTuneForSong",
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "AutoTuneForSoftwareSemitoneSettings",
@@ -1257,7 +1493,11 @@
       "equals": "on"
     },
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "MidiMod",
+    "entry": "AutoTuneForSong",
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "AutoTuneForSoftwareSemitoneTriggers",
@@ -1280,7 +1520,11 @@
       "equals": "on"
     },
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "MidiMod",
+    "entry": "AutoTuneForSong",
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "AutoTuneForSoftwareTrueTuningSettings",
@@ -1303,7 +1547,11 @@
       "equals": "on"
     },
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "MidiMod",
+    "entry": "AutoTuneForSong",
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "AutoTuneForSoftwareTrueTuningTriggers",
@@ -1326,7 +1574,11 @@
       "equals": "on"
     },
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "MidiMod",
+    "entry": "AutoTuneForSong",
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "MidiCustomEditor",
@@ -1346,7 +1598,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": "Midi",
-    "editedBy": null
+    "editedBy": null,
+    "mod": "MidiMod",
+    "entry": "MidiCustomEditor",
+    "heading": null,
+    "entryTitle": "MIDI Setup"
   },
   {
     "key": "TuningOffsetKey",
@@ -1366,7 +1622,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "MidiMod",
+    "entry": "AutoTuneForSong",
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "OverrideInputVolumeEnabled",
@@ -1386,7 +1646,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "MicrophoneVolumeOverrideMod",
+    "entry": "OverrideInputVolumeEnabled",
+    "heading": "Audio",
+    "entryTitle": "Override Microphone Volume"
   },
   {
     "key": "OverrideInputVolumeDevice",
@@ -1409,7 +1673,11 @@
       "equals": "on"
     },
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "MicrophoneVolumeOverrideMod",
+    "entry": "OverrideInputVolumeEnabled",
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "OverrideInputVolume",
@@ -1432,7 +1700,11 @@
       "equals": "on"
     },
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "MicrophoneVolumeOverrideMod",
+    "entry": "OverrideInputVolumeEnabled",
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "ToggleLoftEnabled",
@@ -1452,7 +1724,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "LoftMod",
+    "entry": "ToggleLoftEnabled",
+    "heading": "Highway & Scenery",
+    "entryTitle": "Toggle Loft"
   },
   {
     "key": "ToggleLoftWhen",
@@ -1479,7 +1755,11 @@
       "equals": "on"
     },
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "LoftMod",
+    "entry": "ToggleLoftEnabled",
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "ToggleLoftKey",
@@ -1499,7 +1779,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "LoftMod",
+    "entry": "ToggleLoftEnabled",
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "SecondaryMonitor",
@@ -1519,7 +1803,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "LaunchOnExternalMonitorMod",
+    "entry": "SecondaryMonitor",
+    "heading": "Game & Window",
+    "entryTitle": "Launch on Secondary Monitor"
   },
   {
     "key": "SecondaryMonitorXPosition",
@@ -1542,7 +1830,11 @@
       "equals": "on"
     },
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "LaunchOnExternalMonitorMod",
+    "entry": "SecondaryMonitor",
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "SecondaryMonitorYPosition",
@@ -1565,7 +1857,11 @@
       "equals": "on"
     },
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "LaunchOnExternalMonitorMod",
+    "entry": "SecondaryMonitor",
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "GuitarSpeak",
@@ -1585,7 +1881,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "GuitarSpeakMod",
+    "entry": "GuitarSpeak",
+    "heading": "Game & Window",
+    "entryTitle": "Guitar Speak"
   },
   {
     "key": "GuitarSpeakWhileTuning",
@@ -1608,7 +1908,11 @@
       "equals": "on"
     },
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "GuitarSpeakMod",
+    "entry": "GuitarSpeak",
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "GuitarSpeakCustomEditor",
@@ -1631,7 +1935,11 @@
       "equals": "on"
     },
     "editor": "GuitarSpeak",
-    "editedBy": null
+    "editedBy": null,
+    "mod": "GuitarSpeakMod",
+    "entry": "GuitarSpeak",
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "GuitarSpeakDelete",
@@ -1654,7 +1962,11 @@
       "equals": "on"
     },
     "editor": null,
-    "editedBy": "GuitarSpeak"
+    "editedBy": "GuitarSpeak",
+    "mod": "GuitarSpeakMod",
+    "entry": null,
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "GuitarSpeakSpace",
@@ -1677,7 +1989,11 @@
       "equals": "on"
     },
     "editor": null,
-    "editedBy": "GuitarSpeak"
+    "editedBy": "GuitarSpeak",
+    "mod": "GuitarSpeakMod",
+    "entry": null,
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "GuitarSpeakEnter",
@@ -1700,7 +2016,11 @@
       "equals": "on"
     },
     "editor": null,
-    "editedBy": "GuitarSpeak"
+    "editedBy": "GuitarSpeak",
+    "mod": "GuitarSpeakMod",
+    "entry": null,
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "GuitarSpeakTab",
@@ -1723,7 +2043,11 @@
       "equals": "on"
     },
     "editor": null,
-    "editedBy": "GuitarSpeak"
+    "editedBy": "GuitarSpeak",
+    "mod": "GuitarSpeakMod",
+    "entry": null,
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "GuitarSpeakPageUp",
@@ -1746,7 +2070,11 @@
       "equals": "on"
     },
     "editor": null,
-    "editedBy": "GuitarSpeak"
+    "editedBy": "GuitarSpeak",
+    "mod": "GuitarSpeakMod",
+    "entry": null,
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "GuitarSpeakPageDown",
@@ -1769,7 +2097,11 @@
       "equals": "on"
     },
     "editor": null,
-    "editedBy": "GuitarSpeak"
+    "editedBy": "GuitarSpeak",
+    "mod": "GuitarSpeakMod",
+    "entry": null,
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "GuitarSpeakUpArrow",
@@ -1792,7 +2124,11 @@
       "equals": "on"
     },
     "editor": null,
-    "editedBy": "GuitarSpeak"
+    "editedBy": "GuitarSpeak",
+    "mod": "GuitarSpeakMod",
+    "entry": null,
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "GuitarSpeakDownArrow",
@@ -1815,7 +2151,11 @@
       "equals": "on"
     },
     "editor": null,
-    "editedBy": "GuitarSpeak"
+    "editedBy": "GuitarSpeak",
+    "mod": "GuitarSpeakMod",
+    "entry": null,
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "GuitarSpeakEscape",
@@ -1838,7 +2178,11 @@
       "equals": "on"
     },
     "editor": null,
-    "editedBy": "GuitarSpeak"
+    "editedBy": "GuitarSpeak",
+    "mod": "GuitarSpeakMod",
+    "entry": null,
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "GuitarSpeakClose",
@@ -1861,7 +2205,11 @@
       "equals": "on"
     },
     "editor": null,
-    "editedBy": "GuitarSpeak"
+    "editedBy": "GuitarSpeak",
+    "mod": "GuitarSpeakMod",
+    "entry": null,
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "GuitarSpeakOBracket",
@@ -1884,7 +2232,11 @@
       "equals": "on"
     },
     "editor": null,
-    "editedBy": "GuitarSpeak"
+    "editedBy": "GuitarSpeak",
+    "mod": "GuitarSpeakMod",
+    "entry": null,
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "GuitarSpeakCBracket",
@@ -1907,7 +2259,11 @@
       "equals": "on"
     },
     "editor": null,
-    "editedBy": "GuitarSpeak"
+    "editedBy": "GuitarSpeak",
+    "mod": "GuitarSpeakMod",
+    "entry": null,
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "GuitarSpeakTildea",
@@ -1930,7 +2286,11 @@
       "equals": "on"
     },
     "editor": null,
-    "editedBy": "GuitarSpeak"
+    "editedBy": "GuitarSpeak",
+    "mod": "GuitarSpeakMod",
+    "entry": null,
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "GuitarSpeakForSlash",
@@ -1953,7 +2313,11 @@
       "equals": "on"
     },
     "editor": null,
-    "editedBy": "GuitarSpeak"
+    "editedBy": "GuitarSpeak",
+    "mod": "GuitarSpeakMod",
+    "entry": null,
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "GuitarSpeakAlt",
@@ -1976,7 +2340,11 @@
       "equals": "on"
     },
     "editor": null,
-    "editedBy": "GuitarSpeak"
+    "editedBy": "GuitarSpeak",
+    "mod": "GuitarSpeakMod",
+    "entry": null,
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "GreenScreenWallEnabled",
@@ -1996,7 +2364,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "GreenScreenWallMod",
+    "entry": "GreenScreenWallEnabled",
+    "heading": "Highway & Scenery",
+    "entryTitle": "Green Screen Wall"
   },
   {
     "key": "FretlessModeEnabled",
@@ -2016,7 +2388,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "FretlessMod",
+    "entry": "FretlessModeEnabled",
+    "heading": "Highway & Scenery",
+    "entryTitle": "Fretless Mode"
   },
   {
     "key": "ExtendedRangeEnabled",
@@ -2036,7 +2412,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "ExtendedRangeMod",
+    "entry": "ExtendedRangeEnabled",
+    "heading": "Tuning",
+    "entryTitle": "Extended Range"
   },
   {
     "key": "ExtendedRangeDropTuning",
@@ -2059,7 +2439,11 @@
       "equals": "on"
     },
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "ExtendedRangeMod",
+    "entry": "ExtendedRangeEnabled",
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "ExtendedRangeFixBassTuning",
@@ -2082,7 +2466,11 @@
       "equals": "on"
     },
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "ExtendedRangeMod",
+    "entry": "ExtendedRangeEnabled",
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "ExtendedRangeMode",
@@ -2105,7 +2493,11 @@
       "equals": "on"
     },
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "ExtendedRangeMod",
+    "entry": "ExtendedRangeEnabled",
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "CustomStringColors",
@@ -2125,7 +2517,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": "Colors",
+    "mod": "ExtendedRangeMod",
+    "entry": null,
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "SeparateNoteColors",
@@ -2145,7 +2541,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": "Colors",
+    "mod": "ExtendedRangeMod",
+    "entry": null,
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "SeparateNoteColorsMode",
@@ -2168,7 +2568,11 @@
       "equals": "on"
     },
     "editor": null,
-    "editedBy": null
+    "editedBy": "Colors",
+    "mod": "ExtendedRangeMod",
+    "entry": null,
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "RainbowStringsEnabled",
@@ -2188,7 +2592,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "ExtendedRangeMod",
+    "entry": "RainbowStringsEnabled",
+    "heading": "Colors",
+    "entryTitle": "Rainbow Strings"
   },
   {
     "key": "StringColorsCustomEditor",
@@ -2208,7 +2616,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": "StringColors",
-    "editedBy": null
+    "editedBy": null,
+    "mod": "ExtendedRangeMod",
+    "entry": "StringColorsCustomEditor",
+    "heading": "Colors",
+    "entryTitle": "Custom Colors"
   },
   {
     "key": "RainbowStringsKey",
@@ -2228,7 +2640,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "ExtendedRangeMod",
+    "entry": "RainbowStringsEnabled",
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "ToggleExtendedRangeKey",
@@ -2248,7 +2664,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "ExtendedRangeMod",
+    "entry": "ExtendedRangeEnabled",
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "ForceReEnumerationEnabled",
@@ -2272,7 +2692,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "EnumerationMod",
+    "entry": "ForceReEnumerationEnabled",
+    "heading": "Songs & Profiles",
+    "entryTitle": "Force Enumeration"
   },
   {
     "key": "CheckForNewSongsInterval",
@@ -2295,7 +2719,11 @@
       "equals": "automatic"
     },
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "EnumerationMod",
+    "entry": "ForceReEnumerationEnabled",
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "ForceReEnumerationKey",
@@ -2315,7 +2743,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "EnumerationMod",
+    "entry": "ForceReEnumerationEnabled",
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "CustomHighwayColors",
@@ -2335,7 +2767,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": "HighwayColors",
-    "editedBy": null
+    "editedBy": "Colors",
+    "mod": "CustomHighwayColorsMod",
+    "entry": null,
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "ForceProfileEnabled",
@@ -2355,7 +2791,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "AutoLoadProfileMod",
+    "entry": "ForceProfileEnabled",
+    "heading": "Songs & Profiles",
+    "entryTitle": "Auto Load Profile"
   },
   {
     "key": "ProfileToLoad",
@@ -2378,7 +2818,11 @@
       "equals": "on"
     },
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "AutoLoadProfileMod",
+    "entry": "ForceProfileEnabled",
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "AltOutputSampleRate",
@@ -2398,7 +2842,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "AlternativeSampleRateMod",
+    "entry": "AltOutputSampleRate",
+    "heading": "Audio",
+    "entryTitle": "Alternative Output Sample Rate"
   },
   {
     "key": "AlternativeOutputSampleRate",
@@ -2428,7 +2876,11 @@
       "equals": "on"
     },
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "AlternativeSampleRateMod",
+    "entry": "AltOutputSampleRate",
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "AllowAudioInBackground",
@@ -2448,7 +2900,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "AllowAudioInBackgroundMod",
+    "entry": "AllowAudioInBackground",
+    "heading": "Audio",
+    "entryTitle": "Allow Audio in Background"
   },
   {
     "key": "BackupProfile",
@@ -2468,7 +2924,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "ProfileBackupsMod",
+    "entry": "BackupProfile",
+    "heading": "Songs & Profiles",
+    "entryTitle": "Backup Profile"
   },
   {
     "key": "FastProfileLoadAndSave",
@@ -2491,7 +2951,11 @@
       "equals": "on"
     },
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "ProfileBackupsMod",
+    "entry": "BackupProfile",
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "Ultrawide",
@@ -2511,6 +2975,10 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "UltrawideMod",
+    "entry": "Ultrawide",
+    "heading": "Game & Window",
+    "entryTitle": "Ultrawide"
   }
 ]

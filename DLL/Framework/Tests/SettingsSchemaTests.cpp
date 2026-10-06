@@ -10,6 +10,7 @@
 using Framework::SettingsSchemaRegistry;
 using Framework::SettingDef;
 using Framework::SettingType;
+using Framework::SettingHeading;
 using Framework::IMod;
 
 namespace {
@@ -27,6 +28,12 @@ namespace {
 	const IMod* Owner(int n) {
 		return reinterpret_cast<const IMod*>(static_cast<std::uintptr_t>(0x3000 + n));
 	}
+
+	// The manifest names each setting's mod, so dumping needs a real one.
+	class DumpMod final : public IMod {
+	public:
+		MOD_ID(DumpMod)
+	};
 }
 
 int main() {
@@ -170,7 +177,8 @@ int main() {
 	// 4. JSON Manifest serialization
 	{
 		SettingsSchemaRegistry reg;
-		reg.Register(Owner(1), {
+		const DumpMod dumpMod;
+		reg.Register(&dumpMod, {
 			SettingDef{
 				.key = "AllowRewind",
 				.ini = { "Riff Repeater", "AllowRewind" },
@@ -220,11 +228,59 @@ int main() {
 			Check("item0 choices is empty array", item0["choices"].is_array() && item0["choices"].empty());
 			Check("item0 editor is null", item0["editor"].is_null());
 			Check("item0 editedBy is null", item0["editedBy"].is_null());
+			Check("item0 mod == 'DumpMod'", item0["mod"] == "DumpMod");
+			Check("item0 starts its own entry", item0["entry"] == "AllowRewind");
+			Check("item0 heading is null", item0["heading"].is_null());
+			Check("item0 entryTitle defaults to its label", item0["entryTitle"] == "Allow rewind");
 
 			const auto& item1 = parsed[1];
 			Check("item1 key == 'CustomEditorField'", item1["key"] == "CustomEditorField");
 			Check("item1 editor == 'GuitarSpeak'", item1["editor"] == "GuitarSpeak");
 			Check("item1 editedBy == 'GuitarSpeak'", item1["editedBy"] == "GuitarSpeak");
+			Check("item1 is in no entry (a bespoke editor owns it)", item1["entry"].is_null() && item1["entryTitle"].is_null());
+		}
+	}
+
+	// 4b. Entries: the grouping both the GUI's list and the in-game window show
+	{
+		SettingsSchemaRegistry reg;
+		reg.Register(Owner(1), {
+			SettingDef::KeyBind("LoopKey", "Loop", "Y").ListedUnder("Looping"),
+			SettingDef::Toggle("Rewind", "Rewind").Heading(SettingHeading::Practice),
+			SettingDef::Numeric("RewindBy", "Rewind by").WithVisibleWhen("Rewind"),
+			SettingDef::Toggle("Looping", "Looping").Heading(SettingHeading::Practice),
+			SettingDef::Numeric("LeadUp", "Lead-up").WithVisibleWhen("Looping"),
+			SettingDef::KeyBind("RewindKey", "Rewind", "Z"),
+			SettingDef::Numeric("Mapping", "Mapping").WithVisibleWhen("Rewind").EditedBy("Card"),
+		});
+		reg.Register(Owner(2), {
+			SettingDef::String("Font", "Font").Heading(SettingHeading::OnScreenInfo).EntryTitle("On-Screen Text"),
+			SettingDef::Numeric("FontSize", "Font size").ListedUnder("Font"),
+			SettingDef::Toggle("Wall", "Wall").EditedBy("Card"),
+		});
+		// Parents that belong to another mod
+		reg.Register(Owner(3), {
+			SettingDef::Toggle("Speed", "Speed").WithVisibleWhen("Rewind"),
+			SettingDef::KeyBind("SpeedKey", "Speed", "R").ListedUnder("Looping"),
+		});
+		reg.Register(Owner(4), { SettingDef::KeyBind("OrphanKey", "Orphan", "O") });
+
+		using Keys = std::vector<std::string>;
+		const auto entries = reg.Entries();
+		Check("Entries: one per setting with no parent, none for bespoke-editor values", entries.size() == 4);
+		if (entries.size() == 4) {
+			Check("Entries: a gated setting joins, a key bind with no parent joins its mod's first entry",
+				entries[0].key == "Rewind" && entries[0].keys == Keys{ "Rewind", "RewindBy", "RewindKey" });
+			Check("Entries: a key bind can be listed under a setting declared after it",
+				entries[1].key == "Looping" && entries[1].keys == Keys{ "Looping", "LeadUp", "LoopKey" });
+			Check("Entries: listedUnder joins without a gate", entries[2].keys == Keys{ "Font", "FontSize" });
+			Check("Entries: title defaults to the label", entries[0].title == "Rewind");
+			Check("Entries: entryTitle overrides it", entries[2].title == "On-Screen Text");
+			Check("Entries: heading and owner are carried", entries[1].heading == SettingHeading::Practice && entries[2].owner == Owner(2));
+			Check("Entries: a setting gated on another mod's starts its own entry, with no heading",
+				entries[3].key == "Speed" && !entries[3].heading);
+			Check("Entries: a key bind listed under another mod's setting joins its own mod's first entry",
+				entries[3].keys == Keys{ "Speed", "SpeedKey" });
 		}
 	}
 

@@ -10,6 +10,7 @@ SettingDefs TwoRTCBypassMod::Settings() const {
 	return {
 		SettingDef::Toggle(Setting::BypassTwoRTCMessageBox, "BypassTwoRTCMessageBox", "Bypass Two Real Tone Cables Warning")
 			.Hint("Skips the warning Rocksmith shows when two Real Tone Cables are detected.")
+			.Heading(Framework::SettingHeading::GameAndWindow)
 	};
 }
 

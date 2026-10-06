@@ -11,6 +11,7 @@ SettingDefs ScreenShotScoresMod::Settings() const {
 	return {
 		SettingDef::Toggle(Setting::ScreenShotScores, "ScreenShotScores", "Screenshot Scores")
 			.Hint("We will automatically take a Steam screenshot whenever you finish a song.")
+			.Heading(Framework::SettingHeading::SongsAndProfiles)
 	};
 }
 

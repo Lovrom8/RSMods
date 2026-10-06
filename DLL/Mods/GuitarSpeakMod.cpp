@@ -12,7 +12,8 @@ namespace Setting = Settings::Setting;
 SettingDefs GuitarSpeakMod::Settings() const {
 	return {
 		Toggle(Setting::GuitarSpeak, "GuitarSpeak", "Guitar Speak")
-			.Hint("Use your guitar to control the menus!"),
+			.Hint("Use your guitar to control the menus!")
+			.Heading(Framework::SettingHeading::GameAndWindow),
 		Toggle(Setting::GuitarSpeakWhileTuning, "GuitarSpeakWhileTuning", "Guitar Speak While Tuning")
 			.Hint("For advanced users only!\nUse Guitar Speak in tuning menus.\nThis can potentially stop you from tuning, or playing songs, if set up improperly.")
 			.Ini("Guitar Speak", "GuitarSpeakWhileTuning")
