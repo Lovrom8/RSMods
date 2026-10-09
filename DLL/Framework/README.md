@@ -55,6 +55,9 @@ instead of `ModManager` doing it, and adding a mod is adding one `.cpp` rather t
 That's the whole list. A mod doesn't edit `Settings.hpp`/`.cpp`, `ModManager`, `dllmain.cpp`,
 `D3DHooks` or the GUI.
 
+A mod kept in its own repo goes in `DLL/ExternalMods/<repo>/` instead and needs no project entries; see
+[`../ExternalMods/README.md`](../ExternalMods/README.md).
+
 ### Worked example: a toggle, a hotkey and a HUD line
 
 ```cpp
@@ -109,6 +112,22 @@ its argument names the containing class. IDs must be **unique**; duplicates are 
 registration. They are deliberately separate from settings keys. The
 `static Framework::ModRegistrar<T>` line must stay in the `.cpp`, never a header: it only pushes a POD
 factory node at load time (loader-lock safe), and the registry constructs the mod later on MainThread.
+
+### Hooking game functions
+
+A mod installs its own hooks; the framework has no registry for game functions (D3D calls go through
+`ctx.Draw()`). `MemUtil::PlaceHook` (as `RiffRepeater`, `TrueTuning` and `BugPrevention` do),
+`MemUtil::PatchAdr`, `MemUtil::VTablePatcher` and Detours (in `stdafx.h`) all work from the mod's own file.
+
+- **Install once and leave it.** Hook in `OnInitialize`, or on the first tick after `Loading` if the code
+  isn't there yet, and keep the hook for the life of the process. Gate what it does on the mod's own
+  atomic flag, set last in `OnEnabled` and cleared in `OnDisabled`. Unhooking while another thread may be
+  inside the hook isn't safe, and the framework never unhooks for you.
+- **It runs on the game's thread, not MainThread.** There's no `ModContext` there, nothing catches a
+  throw, and it must not block. The `Settings` getters are thread-safe, but cache what a hot hook needs.
+- **One hook per site.** A second `PlaceHook` on the same address overwrites the first mod's jump, and
+  conflict claims can't help because hooks are installed whether a mod is active or not. If two mods need
+  the same function, move the hook into core and give mods an event, as `DeviceEvents` does for D3D.
 
 ## Lifecycle state machine
 

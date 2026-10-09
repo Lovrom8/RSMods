@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Compiles mods that live in their own repos, cloned or submoduled into DLL\ExternalMods\<repo>\
+     (see Framework\docs\plugin-distribution.md). The wildcard lives in this imported file because Visual
+     Studio rewrites wildcards in the project it edits, and it doesn't edit imports. -->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <!-- A repo's tests have their own main(), so they never go into the DLL. -->
+    <ExternalModsExclude>ExternalMods\*\**\Tests\**;ExternalMods\*\**\tests\**</ExternalModsExclude>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- stdafx.h is force-included and found through the DLL folder, so a file at any depth shares the
+         precompiled header and includes framework headers project-rooted ("Framework/Framework.hpp"). -->
+    <ClCompile Include="ExternalMods\*\**\*.cpp" Exclude="$(ExternalModsExclude)">
+      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ForcedIncludeFiles>stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClInclude Include="ExternalMods\*\**\*.h;ExternalMods\*\**\*.hpp" Exclude="$(ExternalModsExclude)" />
+  </ItemGroup>
+
+  <!-- Names the external mods in the DLL's version info (Version.rc, "SpecialBuild"), so the installer can tell a
+       custom build from an official one before replacing it. -->
+  <Target Name="GenerateExternalModsHeader" BeforeTargets="ClCompile;ResourceCompile">
+    <ItemGroup>
+      <_ExternalModFile Include="@(ClCompile)" Condition="$([System.String]::Copy('%(ClCompile.FullPath)').StartsWith('$(MSBuildThisFileDirectory)ExternalMods\'))">
+        <RelativePath>$([MSBuild]::MakeRelative('$(MSBuildThisFileDirectory)ExternalMods\', '%(ClCompile.FullPath)'))</RelativePath>
+      </_ExternalModFile>
+      <_ExternalModName Include="$([System.String]::Copy('%(_ExternalModFile.RelativePath)').Split('\')[0])" />
+    </ItemGroup>
+    <PropertyGroup>
+      <_ExternalModNames>@(_ExternalModName->Distinct(), ', ')</_ExternalModNames>
+      <_ExternalModsHeader Condition="'$(_ExternalModNames)' != ''">#define RSMODS_EXTERNAL_MODS &quot;$(_ExternalModNames)&quot;</_ExternalModsHeader>
+      <_ExternalModsHeader Condition="'$(_ExternalModNames)' == ''">// No external mods in this build.</_ExternalModsHeader>
+    </PropertyGroup>
+    <WriteLinesToFile File="$(IntDir)ExternalModsVersion.h" Lines="$(_ExternalModsHeader)" Overwrite="true" WriteOnlyWhenDifferent="true" />
+  </Target>
+</Project>

@@ -1,12 +1,17 @@
 # Porting DropPedal (PR #233) onto the framework
 
-> **Shelved (2026-09-26).** We are not porting #233. The fork (Cheesewizard/RSModsPlus) has since
-> folded DropPedal into its Audio Bridge stack: the cable engine's `SetParam` hooks were removed in
-> `53bf1fb8` and the engine switch in `1eb40754`, so the only standalone version is the August snapshot,
-> which nobody maintains upstream. The ASIO tap would also make RSMods an RS_ASIO support desk; l0fka
-> suggested that work belongs in their rs-asio fork. Kept because the table below lists what an
-> out-of-tree mod needs from the framework, which is useful input for plugin support
-> (`plugin-distribution.md`).
+> **Status (2026-10-09): DropPedal comes back as an external mod, maintained by the fork's author.** We
+> still don't port #233 into this repo. The author asked for what an out-of-tree DropPedal needs, and the
+> framework now has it:
+>
+> - out-of-tree source mods: `DLL/ExternalMods/` (`plugin-distribution.md` #1);
+> - the input processor chain, with the ASIO side left to the mod (`audio-input.md`), so RSMods doesn't
+>   take on RS_ASIO support;
+> - `tuning-controller` as a real contest: `MidiMod` now claims it only while `AutoTuneForSong` is on
+>   (option A below; the split turned out unnecessary, see there);
+> - drawing: HUD, menus (player-facing windows from a mod), ImGui overlays and before-reset callbacks.
+>
+> The rest of this note is the original analysis (2026-09), kept for the table of core edits.
 
 PR #233 (branch `pr233`, merge-base `ac1702c`) predates the mod framework: DropPedal hangs off
 `ModManager` and edits a handful of core files. This note records which of those edits the framework
@@ -27,9 +32,12 @@ the device-event and key-binding work (September 2026), so "now" means that stat
 | `stdafx.h` gains `audioclient.h`, `mmreg.h` etc. | Include them in the mod's and `Audio/` files. |
 | Cable engine detours (`SetParam` vtable spy, `SpyTerm`, reference-builder detour) | Stay mod-owned hooks, like `UltrawideRRDim`. No framework involvement. |
 
-## Still missing
+## What was missing then
 
 ### 1. ASIO input tap: take it in as a registry
+
+> Built as `Framework::AudioInput` (`audio-input.md`), with one change: the framework owns only the chain.
+> The tap (driver hook, format conversion) belongs to the mod that provides it, not to core.
 
 `DLL/Audio/` (`AsioHook`, `ComVTable`, `CaptureFormat`, `IInputProcessor`, `DelayLinePitchShifter`) is
 generic and belongs in core. But `AsioHook::SetProcessor(IInputProcessor*)` takes exactly one
@@ -58,6 +66,10 @@ Proposed shape:
   `Process()`) are the contract.
 
 ### 2. True tuning vs MIDI auto-tune: needs a decision
+
+> Decided: option A. `MidiMod` needed no split after all. Its device scan and MIDI-in listener only run
+> with `AutoTuneForSong` on (the listener only logs incoming messages), so `IsEnabled` is now that
+> setting and the whole mod can lose `tuning-controller` without losing anything else.
 
 The cable engine writes the game's true-tuning value so note detection expects the player's physical
 pitch. The PR therefore changed core `SongTuning::GetTrueTuning()` to ask DropPedal for the authored

@@ -851,6 +851,7 @@ IF EXIST "C:\Program Files (x86)\Steam\steamapps\common\Rocksmith2014" copy /Y "
       <Message>Copying to solution directory...</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
+  <Import Project="ExternalMods.targets" />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <Target Name="GenerateGitVersionHeader" BeforeTargets="ClCompile;ResourceCompile">
     <Exec Command="git -C &quot;$(ProjectDir)..&quot; rev-parse HEAD 2&gt;NUL" Condition="'$(GitCommitHashFull)' == ''" ConsoleToMSBuild="true" StandardOutputImportance="Low" IgnoreExitCode="true">
@@ -868,7 +869,7 @@ IF EXIST "C:\Program Files (x86)\Steam\steamapps\common\Rocksmith2014" copy /Y "
        wildcard lives inside a target on purpose: VS rewrites wildcard items, but leaves targets alone. -->
   <Target Name="CheckAllSourcesListed" BeforeTargets="ClCompile">
     <ItemGroup>
-      <_SourceOnDisk Include="**\*.cpp" Exclude="Lib\**;Framework\Tests\**;$(IntDir)**" />
+      <_SourceOnDisk Include="**\*.cpp" Exclude="Lib\**;Framework\Tests\**;$(IntDir)**;$(ExternalModsExclude)" />
       <!-- Full paths, because the project spells some paths with forward slashes. -->
       <_UnlistedSource Include="@(_SourceOnDisk->'%(FullPath)')" />
       <_UnlistedSource Remove="@(ClCompile->'%(FullPath)')" />
