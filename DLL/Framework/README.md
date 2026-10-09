@@ -150,13 +150,16 @@ Registered ──OnInitialize──▶ Inactive ──OnEnabled──▶ Active
 
 ## Conflicts & resources
 
-Some mods can't run together (e.g. MIDI auto-tune and any other mod that drives the tuning pedal).
-They express that by claiming the same named exclusive resource:
+Some mods can't run together (e.g. MIDI auto-tune and any other mod that retunes the guitar, like
+DropPedal). They express that by claiming the same named exclusive resource:
 
 ```cpp
 std::vector<std::string_view> ClaimsExclusive() const override { return { "tuning-controller" }; }
 int Priority() const override { return 10; }   // one GLOBAL priority per mod
 ```
+
+`MidiMod` holds `tuning-controller` at priority 0, and only while `AutoTuneForSong` is on, so another tuning
+mod contends with it only when the player has turned both on.
 
 Among all *enabled* mods claiming a resource the highest-`Priority()` one wins it; a mod that loses
 any resource it claims is suppressed (its `OnDisabled` reverts its game state). The resolver

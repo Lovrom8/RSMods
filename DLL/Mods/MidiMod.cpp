@@ -79,6 +79,12 @@ SettingDefs MidiMod::Settings() const {
 	};
 }
 
+// Every feature here serves auto-tune, and OnDisabled reverts the pedal, so switching it off needs no latch of its
+// own. Gating also keeps the tuning-controller claim honest: it only contends while auto-tune is actually on.
+bool MidiMod::IsEnabled(const ModContext& c) const {
+	return c.IsOn(Setting::AutoTuneForSong);
+}
+
 std::vector<std::string_view> MidiMod::ClaimsExclusive() const {
 	return { "tuning-controller" };
 }
