@@ -9,6 +9,7 @@
 #include "HudRegistry.hpp"
 #include "MenuRegistry.hpp"
 #include "DrawRegistry.hpp"
+#include "AudioInput.hpp"
 
 namespace Settings {
 	// Opaque declarations keep the framework core free of the whole of Settings.hpp; only ModContext.cpp pulls it in. 
@@ -136,6 +137,19 @@ namespace Framework {
 		}
 	};
 
+	struct AudioBinder {
+		AudioInputChain& audio;
+		const IMod* mod;
+
+		// From OnInitialize. Runs `processor` on the guitar input before pitch detection, once a mod hooking the audio
+		// driver starts the tap. `processor` must outlive the mod's registration (make it a member).
+		void AddInputProcessor(IInputProcessor& processor, int order = 0) const {
+			audio.Add(mod, processor, order);
+		}
+
+		[[nodiscard]] bool InputTapLive() const { return audio.TapLive(); }
+	};
+
 	// Internal per-hook context
 	struct ModContext {
 		GamePhase phase = GamePhase::Loading;
@@ -150,6 +164,7 @@ namespace Framework {
 		HudBinder Hud() const { return { Framework::Hud(), currentMod }; }
 		MenuBinder Menu() const { return { Framework::Menus(), currentMod }; }
 		DrawBinder Draw() const { return { Framework::Draw(), currentMod }; }
+		AudioBinder Audio() const { return { Framework::AudioInput(), currentMod }; }
 
 		// Defined in ModContext.cpp so this header stays free of Settings.hpp.
 		bool IsOn(std::string_view key) const;

@@ -11,6 +11,7 @@
 #include "HudRegistry.hpp"
 #include "MenuRegistry.hpp"
 #include "DrawRegistry.hpp"
+#include "AudioInput.hpp"
 #include "SettingsSchema.hpp"
 #include "ModContext.hpp"
 #include "ConflictResolver.hpp"

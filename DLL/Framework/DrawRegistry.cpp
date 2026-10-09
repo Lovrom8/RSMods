@@ -269,6 +269,7 @@ namespace Framework {
 		{
 			std::lock_guard<std::mutex> lock(impl->mutex);
 			callbacks.reserve(impl->beforeResetCallbacks.size());
+			
 			for (const auto& r : impl->beforeResetCallbacks) {
 				if (r.fn) callbacks.push_back(r.fn);
 			}
@@ -286,6 +287,7 @@ namespace Framework {
 		{
 			std::lock_guard<std::mutex> lock(impl->mutex);
 			callbacks.reserve(impl->resetCallbacks.size());
+
 			for (const auto& r : impl->resetCallbacks) {
 				if (r.fn) callbacks.push_back(r.fn);
 			}
@@ -303,6 +305,7 @@ namespace Framework {
 		{
 			std::lock_guard<std::mutex> lock(impl->mutex);
 			callbacks.reserve(impl->regenCallbacks.size());
+			
 			for (const auto& r : impl->regenCallbacks) {
 				if (r.fn) callbacks.push_back(r.fn);
 			}

@@ -456,6 +456,9 @@
     <ClCompile Include="Framework\DrawRegistry.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
+    <ClCompile Include="Framework\AudioInput.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
     <ClCompile Include="Framework\SettingsSchema.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -975,6 +978,9 @@
       <Filter>Framework\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Framework\DrawRegistry.hpp">
+      <Filter>Framework\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\AudioInput.hpp">
       <Filter>Framework\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Framework\Framework.hpp">

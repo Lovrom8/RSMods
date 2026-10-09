@@ -150,6 +150,9 @@
     <ClCompile Include="Framework\DrawRegistry.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Framework\AudioInput.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="Framework\SettingsSchema.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
@@ -491,6 +494,7 @@
     <ClInclude Include="DirectInputCapture.hpp" />
     <ClInclude Include="Framework\Framework.hpp" />
     <ClInclude Include="Framework\DrawRegistry.hpp" />
+    <ClInclude Include="Framework\AudioInput.hpp" />
     <ClInclude Include="Framework\DeviceEvents.hpp" />
     <ClInclude Include="Framework\SettingsSchema.hpp" />
     <ClInclude Include="NoteData.h" />
