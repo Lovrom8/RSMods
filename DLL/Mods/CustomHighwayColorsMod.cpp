@@ -19,7 +19,8 @@ SettingDefs CustomHighwayColorsMod::Settings() const {
 	return {
 		Toggle(Settings::Setting::CustomHighwayColors, "CustomHighwayColors", "Custom Highway Colors", "Highway Colors")
 			.Hint("Lets you change the colors of the noteway in game.\nCan be useful for streamers who want to make the noteway invisible.")
-			.WithEditor("HighwayColors"),
+			.WithEditor("HighwayColors")
+			.EditedBy("Colors"),
 	};
 }
 

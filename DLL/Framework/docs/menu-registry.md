@@ -40,6 +40,28 @@ c.Menu().Register(
 );
 ```
 
+A standalone window (`standaloneWindow = true`) shows in release builds only with `playerFacing = true`, the
+last argument; everything else is a debug tool. Settings a mod declares in `Settings()` already appear in
+the F9 Mod Settings window, so a window is only for UI the schema can't express.
+
+### Overlays
+
+Something a mod draws in game every frame, menu open or not:
+
+```cpp
+c.Menu().RegisterOverlay("tuning", 0, [this] {
+    ImGui::GetBackgroundDrawList()->AddText({ 20, 20 }, IM_COL32_WHITE, label.c_str());
+});
+```
+
+- Drawn while the mod is `Active` only, in `order`, inside the same ImGui frame as the menus, before the
+  HUD. Exceptions are caught like a menu drawer's.
+- Uses the host's ImGui context and font atlas, so it owns no device resources and needs nothing on
+  device reset. For text lines, `ctx.Hud()` is still simpler and lays out with the other mods.
+- Draw into a background draw list, or open a window with `ImGuiWindowFlags_NoInputs` unless it should
+  take the mouse; with the menu closed, the game still gets the mouse (`input-capture.md`).
+- Runs on the render thread: read mod state through atomics or a snapshot, not `Settings`.
+
 ### Availability Modes
 - **`Availability::Active` (Default):** The menu entry is only visible and rendered when the mod is in `ModState::Active` (`IsEnabled() == true` and winning all exclusive resources). If the mod is disabled or suppressed, the menu entry disappears from the UI.
 - **`Availability::Initialized`:** The menu entry is visible as long as the mod initialized successfully, even if its runtime feature is disabled in the configuration (e.g. `MicrophoneVolumeOverrideMod`, allowing device testing without having volume sync enabled).

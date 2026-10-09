@@ -113,6 +113,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Menu.cpp" />
+    <ClCompile Include="SettingsMenu.cpp" />
+    <ClCompile Include="SettingEdits.cpp" />
     <ClCompile Include="DirectInputCapture.cpp" />
     <ClCompile Include="ModManager.cpp" />
     <ClCompile Include="Framework\CommandCollisionDiagnostics.cpp">
@@ -146,6 +148,9 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Framework\DrawRegistry.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Framework\AudioInput.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Framework\SettingsSchema.cpp">
@@ -245,6 +250,9 @@
       <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="Mods\RemoveSkylineMod.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\SettingsMenuMod.cpp">
       <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="Mods\RiffRepeater.cpp">
@@ -415,6 +423,9 @@
     <ClInclude Include="Lib\Midi\RtMidi.h" />
     <ClInclude Include="Log.hpp" />
     <ClInclude Include="Menu.hpp" />
+    <ClInclude Include="SettingsMenu.hpp" />
+    <ClInclude Include="SettingEdits.hpp" />
+    <ClInclude Include="IniPatch.hpp" />
     <ClInclude Include="MidiPedal.h" />
     <ClInclude Include="ModManager.hpp" />
     <ClInclude Include="Mods\AllowAudioInBackgroundMod.hpp" />
@@ -450,6 +461,7 @@
     <ClInclude Include="Mods\RemoveLaneMarkersMod.hpp" />
     <ClInclude Include="Mods\RemoveLyricsMod.hpp" />
     <ClInclude Include="Mods\RemoveSkylineMod.hpp" />
+    <ClInclude Include="Mods\SettingsMenuMod.hpp" />
     <ClInclude Include="Mods\RiffRepeater.hpp" />
     <ClInclude Include="Mods\RiffRepeaterMod.hpp" />
     <ClInclude Include="Mods\ScreenShotScoresMod.hpp" />
@@ -482,6 +494,7 @@
     <ClInclude Include="DirectInputCapture.hpp" />
     <ClInclude Include="Framework\Framework.hpp" />
     <ClInclude Include="Framework\DrawRegistry.hpp" />
+    <ClInclude Include="Framework\AudioInput.hpp" />
     <ClInclude Include="Framework\DeviceEvents.hpp" />
     <ClInclude Include="Framework\SettingsSchema.hpp" />
     <ClInclude Include="NoteData.h" />
@@ -838,6 +851,7 @@ IF EXIST "C:\Program Files (x86)\Steam\steamapps\common\Rocksmith2014" copy /Y "
       <Message>Copying to solution directory...</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
+  <Import Project="ExternalMods.targets" />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <Target Name="GenerateGitVersionHeader" BeforeTargets="ClCompile;ResourceCompile">
     <Exec Command="git -C &quot;$(ProjectDir)..&quot; rev-parse HEAD 2&gt;NUL" Condition="'$(GitCommitHashFull)' == ''" ConsoleToMSBuild="true" StandardOutputImportance="Low" IgnoreExitCode="true">
@@ -855,7 +869,7 @@ IF EXIST "C:\Program Files (x86)\Steam\steamapps\common\Rocksmith2014" copy /Y "
        wildcard lives inside a target on purpose: VS rewrites wildcard items, but leaves targets alone. -->
   <Target Name="CheckAllSourcesListed" BeforeTargets="ClCompile">
     <ItemGroup>
-      <_SourceOnDisk Include="**\*.cpp" Exclude="Lib\**;Framework\Tests\**;$(IntDir)**" />
+      <_SourceOnDisk Include="**\*.cpp" Exclude="Lib\**;Framework\Tests\**;$(IntDir)**;$(ExternalModsExclude)" />
       <!-- Full paths, because the project spells some paths with forward slashes. -->
       <_UnlistedSource Include="@(_SourceOnDisk->'%(FullPath)')" />
       <_UnlistedSource Remove="@(ClCompile->'%(FullPath)')" />

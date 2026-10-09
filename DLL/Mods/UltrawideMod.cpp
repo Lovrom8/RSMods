@@ -183,6 +183,7 @@ SettingDefs UltrawideMod::Settings() const {
 	return {
 		SettingDef::Toggle(Setting::Ultrawide, "Ultrawide", "Ultrawide")
 			.Hint("Ultrawide (21:9 / 32:9) display support. The interface stays 16:9.")
+			.Heading(Framework::SettingHeading::GameAndWindow)
 	};
 }
 

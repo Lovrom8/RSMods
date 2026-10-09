@@ -14,6 +14,9 @@ internal sealed partial class InstallerViewModel(EmbeddedInstallerResources reso
 
     public Func<Task<string?>>? BrowseForRocksmithFolderAsync { get; set; }
 
+    // Asks the player a yes/no question; without one, an existing DLL that needs asking is kept.
+    public Func<string, Task<bool>>? ConfirmAsync { get; set; }
+
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(InstallCommand))]
     private string _rocksmithFolder = string.Empty;
@@ -95,10 +98,13 @@ internal sealed partial class InstallerViewModel(EmbeddedInstallerResources reso
                 return;
             }
 
-            await Task.Run(() => InstallPayloads(rocksmithFolder));
+            ExistingNativeMod existing = await Task.Run(() => ExistingNativeModInspector.Inspect(rocksmithFolder));
+            bool replaceNativeMod = !existing.NeedsConfirmation || await ConfirmReplaceAsync(existing);
+
+            await Task.Run(() => InstallPayloads(rocksmithFolder, existing, replaceNativeMod));
 
             string configuratorPath = ConfiguratorPaths.ExecutablePath(rocksmithFolder);
-            ShowInstallationSuccess();
+            ShowInstallationSuccess(existing, replaceNativeMod);
             RunPostInstallActions(configuratorPath);
         }
         catch (Exception ex)
@@ -149,10 +155,34 @@ internal sealed partial class InstallerViewModel(EmbeddedInstallerResources reso
         StatusMessage = "Installation was not started.";
     }
 
-    private void ShowInstallationSuccess()
+    private async Task<bool> ConfirmReplaceAsync(ExistingNativeMod existing)
+    {
+        if (ConfirmAsync is null)
+            return false;
+
+        string question = existing.Kind == ExistingNativeModKind.CustomRsMods
+            ? $"This Rocksmith folder has an RSMods build with extra mods: {existing.Description}.\n\n" +
+              "Installing replaces it with the official build, and those mods stop working until you reinstall their build. Replace it?"
+            : $"Rocksmith's xinput1_3.dll belongs to another program: {existing.Description}.\n\n" +
+              "RSMods needs that file, so installing replaces it and that program stops working with Rocksmith. Replace it?";
+
+        return await ConfirmAsync(question);
+    }
+
+    private void ShowInstallationSuccess(ExistingNativeMod existing, bool replacedNativeMod)
     {
         InstallationComplete = true;
-        StatusMessage = "RSMods was installed successfully.";
+        StatusMessage = SuccessMessage(existing, replacedNativeMod);
+    }
+
+    private static string SuccessMessage(ExistingNativeMod existing, bool replacedNativeMod)
+    {
+        if (replacedNativeMod)
+            return "RSMods was installed successfully.";
+
+        return existing.Kind == ExistingNativeModKind.CustomRsMods
+            ? "The configurator was updated. Your RSMods build with " + existing.Description + " was kept."
+            : "The configurator was installed, but the other program's xinput1_3.dll was kept, so RSMods won't run in game.";
     }
 
     private void RunPostInstallActions(string configuratorPath)
@@ -171,6 +201,7 @@ internal sealed partial class InstallerViewModel(EmbeddedInstallerResources reso
 
     private void TryCreateDesktopShortcut(string configuratorPath, List<string> warnings)
     {
+        string finishedMessage = StatusMessage;
         try
         {
             StatusMessage = "Creating the desktop shortcut…";
@@ -183,7 +214,7 @@ internal sealed partial class InstallerViewModel(EmbeddedInstallerResources reso
         }
         finally
         {
-            StatusMessage = "RSMods was installed successfully.";
+            StatusMessage = finishedMessage;
         }
     }
 
@@ -215,19 +246,25 @@ internal sealed partial class InstallerViewModel(EmbeddedInstallerResources reso
             : "Installation failed. You can try again.";
     }
 
-    private void InstallPayloads(string rocksmithFolder)
+    private void InstallPayloads(string rocksmithFolder, ExistingNativeMod existing, bool replaceNativeMod)
     {
-        ReportProgress("Installing the native mod…");
-        NativeModInstallStatus nativeStatus = NativeModInstaller.Install(rocksmithFolder, resources.ReadNativeDll(), resources.ReadNativePdb());
+        if (replaceNativeMod)
+        {
+            ReportProgress("Installing the native mod…");
+            NativeModInstallStatus nativeStatus = NativeModInstaller.Install(rocksmithFolder, resources.ReadNativeDll(), resources.ReadNativePdb());
 
-        if (nativeStatus == NativeModInstallStatus.GameRunning)
-            throw new IOException("Rocksmith is open and the native mod files cannot be replaced. Close the game and try again.");
+            if (nativeStatus == NativeModInstallStatus.GameRunning)
+                throw new IOException("Rocksmith is open and the native mod files cannot be replaced. Close the game and try again.");
+        }
 
         PayloadManifest manifest = resources.ReadManifest();
         using Stream payload = resources.OpenPayload();
 
         string folder = ConfiguratorPaths.RsModsFolder(rocksmithFolder);
         ConfiguratorPayloadInstaller.Install(folder, payload, manifest, ReportProgress);
+
+        if (replaceNativeMod && existing.Kind == ExistingNativeModKind.CustomRsMods)
+            ExistingNativeModInspector.SetAsideCustomManifest(folder);
     }
 
     private void ReportProgress(string message) => Dispatcher.UIThread.Post(() => StatusMessage = message);

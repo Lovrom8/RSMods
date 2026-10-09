@@ -6,41 +6,26 @@ using System.Linq;
 namespace RSMods.Core.Settings;
 
 /// <summary>
-/// Turns the manifest's flat setting list into one entry per mod for the Mod Settings list. A setting that
-/// starts a mod is one with no <c>visibleWhen</c>; the settings gated on it (at any depth) go under it, and each
-/// key bind goes to the mod declared just before it, which is how the DLL emits a mod's settings. Mods are grouped
-/// under a heading by what they change, so a player can find one without knowing its name.
+/// Turns the manifest's flat setting list into the Mod Settings list. The DLL decides the grouping
+/// (SettingsSchemaRegistry::Entries) and writes it into the manifest, so the in-game settings window shows the same
+/// entries: each setting names the <c>entry</c> it's listed under, and the setting that starts an entry carries its
+/// <c>heading</c> and <c>entryTitle</c>. Entries are grouped under headings by what they change, so a player can find
+/// one without knowing its name.
 /// </summary>
 public static class ModCatalog
 {
-    // Values another screen owns (Twitch, Custom Colors, the Guitar Speak card), or a button that only said where
-    // to go. Listing them here as well would give one value two editors.
+    // Buttons that only said where to go; their screens have their own tabs.
     private static readonly HashSet<string> Hidden = new(StringComparer.OrdinalIgnoreCase)
     {
         "TwitchSettings",
         "MidiCustomEditor",
         "GuitarSpeakCustomEditor",
-        "CustomStringColors",
-        "SeparateNoteColors",
-        "SeparateNoteColorsMode",
-        "CustomHighwayColors",
     };
 
-    // Settings and key binds that belong to a mod the manifest order or visibleWhen doesn't place them under.
-    private static readonly Dictionary<string, string> Owner = new(StringComparer.OrdinalIgnoreCase)
-    {
-        ["OnScreenFontSize"] = "OnScreenFont",
-        ["TuningPedal"] = "AutoTuneForSong",
-        ["TuningOffset"] = "AutoTuneForSong",
-        ["TuningOffsetKey"] = "AutoTuneForSong",
-        ["LoopStartKey"] = "AllowLooping",
-        ["LoopEndKey"] = "AllowLooping",
-        ["RewindKey"] = "AllowRewind",
-        ["RainbowStringsKey"] = "RainbowStringsEnabled",
-        ["ToggleExtendedRangeKey"] = "ExtendedRangeEnabled",
-    };
-
-    /// <summary>The list's headings, in the order they're shown. A mod not in <see cref="CategoryOf"/> goes under the last.</summary>
+    /// <summary>
+    /// The list's headings, in the order they're shown; keep in step with SettingHeading in the DLL's
+    /// SettingsSchema.hpp. An entry with no heading goes under the last.
+    /// </summary>
     public static readonly IReadOnlyList<string> Categories =
     [
         "Practice",
@@ -54,59 +39,6 @@ public static class ModCatalog
         "Other",
     ];
 
-    private static readonly Dictionary<string, string> CategoryOf = new(StringComparer.OrdinalIgnoreCase)
-    {
-        ["AllowRewind"] = "Practice",
-        ["AllowLooping"] = "Practice",
-        ["RRSpeedAboveOneHundred"] = "Practice",
-        ["LinearRiffRepeater"] = "Practice",
-        ["UseCustomNSPTimer"] = "Practice",
-
-        ["AutoTuneForSong"] = "Tuning",
-        ["ExtendedRangeEnabled"] = "Tuning",
-
-        ["RemoveSkylineEnabled"] = "Highway & Scenery",
-        ["RemoveLyrics"] = "Highway & Scenery",
-        ["RemoveLaneMarkersEnabled"] = "Highway & Scenery",
-        ["RemoveInlaysEnabled"] = "Highway & Scenery",
-        ["RemoveHeadstockEnabled"] = "Highway & Scenery",
-        ["RemoveFingerprints"] = "Highway & Scenery",
-        ["ToggleLoftEnabled"] = "Highway & Scenery",
-        ["GreenScreenWallEnabled"] = "Highway & Scenery",
-        ["FretlessModeEnabled"] = "Highway & Scenery",
-
-        ["RainbowNotesEnabled"] = "Colors",
-        ["RainbowStringsEnabled"] = "Colors",
-        ["StringColorsCustomEditor"] = "Colors",
-
-        ["DisplayCurrentAccuracy"] = "On-Screen Info",
-        ["ShowSongTimerEnabled"] = "On-Screen Info",
-        ["ShowCurrentNoteOnScreen"] = "On-Screen Info",
-        ["OnScreenFont"] = "On-Screen Info",
-
-        ["VolumeControlEnabled"] = "Audio",
-        ["OverrideInputVolumeEnabled"] = "Audio",
-        ["AltOutputSampleRate"] = "Audio",
-        ["AllowAudioInBackground"] = "Audio",
-        ["SongPreviews"] = "Audio",
-
-        ["ForceReEnumerationEnabled"] = "Songs & Profiles",
-        ["ScreenShotScores"] = "Songs & Profiles",
-        ["ForceProfileEnabled"] = "Songs & Profiles",
-        ["BackupProfile"] = "Songs & Profiles",
-
-        ["BypassTwoRTCMessageBox"] = "Game & Window",
-        ["SecondaryMonitor"] = "Game & Window",
-        ["Ultrawide"] = "Game & Window",
-        ["GuitarSpeak"] = "Game & Window",
-    };
-
-    private static readonly Dictionary<string, string> Titles = new(StringComparer.OrdinalIgnoreCase)
-    {
-        ["OnScreenFont"] = "On-Screen Text",
-        ["StringColorsCustomEditor"] = "Custom Colors",
-    };
-
     private static readonly Dictionary<string, string> Descriptions = new(StringComparer.OrdinalIgnoreCase)
     {
         ["StringColorsCustomEditor"] = "String, note and highway colors have their own page.",
@@ -116,47 +48,42 @@ public static class ModCatalog
         IEnumerable<SettingDescriptor> manifestOrder,
         IReadOnlyDictionary<string, SettingFieldViewModel> fieldsByKey)
     {
+        var settings = manifestOrder.ToList();
+        var entryOf = new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase);
+        foreach (var desc in settings)
+            entryOf.TryAdd(desc.Key, EntryKeyOf(desc));
+
         var entries = new List<Builder>();
         var byRoot = new Dictionary<string, Builder>(StringComparer.OrdinalIgnoreCase);
-        var rootOf = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-        Builder? last = null;
 
-        foreach (var desc in manifestOrder)
+        foreach (var desc in settings)
         {
-            if (Hidden.Contains(desc.Key))
+            // Key binds have no field; values a bespoke editor owns have none either.
+            if (Hidden.Contains(desc.Key) || desc.Type == SettingType.Key || !fieldsByKey.TryGetValue(desc.Key, out var field))
                 continue;
 
-            if (desc.Type == SettingType.Key)
+            string? entryKey = entryOf[desc.Key];
+            if (string.Equals(entryKey, desc.Key, StringComparison.OrdinalIgnoreCase))
             {
-                Builder? owner = Owner.TryGetValue(desc.Key, out string? ownerKey) && rootOf.TryGetValue(ownerKey, out string? ownerRoot)
-                    ? byRoot[ownerRoot]
-                    : last;
-                owner?.Keybinds.Add(desc);
-                continue;
+                field.IsNested = false;
+                var created = new Builder(desc, field);
+                entries.Add(created);
+                byRoot[desc.Key] = created;
             }
-
-            // Values a bespoke editor owns have no field of their own.
-            if (!fieldsByKey.TryGetValue(desc.Key, out var field))
-                continue;
-
-            string? parentKey = Owner.TryGetValue(desc.Key, out string? explicitOwner) ? explicitOwner : desc.VisibleWhen?.Key;
-            if (parentKey is not null && rootOf.TryGetValue(parentKey, out string? root))
+            else if (entryKey is not null && byRoot.TryGetValue(entryKey, out var entry))
             {
-                Builder entry = byRoot[root];
-                // Indented only when it hangs off another sub-setting rather than the mod itself.
-                field.IsNested = desc.VisibleWhen is { } cond && !string.Equals(cond.Key, root, StringComparison.OrdinalIgnoreCase)
-                                 && rootOf.ContainsKey(cond.Key);
+                // Indented only when it hangs off another sub-setting rather than the entry's own.
+                field.IsNested = desc.VisibleWhen is { } cond && !string.Equals(cond.Key, entryKey, StringComparison.OrdinalIgnoreCase)
+                                 && entryOf.TryGetValue(cond.Key, out string? condEntry)
+                                 && string.Equals(condEntry, entryKey, StringComparison.OrdinalIgnoreCase);
                 entry.Fields.Add(field);
-                rootOf[desc.Key] = root;
-                continue;
             }
+        }
 
-            field.IsNested = false;
-            var created = new Builder(field);
-            entries.Add(created);
-            byRoot[desc.Key] = created;
-            rootOf[desc.Key] = desc.Key;
-            last = created;
+        foreach (var desc in settings.Where(d => d.Type == SettingType.Key))
+        {
+            if (desc.Entry is { } key && byRoot.TryGetValue(key, out var entry))
+                entry.Keybinds.Add(desc);
         }
 
         return entries
@@ -165,6 +92,9 @@ public static class ModCatalog
             .ThenBy(e => e.Title, StringComparer.CurrentCultureIgnoreCase)
             .ToList();
     }
+
+    // A hand-written manifest (as in tests) may leave "entry" out; each setting then stands alone.
+    private static string? EntryKeyOf(SettingDescriptor desc) => desc.Entry ?? (desc.Type == SettingType.Key ? null : desc.Key);
 
     private static int IndexOfCategory(string category)
     {
@@ -176,7 +106,7 @@ public static class ModCatalog
         return Categories.Count;
     }
 
-    private sealed class Builder(SettingFieldViewModel root)
+    private sealed class Builder(SettingDescriptor rootDescriptor, SettingFieldViewModel root)
     {
         public SettingFieldViewModel Root { get; } = root;
         public List<SettingFieldViewModel> Fields { get; } = [];
@@ -185,7 +115,7 @@ public static class ModCatalog
         public ModEntryViewModel Build()
         {
             string key = Root.Key;
-            string title = Titles.TryGetValue(key, out string? t) ? t : Root.Label;
+            string title = rootDescriptor.EntryTitle ?? Root.Label;
             bool isToggle = Root is BoolSettingFieldViewModel;
 
             // A toggle root is the entry's switch and its hint describes the mod; any other root is the entry's
@@ -193,7 +123,7 @@ public static class ModCatalog
             string? description = Descriptions.TryGetValue(key, out string? d) ? d : isToggle ? Root.Hint : null;
             IReadOnlyList<SettingFieldViewModel> fields = isToggle ? Fields : [Root, .. Fields];
 
-            string category = CategoryOf.TryGetValue(key, out string? c) ? c : Categories[^1];
+            string category = string.IsNullOrEmpty(rootDescriptor.Heading) ? Categories[^1] : rootDescriptor.Heading;
 
             return new ModEntryViewModel(key, title, description, category, Root, fields, Keybinds);
         }

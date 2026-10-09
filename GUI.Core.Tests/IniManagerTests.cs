@@ -175,4 +175,103 @@ public sealed class IniManagerTests
         ini.SetString("[Toggle Switches]", "Key", "off");
         Assert.True(ini.FileOutOfDate);
     }
+
+    [Fact]
+    public void SaveWritesTheFileBackAsItWas()
+    {
+        using var dir = new TemporaryDirectory();
+        string path = dir.File("RSMods.ini");
+        const string contents = "; top comment\nStray=1\n[Section]\n; note\nKey = spaced ; inline\nDup=1\nDup=2\n;Old=x\njunk line\n\n[Other]\nA=1";
+        File.WriteAllText(path, contents);
+        var ini = new IniManager(path);
+        ini.Load();
+
+        Assert.Equal("spaced ; inline", ini.GetString("[Section]", "Key"));
+        Assert.Equal("2", ini.GetString("[Section]", "Dup"));
+        ini.Save();
+
+        Assert.Equal(contents + "\n", File.ReadAllText(path)); // LF endings kept too.
+    }
+
+    [Fact]
+    public void SettingAValueRewritesOnlyItsLine()
+    {
+        using var dir = new TemporaryDirectory();
+        string path = dir.File("RSMods.ini");
+        File.WriteAllLines(path, ["[Section]", "; note", "Key = old", "Other=1", "", "; leads into Next", "[Next]", "B=2"]);
+        var ini = new IniManager(path);
+        ini.Load();
+
+        ini.SetString("[Section]", "Key", "new");
+        ini.SetString("[Section]", "Added", "1");
+        ini.SetString("[New]", "C", "3");
+        ini.Save();
+
+        Assert.Equal<string[]>(
+            ["[Section]", "; note", "Key=new", "Other=1", "Added=1", "", "; leads into Next", "[Next]", "B=2", "", "[New]", "C=3", ""],
+            File.ReadAllLines(path));
+    }
+
+    // RS_ASIO users keep alternatives as comments, e.g. an old interface's driver under the current one.
+    [Fact]
+    public void AnActiveLineWinsOverACommentedCopyOfTheKey()
+    {
+        using var dir = new TemporaryDirectory();
+        string path = dir.File("RS_ASIO.ini");
+        File.WriteAllLines(path, ["[Asio.Output]", "Driver=Current", ";Driver=Old"]);
+        var ini = new IniManager(path);
+        ini.Load();
+
+        Assert.False(ini.IsCommented("[Asio.Output]", "Driver"));
+        Assert.Equal("Current", ini.GetString("[Asio.Output]", "Driver"));
+        ini.SetString("[Asio.Output]", "Driver", "Current");
+        ini.Save();
+
+        Assert.Equal<string[]>(["[Asio.Output]", "Driver=Current", ";Driver=Old"], File.ReadAllLines(path));
+    }
+
+    [Fact]
+    public void CommentingAKeyOutAndBackInChangesItsLineInPlace()
+    {
+        using var dir = new TemporaryDirectory();
+        string path = dir.File("RS_ASIO.ini");
+        File.WriteAllLines(path, ["[Asio.Input.1]", "Driver=Current", "Channel=1", ";Driver=Old"]);
+        var ini = new IniManager(path);
+        ini.Load();
+
+        ini.SetCommentedString("[Asio.Input.1]", "Driver", "Current", commented: true);
+        ini.Save();
+        Assert.Equal<string[]>(["[Asio.Input.1]", ";Driver=Current", "Channel=1", ";Driver=Old"], File.ReadAllLines(path));
+        Assert.Equal("Current", ini.GetCommentedString("[Asio.Input.1]", "Driver"));
+
+        ini.SetCommentedString("[Asio.Input.1]", "Driver", "Current", commented: false);
+        ini.Save();
+        Assert.Equal<string[]>(["[Asio.Input.1]", "Driver=Current", "Channel=1", ";Driver=Old"], File.ReadAllLines(path));
+    }
+
+    [Fact]
+    public void WithoutFillDefaultsShownDefaultsAreNotWritten()
+    {
+        using var dir = new TemporaryDirectory();
+        string path = dir.File("RS_ASIO.ini");
+        File.WriteAllLines(path, ["[Asio]", "CustomBufferSize=64 ; low latency"]);
+        var ini = new IniManager(path, fillDefaults: false);
+        ini.Load();
+        IniValidationWarning? warning = null;
+        ini.ValidationWarning += w => warning = w;
+
+        Assert.Equal(48, ini.GetInt("[Asio]", "CustomBufferSize", 48));
+        Assert.True(warning!.ValueKept);
+        Assert.Equal(0, ini.GetInt("[Asio]", "Missing", 0));
+        Assert.False(ini.FileOutOfDate);
+
+        ini.SetInt("[Asio]", "CustomBufferSize", 48);
+        ini.SetInt("[Asio]", "Missing", 0);
+        Assert.False(ini.Save());
+        Assert.Equal<string[]>(["[Asio]", "CustomBufferSize=64 ; low latency"], File.ReadAllLines(path));
+
+        ini.SetInt("[Asio]", "CustomBufferSize", 128);
+        Assert.True(ini.Save());
+        Assert.Equal<string[]>(["[Asio]", "CustomBufferSize=128"], File.ReadAllLines(path));
+    }
 }

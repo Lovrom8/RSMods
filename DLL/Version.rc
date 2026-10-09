@@ -1,15 +1,23 @@
 #include <winver.h>
 #include "Version.h"
 #include "GitVersion.h"
+#include "ExternalModsVersion.h"
+
+// A build with mods from DLL/ExternalMods names them, so the installer can tell it from an official build.
+#ifdef RSMODS_EXTERNAL_MODS
+#define RSMODS_SPECIALBUILD_FLAG VS_FF_SPECIALBUILD
+#else
+#define RSMODS_SPECIALBUILD_FLAG 0x0L
+#endif
 
 VS_VERSION_INFO VERSIONINFO
  FILEVERSION RSMODS_VERSION_COMMA
  PRODUCTVERSION RSMODS_VERSION_COMMA
  FILEFLAGSMASK VS_FFI_FILEFLAGSMASK
 #ifdef _DEBUG
- FILEFLAGS VS_FF_DEBUG
+ FILEFLAGS VS_FF_DEBUG | RSMODS_SPECIALBUILD_FLAG
 #else
- FILEFLAGS 0x0L
+ FILEFLAGS RSMODS_SPECIALBUILD_FLAG
 #endif
  FILEOS VOS_NT_WINDOWS32
  FILETYPE VFT_DLL
@@ -27,6 +35,9 @@ BEGIN
             VALUE "OriginalFilename", "xinput1_3.dll\0"
             VALUE "ProductName", "RSMods\0"
             VALUE "ProductVersion", RSMODS_BUILD_VERSION_STRING "\0"
+#ifdef RSMODS_EXTERNAL_MODS
+            VALUE "SpecialBuild", "External mods: " RSMODS_EXTERNAL_MODS "\0"
+#endif
         END
     END
     BLOCK "VarFileInfo"

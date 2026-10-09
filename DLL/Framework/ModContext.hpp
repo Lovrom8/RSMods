@@ -9,6 +9,7 @@
 #include "HudRegistry.hpp"
 #include "MenuRegistry.hpp"
 #include "DrawRegistry.hpp"
+#include "AudioInput.hpp"
 
 namespace Settings {
 	// Opaque declarations keep the framework core free of the whole of Settings.hpp; only ModContext.cpp pulls it in. 
@@ -56,10 +57,17 @@ namespace Framework {
 		MenuRegistry& registry;
 		const IMod* mod;
 
+		// playerFacing applies to standalone windows: shown in release builds too, not only as a debug tool.
 		void Register(std::string id, std::string title, int order, MenuDrawFn drawFn,
-			Availability availability = Availability::Active, bool standaloneWindow = false) const {
+			Availability availability = Availability::Active, bool standaloneWindow = false,
+			bool playerFacing = false) const {
 			registry.Register(mod, std::move(id), std::move(title), order,
-				std::move(drawFn), availability, standaloneWindow);
+				std::move(drawFn), availability, standaloneWindow, playerFacing);
+		}
+
+		// Draws in game every frame while the mod is Active, menu open or not (MenuRegistry::RegisterOverlay).
+		void RegisterOverlay(std::string id, int order, MenuDrawFn drawFn) const {
+			registry.RegisterOverlay(mod, std::move(id), order, std::move(drawFn));
 		}
 	};
 
@@ -97,6 +105,12 @@ namespace Framework {
 			draw.RegisterFrame(mod, std::move(fn));
 		}
 
+		// Just before every device Reset, enabled or not: release D3DPOOL_DEFAULT resources (call OnLostDevice on an
+		// ID3DXFont), or Reset fails. Recreate them in the RegisterDeviceReset callback.
+		void RegisterBeforeReset(DeviceResetCallback fn) const {
+			draw.RegisterBeforeReset(mod, std::move(fn));
+		}
+
 		// After every successful device Reset, enabled or not: drop caches keyed by D3D object pointers.
 		void RegisterDeviceReset(DeviceResetCallback fn) const {
 			draw.RegisterDeviceReset(mod, std::move(fn));
@@ -123,6 +137,19 @@ namespace Framework {
 		}
 	};
 
+	struct AudioBinder {
+		AudioInputChain& audio;
+		const IMod* mod;
+
+		// From OnInitialize. Runs `processor` on the guitar input before pitch detection, once a mod hooking the audio
+		// driver starts the tap. `processor` must outlive the mod's registration (make it a member).
+		void AddInputProcessor(IInputProcessor& processor, int order = 0) const {
+			audio.Add(mod, processor, order);
+		}
+
+		[[nodiscard]] bool InputTapLive() const { return audio.TapLive(); }
+	};
+
 	// Internal per-hook context
 	struct ModContext {
 		GamePhase phase = GamePhase::Loading;
@@ -137,6 +164,7 @@ namespace Framework {
 		HudBinder Hud() const { return { Framework::Hud(), currentMod }; }
 		MenuBinder Menu() const { return { Framework::Menus(), currentMod }; }
 		DrawBinder Draw() const { return { Framework::Draw(), currentMod }; }
+		AudioBinder Audio() const { return { Framework::AudioInput(), currentMod }; }
 
 		// Defined in ModContext.cpp so this header stays free of Settings.hpp.
 		bool IsOn(std::string_view key) const;

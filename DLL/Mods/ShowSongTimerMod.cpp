@@ -15,7 +15,8 @@ namespace Setting = Settings::Setting;
 SettingDefs ShowSongTimerMod::Settings() const {
 	return {
 		SettingDef::Toggle(Setting::ShowSongTimerEnabled, "ShowSongTimer", "Show Song Timer")
-			.Hint("Experimental.\nIntent is to show a box with your timestamp position through the song."),
+			.Hint("Experimental.\nIntent is to show a box with your timestamp position through the song.")
+			.Heading(Framework::SettingHeading::OnScreenInfo),
 		SettingDef::Enum(Setting::ShowSongTimerWhen, "Show Song Timer Mode")
 			.Hint("When to show the song timer: always, only in a song, or toggled by a hotkey.")
 			.Choices({ "manual", "automatic" }, "manual")

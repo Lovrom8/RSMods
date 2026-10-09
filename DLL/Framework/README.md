@@ -55,6 +55,9 @@ instead of `ModManager` doing it, and adding a mod is adding one `.cpp` rather t
 That's the whole list. A mod doesn't edit `Settings.hpp`/`.cpp`, `ModManager`, `dllmain.cpp`,
 `D3DHooks` or the GUI.
 
+A mod kept in its own repo goes in `DLL/ExternalMods/<repo>/` instead and needs no project entries; see
+[`../ExternalMods/README.md`](../ExternalMods/README.md).
+
 ### Worked example: a toggle, a hotkey and a HUD line
 
 ```cpp
@@ -110,6 +113,23 @@ registration. They are deliberately separate from settings keys. The
 `static Framework::ModRegistrar<T>` line must stay in the `.cpp`, never a header: it only pushes a POD
 factory node at load time (loader-lock safe), and the registry constructs the mod later on MainThread.
 
+### Hooking game functions
+
+A mod installs its own hooks; the framework has no registry for game functions (D3D calls go through
+`ctx.Draw()`). `MemUtil::PlaceHook` (as `RiffRepeater`, `TrueTuning` and `BugPrevention` do),
+`MemUtil::PatchAdr`, `MemUtil::VTablePatcher` and Detours (in `stdafx.h`) all work from the mod's own file.
+
+- **Install once and leave it.** Hook in `OnInitialize`, or on the first tick after `Loading` if the code
+  isn't there yet, and keep the hook for the life of the process. Gate what it does on the mod's own
+  atomic flag, set last in `OnEnabled` and cleared in `OnDisabled`. Unhooking while another thread may be
+  inside the hook isn't safe, and the framework never unhooks for you.
+- **It runs on the game's thread, not MainThread.** There's no `ModContext` there, nothing catches a
+  throw, and it must not block. The `Settings` getters are thread-safe, but cache what a hot hook needs.
+- **Sharing a site.** A second `PlaceHook` on the same address overwrites the first mod's jump. Detours
+  chains instead, but nothing decides which mod runs first. Conflict claims can't help either way, because
+  hooks are installed whether a mod is active or not. When two mods need the same function, move the hook
+  into core and give mods an event, as `DeviceEvents` does for D3D.
+
 ## Lifecycle state machine
 
 ```
@@ -150,13 +170,16 @@ Registered ──OnInitialize──▶ Inactive ──OnEnabled──▶ Active
 
 ## Conflicts & resources
 
-Some mods can't run together (e.g. MIDI auto-tune and any other mod that drives the tuning pedal).
-They express that by claiming the same named exclusive resource:
+Some mods can't run together (e.g. MIDI auto-tune and any other mod that retunes the guitar, like
+DropPedal). They express that by claiming the same named exclusive resource:
 
 ```cpp
 std::vector<std::string_view> ClaimsExclusive() const override { return { "tuning-controller" }; }
 int Priority() const override { return 10; }   // one GLOBAL priority per mod
 ```
+
+`MidiMod` holds `tuning-controller` at priority 0, and only while `AutoTuneForSong` is on, so another tuning
+mod contends with it only when the player has turned both on.
 
 Among all *enabled* mods claiming a resource the highest-`Priority()` one wins it; a mod that loses
 any resource it claims is suppressed (its `OnDisabled` reverts its game state). The resolver
@@ -184,7 +207,9 @@ every mod's effective state (`Active` / `Disabled` / `Suppressed` / `Faulted`), 
 disabled-vs-suppressed distinction that `ModState` collapses and the log line otherwise owns alone. The
 in-game `RS Mods` window renders it behind an opt-in `Mod status` toggle. See [`docs/mod-status.md`](docs/mod-status.md).
 
-- **Draw interception and render-thread callbacks (`ctx.Draw()`):** per-draw interceptors (optionally changing device state for one draw via `ctx.AfterDraw`), plus per-frame and device-reset callbacks for mods with render-side state. See [`docs/draw-registry.md`](docs/draw-registry.md).
+- **In-game overlays (`ctx.Menu().RegisterOverlay`):** an ImGui drawer that runs every frame while the mod is active, menu open or not, for anything beyond a HUD text line. See [`docs/menu-registry.md`](docs/menu-registry.md).
+- **Draw interception and render-thread callbacks (`ctx.Draw()`):** per-draw interceptors (optionally changing device state for one draw via `ctx.AfterDraw`), plus per-frame, before-reset and device-reset callbacks for mods with render-side state. See [`docs/draw-registry.md`](docs/draw-registry.md).
+- **Audio input (`ctx.Audio()`):** processors that edit the guitar signal before pitch detection, fed by a mod that hooks the audio driver. See [`docs/audio-input.md`](docs/audio-input.md).
 
 > For the history of the retired render-hook subsystem, and why the frame/reset callbacks don't need its
 > machinery, see [`docs/render-hooks.md`](docs/render-hooks.md).

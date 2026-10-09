@@ -9,7 +9,8 @@ namespace Setting = Settings::Setting;
 SettingDefs NonStopPlayTimerMod::Settings() const {
 	return {
 		SettingDef::Toggle(Setting::UseCustomNSPTimer, "UseCustomNSPTimer", "Use Custom Non-Stop Play Timer")
-			.Hint("Use a custom time limit for Non-Stop Play mode instead of the default."),
+			.Hint("Use a custom time limit for Non-Stop Play mode instead of the default.")
+			.Heading(Framework::SettingHeading::Practice),
 		SettingDef::Numeric(Setting::CustomNSPTimeLimit, "NSP Time Limit (seconds)")
 			.Hint("Non-Stop Play time limit, in seconds.")
 			.Ini("Mod Settings", "CustomNSPTimeLimit")

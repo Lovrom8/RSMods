@@ -30,6 +30,33 @@ namespace Framework {
 		return "Bool";
 	}
 
+	// Headings of the settings lists, in display order. The GUI's ModCatalog.Categories mirrors it, plus "Other"
+	// for an entry with none.
+	enum class SettingHeading {
+		Practice,
+		Tuning,
+		HighwayAndScenery,
+		Colors,
+		OnScreenInfo,
+		Audio,
+		SongsAndProfiles,
+		GameAndWindow
+	};
+
+	inline const char* SettingHeadingName(SettingHeading h) {
+		switch (h) {
+			case SettingHeading::Practice:          return "Practice";
+			case SettingHeading::Tuning:            return "Tuning";
+			case SettingHeading::HighwayAndScenery: return "Highway & Scenery";
+			case SettingHeading::Colors:            return "Colors";
+			case SettingHeading::OnScreenInfo:      return "On-Screen Info";
+			case SettingHeading::Audio:             return "Audio";
+			case SettingHeading::SongsAndProfiles:  return "Songs & Profiles";
+			case SettingHeading::GameAndWindow:     return "Game & Window";
+		}
+		return "Other";
+	}
+
 	// Declarative specification of a mod setting.
 	struct SettingDef {
 		std::string key;                                                 // in-code key; matches a Settings::Setting constant
@@ -61,6 +88,9 @@ namespace Framework {
 		std::optional<VisibleWhen> visibleWhen = std::nullopt;           // Tier 2: { key, equals }
 		std::string editor = {};                                         // Tier 3: custom UserControl name
 		std::string editedBy = {};                                       // A bespoke GUI editor owns this value; the generic form skips it
+		std::optional<SettingHeading> heading = std::nullopt;            // Settings-list heading of the entry this setting starts
+		std::string entryTitle = {};                                     // That entry's title, when it isn't this setting's label
+		std::string listedUnder = {};                                    // Listed in this setting's entry without being gated on it
 
 		// --- Fluent Builders (paired && and const & overloads for temporary safety) ---
 
@@ -201,6 +231,37 @@ namespace Framework {
 		SettingDef EditedBy(std::string_view editorName) const & {
 			SettingDef copy = *this;
 			copy.editedBy = editorName;
+			return copy;
+		}
+
+		SettingDef Heading(SettingHeading h) && {
+			heading = h;
+			return std::move(*this);
+		}
+		SettingDef Heading(SettingHeading h) const & {
+			SettingDef copy = *this;
+			copy.heading = h;
+			return copy;
+		}
+
+		SettingDef EntryTitle(std::string_view title) && {
+			entryTitle = title;
+			return std::move(*this);
+		}
+		SettingDef EntryTitle(std::string_view title) const & {
+			SettingDef copy = *this;
+			copy.entryTitle = title;
+			return copy;
+		}
+
+		// For a setting that belongs with another but works without it, e.g. a key bind or a font size.
+		SettingDef ListedUnder(std::string_view parentKey) && {
+			listedUnder = parentKey;
+			return std::move(*this);
+		}
+		SettingDef ListedUnder(std::string_view parentKey) const & {
+			SettingDef copy = *this;
+			copy.listedUnder = parentKey;
 			return copy;
 		}
 
@@ -354,6 +415,18 @@ namespace Framework {
 
 	class IMod;
 
+	// One item in a settings list, shared by the GUI (through the manifest) and the in-game window.
+	// A setting with no visibleWhen or listedUnder starts an entry; the ones gated on or listed under it join it.
+	// A key bind with neither joins its mod's first entry. Values a bespoke editor owns (editedBy) are in none.
+	// A parent declared by another mod is ignored, so a mod's entries depend on nothing outside it.
+	struct SettingsEntry {
+		std::string key;                // The setting that starts it
+		std::string title;
+		std::optional<SettingHeading> heading;
+		const IMod* owner = nullptr;
+		std::vector<std::string> keys;  // Its own key first, then the others in declaration order, key binds last
+	};
+
 	// Registry for declared mod settings.
 	// Threading: Not internally synchronized; correctness rests on MainThread confinement
 	// for mod registration (Register), mod retirement (RemoveMod), and settings queries (GetAll).
@@ -372,10 +445,14 @@ namespace Framework {
 		// Queries
 		const SettingDef* Find(std::string_view key) const;
 		bool Has(std::string_view key) const;
+		const IMod* OwnerOf(std::string_view key) const; // nullptr if undeclared
 		size_t Size() const { return entries.size(); }
 
 		// Returns all registered setting declarations in registration order
 		SettingDefs GetAll() const;
+
+		// Groups the settings into list entries, in the order their first settings were registered
+		std::vector<SettingsEntry> Entries() const;
 
 		// Serializes the aggregate schema to JSON matching the manifest contract in settings-schema.md
 		std::string DumpManifestJson() const;

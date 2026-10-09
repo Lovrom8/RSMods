@@ -463,20 +463,29 @@ void MyMod::OnInitialize(ModContext& c) {
 
     // After every successful IDirect3DDevice9::Reset, enabled or not.
     c.Draw().RegisterDeviceReset([](IDirect3DDevice9* device) { /* drop pointer-keyed caches */ });
+
+    // Just before every Reset, enabled or not.
+    c.Draw().RegisterBeforeReset([](IDirect3DDevice9* device) { /* release D3DPOOL_DEFAULT resources */ });
 }
 ```
 
 - **Reset:** the game releases and recreates its textures, shaders and render targets, so any cache
   keyed by a D3D object pointer can hand a new object an old verdict. Clear such caches here.
   Resets run for disabled mods too, because a disabled mod's caches are still stale.
+- **Before reset:** Reset fails while any `D3DPOOL_DEFAULT` resource is alive, so a mod that owns one
+  (a render target, a dynamic vertex buffer, an `ID3DXFont`) releases it here (`OnLostDevice` for a font)
+  and recreates it in its reset callback. Unlike the others, this callback survives `RemoveMod`: a faulted
+  mod's resources still exist, so they still have to go before every Reset.
 - **Frame:** because it only runs while enabled, it won't run once more to switch things off. Undo
-  its effects in `OnDisabled`.
+  its effects in `OnDisabled`. It runs before the ImGui frame starts, so draw with D3D here; for ImGui,
+  use an overlay (`menu-registry.md`).
 - Same lifetime rule as interceptors (§8.4): anything the callback reads must stay valid after
   `OnDisabled`, and device resources are released through `RequestTextureRelease`, never on the
   MainThread. That is why these callbacks don't need the `Deactivating`/quiescence machinery the
   removed render hooks had (`render-hooks.md`).
 - Neither is caught if it throws, same as interceptors.
-- One of each per mod; registering again replaces it. `RemoveMod` (shutdown, fault) drops both.
+- One of each per mod; registering again replaces it. `RemoveMod` (shutdown, fault) drops the frame and
+  reset callbacks.
 
 ### 8.8 Per-draw state changes and the `…UP` draws
 

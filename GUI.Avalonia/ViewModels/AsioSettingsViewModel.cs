@@ -190,7 +190,7 @@ internal sealed partial class AsioSettingsViewModel : ObservableObject
         _loading = true;
         try
         {
-            WasapiOutputs = s.Config.WasapiOutputs;
+            WasapiOutputs = s.Config.EnableWasapiOutputs;
             EnableWasapiInputs = s.Config.EnableWasapiInputs;
             EnableAsio = s.Config.EnableAsio;
 
@@ -230,7 +230,7 @@ internal sealed partial class AsioSettingsViewModel : ObservableObject
     {
         // No driver means RS_ASIO can't use the input. Input 1 marks "disabled" by commenting its driver out, so a
         // blank uncommented one (a missing RS_ASIO.ini gives that) would otherwise show as enabled.
-        vm.Enabled = !disabled && !string.IsNullOrWhiteSpace(driver);
+        vm.Enabled = ReadsEnabled(disabled, driver);
         // No driver is null, as the driver box reports it; a blank string would read as a change and save straight away.
         vm.Driver = string.IsNullOrWhiteSpace(driver) ? null : driver;
         vm.Channel = channel;
@@ -239,6 +239,8 @@ internal sealed partial class AsioSettingsViewModel : ObservableObject
         vm.MasterVolumePercent = percent;
         vm.RefCountHack = refHack;
     }
+
+    private static bool ReadsEnabled(bool disabled, string driver) => !disabled && !string.IsNullOrWhiteSpace(driver);
 
     private static string NormalizeBufferMode(string mode) =>
         RsAsioLimits.IsValidBufferMode(mode) ? mode.Trim().ToLowerInvariant() : RsAsioLimits.BufferModeDriver;
@@ -252,11 +254,13 @@ internal sealed partial class AsioSettingsViewModel : ObservableObject
         {
             using var _ = s.SuspendSave();
 
-            s.Config.WasapiOutputs = WasapiOutputs;
+            s.Config.EnableWasapiOutputs = WasapiOutputs;
             s.Config.EnableWasapiInputs = EnableWasapiInputs;
             s.Config.EnableAsio = EnableAsio;
 
-            s.AsioSection.BufferSizeMode = BufferSizeMode;
+            // The screen shows an unknown mode as "driver"; the file keeps it unless another mode is picked.
+            if (BufferSizeMode != NormalizeBufferMode(s.AsioSection.BufferSizeMode))
+                s.AsioSection.BufferSizeMode = BufferSizeMode;
             s.AsioSection.CustomBufferSize = (int)CustomBufferSize;
 
             // Output disable convention: blank Driver.
@@ -266,7 +270,7 @@ internal sealed partial class AsioSettingsViewModel : ObservableObject
                 if (!string.IsNullOrEmpty(OutputDriver))
                     s.Output.Driver = OutputDriver;
             }
-            else
+            else if (ReadsEnabled(s.Output.Disabled, s.Output.Driver))
             {
                 s.Output.Disabled = true;
             }
@@ -279,15 +283,15 @@ internal sealed partial class AsioSettingsViewModel : ObservableObject
 
             // Input.0 / Input.Mic: blank-driver disable. Input.1: commented-driver disable.
             // Both are expressed through each section's Disabled/Driver API, so the mapping is uniform.
-            SaveInput(Input0, v => s.Input0.Disabled = v, v => s.Input0.Driver = v, v => s.Input0.Channel = v,
+            SaveInput(Input0, ReadsEnabled(s.Input0.Disabled, s.Input0.Driver), v => s.Input0.Disabled = v, v => s.Input0.Driver = v, v => s.Input0.Channel = v,
                 v => s.Input0.EnableSoftwareEndpointVolumeControl = v, v => s.Input0.EnableSoftwareMasterVolumeControl = v,
                 v => s.Input0.SoftwareMasterVolumePercent = v, v => s.Input0.EnableRefCountHack = v);
 
-            SaveInput(Input1, v => s.Input1.Disabled = v, v => s.Input1.Driver = v, v => s.Input1.Channel = v,
+            SaveInput(Input1, ReadsEnabled(s.Input1.Disabled, s.Input1.Driver), v => s.Input1.Disabled = v, v => s.Input1.Driver = v, v => s.Input1.Channel = v,
                 v => s.Input1.EnableSoftwareEndpointVolumeControl = v, v => s.Input1.EnableSoftwareMasterVolumeControl = v,
                 v => s.Input1.SoftwareMasterVolumePercent = v, v => s.Input1.EnableRefCountHack = v);
 
-            SaveInput(InputMic, v => s.InputMic.Disabled = v, v => s.InputMic.Driver = v, v => s.InputMic.Channel = v,
+            SaveInput(InputMic, ReadsEnabled(s.InputMic.Disabled, s.InputMic.Driver), v => s.InputMic.Disabled = v, v => s.InputMic.Driver = v, v => s.InputMic.Channel = v,
                 v => s.InputMic.EnableSoftwareEndpointVolumeControl = v, v => s.InputMic.EnableSoftwareMasterVolumeControl = v,
                 v => s.InputMic.SoftwareMasterVolumePercent = v, v => s.InputMic.EnableRefCountHack = v);
         });
@@ -295,7 +299,7 @@ internal sealed partial class AsioSettingsViewModel : ObservableObject
         StatusMessage = $"Saved at {DateTime.Now:HH:mm:ss}";
     }
 
-    private static void SaveInput(AsioInputViewModel vm, Action<bool> setDisabled, Action<string> setDriver,
+    private static void SaveInput(AsioInputViewModel vm, bool storedEnabled, Action<bool> setDisabled, Action<string> setDriver,
         Action<int> setChannel, Action<bool> setEndpoint, Action<bool> setMaster, Action<int> setPercent,
         Action<bool> setRefHack)
     {
@@ -305,8 +309,9 @@ internal sealed partial class AsioSettingsViewModel : ObservableObject
             if (!string.IsNullOrEmpty(vm.Driver))
                 setDriver(vm.Driver);
         }
-        else
+        else if (storedEnabled)
         {
+            // A blank uncommented driver already reads as disabled; commenting it out as well would be a change nobody made.
             setDisabled(true);
         }
 
