@@ -109,6 +109,25 @@ int main() {
 			entries[1].id == "initialized");
 	}
 
+	// Overlays are Active-only, player-facing, and a later Register with the same id turns one back into a menu.
+	{
+		MenuRegistry menus;
+		menus.RegisterOverlay(Owner(1), "hud", 5, [] {});
+		menus.RegisterOverlay(Owner(2), "hud", 5, [] {});
+		menus.PublishAvailability({
+			{ Owner(1), Availability::Active },
+			{ Owner(2), Availability::Initialized }
+		});
+
+		auto entries = menus.GetEntries();
+		Check("overlay shows only while its owner is Active",
+			entries.size() == 1 && entries[0].owner == Owner(1) && entries[0].overlay && entries[0].playerFacing);
+
+		menus.Register(Owner(1), "hud", "Menu", 5, [] {});
+		entries = menus.GetEntries();
+		Check("re-registering as a menu clears overlay", entries.size() == 1 && !entries[0].overlay);
+	}
+
 	std::cout << (g_failures == 0 ? "ALL MENUREGISTRY TESTS PASSED\n" : "MENUREGISTRY TESTS FAILED\n");
 	return g_failures == 0 ? 0 : 1;
 }

@@ -56,10 +56,17 @@ namespace Framework {
 		MenuRegistry& registry;
 		const IMod* mod;
 
+		// playerFacing applies to standalone windows: shown in release builds too, not only as a debug tool.
 		void Register(std::string id, std::string title, int order, MenuDrawFn drawFn,
-			Availability availability = Availability::Active, bool standaloneWindow = false) const {
+			Availability availability = Availability::Active, bool standaloneWindow = false,
+			bool playerFacing = false) const {
 			registry.Register(mod, std::move(id), std::move(title), order,
-				std::move(drawFn), availability, standaloneWindow);
+				std::move(drawFn), availability, standaloneWindow, playerFacing);
+		}
+
+		// Draws in game every frame while the mod is Active, menu open or not (MenuRegistry::RegisterOverlay).
+		void RegisterOverlay(std::string id, int order, MenuDrawFn drawFn) const {
+			registry.RegisterOverlay(mod, std::move(id), order, std::move(drawFn));
 		}
 	};
 
@@ -95,6 +102,12 @@ namespace Framework {
 		// Once per frame on the render thread while this mod is enabled, before the HUD is laid out.
 		void RegisterFrame(FrameCallback fn) const {
 			draw.RegisterFrame(mod, std::move(fn));
+		}
+
+		// Just before every device Reset, enabled or not: release D3DPOOL_DEFAULT resources (call OnLostDevice on an
+		// ID3DXFont), or Reset fails. Recreate them in the RegisterDeviceReset callback.
+		void RegisterBeforeReset(DeviceResetCallback fn) const {
+			draw.RegisterBeforeReset(mod, std::move(fn));
 		}
 
 		// After every successful device Reset, enabled or not: drop caches keyed by D3D object pointers.

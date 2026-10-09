@@ -22,28 +22,25 @@ namespace Framework {
 
 	void MenuRegistry::Register(const IMod* owner, std::string id, std::string title, int order,
 		MenuDrawFn drawFn, Availability availability, bool standaloneWindow, bool playerFacing) {
+		Upsert(MenuEntry{ owner, std::move(id), std::move(title), order, availability, std::move(drawFn),
+			standaloneWindow, playerFacing, false });
+	}
+
+	void MenuRegistry::RegisterOverlay(const IMod* owner, std::string id, int order, MenuDrawFn drawFn) {
+		std::string title = id;
+		Upsert(MenuEntry{ owner, std::move(id), std::move(title), order, Availability::Active, std::move(drawFn),
+			true, true, true });
+	}
+
+	void MenuRegistry::Upsert(MenuEntry entry) {
 		std::lock_guard<std::mutex> lock(impl->mutex);
 
-		auto it = impl->Find(owner, id);
+		auto it = impl->Find(entry.owner, entry.id);
 		if (it == impl->entries.end()) {
-			impl->entries.push_back(MenuEntry{
-				owner,
-				std::move(id),
-				std::move(title),
-				order,
-				availability,
-				std::move(drawFn),
-				standaloneWindow,
-				playerFacing
-			});
+			impl->entries.push_back(std::move(entry));
 		}
 		else {
-			it->title = std::move(title);
-			it->order = order;
-			it->availability = availability;
-			it->drawFn = std::move(drawFn);
-			it->standaloneWindow = standaloneWindow;
-			it->playerFacing = playerFacing;
+			*it = std::move(entry);
 		}
 	}
 

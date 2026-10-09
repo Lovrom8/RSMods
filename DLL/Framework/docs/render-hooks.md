@@ -17,6 +17,10 @@
 > only on the render thread through `RequestTextureRelease`. So `OnDisabled` never frees anything a
 > callback in flight could still touch. If a future tenant needs to free render resources
 > synchronously on disable, that is the point to reconsider the machinery below.
+>
+> **Update (2026-10):** mods that draw their own things now have ImGui overlays (`menu-registry.md`,
+> nothing to own or free) and, when drawing with their own D3D resources, before-reset callbacks
+> (`draw-registry.md` §8.7). Neither needs `Deactivating` either.
 
 ## What it was
 

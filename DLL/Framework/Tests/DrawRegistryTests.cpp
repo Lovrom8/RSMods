@@ -368,6 +368,25 @@ int main() {
 		Check("RemoveMod drops frame and reset callbacks", frames.empty() && resetsA == 11 && resetsB == 2);
 	}
 
+	// Before-reset callbacks reach every registered mod and survive RemoveMod: the resources they free outlive a fault.
+	{
+		auto* device = reinterpret_cast<IDirect3DDevice9*>(static_cast<std::uintptr_t>(0x1000));
+		DrawRegistry reg;
+		int releasesA = 0, releasesB = 0;
+
+		reg.RegisterBeforeReset(&modA, [&](IDirect3DDevice9*) { ++releasesA; });
+		reg.RegisterBeforeReset(&modB, [&](IDirect3DDevice9*) { ++releasesB; });
+		reg.RebuildActive([&](const IMod* m) { return m == &modB; });
+		reg.RunBeforeReset(device);
+		Check("before-reset reaches disabled mods too", releasesA == 1 && releasesB == 1);
+
+		reg.RegisterBeforeReset(&modA, [&](IDirect3DDevice9*) { releasesA += 10; });
+		reg.RemoveMod(&modA);
+		reg.RunBeforeReset(device);
+		reg.RunBeforeReset(nullptr);
+		Check("before-reset replaced on re-register, kept after RemoveMod", releasesA == 11 && releasesB == 2);
+	}
+
 	// Device channels: Always ignores enablement, handlers run in owner-Id order and can rewrite
 	// the event, and RemoveMod unpublishes without waiting for a rebuild.
 	{

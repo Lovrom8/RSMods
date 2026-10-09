@@ -149,8 +149,12 @@ namespace Framework {
 		// MainThread: register this mod's device-reset callback (replaces any earlier one).
 		void RegisterDeviceReset(const IMod* owner, DeviceResetCallback fn);
 
+		// MainThread: register this mod's before-reset callback (replaces any earlier one). It outlives RemoveMod:
+		// a faulted mod's D3DPOOL_DEFAULT resources still have to go before every Reset, or Reset fails.
+		void RegisterBeforeReset(const IMod* owner, DeviceResetCallback fn);
+
 		// MainThread: drop every interceptor, regen, release, frame, reset and device-event handler owned by this mod.
-		// A release it already queued still runs at the next RunPendingReleases.
+		// A release it already queued still runs at the next RunPendingReleases; its before-reset callback stays.
 		void RemoveMod(const IMod* owner);
 
 		// MainThread: rebuild the active snapshots from currently-enabled owners.
@@ -165,6 +169,9 @@ namespace Framework {
 
 		// Render thread (EndScene): run enabled mods' frame callbacks, lock-free.
 		void RunFrame(IDirect3DDevice9* pDevice);
+
+		// Render thread (just before Reset): run every registered before-reset callback.
+		void RunBeforeReset(IDirect3DDevice9* pDevice);
 
 		// Render thread (after a successful Reset): run every registered reset callback.
 		void RunDeviceReset(IDirect3DDevice9* pDevice);

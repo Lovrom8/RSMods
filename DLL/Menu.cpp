@@ -103,14 +103,29 @@ namespace Menu {
 		ImGui_ImplWin32_NewFrame();
 		ImGui::NewFrame();
 
+		const auto entries = Framework::Menus().GetEntries();
+
+		for (const auto& entry : entries) {
+			if (!entry.overlay || !entry.drawFn) continue;
+
+			try {
+				entry.drawFn();
+			}
+			catch (const std::exception& e) {
+				LOG_ERROR("Exception rendering overlay '" << entry.id << "': " << e.what() << std::endl);
+			}
+			catch (...) {
+				LOG_ERROR("Unknown exception rendering overlay '" << entry.id << "'" << std::endl);
+			}
+		}
+
 		if (Menu::menuEnabled) {
-			const auto entries = Framework::Menus().GetEntries();
 
 			// The RS Mods window holds the debug tools and mod status, so release builds only get player-facing windows.
 			if (D3DHooks::debug) {
 				ImGui::Begin("RS Mods");
 				for (const auto& entry : entries) {
-					if (entry.standaloneWindow || !entry.drawFn) continue;
+					if (entry.standaloneWindow || entry.overlay || !entry.drawFn) continue;
 
 					try {
 						if (ImGui::CollapsingHeader(entry.title.c_str(), ImGuiTreeNodeFlags_DefaultOpen)) {
@@ -142,7 +157,7 @@ namespace Menu {
 			}
 
 			for (const auto& entry : entries) {
-				if (!entry.standaloneWindow || !entry.drawFn) continue;
+				if (!entry.standaloneWindow || entry.overlay || !entry.drawFn) continue;
 				if (!entry.playerFacing && !D3DHooks::debug) continue;
 
 				if (ImGui::Begin(entry.title.c_str())) {

@@ -93,6 +93,7 @@ namespace Framework {
 		std::vector<RegisteredInterceptor> interceptors;
 		std::vector<OwnedCallback<FrameCallback>> frameCallbacks;
 		std::vector<OwnedCallback<DeviceResetCallback>> resetCallbacks;
+		std::vector<OwnedCallback<DeviceResetCallback>> beforeResetCallbacks; // Not dropped by RemoveMod.
 		std::vector<OwnedCallback<TextureRegenCallback>> regenCallbacks;
 		std::vector<OwnedCallback<TextureReleaseCallback>> releaseCallbacks;
 		std::vector<const IMod*> pendingReleases;  // owners waiting for deferred release
@@ -164,6 +165,11 @@ namespace Framework {
 	void DrawRegistry::RegisterDeviceReset(const IMod* owner, DeviceResetCallback fn) {
 		std::lock_guard<std::mutex> lock(impl->mutex);
 		Upsert(impl->resetCallbacks, owner, std::move(fn));
+	}
+
+	void DrawRegistry::RegisterBeforeReset(const IMod* owner, DeviceResetCallback fn) {
+		std::lock_guard<std::mutex> lock(impl->mutex);
+		Upsert(impl->beforeResetCallbacks, owner, std::move(fn));
 	}
 
 	void DrawRegistry::RemoveMod(const IMod* owner) {
@@ -253,6 +259,23 @@ namespace Framework {
 		const auto frames = impl->activeFrame.load(std::memory_order_acquire);
 		for (const auto& fn : *frames) {
 			fn(pDevice);
+		}
+	}
+
+	void DrawRegistry::RunBeforeReset(IDirect3DDevice9* pDevice) {
+		if (!pDevice) return;
+
+		std::vector<DeviceResetCallback> callbacks;
+		{
+			std::lock_guard<std::mutex> lock(impl->mutex);
+			callbacks.reserve(impl->beforeResetCallbacks.size());
+			for (const auto& r : impl->beforeResetCallbacks) {
+				if (r.fn) callbacks.push_back(r.fn);
+			}
+		}
+
+		for (const auto& cb : callbacks) {
+			cb(pDevice);
 		}
 	}
 
