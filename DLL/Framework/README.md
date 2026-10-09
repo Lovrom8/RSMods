@@ -125,9 +125,10 @@ A mod installs its own hooks; the framework has no registry for game functions (
   inside the hook isn't safe, and the framework never unhooks for you.
 - **It runs on the game's thread, not MainThread.** There's no `ModContext` there, nothing catches a
   throw, and it must not block. The `Settings` getters are thread-safe, but cache what a hot hook needs.
-- **One hook per site.** A second `PlaceHook` on the same address overwrites the first mod's jump, and
-  conflict claims can't help because hooks are installed whether a mod is active or not. If two mods need
-  the same function, move the hook into core and give mods an event, as `DeviceEvents` does for D3D.
+- **Sharing a site.** A second `PlaceHook` on the same address overwrites the first mod's jump. Detours
+  chains instead, but nothing decides which mod runs first. Conflict claims can't help either way, because
+  hooks are installed whether a mod is active or not. When two mods need the same function, move the hook
+  into core and give mods an event, as `DeviceEvents` does for D3D.
 
 ## Lifecycle state machine
 
