@@ -17,7 +17,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "MetronomeMod",
+    "entry": "MetronomeEnabled",
+    "heading": "Practice",
+    "entryTitle": "Metronome"
   },
   {
     "key": "MetronomeAccentVolume",
@@ -40,7 +44,11 @@
       "equals": "on"
     },
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "MetronomeMod",
+    "entry": "MetronomeEnabled",
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "MetronomeBeatVolume",
@@ -63,7 +71,11 @@
       "equals": "on"
     },
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "MetronomeMod",
+    "entry": "MetronomeEnabled",
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "MetronomeAccentSound",
@@ -86,7 +98,11 @@
       "equals": "on"
     },
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "MetronomeMod",
+    "entry": "MetronomeEnabled",
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "MetronomeBeatSound",
@@ -109,7 +125,11 @@
       "equals": "on"
     },
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "MetronomeMod",
+    "entry": "MetronomeEnabled",
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "MetronomeOffsetMs",
@@ -132,7 +152,11 @@
       "equals": "on"
     },
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "MetronomeMod",
+    "entry": "MetronomeEnabled",
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "MetronomeToggleKey",
@@ -152,7 +176,11 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null,
-    "editedBy": null
+    "editedBy": null,
+    "mod": "MetronomeMod",
+    "entry": "MetronomeEnabled",
+    "heading": null,
+    "entryTitle": null
   },
   {
     "key": "VolumeControlEnabled",

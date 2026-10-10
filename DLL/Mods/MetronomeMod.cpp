@@ -93,6 +93,7 @@ namespace {
 SettingDefs MetronomeMod::Settings() const {
 	return {
 		SettingDef::Toggle(kEnabled, "Metronome")
+			.Heading(Framework::SettingHeading::Practice)
 			.Hint("Plays a click on every beat of the song, with a different sound on the first beat of each measure.\n"
 				"Toggle the clicks in game with the Metronome key; the top left corner shows whether they're on.\n"
 				"Turning this on takes effect after restarting the game.\n"
