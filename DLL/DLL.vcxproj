@@ -297,6 +297,27 @@
     <ClCompile Include="Mods\VolumeDisplayMod.cpp">
       <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="Mods\MetronomeMod.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\MetronomeBeats.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\MetronomeClickMixer.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Mods\MetronomeAudioHook.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\MetronomeSongClock.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Mods\MetronomeWav.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Mods\MetronomeCountIn.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="ObjectUtil.cpp" />
     <ClCompile Include="CC\Effects\ShuffleTonesEffect.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../stdafx.h</PrecompiledHeaderFile>
@@ -476,6 +497,13 @@
     <ClInclude Include="Mods\VoiceOverControlMod.hpp" />
     <ClInclude Include="Mods\VolumeControl.hpp" />
     <ClInclude Include="Mods\VolumeDisplayMod.hpp" />
+    <ClInclude Include="Mods\MetronomeMod.hpp" />
+    <ClInclude Include="Mods\MetronomeBeats.hpp" />
+    <ClInclude Include="Mods\MetronomeClickMixer.hpp" />
+    <ClInclude Include="Mods\MetronomeAudioHook.hpp" />
+    <ClInclude Include="Mods\MetronomeSongClock.hpp" />
+    <ClInclude Include="Mods\MetronomeWav.hpp" />
+    <ClInclude Include="Mods\MetronomeCountIn.hpp" />
     <ClInclude Include="Framework\GamePhase.hpp" />
     <ClInclude Include="Framework\CommandCollisionDiagnostics.hpp" />
     <ClInclude Include="Framework\CommandRouter.hpp" />
