@@ -27,7 +27,8 @@ namespace Setting = Settings::Setting;
 SettingDefs ExtendedRangeMod::Settings() const {
 	return {
 		Toggle(Setting::ExtendedRangeEnabled, "ExtendedRange", "Extended Range")
-			.Hint("Alters the string and note colors to make it easier to play a 5-string bass or 7-string guitar."),
+			.Hint("Alters the string and note colors to make it easier to play a 5-string bass or 7-string guitar.")
+			.Heading(Framework::SettingHeading::Tuning),
 		Toggle(Setting::ExtendedRangeDropTuning, "ExtendedRangeDropTuning", "Extended Range Drop Tuning")
 			.Hint("By default we require a song to be in standard to trigger Extended Range.\nTurn this on if you want drop tunings to also trigger Extended Range.\n(Ex: if you drop to B but are playing Drop B, this will trigger Extended Range Mode.)")
 			.WithVisibleWhen(Setting::ExtendedRangeEnabled),
@@ -44,17 +45,21 @@ SettingDefs ExtendedRangeMod::Settings() const {
 			.Hint("Lets you define the string / note colors you want.\nSaves a normal set and a colorblind set.")
 			.Ini("Toggle Switches", "CustomStringColors")
 			.Default("0")
-			.Range(0, 2),
+			.Range(0, 2)
+			.EditedBy("Colors"),
 		Toggle(Setting::SeparateNoteColors, "SeparateNoteColors", "Separate Note Colors")
-			.Hint("Use a separate set of colors for notes, distinct from the string colors."),
+			.Hint("Use a separate set of colors for notes, distinct from the string colors.")
+			.EditedBy("Colors"),
 		Numeric(Setting::SeparateNoteColorsMode, "Separate Note Colors Mode")
 			.Hint("Which note color palette to use (normal or colorblind).")
 			.Ini("Mod Settings", "SeparateNoteColorsMode")
 			.Default("0")
 			.Range(0, 2)
-			.WithVisibleWhen(Setting::SeparateNoteColors),
+			.WithVisibleWhen(Setting::SeparateNoteColors)
+			.EditedBy("Colors"),
 		Toggle(Setting::RainbowStringsEnabled, "RainbowStrings", "Rainbow Strings")
-			.Hint("Experimental.\nHow Pro are you? This makes the player's guitar strings constantly cycle through colors."),
+			.Hint("Experimental.\nHow Pro are you? This makes the player's guitar strings constantly cycle through colors.")
+			.Heading(Framework::SettingHeading::Colors),
 		SettingDef{
 			"StringColorsCustomEditor",
 			{ "String Colors", "CustomEditor" },
@@ -62,8 +67,10 @@ SettingDefs ExtendedRangeMod::Settings() const {
 			"",
 			"String & Note Color Editor",
 			"Open the custom string and note color palette editor",
-		}.WithEditor("StringColors"),
-		Framework::KeyBind(Setting::Key::RainbowStrings, "Rainbow Strings", "V"),
+		}.WithEditor("StringColors")
+			.Heading(Framework::SettingHeading::Colors)
+			.EntryTitle("Custom Colors"),
+		Framework::KeyBind(Setting::Key::RainbowStrings, "Rainbow Strings", "V").ListedUnder(Setting::RainbowStringsEnabled),
 		Framework::KeyBind(Setting::Key::ToggleExtendedRange, "Toggle Extended Range", "E"),
 	};
 }

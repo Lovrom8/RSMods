@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "../Log.hpp"
+#include "AudioInput.hpp"
 #include "ConflictResolver.hpp"
 #include "HookWatchdog.hpp"
 #include "HudRegistry.hpp"
@@ -156,6 +157,7 @@ namespace Framework {
 			Hud().RemoveMod(mod);
 			Menus().RemoveMod(mod);
 			Draw().RemoveMod(mod);
+			AudioInput().RemoveMod(mod);
 			watchdog.Forget(mod);
 		}
 
@@ -408,9 +410,11 @@ namespace Framework {
 		}
 
 		void PublishDrawActive() {
-			Draw().RebuildActive([this](const IMod* mod) {
+			const auto isActive = [this](const IMod* mod) {
 				return IsOwnerAvailable(mod, Availability::Active);
-			});
+			};
+			Draw().RebuildActive(isActive);
+			AudioInput().PublishActive(isActive);
 		}
 
 		// Without requestedActive (i.e. outside a resolved Tick) every Inactive mod reads Disabled,
@@ -583,6 +587,7 @@ namespace Framework {
 
 	void ModRegistry::Shutdown() {
 		Draw().RebuildActive([](const IMod*) { return false; });
+		AudioInput().PublishActive([](const IMod*) { return false; });
 
 		for (auto& record : impl->records) {
 			if (record.state == ModState::Registered)

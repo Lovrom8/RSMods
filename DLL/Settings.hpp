@@ -49,6 +49,9 @@ namespace Settings {
 		inline constexpr char RemoveLyricsEnabled[]     = "RemoveLyrics";
 		inline constexpr char RemoveLyricsWhen[]        = "RemoveLyricsWhen";
 
+		// In-game settings window
+		inline constexpr char SettingsMenuEnabled[]     = "SettingsMenuEnabled";
+
 		// Volume
 		inline constexpr char VolumeControlEnabled[]    = "VolumeControlEnabled";
 		inline constexpr char VolumeControlInterval[]   = "VolumeControlInterval";
@@ -178,6 +181,7 @@ namespace Settings {
 			inline constexpr char LoopStart[]            = "LoopStartKey";
 			inline constexpr char LoopEnd[]              = "LoopEndKey";
 			inline constexpr char Rewind[]               = "RewindKey";
+			inline constexpr char ToggleSettingsMenu[]   = "ToggleSettingsMenuKey";
 
 			inline constexpr char MasterVolume[]         = "MasterVolumeKey";
 			inline constexpr char SongVolume[]           = "SongVolumeKey";

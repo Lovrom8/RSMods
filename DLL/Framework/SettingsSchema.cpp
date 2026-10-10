@@ -1,4 +1,5 @@
 #include "SettingsSchema.hpp"
+#include "IMod.hpp"
 #include "../Lib/Json/json.hpp"
 #include <unordered_set>
 
@@ -57,12 +58,57 @@ namespace Framework {
 		return keyToIndex.find(std::string(key)) != keyToIndex.end();
 	}
 
+	const IMod* SettingsSchemaRegistry::OwnerOf(std::string_view key) const {
+		auto it = keyToIndex.find(std::string(key));
+		return it != keyToIndex.end() ? entries[it->second].owner : nullptr;
+	}
+
 	SettingDefs SettingsSchemaRegistry::GetAll() const {
 		SettingDefs result;
 		result.reserve(entries.size());
 		for (const auto& entry : entries) {
 			result.push_back(entry.decl);
 		}
+		return result;
+	}
+
+	std::vector<SettingsEntry> SettingsSchemaRegistry::Entries() const {
+		std::vector<SettingsEntry> result;
+		std::unordered_map<std::string, size_t> entryOf;
+		std::unordered_map<const IMod*, size_t> firstEntryOf;
+
+		auto parentOf = [](const SettingDef& d) -> const std::string* {
+			if (!d.listedUnder.empty()) return &d.listedUnder;
+			if (d.visibleWhen) return &d.visibleWhen->key;
+			return nullptr;
+		};
+
+		for (const auto& [owner, decl] : entries) {
+			if (decl.type == SettingType::Key || !decl.editedBy.empty()) continue;
+
+			const std::string* parent = parentOf(decl);
+			if (auto it = parent ? entryOf.find(*parent) : entryOf.end(); it != entryOf.end() && result[it->second].owner == owner) {
+				result[it->second].keys.push_back(decl.key);
+				entryOf[decl.key] = it->second;
+				continue;
+			}
+
+			entryOf[decl.key] = result.size();
+			firstEntryOf.try_emplace(owner, result.size());
+			result.push_back(SettingsEntry{ decl.key, decl.entryTitle.empty() ? decl.label : decl.entryTitle, decl.heading, owner, { decl.key } });
+		}
+
+		// After every other setting, so a key bind can be listed under one declared after it.
+		for (const auto& [owner, decl] : entries) {
+			if (decl.type != SettingType::Key) continue;
+
+			const std::string* parent = parentOf(decl);
+			if (auto it = parent ? entryOf.find(*parent) : entryOf.end(); it != entryOf.end() && result[it->second].owner == owner)
+				result[it->second].keys.push_back(decl.key);
+			else if (auto first = firstEntryOf.find(owner); first != firstEntryOf.end())
+				result[first->second].keys.push_back(decl.key);
+		}
+
 		return result;
 	}
 
@@ -100,9 +146,25 @@ namespace Framework {
 	}
 
 	std::string SettingsSchemaRegistry::DumpManifestJson() const {
+		const auto listEntries = Entries();
+		std::unordered_map<std::string_view, const SettingsEntry*> listEntryOf;
+		for (const auto& listEntry : listEntries) {
+			for (const auto& key : listEntry.keys)
+				listEntryOf.emplace(key, &listEntry);
+		}
+
 		ordered_json j = ordered_json::array();
 		for (const auto& entry : entries) {
-			j.push_back(entry.decl);
+			auto it = listEntryOf.find(entry.decl.key);
+			const SettingsEntry* listEntry = it != listEntryOf.end() ? it->second : nullptr;
+			const bool startsEntry = listEntry && listEntry->key == entry.decl.key;
+
+			ordered_json item = entry.decl;
+			item["mod"] = entry.owner ? ordered_json(entry.owner->Id()) : ordered_json(nullptr);
+			item["entry"] = listEntry ? ordered_json(listEntry->key) : ordered_json(nullptr);
+			item["heading"] = startsEntry && listEntry->heading ? ordered_json(SettingHeadingName(*listEntry->heading)) : ordered_json(nullptr);
+			item["entryTitle"] = startsEntry ? ordered_json(listEntry->title) : ordered_json(nullptr);
+			j.push_back(std::move(item));
 		}
 		return j.dump(2);
 	}

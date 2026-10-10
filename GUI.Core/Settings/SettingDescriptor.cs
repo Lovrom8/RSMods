@@ -40,5 +40,12 @@ public sealed record SettingDescriptor(
     [property: JsonPropertyName("visibleWhen")] SettingVisibilityCondition? VisibleWhen,
     [property: JsonPropertyName("editor")] string? Editor,
     // A bespoke screen (e.g. the Guitar Speak mapping card) writes this value, so the generic form leaves it out.
-    [property: JsonPropertyName("editedBy")] string? EditedBy = null
+    [property: JsonPropertyName("editedBy")] string? EditedBy = null,
+    // Id of the DLL mod that declares this setting.
+    [property: JsonPropertyName("mod")] string? Mod = null,
+    // Key of the setting whose Mod Settings entry lists this one; the DLL works it out (see ModCatalog).
+    [property: JsonPropertyName("entry")] string? Entry = null,
+    // Only on the setting that starts an entry.
+    [property: JsonPropertyName("heading")] string? Heading = null,
+    [property: JsonPropertyName("entryTitle")] string? EntryTitle = null
 );

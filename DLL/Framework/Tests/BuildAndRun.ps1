@@ -6,14 +6,16 @@
 # (no windows.h / stdafx), so each test compiles against only the handful of
 # framework translation units it actually uses.
 #
-# Run locally:   pwsh DLL/Framework/Tests/BuildAndRun.ps1 [-DumpManifest]
+# Run locally:   pwsh DLL/Framework/Tests/BuildAndRun.ps1 [-DumpManifest [-ManifestPath <file>]]
 # CI entrypoint: appveyor.yml (the `test_script` step runs this script on the develop branch).
 #
 # Exits non-zero if any test fails to build or reports test failures.
 
 param (
     [switch]$DumpManifest,
-    [switch]$VerifyManifest
+    [switch]$VerifyManifest,
+    # Where -DumpManifest writes. A build with external mods ships its own manifest next to the GUI exe.
+    [string]$ManifestPath
 )
 
 $ErrorActionPreference = 'Stop'
@@ -30,9 +32,26 @@ $candidateDlls = @(
 )
 $dll = $candidateDlls | Where-Object { Test-Path $_ } | Sort-Object { (Get-Item $_).LastWriteTimeUtc } -Descending | Select-Object -First 1
 
+# The committed manifest describes the official build only; external mods' settings must not leak into it.
+$externalMods = Join-Path $TestsDir '..\..\ExternalMods'
+$externalSources = @(Get-ChildItem $externalMods -Recurse -Filter *.cpp -ErrorAction SilentlyContinue)
+function Stop-IfExternalMods {
+    if ($externalSources.Count -gt 0) {
+        Write-Host "DLL/ExternalMods has mods in it, so the built DLL doesn't match the committed mods.manifest.json." -ForegroundColor Red
+        Write-Host "Use -DumpManifest -ManifestPath <file> for this build's own manifest, or move them out and rebuild." -ForegroundColor Yellow
+        exit 1
+    }
+}
+
 if ($DumpManifest) {
     if ($dll -and (Test-Path $dll)) {
-        $manifestPath = (Resolve-Path (Join-Path $TestsDir '..\..\..\mods.manifest.json')).Path
+        if ($ManifestPath) {
+            $manifestPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($ManifestPath)
+        }
+        else {
+            Stop-IfExternalMods
+            $manifestPath = (Resolve-Path (Join-Path $TestsDir '..\..\..\mods.manifest.json')).Path
+        }
         Write-Host "=== Dumping mods.manifest.json ===" -ForegroundColor Cyan
         & cmd /c "C:\Windows\SysWOW64\rundll32.exe `"$dll`",DumpManifest `"$manifestPath`""
         Write-Host "Manifest successfully dumped to $manifestPath" -ForegroundColor Green
@@ -46,6 +65,7 @@ if ($DumpManifest) {
 
 if ($VerifyManifest) {
     if ($dll -and (Test-Path $dll)) {
+        Stop-IfExternalMods
         $manifestPath = (Resolve-Path (Join-Path $TestsDir '..\..\..\mods.manifest.json')).Path
         $tempPath = [System.IO.Path]::GetTempFileName()
         try {
@@ -84,9 +104,11 @@ $Tests = @(
     @{ Name = 'HudRegistryTests';       Sources = @('HudRegistry.cpp') },
     @{ Name = 'MenuRegistryTests';      Sources = @('MenuRegistry.cpp') },
     @{ Name = 'DrawRegistryTests';      Sources = @('DrawRegistry.cpp') },
+    @{ Name = 'AudioInputTests';        Sources = @('AudioInput.cpp') },
     @{ Name = 'SettingsSchemaTests';    Sources = @('SettingsSchema.cpp') },
     @{ Name = 'MetronomeTests';         Sources = @('..\Mods\MetronomeSongClock.cpp', '..\Mods\MetronomeClickMixer.cpp', '..\Mods\MetronomeCountIn.cpp', '..\Mods\MetronomeWav.cpp') },  # host-agnostic metronome logic
-    @{ Name = 'StateMachineTests';      Sources = @('ModRegistry.cpp', 'ResourceLedger.cpp', 'HookWatchdog.cpp', 'StallMonitor.cpp', 'CommandRouter.cpp', 'MainThreadInbox.cpp', 'CommandCollisionDiagnostics.cpp', 'HudRegistry.cpp', 'MenuRegistry.cpp', 'DrawRegistry.cpp', 'SettingsSchema.cpp') }
+    @{ Name = 'IniPatchTests';          Sources = @() },  # header-only DLL/IniPatch.hpp
+    @{ Name = 'StateMachineTests';      Sources = @('ModRegistry.cpp', 'ResourceLedger.cpp', 'HookWatchdog.cpp', 'StallMonitor.cpp', 'CommandRouter.cpp', 'MainThreadInbox.cpp', 'CommandCollisionDiagnostics.cpp', 'HudRegistry.cpp', 'MenuRegistry.cpp', 'DrawRegistry.cpp', 'AudioInput.cpp', 'SettingsSchema.cpp') }
 )
 
 # Locate the MSVC developer environment (matches the DLL's v143 toolset).

@@ -343,7 +343,8 @@ SettingDefs ProfileBackupsMod::Settings() const {
 				"This mod will create a backup of your save every time you open this GUI,\n"
 				"and every 10 minutes while Rocksmith is running (only when your save changed).\n"
 				"Backups go in the Profile_AutoBackups folder: the last hour, 6 hourly, 4 quarter-daily and 30 daily backups are kept.\n"
-				"Fast Profile Load/Save needs this on."),
+				"Fast Profile Load/Save needs this on.")
+			.Heading(Framework::SettingHeading::SongsAndProfiles),
 		SettingDef::Toggle(Settings::Setting::FastProfileLoadAndSave, "FastProfileLoadAndSave", "Fast Profile Load/Save")
 			.Hint("Big profiles can freeze Rocksmith for minutes when it loads them, and crash it when it saves them.\n"
 				"This mod saves and loads the profile in pieces instead, so the game keeps running and doesn't run out of memory.\n"

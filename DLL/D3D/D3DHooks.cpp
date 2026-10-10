@@ -236,6 +236,7 @@ HRESULT APIENTRY D3DHooks::Hook_Reset(IDirect3DDevice9* pDevice, D3DPRESENT_PARA
 	// Release device-dependent resources before Reset. The ImGui backend owns the HUD font texture now,
 	// so invalidating it is all the overlay needs.
 	ImGui_ImplDX9_InvalidateDeviceObjects();
+	Framework::Draw().RunBeforeReset(pDevice);
 
 	// Reset Device. Call original Reset.
 	HRESULT ResetReturn = oReset(pDevice, pPresentationParameters);

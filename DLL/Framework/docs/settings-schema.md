@@ -158,10 +158,14 @@ no value. The bespoke editor it opens reads and saves its own settings, and a va
 computed from its `visibleWhen`. Despite the key's name, the GUI shows a gated setting either way and greys
 it out while the condition doesn't hold, so a mod's pane doesn't change shape when it's switched on. An
 `ItemsControl` over the collection with **per-type `DataTemplate`s** (Avalonia matches on `DataType`) picks
-the control. The screen lists one entry per mod (`ModCatalog`): a setting with no `visibleWhen` starts a
-mod, the settings gated on it go in its pane, and each key bind goes to the mod declared just before it,
-the order the DLL emits them in. The list groups mods under headings (Practice, Tuning, Audio, ...) that
-`ModCatalog` assigns by root key; a mod it doesn't know yet goes under "Other". Load/save becomes **generic** — iterate the field VMs, read/write each
+the control. The screen's list (`ModCatalog`) and the in-game settings window (F9) show the same entries,
+which the DLL works out (`SettingsSchemaRegistry::Entries`) and writes into the manifest: a setting with no
+`visibleWhen` or `.ListedUnder()` starts an entry, the settings gated on or listed under it join it, and a
+key bind joins its mod's first entry unless it's listed under another. Only parents in the same mod count,
+so a mod's entries depend on nothing outside it. An entry is often smaller than a mod (Riff Repeater's
+toggles are four entries). Its first setting declares the `.Heading(SettingHeading::...)` (Practice, Tuning,
+Audio, ...) and, when its label won't do, an `.EntryTitle()`; an entry with no heading goes under "Other".
+Load/save becomes **generic** — iterate the field VMs, read/write each
 key through the existing round-trip-safe `IniManager` / `FlatKeyValueSettingsStore`, which already
 preserves unknown keys, so nothing regresses.
 
@@ -186,7 +190,11 @@ First-cut fields:
   "choicesSource": null,                    // Tier 2: "SystemFonts" | "MidiOutDevices" | "Profiles" | ...
   "visibleWhen": null,                      // Tier 2: { "key": "...", "equals": "..." }
   "editor":     null,                       // Tier 3: custom UserControl name; when set, other UI fields ignored
-  "editedBy":   null                        // a bespoke editor owns this value; the generic form skips it
+  "editedBy":   null,                       // a bespoke editor owns this value; the generic form skips it
+  "mod":        "RiffRepeaterMod",          // Id() of the mod that declares it
+  "entry":      "AllowRewind",              // key of the setting whose list entry it's in; null if in none
+  "heading":    "Practice",                 // only on the setting that starts an entry
+  "entryTitle": "Allow Rewind"              // likewise; its label unless .EntryTitle() says otherwise
 }
 ```
 

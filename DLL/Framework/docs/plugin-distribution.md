@@ -6,8 +6,10 @@
 > (reviewed in-tree source) in light of "if people want plugins in their own repos, let them."
 >
 > **Update 2026-09-26:** nobody currently needs #2. Contributors are core team working in-tree, and the one
-> outside author keeps their own fork. The route for "a mod in its own repo" is #1, designed below and not
-> built yet; build it when an author outside the team asks.
+> outside author keeps their own fork. The route for "a mod in its own repo" is #1.
+>
+> **Update 2026-10-09:** #1 is built. The fork's author asked for it to bring DropPedal and the audio side of
+> their Audio Bridge in as mods instead of maintaining the fork; see `DLL/ExternalMods/README.md`.
 
 ## The one question is really three
 
@@ -31,20 +33,22 @@ this repo. Authors can keep mods in their own repos and pull them into a build. 
 settings, key bindings and GUI rendering come from the mod's own schema (`settings-schema.md`), and a mod
 needs no core edits (README, "Adding a mod").
 
-**Design (not built):**
+**How it works:**
 
-- **Folder:** a git-ignored `DLL/ExternalMods/`. Each mod repo is cloned or submoduled into its own
-  subfolder, with its `.cpp` files at the top of that folder.
-- **Project:** a small `ExternalMods.targets`, imported by `DLL.vcxproj`, compiles `ExternalMods\*\*.cpp`
-  with a wildcard. The main project stays wildcard-free because Visual Studio rewrites wildcards in the
-  project file it edits. It doesn't edit imported files, and these files arrive through git rather than
-  the IDE, so the import should be safe. **Verify in the IDE before relying on it.**
-- **Precompiled header:** external mods include `../../stdafx.h`, as `CC/Effects/` already does from the
-  same depth.
+- **Folder:** `DLL/ExternalMods/` is git-ignored except its README. Each mod repo is cloned or submoduled
+  into its own subfolder.
+- **Project:** `DLL/ExternalMods.targets`, imported by `DLL.vcxproj`, compiles every `.cpp` under
+  `ExternalMods\<repo>\` (any depth, `Tests` folders excluded) with a wildcard. The main project stays
+  wildcard-free because Visual Studio rewrites wildcards in the project file it edits. It doesn't edit
+  imported files, and these files arrive through git rather than the IDE, so the import should be safe.
+  Verified from the command line; **check it in the IDE before relying on it there.**
+- **Precompiled header:** `stdafx.h` is force-included and the `DLL` folder is on the include path, so a
+  file at any depth shares the precompiled header and includes framework headers project-rooted.
 - **Unlisted-file check:** the import lists the external files, so `CheckAllSourcesListed` passes.
-- **Settings and GUI:** `DumpManifest` includes external mods' settings. The GUI prefers a loose
-  `mods.manifest.json` next to its exe over the embedded one, so a custom build ships its manifest without
-  rebuilding the GUI.
+- **Settings and GUI:** `DumpManifest` includes external mods' settings, so `BuildAndRun.ps1` refuses to
+  dump or verify the committed manifest while `ExternalMods` has sources; `-ManifestPath` writes the custom
+  build's own. The GUI prefers a loose `mods.manifest.json` next to its exe over the embedded one, so a
+  custom build ships its manifest without rebuilding the GUI.
 - **API changes:** the mod compiles against the framework as source, so a breaking `ModContext` change fails
   loudly in the mod's own build. No versioning, nothing frozen.
 
@@ -105,10 +109,11 @@ while not staking the project's name on unaudited native code. Review changes ro
 1. **Make the *source* surface zero-core-edit — done (2026-09-26).** Settings, key bindings and the GUI
    come from the schema, and `Build/New-Mod.ps1` writes a new mod's explicit project entries. The project
    deliberately stays wildcard-free (Visual Studio rewrites wildcards); a build check fails on any `.cpp`
-   missing from it. The external-repo route in #1 is designed and waits for an author who needs it.
-2. **Bake the API on real consumers.** This is where it stands: DropPedal was dropped (PR #233), and
-   Cheesewizard keeps their own fork. Two or three real external mods is the signal that `ModContext` has
-   stopped moving.
+   missing from it. The external-repo route in #1 was built on 2026-10-09.
+2. **Bake the API on real consumers.** This is where it stands: the fork's author is moving DropPedal and the
+   Audio Bridge's audio side to external mods (October 2026), which added the audio input chain
+   (`audio-input.md`), ImGui overlays and before-reset callbacks. Two or three real external mods is the
+   signal that `ModContext` has stopped moving.
 3. **Then cut #2 and #3 together**, once both hold:
    - the mod-facing headers (`ModContext`, `IMod`, the HUD/draw/menu/settings/command types) go about two
      months without a breaking change (they changed in 5 of the 8 weeks to late September 2026), and

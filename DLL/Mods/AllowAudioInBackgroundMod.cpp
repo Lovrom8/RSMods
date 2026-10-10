@@ -10,6 +10,7 @@ SettingDefs AllowAudioInBackgroundMod::Settings() const {
     return {
         SettingDef::Toggle(Setting::AllowAudioInBackground, "AllowAudioInBackground", "Allow Audio in Background")
             .Hint("Keeps game audio playing when Rocksmith loses window focus.")
+        	.Heading(Framework::SettingHeading::Audio)
     };
 }
 

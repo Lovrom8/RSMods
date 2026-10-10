@@ -81,6 +81,20 @@ public sealed class ModCatalogTests
     }
 
     [Fact]
+    public void EveryHeadingTheDllDeclaresIsListed()
+    {
+        var headings = new ManifestService().AllSettings.Select(d => d.Heading).OfType<string>().Distinct();
+
+        Assert.All(headings, h => Assert.Contains(h, ModCatalog.Categories));
+    }
+
+    [Fact]
+    public void EverySettingNamesItsMod()
+    {
+        Assert.All(new ManifestService().AllSettings, d => Assert.False(string.IsNullOrEmpty(d.Mod), d.Key));
+    }
+
+    [Fact]
     public void EveryCurrentModHasItsOwnCategory()
     {
         // "Other" catches mods added to the DLL later; today's mods should each have a real heading.

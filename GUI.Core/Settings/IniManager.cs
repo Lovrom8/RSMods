@@ -6,7 +6,7 @@ using System.Threading;
 
 namespace RSMods
 {
-    public sealed class IniValidationWarning(string filePath, string section, string key, string rawValue, string defaultValue, string reason)
+    public sealed class IniValidationWarning(string filePath, string section, string key, string rawValue, string defaultValue, string reason, bool valueKept = false)
     {
         public string FilePath { get; } = filePath;
         public string Section { get; } = section;
@@ -14,15 +14,52 @@ namespace RSMods
         public string RawValue { get; } = rawValue;
         public string DefaultValue { get; } = defaultValue;
         public string Reason { get; } = reason;
+
+        /// <summary>True when the file keeps the raw value (only the default is shown) rather than being corrected.</summary>
+        public bool ValueKept { get; } = valueKept;
     }
 
-    public class IniManager(string filePath)
+    /// <summary>
+    /// Reads and writes one INI file, keeping the file's own lines: comments, unknown sections and keys,
+    /// duplicates and spacing are written back as they were, and only a line whose value changes is rewritten.
+    /// </summary>
+    /// <param name="fillDefaults">
+    /// When true, reading a missing key adds its default to the file and an invalid value is corrected to its
+    /// default. When false (a file another program owns), both only show the default: the file changes only
+    /// where a value is set to something other than what was shown.
+    /// </param>
+    public class IniManager(string filePath, bool fillDefaults = true)
     {
         public event Action<IniValidationWarning> ValidationWarning;
 
-        private readonly Dictionary<string, Dictionary<string, string>> _data = new(StringComparer.OrdinalIgnoreCase);
-        private readonly Dictionary<string, Dictionary<string, string>> _commentedData = new(StringComparer.OrdinalIgnoreCase);
+        private sealed class Line
+        {
+            public string Raw;      // Null once the value changes, so the line is regenerated.
+            public string Key;      // Null for comments, blank lines and anything else that isn't key=value.
+            public string Value;
+            public bool Commented;
+
+            public string Text => Raw ?? $"{(Commented ? ";" : "")}{Key}={Value}";
+        }
+
+        private sealed class Block
+        {
+            public string Name;     // Null for the lines before the first section.
+            public string Header;   // The header as the file wrote it; null for a section this class created.
+            public readonly List<Line> Lines = [];
+        }
+
+        private readonly List<Block> _blocks = [new Block()];
+
+        // The line each key reads from: the last active one, and separately the last commented-out one.
+        private readonly Dictionary<string, Dictionary<string, Line>> _data = new(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, Dictionary<string, Line>> _commentedData = new(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, string[]> _sectionComments = new(StringComparer.OrdinalIgnoreCase);
+
+        // Without fillDefaults: the default shown for a missing or invalid key, so setting that same value back isn't a change.
+        private readonly Dictionary<string, string> _shownDefaults = new(StringComparer.OrdinalIgnoreCase);
+
+        private string _newLine = Environment.NewLine;
 
         // Screens save from the thread pool while the UI thread reads and writes values (a read can seed a
         // default), so every access goes through this. Events fire after it's released.
@@ -33,6 +70,8 @@ namespace RSMods
         private bool _changedSinceSave; // A value was set to something new; reading or seeding a default doesn't count.
         private bool _fileOutOfDate;    // Anything the file on disk lacks, seeded defaults and corrections included.
 
+        public string FilePath => filePath;
+
         public void Load()
         {
             lock (_gate)
@@ -41,34 +80,47 @@ namespace RSMods
 
         private void LoadLocked()
         {
+            _blocks.Clear();
             _data.Clear();
             _commentedData.Clear();
+            _shownDefaults.Clear();
+            _newLine = Environment.NewLine;
             _changedSinceSave = false;
             _fileOutOfDate = false;
+
+            var block = new Block();
+            _blocks.Add(block);
 
             try
             {
                 if (!File.Exists(filePath)) return;
 
-                string currentSection = string.Empty;
+                string text = File.ReadAllText(filePath);
+                if (text.Contains('\n') && !text.Contains("\r\n"))
+                    _newLine = "\n";
 
-                foreach (var line in File.ReadLines(filePath))
+                using var reader = new StringReader(text);
+                for (string line = reader.ReadLine(); line != null; line = reader.ReadLine())
                 {
                     var trimmed = line.Trim();
-                    if (string.IsNullOrWhiteSpace(trimmed)) continue;
 
                     if (TryParseSection(trimmed, out string newSection))
                     {
-                        currentSection = newSection;
+                        block = new Block { Name = newSection, Header = line };
+                        _blocks.Add(block);
+                        continue;
                     }
-                    else if (trimmed.StartsWith(";"))
-                    {
-                        ParseKeyValuePair(trimmed.Substring(1), currentSection, _commentedData);
-                    }
-                    else
-                    {
-                        ParseKeyValuePair(trimmed, currentSection, _data);
-                    }
+
+                    var entry = new Line { Raw = line };
+                    block.Lines.Add(entry);
+
+                    // Key lines before the first section belong to no section, so they're only kept, never read.
+                    if (block.Name == null || trimmed.Length == 0)
+                        continue;
+
+                    entry.Commented = trimmed.StartsWith(';');
+                    if (TrySplitKeyValue(entry.Commented ? trimmed.Substring(1) : trimmed, out entry.Key, out entry.Value))
+                        GetOrCreateSection(entry.Commented ? _commentedData : _data, block.Name)[entry.Key] = entry;
                 }
             }
             catch (IOException ex)
@@ -197,51 +249,30 @@ namespace RSMods
 
         private void WriteContents(StreamWriter sw)
         {
-            // _data ordering first, then any section that exists only as commented lines.
-            var sectionNames = new List<string>(_data.Keys);
-            foreach (var section in _commentedData.Keys)
+            sw.NewLine = _newLine;
+
+            foreach (var block in _blocks)
             {
-                if (!_data.ContainsKey(section))
-                    sectionNames.Add(section);
-            }
-
-            foreach (var sectionName in sectionNames)
-            {
-                if (_sectionComments.TryGetValue(sectionName, out var headers))
+                if (block.Name != null)
                 {
-                    foreach (var header in headers)
-                        sw.WriteLine(header);
-                }
-
-                sw.WriteLine(sectionName);
-
-                _data.TryGetValue(sectionName, out var dataSection);
-                _commentedData.TryGetValue(sectionName, out var commentedSection);
-
-                if (dataSection != null)
-                {
-                    foreach (var kvp in dataSection)
-                        WriteKeyValuePair(sw, sectionName, kvp.Key, kvp.Value);
-                }
-
-                // Preserve commented-only entries that were never mirrored into _data,
-                // so a load/save round-trip doesn't silently drop them.
-                if (commentedSection != null)
-                {
-                    foreach (var kvp in commentedSection)
+                    // A file's own section keeps whatever comments it has; only a section created here gets ours.
+                    if (block.Header == null && _sectionComments.TryGetValue(block.Name, out var headers))
                     {
-                        if (dataSection == null || !dataSection.ContainsKey(kvp.Key))
-                            sw.WriteLine($";{kvp.Key}={kvp.Value}");
+                        foreach (var header in headers)
+                            sw.WriteLine(header);
                     }
+
+                    sw.WriteLine(block.Header ?? block.Name);
                 }
 
-                sw.WriteLine(); // Blank line for readability
+                foreach (var line in block.Lines)
+                    sw.WriteLine(line.Text);
             }
         }
 
-        private bool TryParseSection(string line, out string section)
+        private static bool TryParseSection(string line, out string section)
         {
-            if (line.StartsWith("[") && line.EndsWith("]"))
+            if (line.StartsWith('[') && line.EndsWith(']'))
             {
                 section = line;
                 return true;
@@ -250,55 +281,103 @@ namespace RSMods
             return false;
         }
 
-        private void ParseKeyValuePair(string body, string currentSection, Dictionary<string, Dictionary<string, string>> targetDict)
+        private static bool TrySplitKeyValue(string body, out string key, out string value)
         {
-            if (string.IsNullOrEmpty(currentSection)) return;
-
             int splitIndex = body.IndexOf('=');
             if (splitIndex > 0)
             {
-                var key = body.Substring(0, splitIndex).Trim();
-                var val = body.Substring(splitIndex + 1).Trim();
-
-                var sectionDict = GetOrCreateSection(targetDict, currentSection);
-                sectionDict[key] = val;
+                key = body.Substring(0, splitIndex).Trim();
+                value = body.Substring(splitIndex + 1).Trim();
+                return key.Length > 0;
             }
+
+            key = value = null;
+            return false;
         }
 
-        private void WriteKeyValuePair(StreamWriter sw, string sectionName, string key, string value)
-        {
-            if (_commentedData.TryGetValue(sectionName, out var commentedSection) && commentedSection.TryGetValue(key, out var commentedValue))
-            {
-                sw.WriteLine($";{key}={commentedValue}");
-            }
-            else
-            {
-                sw.WriteLine($"{key}={value}");
-            }
-        }
-
-        private Dictionary<string, string> GetOrCreateSection(Dictionary<string, Dictionary<string, string>> target, string section)
+        private static Dictionary<string, Line> GetOrCreateSection(Dictionary<string, Dictionary<string, Line>> target, string section)
         {
             if (!target.TryGetValue(section, out var sectionDict))
             {
-                sectionDict = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                sectionDict = new Dictionary<string, Line>(StringComparer.OrdinalIgnoreCase);
                 target[section] = sectionDict;
             }
             return sectionDict;
         }
 
+        private static Line Find(Dictionary<string, Dictionary<string, Line>> source, string section, string key)
+            => source.TryGetValue(section, out var sec) && sec.TryGetValue(key, out var line) ? line : null;
+
+        private Block GetOrCreateBlock(string section)
+        {
+            for (int i = _blocks.Count - 1; i >= 0; i--)
+            {
+                if (string.Equals(_blocks[i].Name, section, StringComparison.OrdinalIgnoreCase))
+                    return _blocks[i];
+            }
+
+            // Keep a blank line between the previous section and this one, as the file would have been written.
+            var last = _blocks[^1];
+            if ((last.Name != null || last.Lines.Count > 0) && (last.Lines.Count == 0 || last.Lines[^1].Text.Trim().Length > 0))
+                last.Lines.Add(new Line { Raw = "" });
+
+            var block = new Block { Name = section };
+            block.Lines.Add(new Line { Raw = "" });
+            _blocks.Add(block);
+            return block;
+        }
+
+        private Line AddLine(string section, string key, string value, bool commented)
+        {
+            var block = GetOrCreateBlock(section);
+
+            // After the section's last key, so the comments and blank lines that lead into the next section stay there.
+            int index = block.Lines.FindLastIndex(l => l.Key != null) + 1;
+            var line = new Line { Key = key, Value = value, Commented = commented };
+            block.Lines.Insert(index, line);
+            GetOrCreateSection(commented ? _commentedData : _data, section)[key] = line;
+            return line;
+        }
+
+        private void MarkChanged()
+        {
+            _changedSinceSave = true;
+            _fileOutOfDate = true;
+        }
+
+        private static string ShownDefaultId(string section, string key) => section + "\n" + key;
+
         public string GetString(string section, string key, string defaultValue = "")
         {
             lock (_gate)
             {
-                if (_data.TryGetValue(section, out var sec) && sec.TryGetValue(key, out var val))
-                    return val;
+                var line = Find(_data, section, key);
+                if (line != null)
+                    return line.Value;
 
-                // Seed the default so Save() persists it, but a read must never count as a
-                // change (that would trigger a spurious save and game reload).
-                GetOrCreateSection(_data, section)[key] = defaultValue;
-                _fileOutOfDate = true;
+                if (fillDefaults)
+                {
+                    // Seed the default so Save() persists it, but a read must never count as a
+                    // change (that would trigger a spurious save and game reload).
+                    AddLine(section, key, defaultValue, commented: false);
+                    _fileOutOfDate = true;
+                }
+                else
+                {
+                    _shownDefaults[ShownDefaultId(section, key)] = defaultValue;
+                }
+
                 return defaultValue;
+            }
+        }
+
+        /// <summary>Reads a key's active value without adding its default.</summary>
+        public bool TryGetString(string section, string key, out string value)
+        {
+            lock (_gate)
+            {
+                value = Find(_data, section, key)?.Value;
+                return value != null;
             }
         }
 
@@ -306,12 +385,75 @@ namespace RSMods
         {
             lock (_gate)
             {
-                var sectionDict = GetOrCreateSection(_data, section);
+                string id = ShownDefaultId(section, key);
+                if (_shownDefaults.TryGetValue(id, out string shown))
+                {
+                    if (shown == value)
+                        return; // The screen is saving back the default it showed; the file keeps what it has.
+                    _shownDefaults.Remove(id);
+                }
 
-                bool changed = !sectionDict.TryGetValue(key, out var oldVal) || oldVal != value;
-                sectionDict[key] = value;
-                _changedSinceSave |= changed;
-                _fileOutOfDate |= changed;
+                SetActiveLocked(section, key, value);
+            }
+        }
+
+        private void SetActiveLocked(string section, string key, string value)
+        {
+            var line = Find(_data, section, key);
+            if (line == null)
+            {
+                AddLine(section, key, value, commented: false);
+                MarkChanged();
+            }
+            else if (line.Value != value)
+            {
+                line.Value = value;
+                line.Raw = null;
+                MarkChanged();
+            }
+        }
+
+        /// <summary>Deletes every active line of the key in the section; commented-out ones stay.</summary>
+        public void RemoveKey(string section, string key)
+        {
+            lock (_gate)
+            {
+                if (_data.TryGetValue(section, out var sec) && sec.Remove(key))
+                {
+                    foreach (var block in _blocks)
+                    {
+                        if (string.Equals(block.Name, section, StringComparison.OrdinalIgnoreCase))
+                            block.Lines.RemoveAll(l => !l.Commented && string.Equals(l.Key, key, StringComparison.OrdinalIgnoreCase));
+                    }
+                    MarkChanged();
+                }
+                _shownDefaults.Remove(ShownDefaultId(section, key));
+            }
+        }
+
+        /// <summary>
+        /// Sets a value the game already applied (an edit from its in-game settings window): the next <see cref="Save"/>
+        /// writes it, but it doesn't count as a change the game has to reload.
+        /// </summary>
+        public void SetStringFromGame(string section, string key, string value)
+        {
+            lock (_gate)
+            {
+                // The file now holds the game's value, so a screen saving back its shown default is a real change.
+                _shownDefaults.Remove(ShownDefaultId(section, key));
+
+                var line = Find(_data, section, key);
+                if (line == null)
+                {
+                    AddLine(section, key, value, commented: false);
+                    _fileOutOfDate = true;
+                }
+                else if (line.Value != value)
+                {
+                    line.Value = value;
+                    line.Raw = null;
+                    _fileOutOfDate = true;
+                }
             }
         }
 
@@ -403,67 +545,94 @@ namespace RSMods
         public string GetCommentedString(string section, string key, string defaultValue = "")
         {
             lock (_gate)
-            {
-                if (_commentedData.TryGetValue(section, out var sec) && sec.TryGetValue(key, out var val))
-                    return val;
-                return defaultValue;
-            }
+                return Find(_commentedData, section, key)?.Value ?? defaultValue;
         }
 
+        /// <summary>
+        /// Comments the key out (<paramref name="commented"/> true) or back in, with the given value. The line
+        /// changes in place; other commented-out lines of the same key, such as alternatives a user keeps, stay.
+        /// </summary>
         public void SetCommentedString(string section, string key, string value, bool commented)
         {
-            if (commented)
+            lock (_gate)
             {
-                lock (_gate)
+                _shownDefaults.Remove(ShownDefaultId(section, key));
+
+                var active = Find(_data, section, key);
+                var inactive = Find(_commentedData, section, key);
+
+                if (commented)
                 {
-                    var commentedSection = GetOrCreateSection(_commentedData, section);
-                    bool changed = !commentedSection.TryGetValue(key, out var oldVal) || oldVal != value;
-                    _changedSinceSave |= changed;
-                    _fileOutOfDate |= changed;
-                    commentedSection[key] = value;
-                    GetOrCreateSection(_data, section)[key] = value;
-                }
-            }
-            else
-            {
-                lock (_gate)
-                {
-                    if (_commentedData.TryGetValue(section, out var sec) && sec.Remove(key))
+                    if (active != null)
                     {
-                        _changedSinceSave = true;
-                        _fileOutOfDate = true;
+                        _data[section].Remove(key);
+                        GetOrCreateSection(_commentedData, section)[key] = active;
+                        active.Commented = true;
+                        active.Value = value;
+                        active.Raw = null;
+                        MarkChanged();
+                    }
+                    else if (inactive == null)
+                    {
+                        AddLine(section, key, value, commented: true);
+                        MarkChanged();
+                    }
+                    else if (inactive.Value != value)
+                    {
+                        inactive.Value = value;
+                        inactive.Raw = null;
+                        MarkChanged();
                     }
                 }
-
-                SetString(section, key, value);
+                else if (active == null && inactive != null)
+                {
+                    _commentedData[section].Remove(key);
+                    GetOrCreateSection(_data, section)[key] = inactive;
+                    inactive.Commented = false;
+                    inactive.Value = value;
+                    inactive.Raw = null;
+                    MarkChanged();
+                }
+                else
+                {
+                    SetActiveLocked(section, key, value);
+                }
             }
         }
 
+        /// <summary>True when the key is only present commented out; an active line of it wins over any comment.</summary>
         public bool IsCommented(string section, string key)
         {
             lock (_gate)
-                return _commentedData.TryGetValue(section, out var sec) && sec.ContainsKey(key);
+                return Find(_data, section, key) == null && Find(_commentedData, section, key) != null;
         }
 
+        /// <summary>Comment lines written above the section when this class creates it; a file's own section keeps its own.</summary>
         public void SetSectionComments(string section, string[] comments)
         {
             lock (_gate)
-            {
                 _sectionComments[section] = comments;
-                _fileOutOfDate = true;
-            }
         }
 
         // A blank value isn't reported: it is how RS_ASIO's own RS_ASIO.ini leaves a setting at its default, so the
         // typed getters read it as the default and leave the file as it is.
         private void ReportInvalid(string section, string key, string rawValue, string defaultValue, string reason)
         {
-            // Self-heal: overwrite the invalid raw value with the default in memory so the next
-            // Save() persists the correction.
             lock (_gate)
             {
-                GetOrCreateSection(_data, section)[key] = defaultValue;
-                _fileOutOfDate = true;
+                if (fillDefaults)
+                {
+                    // Self-heal: overwrite the invalid raw value with the default in memory so the next
+                    // Save() persists the correction.
+                    var line = Find(_data, section, key);
+                    line.Value = defaultValue;
+                    line.Raw = null;
+                    _fileOutOfDate = true;
+                }
+                else
+                {
+                    _shownDefaults[ShownDefaultId(section, key)] = defaultValue;
+                }
             }
 
             ValidationWarning?.Invoke(new IniValidationWarning(
@@ -472,7 +641,8 @@ namespace RSMods
                 key,
                 rawValue,
                 defaultValue,
-                reason));
+                reason,
+                valueKept: !fillDefaults));
         }
 
         private sealed class SaveScope : IDisposable
