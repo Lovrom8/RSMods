@@ -7,6 +7,10 @@
 namespace Framework {
 	class IMod;
 
+	// Separate capture streams the tap can feed, each with its own format, latency and audio thread. The tap picks
+	// the index; Rocksmith's capture streams map to it by player (0 = player 1, 1 = player 2).
+	inline constexpr std::uint32_t kMaxAudioInputs = 2;
+
 	struct CaptureFormat {
 		std::uint32_t sampleRate = 0;
 		std::uint32_t channelCount = 0;
@@ -15,24 +19,27 @@ namespace Framework {
 
 	// Edits the guitar input before the game's pitch detection sees it. Process runs on the audio thread, so it must
 	// not allocate, lock, log, block or throw (noexcept makes a throw terminate instead of unwinding into the driver).
+	// Every call carries the input index; keep state per input, since one input can be prepared while another runs.
 	class IInputProcessor {
 	public:
 		virtual ~IInputProcessor() = default;
 
-		// Off the audio thread, before any Process call and again whenever the tap's format changes. Allocate here.
-		virtual void Prepare(const CaptureFormat& format) = 0;
+		// Off that input's audio thread, before its first Process call and again whenever its format changes.
+		// Allocate here. It may overlap Process for a different input.
+		virtual void Prepare(std::uint32_t input, const CaptureFormat& format) = 0;
 
 		// `frames` frames of interleaved samples, edited in place. `active` is false while the owner isn't Active
 		// (disabled, suppressed, faulted): pass the audio through, but keep the same delay.
-		virtual void Process(float* samples, std::uint32_t frames, bool active) noexcept = 0;
+		virtual void Process(std::uint32_t input, float* samples, std::uint32_t frames, bool active) noexcept = 0;
 
-		// Constant delay in frames, active or not. Rocksmith calibrates input latency once, so it must never change.
-		virtual std::uint32_t GetLatencyFrames() const = 0;
+		// Constant delay in frames for this input, active or not. Rocksmith calibrates input latency once, so it must
+		// never change between Prepare calls.
+		virtual std::uint32_t GetLatencyFrames(std::uint32_t input) const = 0;
 	};
 
 	// The chain of input processors. A mod hooking the audio driver (the "tap") feeds it; others only add processors.
-	// The chain is fixed when the tap first prepares: the audio thread then walks a fixed array with no locks, and
-	// the total latency the game calibrated against can't change.
+	// The chain is fixed when the tap first prepares any input: the audio threads then walk a fixed array with no
+	// locks, and the total latency the game calibrated against can't change.
 	class AudioInputChain {
 	public:
 		AudioInputChain();
@@ -52,18 +59,20 @@ namespace Framework {
 		// MainThread: which owners are Active, i.e. what each processor's `active` is.
 		void PublishActive(const std::function<bool(const IMod*)>& isActive);
 
-		// Tap side. Call when the driver's buffers are created, while ProcessTap can't run (ASIO: createBuffers).
-		// Prepares every processor and returns the chain's total latency in frames.
-		std::uint32_t PrepareTap(const CaptureFormat& format);
+		// Tap side, any thread except from inside ProcessTap for the same input. Waits for an in-flight ProcessTap on
+		// that input to return, prepares every processor for it and returns that input's total latency in frames
+		// (0 for an index past kMaxAudioInputs).
+		std::uint32_t PrepareTap(std::uint32_t input, const CaptureFormat& format);
 
-		// Tap side, audio thread.
-		void ProcessTap(float* samples, std::uint32_t frames) noexcept;
+		// Tap side, that input's audio thread.
+		void ProcessTap(std::uint32_t input, float* samples, std::uint32_t frames) noexcept;
 
-		// Tap side: buffers disposed. ProcessTap does nothing until the next PrepareTap.
-		void ReleaseTap();
+		// Tap side: that stream is gone. Waits like PrepareTap; ProcessTap does nothing for it until the next one.
+		void ReleaseTap(std::uint32_t input);
 
-		[[nodiscard]] bool TapLive() const;
-		[[nodiscard]] std::uint32_t LatencyFrames() const;
+		[[nodiscard]] bool TapLive() const; // Any input.
+		[[nodiscard]] bool TapLive(std::uint32_t input) const;
+		[[nodiscard]] std::uint32_t LatencyFrames(std::uint32_t input) const;
 
 	private:
 		struct Impl;

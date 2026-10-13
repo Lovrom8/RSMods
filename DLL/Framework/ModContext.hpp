@@ -148,6 +148,7 @@ namespace Framework {
 		}
 
 		[[nodiscard]] bool InputTapLive() const { return audio.TapLive(); }
+		[[nodiscard]] bool InputTapLive(std::uint32_t input) const { return audio.TapLive(input); }
 	};
 
 	// Internal per-hook context

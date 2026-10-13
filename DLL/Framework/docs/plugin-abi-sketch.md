@@ -206,21 +206,30 @@ typedef struct {
 ```c
 typedef struct { uint32_t structSize, sampleRate, channelCount, maxFrames; } RSCaptureFormat;
 
+// Every call names the input (capture stream, 0..RS_MAX_AUDIO_INPUTS-1): each has its own format, latency and
+// audio thread, and one can be prepared while another processes, so a processor keeps state per input.
+#define RS_MAX_AUDIO_INPUTS 2
+
 typedef struct {
 	uint32_t structSize;
-	RSResult (RSCALL *prepare)(void* self, const RSCaptureFormat* fmt);     // Off the audio thread
-	void     (RSCALL *process)(void* self, float* samples, uint32_t frames, // Audio thread: must not
-	                           int32_t active);                             // allocate, lock or fail
-	uint32_t (RSCALL *latencyFrames)(void* self);                          // Constant, active or not
+	RSResult (RSCALL *prepare)(void* self, uint32_t input,                 // Off that input's audio thread
+	                           const RSCaptureFormat* fmt);
+	void     (RSCALL *process)(void* self, uint32_t input, float* samples, // Audio thread: must not
+	                           uint32_t frames, int32_t active);           // allocate, lock or fail
+	uint32_t (RSCALL *latencyFrames)(void* self, uint32_t input);          // Constant, active or not
 } RSInputProcessor;
 
 typedef struct {
 	RSInterfaceHeader hdr;
 	// From onInitialize only; `vt` and `self` must outlive the plugin.
 	RSResult (RSCALL *addProcessor)(RSCtx ctx, const RSInputProcessor* vt, void* self, int32_t order);
-	int32_t  (RSCALL *tapLive)(void); // Any thread
+	int32_t  (RSCALL *tapLive)(int32_t input); // Any thread; -1 = any input
 } RSAudioV1;
 ```
+
+The tap side (`PrepareTap`/`ProcessTap`/`ReleaseTap`) isn't in v1: the only tap so far is an external
+source mod. A binary tap would add `prepareTap(input, fmt)`, `processTap(input, samples, frames)` and
+`releaseTap(input)` here as a minor version.
 
 ### `rsmods.imgui` v1 — optional (mirrors `MenuBinder`)
 
