@@ -121,10 +121,12 @@ while not staking the project's name on unaudited native code. Review changes ro
      need.
 
    Then ship the versioned C ABI shim **and** the signed/verified loader model in the same step, because
-   #2 forces #3. Keep v1 to the parts that are already data: the settings schema, HUD text snapshots and
-   named commands. Draw interceptors and ImGui menus stay in-tree only: a raw device handle can't cross the
-   boundary (`render-hooks.md`), and a plugin's ImGui must match the host's version and context exactly.
-   Until then, prefer adding to the mod-facing API over changing it, so the eventual freeze is cheap.
+   #2 forces #3. [`plugin-abi-sketch.md`](plugin-abi-sketch.md) sketches that shim against the current
+   `ModContext`: per-subsystem interfaces, each versioned on its own, so the stable parts (mods, settings,
+   commands, HUD, audio) can freeze before the rest; the settings schema as JSON; ImGui as an optional,
+   version-pinned interface; draw interceptors in-tree only (`render-hooks.md`); and a committed conformance
+   plugin that every host build must still load. Until then, prefer adding to the mod-facing API over
+   changing it, so the eventual freeze is cheap.
 
 ## What this doesn't change
 
