@@ -69,6 +69,11 @@ namespace Framework {
 		void RegisterOverlay(std::string id, int order, MenuDrawFn drawFn) const {
 			registry.RegisterOverlay(mod, std::move(id), order, std::move(drawFn));
 		}
+
+		// Adds fonts to the ImGui atlas before the next frame, once for the game's lifetime (MenuRegistry::RegisterFonts).
+		void RegisterFonts(FontLoadFn fn) const {
+			registry.RegisterFonts(mod, std::move(fn));
+		}
 	};
 
 	struct DrawBinder {

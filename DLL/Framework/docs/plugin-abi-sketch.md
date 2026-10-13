@@ -264,6 +264,8 @@ typedef struct {
 	// From onInitialize only.
 	RSResult (RSCALL *registerMenu)(RSCtx ctx, const RSMenuDesc* menu);
 	RSResult (RSCALL *registerOverlay)(RSCtx ctx, const RSMenuDesc* overlay); // Every frame while Active
+	// Once, render thread, outside a frame: add to ImGui::GetIO().Fonts and keep the ImFont*s.
+	RSResult (RSCALL *registerFonts)(RSCtx ctx, RSResult (RSCALL *addFonts)(void* user), void* user);
 } RSImGuiV1;
 ```
 

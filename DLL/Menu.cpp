@@ -97,6 +97,26 @@ namespace Menu {
 	/// Renders the ImGui frame, including the main mod menu.
 	/// </summary>
 	void RenderImGuiMenu() {
+		// Mods' fonts go in outside the frame, where the atlas isn't locked; NewFrame then re-uploads the texture.
+		auto fontLoads = Framework::Menus().TakePendingFonts();
+		if (!fontLoads.empty()) {
+			for (const auto& load : fontLoads) {
+				const std::string owner = load.owner ? std::string(load.owner->Id()) : "(host)";
+				try {
+					load.fn();
+				}
+				catch (const std::exception& e) {
+					LOG_ERROR("Exception adding fonts for '" << owner << "': " << e.what() << std::endl);
+				}
+				catch (...) {
+					LOG_ERROR("Unknown exception adding fonts for '" << owner << "'" << std::endl);
+				}
+			}
+
+			ImGui::GetIO().Fonts->Build();
+			ImGui_ImplDX9_InvalidateDeviceObjects();
+		}
+
 		GameOverlay::PrepareImGuiHud(); // bake/rebuild HUD fonts before NewFrame recreates the atlas texture
 
 		ImGui_ImplDX9_NewFrame();

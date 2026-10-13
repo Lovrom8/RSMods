@@ -62,6 +62,26 @@ c.Menu().RegisterOverlay("tuning", 0, [this] {
   take the mouse; with the menu closed, the game still gets the mouse (`input-capture.md`).
 - Runs on the render thread: read mod state through atomics or a snapshot, not `Settings`.
 
+### Fonts
+
+The atlas starts with the host's Roboto at 20 px. A mod that wants other sizes or faces adds them once:
+
+```cpp
+c.Menu().RegisterFonts([this] {
+    big = ImGui::GetIO().Fonts->AddFontFromMemoryTTF(ttf, ttfSize, 32.0f, &cfgNotOwned);
+});
+// In the overlay: if (big) ImGui::PushFont(big); ... ImGui::PopFont();
+```
+
+- Runs on the render thread before the next ImGui frame, outside it, where the atlas isn't locked; the host
+  then rebuilds the atlas and NewFrame re-uploads the texture. Fonts added inside a frame would assert.
+- Runs once. The atlas lives as long as the game: a device reset only re-uploads its texture, so there's
+  nothing to redo after Alt+Tab. Fonts stay in the atlas after a fault, so stored `ImFont*`s stay valid.
+- Until it runs the pointers are null, so check before `PushFont`.
+- Font bytes passed with `FontDataOwnedByAtlas = false` must outlive the atlas (keep them in the mod).
+- Every call runs, so a retried mod re-running `OnInitialize` adds its fonts again: a few duplicates in
+  the atlas, nothing worse.
+
 ### Availability Modes
 - **`Availability::Active` (Default):** The menu entry is only visible and rendered when the mod is in `ModState::Active` (`IsEnabled() == true` and winning all exclusive resources). If the mod is disabled or suppressed, the menu entry disappears from the UI.
 - **`Availability::Initialized`:** The menu entry is visible as long as the mod initialized successfully, even if its runtime feature is disabled in the configuration (e.g. `MicrophoneVolumeOverrideMod`, allowing device testing without having volume sync enabled).

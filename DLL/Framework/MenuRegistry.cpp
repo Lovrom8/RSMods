@@ -8,6 +8,7 @@ namespace Framework {
 	struct MenuRegistry::Impl {
 		mutable std::mutex mutex;
 		std::vector<MenuEntry> entries;
+		std::vector<FontLoad> pendingFonts;
 		std::unordered_map<const IMod*, Availability> ownerAvailability;
 		bool hasAvailabilitySnapshot = false;
 
@@ -32,6 +33,16 @@ namespace Framework {
 			true, true, true });
 	}
 
+	void MenuRegistry::RegisterFonts(const IMod* owner, FontLoadFn fn) {
+		std::lock_guard<std::mutex> lock(impl->mutex);
+		impl->pendingFonts.push_back(FontLoad{ owner, std::move(fn) });
+	}
+
+	std::vector<FontLoad> MenuRegistry::TakePendingFonts() {
+		std::lock_guard<std::mutex> lock(impl->mutex);
+		return std::exchange(impl->pendingFonts, {});
+	}
+
 	void MenuRegistry::Upsert(MenuEntry entry) {
 		std::lock_guard<std::mutex> lock(impl->mutex);
 
@@ -47,6 +58,7 @@ namespace Framework {
 	void MenuRegistry::RemoveMod(const IMod* owner) {
 		std::lock_guard<std::mutex> lock(impl->mutex);
 		std::erase_if(impl->entries, [owner](const MenuEntry& e) { return e.owner == owner; });
+		std::erase_if(impl->pendingFonts, [owner](const FontLoad& load) { return load.owner == owner; });
 		impl->ownerAvailability.erase(owner);
 	}
 

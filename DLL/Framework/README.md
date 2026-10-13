@@ -207,7 +207,7 @@ every mod's effective state (`Active` / `Disabled` / `Suppressed` / `Faulted`), 
 disabled-vs-suppressed distinction that `ModState` collapses and the log line otherwise owns alone. The
 in-game `RS Mods` window renders it behind an opt-in `Mod status` toggle. See [`docs/mod-status.md`](docs/mod-status.md).
 
-- **In-game overlays (`ctx.Menu().RegisterOverlay`):** an ImGui drawer that runs every frame while the mod is active, menu open or not, for anything beyond a HUD text line. See [`docs/menu-registry.md`](docs/menu-registry.md).
+- **In-game overlays (`ctx.Menu().RegisterOverlay`):** an ImGui drawer that runs every frame while the mod is active, menu open or not, for anything beyond a HUD text line; `RegisterFonts` adds atlas fonts for it. See [`docs/menu-registry.md`](docs/menu-registry.md).
 - **Draw interception and render-thread callbacks (`ctx.Draw()`):** per-draw interceptors (optionally changing device state for one draw via `ctx.AfterDraw`), plus per-frame, before-reset and device-reset callbacks for mods with render-side state. See [`docs/draw-registry.md`](docs/draw-registry.md).
 - **Audio input (`ctx.Audio()`):** processors that edit the guitar signal before pitch detection, fed by a mod that hooks the audio input, per capture stream (player). See [`docs/audio-input.md`](docs/audio-input.md).
 

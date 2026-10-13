@@ -12,6 +12,12 @@ namespace Framework {
 	class IMod;
 
 	using MenuDrawFn = std::function<void()>;
+	using FontLoadFn = std::function<void()>;
+
+	struct FontLoad {
+		const IMod* owner = nullptr;
+		FontLoadFn fn;
+	};
 
 	struct MenuEntry {
 		const IMod* owner = nullptr; // Opaque key; nullptr means system/shared entry.
@@ -42,7 +48,16 @@ namespace Framework {
 		// its own window (with ImGuiWindowFlags_NoInputs unless it wants the mouse) or uses a background draw list.
 		void RegisterOverlay(const IMod* owner, std::string id, int order, MenuDrawFn drawFn);
 
-		// Drop all menu entries owned by this mod (e.g. on mod teardown or fault).
+		// Fonts for the mod's ImGui drawing: `fn` calls ImGui::GetIO().Fonts->AddFont* and keeps the ImFont*s. Runs
+		// once, on the render thread before the next ImGui frame. The atlas lives as long as the game (a device reset
+		// only re-uploads its texture), so fonts never need adding again. Each call runs, a retried mod's included.
+		void RegisterFonts(const IMod* owner, FontLoadFn fn);
+
+		// Render thread, outside an ImGui frame: the loads that haven't run yet, oldest first. The caller runs them
+		// and rebuilds the atlas.
+		[[nodiscard]] std::vector<FontLoad> TakePendingFonts();
+
+		// Drop all menu entries and pending font loads owned by this mod (e.g. on mod teardown or fault).
 		void RemoveMod(const IMod* owner);
 
 		// MainThread: publish snapshot of owner availability.
