@@ -124,8 +124,10 @@ namespace Framework {
 
 			try {
 				entry->processor->Prepare(input, format);
+				// Latency first: a processor whose latency throws would otherwise run with its delay uncounted.
+				const std::uint32_t latency = entry->processor->GetLatencyFrames(input);
 				entry->prepared[input] = true;
-				total += entry->processor->GetLatencyFrames(input);
+				total += latency;
 			}
 			catch (const std::exception& e) {
 				LOG_ERROR("[Framework] " << (entry->owner ? entry->owner->Id() : "(host)")

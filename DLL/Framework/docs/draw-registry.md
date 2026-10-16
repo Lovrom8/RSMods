@@ -171,7 +171,8 @@ Mods register their interceptors in `OnInitialize` (same place they bind command
 interceptor closure captures the mod's own texture pointers / state. Teardown on
 deactivate/fault reuses the owner-keyed `RemoveMod`, exactly like `HudRegistry::RemoveMod`.
 
-`ActiveEntry` is `{ int priority; std::string_view ownerId; DrawInterceptor fn; }`.
+`ActiveEntry` is `{ int priority; std::string_view ownerId; DrawInterceptor fn; const IMod* owner; }`.
+The hooks call each one through `Draw().Intercept(entry, ctx)`, which catches a throw (see §8.10).
 
 ---
 
@@ -363,14 +364,18 @@ void MyMod::OnDisabled(ModContext& c) {
 }
 ```
 
-**`OnShutdown`**: synchronous `ReleaseTextures()` is accepted. The game still renders while it closes, but
-`Shutdown` empties the active interceptor lists before any `OnShutdown` runs, so only a draw already in
-flight could still hold the pointer:
+**`OnShutdown`**: the same deferred release. The game keeps rendering while it closes and a draw already
+in flight may still hold the pointer, so never release on MainThread here either. `Shutdown` removes the
+mod right after, and a release queued before `RemoveMod` still runs at the next EndScene:
 ```cpp
-void MyMod::OnShutdown(ModContext&) {
-    ReleaseTextures(); // interceptors already unpublished
+void MyMod::OnShutdown(ModContext& c) {
+    c.Draw().RequestTextureRelease(); // freed on the render thread
 }
 ```
+
+Better still, have the interceptor read the texture the render thread owns at draw time, rather than a
+pointer MainThread copied: regen and release run on the render thread too, between draws, so it can never
+see a freed one (`ExtendedRangeMod`, `TwitchMod`).
 
 **`OnEnabled` / `OnSettingsChanged`**: trigger regen by setting `D3DHooks::RecreateTextures = true;`.
 
@@ -440,7 +445,7 @@ public:
         s_texture.store(nullptr, std::memory_order_release);
         c.Draw().RequestTextureRelease();
     }
-    void OnShutdown(Framework::ModContext&) override { Release(); }
+    void OnShutdown(Framework::ModContext& c) override { c.Draw().RequestTextureRelease(); }
 
     static void Regenerate(IDirect3DDevice9* dev) { /* D3D::GenerateGradientTexture(...) */ }
     static void Release() { D3D::ReleaseTexture(&s_rawTexture); s_texture.store(nullptr, std::memory_order_release); }
@@ -483,7 +488,8 @@ void MyMod::OnInitialize(ModContext& c) {
   `OnDisabled`, and device resources are released through `RequestTextureRelease`, never on the
   MainThread. That is why these callbacks don't need the `Deactivating`/quiescence machinery the
   removed render hooks had (`render-hooks.md`).
-- Neither is caught if it throws, same as interceptors.
+- A throw is caught like an interceptor's (§8.10). A throwing before-reset callback doesn't stop the others
+  or the Reset itself.
 - One of each per mod; registering again replaces it. `RemoveMod` (shutdown, fault) drops the frame and
   reset callbacks.
 
@@ -537,12 +543,21 @@ c.Draw().OnStretchRect([](DeviceEvent::StretchRect& e) { /* e.destRect = ... */ 
 - A replaced pointer (`data`, `destRect`) only has to live until the handler chain returns.
 - The framework's own device calls (e.g. an interceptor's `SetTexture`, or a restore writing
   constants) go through the same hooks, so handlers see them too.
-- Same rules as interceptors: render thread, no Settings lookups, exceptions are not caught.
+- Same rules as interceptors: render thread, no Settings lookups; a throw faults the mod (§8.10).
 
 **Adding an event** for a call that is already hooked takes three changes: a struct in `DeviceEvent`,
 a channel in `DeviceChannels` (member plus its `ForEach` line), and one `Dispatch` in the hook.
 A D3D9 method that isn't hooked yet also needs the trampoline in `ModManager.cpp`. That is a
 one-time change to the host, not per mod.
+
+### 8.10 Exceptions on the render thread
+
+Interceptors, frame, reset, before-reset, regen and release callbacks and device handlers are all caught
+per callback. The one that threw is skipped and the rest run; a draw goes on as `Pass`, a device call goes
+ahead. The registry unpublishes everything its owner has on the render thread at once and keeps it out of
+rebuilds, then MainThread faults the mod on its next pass (`Draw().TakeFaults()`), with the usual
+best-effort `OnDisabled` for an Active one. `RemoveMod` clears the mark, so *Retry faulted* works.
+Empty interceptors are never published.
 
 ---
 

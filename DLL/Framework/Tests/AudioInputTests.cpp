@@ -51,12 +51,16 @@ namespace {
 			if (active) samples[0] += 1.0f;
 		}
 
-		std::uint32_t GetLatencyFrames(std::uint32_t input) const override { return latency + input * extraPerInput; }
+		std::uint32_t GetLatencyFrames(std::uint32_t input) const override {
+			if (failLatency) throw std::runtime_error("no latency");
+			return latency + input * extraPerInput;
+		}
 
 		std::string name;
 		std::vector<std::string>& log;
 		std::uint32_t latency;
 		bool failPrepare;
+		bool failLatency = false;
 		std::uint32_t extraPerInput = 0;
 		CaptureFormat prepared{};
 		std::uint32_t preparedInput = 99;
@@ -201,6 +205,21 @@ int main() {
 		float sample = 0;
 		chain.ProcessTap(0, &sample, 1);
 		Check("failed prepare is skipped", log == std::vector<std::string>{ "good+" });
+	}
+
+	// A processor whose latency throws after Prepare drops out too, so no delay runs uncounted.
+	{
+		AudioInputChain chain;
+		std::vector<std::string> log;
+		Recorder bad("bad", log, 100), good("good", log, 7);
+		bad.failLatency = true;
+		chain.Add(&modA, bad, 0);
+		chain.Add(&modB, good, 1);
+		chain.PublishActive(AllActive);
+		Check("failed latency adds no latency", chain.PrepareTap(0, kFormat) == 7);
+		float sample = 0;
+		chain.ProcessTap(0, &sample, 1);
+		Check("failed latency is skipped", log == std::vector<std::string>{ "good+" });
 	}
 
 	// Release and re-prepare (driver reset).

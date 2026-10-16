@@ -128,7 +128,7 @@ int main() {
 		Check("re-registering as a menu clears overlay", entries.size() == 1 && !entries[0].overlay);
 	}
 
-	// Font loads run once each, in order; RemoveMod drops a pending one.
+	// One font load per owner, in order; RemoveMod drops a pending one; a loaded owner never loads again.
 	{
 		MenuRegistry menus;
 		int ran = 0;
@@ -140,12 +140,15 @@ int main() {
 
 		auto loads = menus.TakePendingFonts();
 		for (const auto& load : loads) load.fn();
-		Check("pending font loads: all kept, removed owner dropped, oldest first",
-			ran == 111 && loads.size() == 3 && loads[0].owner == Owner(1) && loads[2].owner == Owner(2));
+		Check("pending font loads: re-registering replaces, removed owner dropped, oldest first",
+			ran == 110 && loads.size() == 2 && loads[0].owner == Owner(1) && loads[1].owner == Owner(2));
 		Check("font loads are taken once", menus.TakePendingFonts().empty());
 
 		menus.RegisterFonts(Owner(1), [&] { ran += 1; });
-		Check("a retried mod's fonts load again", menus.TakePendingFonts().size() == 1);
+		Check("a retried mod's fonts are not added to the atlas again", menus.TakePendingFonts().empty());
+
+		menus.RegisterFonts(Owner(3), [&] { ran += 1000; });
+		Check("an owner whose load was dropped before it ran still loads", menus.TakePendingFonts().size() == 1);
 	}
 
 	std::cout << (g_failures == 0 ? "ALL MENUREGISTRY TESTS PASSED\n" : "MENUREGISTRY TESTS FAILED\n");

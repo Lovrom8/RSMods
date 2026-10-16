@@ -8,6 +8,7 @@
 #include <iomanip>
 #include <iterator>
 #include <mutex>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <unordered_map>
@@ -31,7 +32,9 @@ namespace Framework {
 	PendingRegistration* g_modPendingHead = nullptr;
 
 	// Registered initializes into Inactive; resolution moves Inactive <-> Active. A mod leaving
-	// Active reverts synchronously (there are no in-flight callbacks to wait for). Faulted is terminal.
+	// Active reverts synchronously on MainThread without waiting for the render thread, which may still be
+	// in a draw or frame callback of the mod; so anything those callbacks touch (textures) is freed through
+	// the deferred render-thread release, never here. Faulted is terminal.
 	// The complete lifecycle contract and transition diagram live in README.md.
 	enum class ModState {
 		Registered,
@@ -131,16 +134,21 @@ namespace Framework {
 			}
 		}
 
-		bool IsRequestedSafe(Record& record) {
+		// nullopt when IsEnabled threw: the caller faults the mod like any other hook.
+		std::optional<bool> IsRequestedSafe(Record& record) {
 			ctx.currentMod = record.mod.get();
 
 			try {
 				return record.mod->IsEnabled(ctx);
 			}
-			catch (...) {
-				LOG_ERROR("[Framework] " << record.mod->Id() << "::IsEnabled threw; treating as disabled" << std::endl);
-				return false;
+			catch (const std::exception& ex) {
+				LOG_ERROR("[Framework] " << record.mod->Id() << "::IsEnabled threw: " << ex.what() << std::endl);
 			}
+			catch (...) {
+				LOG_ERROR("[Framework] " << record.mod->Id() << "::IsEnabled threw unknown exception" << std::endl);
+			}
+
+			return std::nullopt;
 		}
 
 		void Fault(Record& record, const char* reason) {
@@ -171,8 +179,8 @@ namespace Framework {
 			Invoke(record, &IMod::OnDisabled, "OnDisabled");
 		}
 
-		// Leaves Active: revert live game state immediately (there are no render callbacks to wait
-		// for), then settle into Inactive - or Faulted when the teardown is itself a fault.
+		// Leaves Active: revert live game state immediately (render callbacks aren't waited for; see
+		// ModState), then settle into Inactive - or Faulted when the teardown is itself a fault.
 		void BeginTeardown(Record& record, DeactivationReason reason) {
 			Revert(record);
 
@@ -196,18 +204,44 @@ namespace Framework {
 			}
 		}
 
+		// An Inactive mod (initialized, not active) has no live game state to revert, so fault it
+		// straight away; an Active one gets a best-effort revert first.
+		void FaultSettled(Record& record, const char* reason) {
+			if (record.state == ModState::Inactive) {
+				Fault(record, reason);
+			}
+			else {
+				EscalateToFaulted(record);
+			}
+		}
+
 		void HandleCommandFaults() {
 			for (const IMod* mod : Commands().TakeFaultedMods()) {
 				Record* record = FindByMod(mod);
 				if (!record) continue;
 
-				// An Inactive mod (initialized, not active) has no live game state to revert, so
-				// fault it straight away; an Active one gets a best-effort revert first.
-				if (record->state == ModState::Inactive) {
-					Fault(*record, "threw in a command");
+				FaultSettled(*record, "threw in a command");
+			}
+
+			HandleRenderFaults();
+		}
+
+		// The render thread already stopped calling the mod; fault it here like a command.
+		void HandleRenderFaults() {
+			for (const RenderFault& fault : Draw().TakeFaults()) {
+				LOG_ERROR("[Framework] " << (fault.owner ? fault.owner->Id() : "host") << " " << fault.where
+					<< " threw on the render thread: " << fault.detail << std::endl);
+
+				Record* record = fault.owner ? FindByMod(fault.owner) : nullptr;
+				if (!record) continue;
+
+				if (record->state == ModState::Inactive || record->state == ModState::Active) {
+					FaultSettled(*record, "threw on the render thread");
 				}
 				else {
-					EscalateToFaulted(*record);
+					// Already faulted or shut down (a before-reset callback outlives both): clear the render-side mark,
+					// or a retry would stay off the render thread for good.
+					Draw().RemoveMod(fault.owner);
 				}
 			}
 		}
@@ -333,8 +367,14 @@ namespace Framework {
 			ActivationMask requestedActive(records.size(), 0);
 
 			for (size_t i = 0; i < records.size(); ++i) {
-				if (IsResolutionEligible(records[i].state)) {
-					requestedActive[i] = IsRequestedSafe(records[i]);
+				if (!IsResolutionEligible(records[i].state)) continue;
+
+				const auto requested = IsRequestedSafe(records[i]);
+				if (requested) {
+					requestedActive[i] = *requested;
+				}
+				else {
+					FaultSettled(records[i], "threw in IsEnabled"); // Out of resolution from here on, as Faulted.
 				}
 			}
 
@@ -367,6 +407,22 @@ namespace Framework {
 			}
 
 			Ledger().Publish(&registryOwner, std::move(winnerResources));
+		}
+
+		// The ledger goes out before OnEnabled runs; a winner that faulted since holds nothing, so drop its
+		// claim now rather than leave CC effects blocked on it until the next tick.
+		void DropFaultedWinners(const ActivationMask& selectedActive) {
+			ActivationMask stillActive = selectedActive;
+			bool changed = false;
+
+			for (size_t i = 0; i < records.size(); ++i) {
+				if (stillActive[i] && records[i].state != ModState::Active) {
+					stillActive[i] = 0;
+					changed = true;
+				}
+			}
+
+			if (changed) PublishSelectedResources(stillActive);
 		}
 
 		// Tear down every Active mod the resolver did not select. Reverts run synchronously, so a
@@ -566,6 +622,7 @@ namespace Framework {
 		// resource the outgoing mod hasn't released; reverts are synchronous, so one pass suffices.
 		impl->BeginOutgoingTeardowns(requestedActive, selectedActive);
 		impl->ActivateAndTickSelected(selectedActive, phase);
+		impl->DropFaultedWinners(selectedActive);
 		impl->PublishMenuAvailability();
 		impl->PublishDrawActive();
 		impl->PublishStatus(&requestedActive);

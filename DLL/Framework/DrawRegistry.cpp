@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <atomic>
+#include <exception>
 #include <iterator>
 #include <mutex>
 #include <utility>
@@ -48,7 +49,12 @@ namespace Framework {
 
 	DrawContext::~DrawContext() {
 		for (auto it = restores.rbegin(); it != restores.rend(); ++it) {
-			(*it)();
+			// A throw out of a destructor terminates the game, and a restore has no owner to fault.
+			try {
+				(*it)();
+			}
+			catch (...) {
+			}
 		}
 	}
 
@@ -97,17 +103,82 @@ namespace Framework {
 		std::vector<OwnedCallback<TextureRegenCallback>> regenCallbacks;
 		std::vector<OwnedCallback<TextureReleaseCallback>> releaseCallbacks;
 		std::vector<const IMod*> pendingReleases;  // owners waiting for deferred release
-		std::vector<TextureReleaseCallback> orphanedReleases; // queued by an owner removed before EndScene ran them
+		std::vector<OwnedCallback<TextureReleaseCallback>> orphanedReleases; // queued by an owner removed before EndScene ran them
+		std::vector<const IMod*> faultedOwners; // threw on the render thread; kept out of the snapshots until RemoveMod
+		std::vector<RenderFault> pendingFaults; // drained by TakeFaults
 
 		std::atomic<std::shared_ptr<const std::vector<ActiveEntry>>> active[pathCount];
-		std::atomic<std::shared_ptr<const std::vector<FrameCallback>>> activeFrame;
+		std::atomic<std::shared_ptr<const std::vector<OwnedCallback<FrameCallback>>>> activeFrame;
 
 		DeviceChannels device; // Locks on its own; never touched under `mutex`.
 
 		Impl() {
 			auto empty = std::make_shared<const std::vector<ActiveEntry>>();
 			for (auto& list : active) list.store(empty, std::memory_order_relaxed);
-			activeFrame.store(std::make_shared<const std::vector<FrameCallback>>(), std::memory_order_relaxed);
+			activeFrame.store(std::make_shared<const std::vector<OwnedCallback<FrameCallback>>>(), std::memory_order_relaxed);
+			device.SetFaultSink([this](const IMod* owner, const char* where, const char* detail) { NoteFault(owner, where, detail); });
+		}
+
+		bool IsFaultedLocked(const IMod* owner) const {
+			return std::ranges::find(faultedOwners, owner) != faultedOwners.end();
+		}
+
+		// Republish the snapshots without `owner`, so the render thread stops calling it before the next rebuild.
+		void UnpublishLocked(const IMod* owner) {
+			for (auto& list : active) {
+				const auto current = list.load(std::memory_order_acquire);
+				auto kept = std::make_shared<std::vector<ActiveEntry>>();
+				std::copy_if(current->begin(), current->end(), std::back_inserter(*kept), [owner](const ActiveEntry& e) { return e.owner != owner; });
+				list.store(std::move(kept), std::memory_order_release);
+			}
+
+			const auto frames = activeFrame.load(std::memory_order_acquire);
+			auto keptFrames = std::make_shared<std::vector<OwnedCallback<FrameCallback>>>();
+			std::copy_if(frames->begin(), frames->end(), std::back_inserter(*keptFrames),
+				[owner](const OwnedCallback<FrameCallback>& r) { return r.owner != owner; });
+			activeFrame.store(std::move(keptFrames), std::memory_order_release);
+		}
+
+		// Render thread. Reports each owner once; MainThread faults it, and RemoveMod clears the mark.
+		void NoteFault(const IMod* owner, const char* where, const char* detail) {
+			{
+				std::lock_guard<std::mutex> lock(mutex);
+				if (owner && IsFaultedLocked(owner)) return;
+
+				pendingFaults.push_back({ owner, where, detail });
+				if (!owner) return;
+
+				faultedOwners.push_back(owner);
+				UnpublishLocked(owner);
+			}
+
+			device.Suspend(owner);
+		}
+
+		template <typename Fn>
+		void Guarded(const IMod* owner, const char* where, Fn&& fn) {
+			try {
+				fn();
+			}
+			catch (const std::exception& ex) {
+				NoteFault(owner, where, ex.what());
+			}
+			catch (...) {
+				NoteFault(owner, where, "threw an unknown exception");
+			}
+		}
+
+		// Copies the live callbacks under the lock, so they run without it.
+		template <typename Fn>
+		std::vector<OwnedCallback<Fn>> CopyCallbacks(const std::vector<OwnedCallback<Fn>>& list, bool skipFaulted) const {
+			std::lock_guard<std::mutex> lock(mutex);
+			std::vector<OwnedCallback<Fn>> callbacks;
+			callbacks.reserve(list.size());
+
+			for (const auto& r : list) {
+				if (r.fn && !(skipFaulted && IsFaultedLocked(r.owner))) callbacks.push_back(r);
+			}
+			return callbacks;
 		}
 	};
 
@@ -155,6 +226,8 @@ namespace Framework {
 	void DrawRegistry::CancelTextureRelease(const IMod* owner) {
 		std::lock_guard<std::mutex> lock(impl->mutex);
 		std::erase_if(impl->pendingReleases, [owner](const IMod* p) { return p == owner; });
+		// A release orphaned by a fault would otherwise free what the retried mod just regenerated.
+		std::erase_if(impl->orphanedReleases, [owner](const OwnedCallback<TextureReleaseCallback>& r) { return r.owner == owner; });
 	}
 
 	void DrawRegistry::RegisterFrame(const IMod* owner, FrameCallback fn) {
@@ -183,7 +256,7 @@ namespace Framework {
 			auto it = std::find_if(impl->releaseCallbacks.begin(), impl->releaseCallbacks.end(),
 				[owner](const OwnedCallback<TextureReleaseCallback>& r) { return r.owner == owner; });
 			if (it != impl->releaseCallbacks.end() && it->fn)
-				impl->orphanedReleases.push_back(it->fn);
+				impl->orphanedReleases.push_back(*it);
 		}
 
 		std::erase_if(impl->frameCallbacks, [owner](const OwnedCallback<FrameCallback>& r) { return r.owner == owner; });
@@ -192,6 +265,11 @@ namespace Framework {
 		std::erase_if(impl->regenCallbacks, [owner](const OwnedCallback<TextureRegenCallback>& r) { return r.owner == owner; });
 		std::erase_if(impl->releaseCallbacks, [owner](const OwnedCallback<TextureReleaseCallback>& r) { return r.owner == owner; });
 		std::erase_if(impl->pendingReleases, [owner](const IMod* p) { return p == owner; });
+		std::erase(impl->faultedOwners, owner);
+		std::erase_if(impl->pendingFaults, [owner](const RenderFault& f) { return f.owner == owner; });
+
+		// Like the device channels: a faulted mod must stop drawing now, not at the end-of-tick rebuild.
+		impl->UnpublishLocked(owner);
 	}
 
 	DeviceChannels& DrawRegistry::Device() {
@@ -207,12 +285,13 @@ namespace Framework {
 		for (auto& list : lists) list = std::make_shared<std::vector<ActiveEntry>>();
 
 		for (const auto& reg : impl->interceptors) {
-			if (!reg.owner || !isOwnerEnabled(reg.owner)) continue;
+			if (!reg.owner || !reg.fn || impl->IsFaultedLocked(reg.owner) || !isOwnerEnabled(reg.owner)) continue;
 
 			ActiveEntry entry{
 				reg.priority,
 				reg.owner->Id(),
-				reg.fn
+				reg.fn,
+				reg.owner
 			};
 
 			for (size_t i = 0; i < pathCount; ++i) {
@@ -233,15 +312,20 @@ namespace Framework {
 		// Frame callbacks in owner-Id order, so the run order doesn't depend on registration order.
 		std::vector<const OwnedCallback<FrameCallback>*> enabledFrames;
 		for (const auto& reg : impl->frameCallbacks) {
-			if (reg.owner && reg.fn && isOwnerEnabled(reg.owner)) enabledFrames.push_back(&reg);
+			if (reg.owner && reg.fn && !impl->IsFaultedLocked(reg.owner) && isOwnerEnabled(reg.owner)) enabledFrames.push_back(&reg);
 		}
 		std::stable_sort(enabledFrames.begin(), enabledFrames.end(),
 			[](const auto* a, const auto* b) { return a->owner->Id() < b->owner->Id(); });
 
-		auto frames = std::make_shared<std::vector<FrameCallback>>();
+		auto frames = std::make_shared<std::vector<OwnedCallback<FrameCallback>>>();
 		frames->reserve(enabledFrames.size());
-		for (const auto* reg : enabledFrames) frames->push_back(reg->fn);
+		for (const auto* reg : enabledFrames) frames->push_back(*reg);
 		impl->activeFrame.store(frames, std::memory_order_release);
+	}
+
+	std::vector<RenderFault> DrawRegistry::TakeFaults() {
+		std::lock_guard<std::mutex> lock(impl->mutex);
+		return std::exchange(impl->pendingFaults, {});
 	}
 
 	std::shared_ptr<const std::vector<ActiveEntry>> DrawRegistry::ActiveSnapshot(DrawPath path) const {
@@ -253,88 +337,63 @@ namespace Framework {
 		return impl->active[slot].load(std::memory_order_acquire);
 	}
 
+	DrawResult DrawRegistry::Intercept(const ActiveEntry& entry, DrawContext& ctx) {
+		DrawResult result{ DrawOutcome::Pass };
+		impl->Guarded(entry.owner, "draw interceptor", [&] { result = entry.fn(ctx); });
+		return result;
+	}
+
 	void DrawRegistry::RunFrame(IDirect3DDevice9* pDevice) {
 		if (!pDevice) return;
 
 		const auto frames = impl->activeFrame.load(std::memory_order_acquire);
-		for (const auto& fn : *frames) {
-			fn(pDevice);
+		for (const auto& r : *frames) {
+			impl->Guarded(r.owner, "frame callback", [&] { r.fn(pDevice); });
 		}
 	}
 
 	void DrawRegistry::RunBeforeReset(IDirect3DDevice9* pDevice) {
 		if (!pDevice) return;
 
-		std::vector<DeviceResetCallback> callbacks;
-		{
-			std::lock_guard<std::mutex> lock(impl->mutex);
-			callbacks.reserve(impl->beforeResetCallbacks.size());
-			
-			for (const auto& r : impl->beforeResetCallbacks) {
-				if (r.fn) callbacks.push_back(r.fn);
-			}
-		}
-
-		for (const auto& cb : callbacks) {
-			cb(pDevice);
+		for (const auto& r : impl->CopyCallbacks(impl->beforeResetCallbacks, false)) {
+			impl->Guarded(r.owner, "before-reset callback", [&] { r.fn(pDevice); });
 		}
 	}
 
 	void DrawRegistry::RunDeviceReset(IDirect3DDevice9* pDevice) {
 		if (!pDevice) return;
 
-		std::vector<DeviceResetCallback> callbacks;
-		{
-			std::lock_guard<std::mutex> lock(impl->mutex);
-			callbacks.reserve(impl->resetCallbacks.size());
-
-			for (const auto& r : impl->resetCallbacks) {
-				if (r.fn) callbacks.push_back(r.fn);
-			}
-		}
-
-		for (const auto& cb : callbacks) {
-			cb(pDevice);
+		for (const auto& r : impl->CopyCallbacks(impl->resetCallbacks, true)) {
+			impl->Guarded(r.owner, "device-reset callback", [&] { r.fn(pDevice); });
 		}
 	}
 
 	void DrawRegistry::RegenerateAllTextures(IDirect3DDevice9* pDevice) {
 		if (!pDevice) return;
 
-		std::vector<TextureRegenCallback> callbacks;
-		{
-			std::lock_guard<std::mutex> lock(impl->mutex);
-			callbacks.reserve(impl->regenCallbacks.size());
-			
-			for (const auto& r : impl->regenCallbacks) {
-				if (r.fn) callbacks.push_back(r.fn);
-			}
-		}
-
-		for (const auto& cb : callbacks) {
-			cb(pDevice);
+		for (const auto& r : impl->CopyCallbacks(impl->regenCallbacks, true)) {
+			impl->Guarded(r.owner, "texture regen", [&] { r.fn(pDevice); });
 		}
 	}
 
 	void DrawRegistry::RunPendingReleases() {
-		std::vector<TextureReleaseCallback> callbacks;
+		std::vector<OwnedCallback<TextureReleaseCallback>> callbacks;
 		{
 			std::lock_guard<std::mutex> lock(impl->mutex);
 			if (impl->pendingReleases.empty() && impl->orphanedReleases.empty()) return;
 
-			callbacks = std::move(impl->orphanedReleases);
-			impl->orphanedReleases.clear();
+			callbacks = std::exchange(impl->orphanedReleases, {});
 			for (const IMod* owner : impl->pendingReleases) {
 				auto it = std::find_if(impl->releaseCallbacks.begin(), impl->releaseCallbacks.end(),
 					[owner](const OwnedCallback<TextureReleaseCallback>& r) { return r.owner == owner; });
 				if (it != impl->releaseCallbacks.end() && it->fn)
-					callbacks.push_back(it->fn);
+					callbacks.push_back(*it);
 			}
 			impl->pendingReleases.clear();
 		}
 
-		for (const auto& cb : callbacks) {
-			cb();
+		for (const auto& r : callbacks) {
+			impl->Guarded(r.owner, "texture release", [&] { r.fn(); });
 		}
 	}
 

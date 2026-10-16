@@ -112,6 +112,15 @@ namespace Framework {
 		int priority = 0;
 		std::string_view ownerId;
 		DrawInterceptor fn;
+		const IMod* owner = nullptr;
+	};
+
+	// A render-thread callback that threw. The registry already stopped running its owner's callbacks;
+	// MainThread faults the owner (ModRegistry drains these with TakeFaults).
+	struct RenderFault {
+		const IMod* owner = nullptr;
+		std::string where;
+		std::string detail;
 	};
 
 	class DrawRegistry {
@@ -140,7 +149,8 @@ namespace Framework {
 		// render thread at the next RunPendingReleases call (EndScene), after all DIP/DP are done.
 		void RequestTextureRelease(const IMod* owner);
 
-		// MainThread: cancel a previously requested deferred texture release for `owner`.
+		// MainThread: cancel a previously requested deferred texture release for `owner`, including one kept
+		// across RemoveMod (a retried mod re-enabling before the next EndScene).
 		void CancelTextureRelease(const IMod* owner);
 
 		// MainThread: register this mod's per-frame callback (replaces any earlier one).
@@ -153,12 +163,17 @@ namespace Framework {
 		// a faulted mod's D3DPOOL_DEFAULT resources still have to go before every Reset, or Reset fails.
 		void RegisterBeforeReset(const IMod* owner, DeviceResetCallback fn);
 
-		// MainThread: drop every interceptor, regen, release, frame, reset and device-event handler owned by this mod.
-		// A release it already queued still runs at the next RunPendingReleases; its before-reset callback stays.
+		// MainThread: drop every interceptor, regen, release, frame, reset and device-event handler owned by this mod,
+		// and unpublish them at once. A release it already queued still runs at the next RunPendingReleases; its
+		// before-reset callback stays.
 		void RemoveMod(const IMod* owner);
 
-		// MainThread: rebuild the active snapshots from currently-enabled owners.
+		// MainThread: rebuild the active snapshots from currently-enabled owners. An owner whose render-thread
+		// callback threw stays out until RemoveMod.
 		void RebuildActive(std::function<bool(const IMod*)> isOwnerEnabled);
+
+		// MainThread: render-thread callbacks that threw since the last call, oldest first, one per owner.
+		[[nodiscard]] std::vector<RenderFault> TakeFaults();
 
 		// Mods register through ModContext::Draw(); only the hooks use this directly.
 		DeviceChannels& Device();
@@ -167,10 +182,16 @@ namespace Framework {
 		// (Indexed, Primitive, IndexedUP or PrimitiveUP; a combined value returns an empty list).
 		[[nodiscard]] std::shared_ptr<const std::vector<ActiveEntry>> ActiveSnapshot(DrawPath path) const;
 
+		// Render thread: run one interceptor from ActiveSnapshot. If it throws, its owner stops running and is
+		// reported through TakeFaults, and the draw goes on as Pass.
+		DrawResult Intercept(const ActiveEntry& entry, DrawContext& ctx);
+
+		// Every Run* below catches a throwing callback the same way and carries on with the rest.
+
 		// Render thread (EndScene): run enabled mods' frame callbacks, lock-free.
 		void RunFrame(IDirect3DDevice9* pDevice);
 
-		// Render thread (just before Reset): run every registered before-reset callback.
+		// Render thread (just before Reset): run every registered before-reset callback. Never throws, so Reset still runs.
 		void RunBeforeReset(IDirect3DDevice9* pDevice);
 
 		// Render thread (after a successful Reset): run every registered reset callback.

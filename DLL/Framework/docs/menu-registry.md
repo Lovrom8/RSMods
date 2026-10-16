@@ -79,8 +79,8 @@ c.Menu().RegisterFonts([this] {
   nothing to redo after Alt+Tab. Fonts stay in the atlas after a fault, so stored `ImFont*`s stay valid.
 - Until it runs the pointers are null, so check before `PushFont`.
 - Font bytes passed with `FontDataOwnedByAtlas = false` must outlive the atlas (keep them in the mod).
-- Every call runs, so a retried mod re-running `OnInitialize` adds its fonts again: a few duplicates in
-  the atlas, nothing worse.
+- One load per mod. Registering again before it runs replaces it; once it ran, a retried mod re-running
+  `OnInitialize` adds nothing, so don't reset the stored `ImFont*`s there.
 
 ### Availability Modes
 - **`Availability::Active` (Default):** The menu entry is only visible and rendered when the mod is in `ModState::Active` (`IsEnabled() == true` and winning all exclusive resources). If the mod is disabled or suppressed, the menu entry disappears from the UI.

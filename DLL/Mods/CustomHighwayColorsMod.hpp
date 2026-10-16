@@ -1,7 +1,9 @@
 #pragma once
 
+#include <array>
 #include <atomic>
 #include <memory>
+#include <string>
 #include <d3d9.h>
 #include "../Framework/Framework.hpp"
 
@@ -41,7 +43,9 @@ private:
 	};
 
 	static void GenerateSingleColorTexture(IDirect3DDevice9* pDevice, IDirect3DTexture9** ppTexture, const std::string& colorKey, UINT width, UINT height, int lineHeight, int lines);
+	static std::array<std::string, 4> CurrentColors();
 
+	static inline std::array<std::string, 4> s_requestedColors; // MainThread: the colours the last regen request was for.
 	static inline std::atomic<bool> s_active = false;
 	static inline std::atomic<bool> s_hasNotewayColors = false;
 	static inline std::atomic<bool> s_hasGutterColor = false;

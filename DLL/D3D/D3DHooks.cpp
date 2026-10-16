@@ -36,7 +36,7 @@ HRESULT APIENTRY D3DHooks::Hook_DP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE P
 	DrawContext ctx{ pDevice, currentMesh, currentThicc, DrawPath::Primitive, GameState::IsInSong() };
 	auto active = Framework::Draw().ActiveSnapshot(DrawPath::Primitive);
 	for (const auto& e : *active) {
-		DrawResult r = e.fn(ctx);
+		DrawResult r = Framework::Draw().Intercept(e, ctx);
 		switch (r.outcome) {
 			case DrawOutcome::Hide: return REMOVE_TEXTURE;
 			case DrawOutcome::Show: return oDrawPrimitive(pDevice, PrimType, StartIndex, PrimCount);
@@ -58,7 +58,7 @@ HRESULT APIENTRY D3DHooks::Hook_DrawPrimitiveUP(IDirect3DDevice9* pDevice, D3DPR
 		ThiccMesh currentThicc(VertexStreamZeroStride, PrimCount, 0, 0, StartRegister, PrimType, decl->Type, VectorCount, NumElements);
 		DrawContext ctx{ pDevice, currentMesh, currentThicc, DrawPath::PrimitiveUP, GameState::IsInSong() };
 		for (const auto& e : *active) {
-			DrawResult r = e.fn(ctx);
+			DrawResult r = Framework::Draw().Intercept(e, ctx);
 			switch (r.outcome) {
 				case DrawOutcome::Hide: return REMOVE_TEXTURE;
 				case DrawOutcome::Show: return oDrawPrimitiveUP(pDevice, PrimType, PrimCount, pVertexStreamZeroData, VertexStreamZeroStride);
@@ -81,7 +81,7 @@ HRESULT APIENTRY D3DHooks::Hook_DrawIndexedPrimitiveUP(IDirect3DDevice9* pDevice
 		ThiccMesh currentThicc(VertexStreamZeroStride, PrimCount, NumVertices, 0, StartRegister, PrimType, decl->Type, VectorCount, NumElements);
 		DrawContext ctx{ pDevice, currentMesh, currentThicc, DrawPath::IndexedUP, GameState::IsInSong() };
 		for (const auto& e : *active) {
-			DrawResult r = e.fn(ctx);
+			DrawResult r = Framework::Draw().Intercept(e, ctx);
 			switch (r.outcome) {
 				case DrawOutcome::Hide: return REMOVE_TEXTURE;
 				case DrawOutcome::Show: return oDrawIndexedPrimitiveUP(pDevice, PrimType, MinVertexIndex, NumVertices, PrimCount, pIndexData, IndexDataFormat, pVertexStreamZeroData, VertexStreamZeroStride);
@@ -343,7 +343,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 	DrawContext ctx{ pDevice, current, currentThicc, DrawPath::Indexed, GameState::IsInSong() };
 	auto active = Framework::Draw().ActiveSnapshot(DrawPath::Indexed);
 	for (const auto& e : *active) {
-		DrawResult r = e.fn(ctx);
+		DrawResult r = Framework::Draw().Intercept(e, ctx);
 		switch (r.outcome) {
 			case DrawOutcome::Hide: return REMOVE_TEXTURE;
 			case DrawOutcome::Show: return SHOW_TEXTURE;
