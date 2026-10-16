@@ -8,6 +8,7 @@
 #include <iomanip>
 #include <iterator>
 #include <mutex>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <unordered_map>
@@ -133,16 +134,21 @@ namespace Framework {
 			}
 		}
 
-		bool IsRequestedSafe(Record& record) {
+		// nullopt when IsEnabled threw: the caller faults the mod like any other hook.
+		std::optional<bool> IsRequestedSafe(Record& record) {
 			ctx.currentMod = record.mod.get();
 
 			try {
 				return record.mod->IsEnabled(ctx);
 			}
-			catch (...) {
-				LOG_ERROR("[Framework] " << record.mod->Id() << "::IsEnabled threw; treating as disabled" << std::endl);
-				return false;
+			catch (const std::exception& ex) {
+				LOG_ERROR("[Framework] " << record.mod->Id() << "::IsEnabled threw: " << ex.what() << std::endl);
 			}
+			catch (...) {
+				LOG_ERROR("[Framework] " << record.mod->Id() << "::IsEnabled threw unknown exception" << std::endl);
+			}
+
+			return std::nullopt;
 		}
 
 		void Fault(Record& record, const char* reason) {
@@ -361,8 +367,14 @@ namespace Framework {
 			ActivationMask requestedActive(records.size(), 0);
 
 			for (size_t i = 0; i < records.size(); ++i) {
-				if (IsResolutionEligible(records[i].state)) {
-					requestedActive[i] = IsRequestedSafe(records[i]);
+				if (!IsResolutionEligible(records[i].state)) continue;
+
+				const auto requested = IsRequestedSafe(records[i]);
+				if (requested) {
+					requestedActive[i] = *requested;
+				}
+				else {
+					FaultSettled(records[i], "threw in IsEnabled"); // Out of resolution from here on, as Faulted.
 				}
 			}
 
@@ -395,6 +407,22 @@ namespace Framework {
 			}
 
 			Ledger().Publish(&registryOwner, std::move(winnerResources));
+		}
+
+		// The ledger goes out before OnEnabled runs; a winner that faulted since holds nothing, so drop its
+		// claim now rather than leave CC effects blocked on it until the next tick.
+		void DropFaultedWinners(const ActivationMask& selectedActive) {
+			ActivationMask stillActive = selectedActive;
+			bool changed = false;
+
+			for (size_t i = 0; i < records.size(); ++i) {
+				if (stillActive[i] && records[i].state != ModState::Active) {
+					stillActive[i] = 0;
+					changed = true;
+				}
+			}
+
+			if (changed) PublishSelectedResources(stillActive);
 		}
 
 		// Tear down every Active mod the resolver did not select. Reverts run synchronously, so a
@@ -594,6 +622,7 @@ namespace Framework {
 		// resource the outgoing mod hasn't released; reverts are synchronous, so one pass suffices.
 		impl->BeginOutgoingTeardowns(requestedActive, selectedActive);
 		impl->ActivateAndTickSelected(selectedActive, phase);
+		impl->DropFaultedWinners(selectedActive);
 		impl->PublishMenuAvailability();
 		impl->PublishDrawActive();
 		impl->PublishStatus(&requestedActive);

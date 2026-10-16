@@ -1,6 +1,7 @@
 #include <iomanip>
 
 #include "../Framework.hpp"
+#include "../ResourceLedger.hpp"
 
 #include <iostream>
 #include <mutex>
@@ -11,6 +12,10 @@
 
 using Framework::ModRegistry;
 using Framework::GamePhase;
+
+// Dummy draw-context types, as in DrawRegistryTests.
+struct Mesh {};
+struct ThiccMesh {};
 
 namespace {
 	std::vector<std::string> g_events;
@@ -78,6 +83,8 @@ namespace {
 		int commandCalls = 0;
 		bool lastCommandControl = false;
 		bool probeStall = false;   // Poll the stall monitor from inside OnTick and the command.
+		bool throwInIsEnabled = false;
+		bool throwingInterceptor = false; // Registers a draw interceptor that throws.
 		std::optional<Framework::StallMonitor::Report> stallInTick;
 		std::optional<Framework::StallMonitor::Report> stallInCommand;
 
@@ -88,7 +95,10 @@ namespace {
 		}
 
 		std::string_view Id() const override { return id; }
-		bool IsEnabled(const Framework::ModContext&) const override { return enabled; }
+		bool IsEnabled(const Framework::ModContext&) const override {
+			if (throwInIsEnabled) throw std::runtime_error("injected failure in IsEnabled");
+			return enabled;
+		}
 		int Priority() const override { return prio; }
 
 		std::vector<std::string_view> ClaimsExclusive() const override {
@@ -100,6 +110,11 @@ namespace {
 
 		void OnInitialize(Framework::ModContext& c) override {
 			Rec("OnInitialize");
+			if (throwingInterceptor) {
+				c.Draw().Register("boom", 0, Framework::DrawPath::Indexed, [](Framework::DrawContext&) -> Framework::DrawResult {
+					throw std::runtime_error("injected failure in a draw interceptor");
+				});
+			}
 			if (!commandSetting.empty()) {
 				c.Commands().BindSetting(commandSetting, Framework::KeyEdge::Up, availability,
 					[this](Framework::ModContext&, const Framework::KeyEvent& event) {
@@ -578,6 +593,80 @@ static void Test_RetryFaultedMods() {
 	reg.Shutdown();
 }
 
+// IsEnabled throwing faults the mod (retryable) instead of leaving it silently disabled for good.
+static void Test_IsEnabledThrowFaults() {
+	ClearEvents();
+	ModRegistry reg;
+	TestMod* flip = Add(reg, "Flip");
+	TestMod* off = Add(reg, "OffThrow", false);
+	reg.DispatchInitialize();
+	reg.Tick(GamePhase::Menu);
+
+	flip->throwInIsEnabled = true;
+	off->throwInIsEnabled = true;
+	ClearEvents();
+	reg.Tick(GamePhase::Menu);
+
+	Expect(Has("Flip:OnDisabled") && !Has("Flip:OnTick"), "IsEnabled throwing on an Active mod reverts it and stops its ticks");
+	auto snap = reg.StatusSnapshot();
+	const auto* f = FindStatus(snap, "Flip");
+	const auto* o = FindStatus(snap, "OffThrow");
+	Expect(f && f->kind == Framework::ModStatusKind::Faulted, "Active mod whose IsEnabled threw reads Faulted");
+	Expect(o && o->kind == Framework::ModStatusKind::Faulted, "Inactive mod whose IsEnabled threw reads Faulted");
+
+	flip->throwInIsEnabled = false;
+	reg.RequestRetryFaulted();
+	reg.Tick(GamePhase::Menu);
+	snap = reg.StatusSnapshot();
+	f = FindStatus(snap, "Flip");
+	Expect(f && f->kind == Framework::ModStatusKind::Active, "a mod faulted by IsEnabled recovers on retry");
+
+	reg.Shutdown();
+}
+
+// A draw interceptor throwing on the render thread is dropped there at once, and MainThread faults its mod.
+static void Test_RenderFaultFaultsMod() {
+	ClearEvents();
+	ModRegistry reg;
+	TestMod* painter = Add(reg, "Painter"); painter->throwingInterceptor = true;
+	Add(reg, "Bystander");
+	reg.DispatchInitialize();
+	reg.Tick(GamePhase::Menu);
+
+	auto& draw = Framework::Draw();
+	const auto snap = draw.ActiveSnapshot(Framework::DrawPath::Indexed);
+	Expect(snap->size() == 1, "the interceptor is published while its mod is Active");
+
+	Mesh mesh;
+	ThiccMesh thicc;
+	Framework::DrawContext ctx(nullptr, mesh, thicc);
+	const auto result = draw.Intercept((*snap)[0], ctx);
+	Expect(result.outcome == Framework::DrawOutcome::Pass, "a throwing interceptor passes the draw");
+	Expect(draw.ActiveSnapshot(Framework::DrawPath::Indexed)->empty(), "and is unpublished before MainThread runs");
+
+	ClearEvents();
+	reg.Tick(GamePhase::Menu);
+	const auto status = reg.StatusSnapshot();
+	const auto* p = FindStatus(status, "Painter");
+	Expect(p && p->kind == Framework::ModStatusKind::Faulted, "the next tick faults the mod");
+	Expect(Has("Painter:OnDisabled") && !Has("Painter:OnTick"), "with a best-effort revert, like a tick fault");
+	Expect(Has("Bystander:OnTick"), "other mods keep running");
+
+	reg.Shutdown();
+}
+
+// The ledger is published before OnEnabled; a winner faulting there must not keep its claim.
+static void Test_FaultedWinnerDropsLedgerClaim() {
+	ClearEvents();
+	ModRegistry reg;
+	TestMod* boom = Add(reg, "ClaimBoom"); boom->claimStrings = { "ledgerRes" }; boom->throwOn = "OnEnabled";
+	reg.DispatchInitialize();
+	reg.Tick(GamePhase::Menu);
+
+	Expect(!Framework::Ledger().HeldExcluding(nullptr).contains("ledgerRes"), "a winner faulted in OnEnabled releases its claim the same tick");
+	reg.Shutdown();
+}
+
 // Settings reloads rebuild every key from the schema, so a faulted mod's keys must stay in it.
 static void Test_FaultKeepsSettingsSchema() {
 	ClearEvents();
@@ -627,6 +716,9 @@ int main() {
 	Test_StatusSnapshotReflectsStates();
 	Test_RetryFaultedMods();
 	Test_FaultKeepsSettingsSchema();
+	Test_IsEnabledThrowFaults();
+	Test_RenderFaultFaultsMod();
+	Test_FaultedWinnerDropsLedgerClaim();
 
 	std::cout << (g_failures == 0 ? "\nALL PASS\n" : "\nFAILURES: " + std::to_string(g_failures) + "\n");
 	return g_failures == 0 ? 0 : 1;
