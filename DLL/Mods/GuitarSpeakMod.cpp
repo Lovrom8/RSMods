@@ -45,18 +45,44 @@ SettingDefs GuitarSpeakMod::Settings() const {
 }
 
 void GuitarSpeakMod::OnMenuTick(ModContext& c) {
-	if (!guitarSpeakPresent && c.IsOn(Setting::GuitarSpeak)) {
-		guitarSpeakPresent = true;
-
-		if (!GuitarSpeak::RunGuitarSpeak()) { // If we are in a menu where we don't want to read bad values
-			guitarSpeakPresent = false;
-		}
+	if (!c.IsOn(Setting::GuitarSpeak)) {
+		StopListening();
+		return;
 	}
+
+	if (listener.joinable())
+		return;
+
+	GuitarSpeak::keysDirty = true;
+	listener = std::jthread([](std::stop_token stop) {
+		try {
+			GuitarSpeak::RunGuitarSpeak(stop);
+		}
+		catch (const std::exception& e) {
+			LOG_ERROR("(GS) Guitar Speak stopped: " << e.what() << std::endl);
+		}
+	});
 }
 
-// Guitar Speak restarts each time the player returns to a menu, so clear the latch while in a song.
-void GuitarSpeakMod::OnSongTick(ModContext&) {
-	guitarSpeakPresent = false;
+void GuitarSpeakMod::OnSettingsChanged(ModContext&) {
+	GuitarSpeak::keysDirty = true;
+}
+
+void GuitarSpeakMod::OnDisabled(ModContext&) {
+	StopListening();
+}
+
+void GuitarSpeakMod::OnShutdown(ModContext&) {
+	StopListening();
+}
+
+// Waits out at most one 50 ms poll, plus a key press in progress.
+void GuitarSpeakMod::StopListening() {
+	if (!listener.joinable())
+		return;
+
+	listener.request_stop();
+	listener.join();
 }
 
 

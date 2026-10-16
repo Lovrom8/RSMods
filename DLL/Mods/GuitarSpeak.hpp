@@ -1,10 +1,16 @@
 #pragma once
 
+#include <array>
+#include <atomic>
+#include <stop_token>
+
 namespace GuitarSpeak {
 	byte GetCurrentNote();
 	std::string GetCurrentNoteName();
-	bool RunGuitarSpeak();
+	void RunGuitarSpeak(std::stop_token stop); // Blocks until stopped or the game closes; run it on its own thread.
 	void FillKeyList();
+
+	inline std::atomic<bool> keysDirty = true; // Set when the note mappings may have changed; the loop rereads them.
 
 	inline bool verbose = false;
 
@@ -12,7 +18,7 @@ namespace GuitarSpeak {
 	inline int lastNoteBuffer = 0xFF, currentNoteBuffer = 0xFF; // 0xFF = End Note
 	inline int timer = 50; // Milliseconds | Original value of 50ms
 	inline bool sendKeystrokesToRS2014 = true, newNote = false;
-	inline std::string* strKeyList = new std::string[96]; // 12 notes in an octave, 8 octaves spanned (-1 <-> 6) || Limit C-1 <-> C7
+	inline std::array<std::string, 96> strKeyList; // 12 notes in an octave, 8 octaves spanned (-1 <-> 6) || Limit C-1 <-> C7
 	inline int noNote = 0x0, endOfNote = 0xFF; // Used so we can call these instead of 0xFF and 0x0 in the file.
 
 	inline std::map<std::string, int> keyToVKey{
