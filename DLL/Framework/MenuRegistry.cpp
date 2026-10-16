@@ -9,6 +9,7 @@ namespace Framework {
 		mutable std::mutex mutex;
 		std::vector<MenuEntry> entries;
 		std::vector<FontLoad> pendingFonts;
+		std::vector<const IMod*> loadedFontOwners; // Taken once; never cleared, like the atlas.
 		std::unordered_map<const IMod*, Availability> ownerAvailability;
 		bool hasAvailabilitySnapshot = false;
 
@@ -35,11 +36,21 @@ namespace Framework {
 
 	void MenuRegistry::RegisterFonts(const IMod* owner, FontLoadFn fn) {
 		std::lock_guard<std::mutex> lock(impl->mutex);
-		impl->pendingFonts.push_back(FontLoad{ owner, std::move(fn) });
+
+		// The atlas keeps a loaded owner's fonts for good, so a retried mod re-running OnInitialize adds nothing.
+		if (std::ranges::find(impl->loadedFontOwners, owner) != impl->loadedFontOwners.end()) return;
+
+		auto it = std::find_if(impl->pendingFonts.begin(), impl->pendingFonts.end(),
+			[owner](const FontLoad& load) { return load.owner == owner; });
+		if (it == impl->pendingFonts.end())
+			impl->pendingFonts.push_back(FontLoad{ owner, std::move(fn) });
+		else
+			it->fn = std::move(fn);
 	}
 
 	std::vector<FontLoad> MenuRegistry::TakePendingFonts() {
 		std::lock_guard<std::mutex> lock(impl->mutex);
+		for (const auto& load : impl->pendingFonts) impl->loadedFontOwners.push_back(load.owner);
 		return std::exchange(impl->pendingFonts, {});
 	}
 

@@ -50,7 +50,8 @@ namespace Framework {
 
 		// Fonts for the mod's ImGui drawing: `fn` calls ImGui::GetIO().Fonts->AddFont* and keeps the ImFont*s. Runs
 		// once, on the render thread before the next ImGui frame. The atlas lives as long as the game (a device reset
-		// only re-uploads its texture), so fonts never need adding again. Each call runs, a retried mod's included.
+		// only re-uploads its texture), so fonts never need adding again. One load per mod: calling again before it
+		// runs replaces it, after it ran (a retried mod re-running OnInitialize) does nothing, so keep the ImFont*s.
 		void RegisterFonts(const IMod* owner, FontLoadFn fn);
 
 		// Render thread, outside an ImGui frame: the loads that haven't run yet, oldest first. The caller runs them
