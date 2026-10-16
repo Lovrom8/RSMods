@@ -84,10 +84,20 @@ void CustomHighwayColorsMod::OnInitialize(ModContext& c) {
 	c.Draw().RegisterTextureLifecycle(&CustomHighwayColorsMod::RegenerateTextures, &CustomHighwayColorsMod::ReleaseTextures);
 }
 
+std::array<std::string, 4> CustomHighwayColorsMod::CurrentColors() {
+	return {
+		Settings::ReturnNotewayColor("CustomHighwayNumbered"),
+		Settings::ReturnNotewayColor("CustomHighwayUnNumbered"),
+		Settings::ReturnNotewayColor("CustomHighwayGutter"),
+		Settings::ReturnNotewayColor("CustomFretNubmers"),
+	};
+}
+
 void CustomHighwayColorsMod::OnEnabled(ModContext& c) {
 	s_active = true;
 	c.Draw().CancelTextureRelease();
 	UpdateColorPresence();
+	s_requestedColors = CurrentColors();
 	D3DHooks::RecreateTextures = true;
 }
 
@@ -96,14 +106,22 @@ void CustomHighwayColorsMod::OnDisabled(ModContext& c) {
 	c.Draw().RequestTextureRelease();
 }
 
+// Runs on every settings update (CC effects, in-game edits), Inactive mods included. Regeneration rebuilds
+// every mod's textures, so only ask for it when this mod is on and its colours actually changed.
 void CustomHighwayColorsMod::OnSettingsChanged(ModContext&) {
 	UpdateColorPresence();
+	if (!s_active) return;
+
+	auto colors = CurrentColors();
+	if (colors == s_requestedColors) return;
+
+	s_requestedColors = std::move(colors);
 	D3DHooks::RecreateTextures = true;
 }
 
-void CustomHighwayColorsMod::OnShutdown(ModContext&) {
+void CustomHighwayColorsMod::OnShutdown(ModContext& c) {
 	s_active = false;
-	ReleaseTextures();
+	c.Draw().RequestTextureRelease(); // The game still renders while it closes; free them on its thread.
 }
 
 void CustomHighwayColorsMod::RegenerateTextures(IDirect3DDevice9* pDevice) {
