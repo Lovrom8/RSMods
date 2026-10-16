@@ -113,9 +113,11 @@ namespace RSMods.Twitch.EffectServer
                 if (IsRunning)
                     return Task.CompletedTask;
 
+                var listener = new TcpListener(IPAddress.Loopback, _options.Port);
+                // Throws when the port is taken; nothing is kept, so the owner can simply call this again later.
+                listener.Start();
+                _listener = listener;
                 _lifetime = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-                _listener = new TcpListener(IPAddress.Loopback, _options.Port);
-                _listener.Start();
                 ListeningPort = ((IPEndPoint)_listener.LocalEndpoint).Port;
                 IsRunning = true;
 
