@@ -34,6 +34,7 @@ namespace CrowdControl {
 		std::condition_variable_any wake;
 		std::mutex effectsMutex;
 
+		std::mutex socketMutex;  // Held to close the socket, so another thread never shuts down a closed (reused) handle
 		std::atomic<SOCKET> activeSocket{ INVALID_SOCKET };
 		bool reconnectRequested = false; // Under waitMutex.
 
@@ -44,10 +45,19 @@ namespace CrowdControl {
 		}
 
 		void CloseActiveSocket() {
+			std::lock_guard lock(socketMutex);
 			const SOCKET socket = activeSocket.exchange(INVALID_SOCKET);
 			if (socket == INVALID_SOCKET) return;
 
 			closesocket(socket);
+		}
+
+		// For other threads: ends a blocked recv but leaves closing to the connection thread, which may still be using it.
+		void ShutdownActiveSocket() {
+			std::lock_guard lock(socketMutex);
+			const SOCKET socket = activeSocket.load();
+			if (socket != INVALID_SOCKET)
+				shutdown(socket, SD_BOTH);
 		}
 	}
 
@@ -290,7 +300,7 @@ namespace CrowdControl {
 			reconnectRequested = true;
 		}
 
-		CloseActiveSocket(); // Ends a live connection's recv, so the thread comes round to connect again.
+		ShutdownActiveSocket(); // Ends a live connection's recv, so the thread comes round to connect again.
 		wake.notify_all();
 	}
 
