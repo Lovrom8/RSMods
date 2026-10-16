@@ -1,7 +1,10 @@
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,13 +17,28 @@ namespace RSMods.Twitch
         public string Detail { get; } = detail ?? string.Empty;
     }
 
+    public sealed class TwitchEventSubCredentials(string accessToken, string broadcasterUserId)
+    {
+        public string AccessToken { get; } = accessToken;
+        public string BroadcasterUserId { get; } = broadcasterUserId;
+    }
+
+    /// <summary>
+    /// Supplies the credentials for each new EventSub session. <paramref name="rejectedAccessToken"/> is the token Twitch
+    /// just refused (null otherwise), which the provider should refresh. Null means authorization is gone.
+    /// </summary>
+    public delegate Task<TwitchEventSubCredentials> TwitchEventSubCredentialProvider(
+        string rejectedAccessToken,
+        CancellationToken cancellationToken);
+
     public interface ITwitchEventSubClient : IAsyncDisposable
     {
         event EventHandler<TwitchEventSubStateChangedEventArgs> StateChanged;
         event EventHandler<TwitchTriggerEventArgs> TriggerReceived;
         event EventHandler<TwitchRevocationEventArgs> Revoked;
 
-        Task StartAsync(string accessToken, string broadcasterUserId, CancellationToken cancellationToken = default(CancellationToken));
+        // Asked on every new session: a token captured once at start goes stale after a refresh.
+        Task StartAsync(TwitchEventSubCredentialProvider credentials, CancellationToken cancellationToken = default(CancellationToken));
         Task StopAsync();
     }
 
@@ -38,6 +56,7 @@ namespace RSMods.Twitch
         {
             public ITwitchWebSocket Socket { get; set; }
             public TimeSpan KeepaliveTimeout { get; set; }
+            public IReadOnlyList<TwitchApiException> RejectedSubscriptions { get; set; } = [];
 
             public void Dispose() => Socket?.Dispose();
         }
@@ -56,7 +75,8 @@ namespace RSMods.Twitch
         public event EventHandler<TwitchTriggerEventArgs> TriggerReceived;
         public event EventHandler<TwitchRevocationEventArgs> Revoked;
 
-        public async Task StartAsync(
+        /// <summary>Listens with fixed credentials; a rejected token ends the session.</summary>
+        public Task StartAsync(
             string accessToken,
             string broadcasterUserId,
             CancellationToken cancellationToken = default(CancellationToken))
@@ -65,6 +85,17 @@ namespace RSMods.Twitch
                 throw new ArgumentException("An access token is required.", nameof(accessToken));
             if (string.IsNullOrWhiteSpace(broadcasterUserId))
                 throw new ArgumentException("A broadcaster user ID is required.", nameof(broadcasterUserId));
+
+            var credentials = new TwitchEventSubCredentials(accessToken, broadcasterUserId);
+            return StartAsync((rejected, _) => Task.FromResult(rejected == null ? credentials : null), cancellationToken);
+        }
+
+        public async Task StartAsync(
+            TwitchEventSubCredentialProvider credentials,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (credentials == null)
+                throw new ArgumentNullException(nameof(credentials));
 
             await _gate.WaitAsync(cancellationToken).ConfigureAwait(false);
             try
@@ -75,7 +106,7 @@ namespace RSMods.Twitch
 
                 _runCancellation?.Dispose();
                 _runCancellation = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-                _runTask = RunAsync(accessToken, broadcasterUserId, _runCancellation.Token);
+                _runTask = RunAsync(credentials, _runCancellation.Token);
             }
             finally
             {
@@ -111,12 +142,14 @@ namespace RSMods.Twitch
             SetState(TwitchEventSubState.Stopped, string.Empty);
         }
 
-        private async Task RunAsync(string accessToken, string broadcasterUserId, CancellationToken cancellationToken)
+        private async Task RunAsync(TwitchEventSubCredentialProvider credentialProvider, CancellationToken cancellationToken)
         {
             int reconnectAttempt = 0;
             Uri endpoint = _options.EventSubWebSocketEndpoint;
             bool plannedReconnect = false;
             Connection connection = null;
+            TwitchEventSubCredentials credentials = null;
+            string rejectedAccessToken = null;
 
             try
             {
@@ -127,11 +160,21 @@ namespace RSMods.Twitch
                         SetState(reconnectAttempt == 0 && !plannedReconnect
                             ? TwitchEventSubState.Connecting
                             : TwitchEventSubState.Reconnecting, string.Empty);
+                        // A planned reconnect keeps its subscriptions, so only a new session needs credentials.
+                        if (!plannedReconnect)
+                        {
+                            credentials = await credentialProvider(rejectedAccessToken, cancellationToken).ConfigureAwait(false);
+                            rejectedAccessToken = null;
+                            if (credentials == null)
+                            {
+                                SetState(TwitchEventSubState.Error, "Twitch authorization is required before listening can resume.");
+                                return;
+                            }
+                        }
+
                         Connection next = await ConnectAsync(
                             endpoint,
-                            !plannedReconnect,
-                            accessToken,
-                            broadcasterUserId,
+                            plannedReconnect ? null : credentials,
                             cancellationToken).ConfigureAwait(false);
 
                         if (connection != null)
@@ -144,7 +187,7 @@ namespace RSMods.Twitch
                         reconnectAttempt = 0;
                         plannedReconnect = false;
                         endpoint = _options.EventSubWebSocketEndpoint;
-                        SetState(TwitchEventSubState.Connected, string.Empty);
+                        SetState(TwitchEventSubState.Connected, DescribeRejections(connection.RejectedSubscriptions));
 
                         Uri reconnectUri = await ReceiveUntilReconnectAsync(connection, cancellationToken).ConfigureAwait(false);
                         if (reconnectUri != null)
@@ -161,14 +204,12 @@ namespace RSMods.Twitch
                     {
                         break;
                     }
-                    catch (TwitchApiException ex) when (
-                        ex.StatusCode == HttpStatusCode.BadRequest ||
-                        ex.StatusCode == HttpStatusCode.Unauthorized ||
-                        ex.StatusCode == HttpStatusCode.Forbidden)
+                    catch (TwitchApiException ex) when (ex.StatusCode == HttpStatusCode.Unauthorized)
                     {
-                        SetState(TwitchEventSubState.Error, ex.Message);
-                        Revoked?.Invoke(this, new TwitchRevocationEventArgs(string.Empty, "authorization_failed"));
-                        return;
+                        // Usually an expired token. The provider refreshes it for the next attempt and only gives up
+                        // (returns null) when the refresh itself is refused.
+                        rejectedAccessToken = credentials?.AccessToken;
+                        SetState(TwitchEventSubState.Reconnecting, "Twitch rejected the access token; refreshing authorization.");
                     }
                     catch (SubscriptionRevokedException)
                     {
@@ -178,9 +219,23 @@ namespace RSMods.Twitch
                     {
                         SetState(TwitchEventSubState.Error, "Twitch sent an invalid EventSub message.");
                     }
-                    catch (Exception ex) when (ex is IOException || ex is WebSocketException || ex is TimeoutException || ex is TwitchApiException)
+                    catch (TwitchApiException ex)
+                    {
+                        // Every subscription refused (400/403) or a Twitch outage: worth another try, never a sign-out.
+                        SetState(TwitchEventSubState.Reconnecting, ex.Message);
+                    }
+                    // An OperationCanceledException here is an HttpClient timeout, not a stop.
+                    catch (Exception ex) when (ex is IOException || ex is InvalidDataException || ex is WebSocketException ||
+                                               ex is TimeoutException || ex is HttpRequestException ||
+                                               ex is OperationCanceledException)
                     {
                         SetState(TwitchEventSubState.Reconnecting, "The Twitch connection was interrupted.");
+                    }
+                    catch (Exception ex)
+                    {
+                        // Don't end silently while the state still says Connected; maintenance restarts an Error session.
+                        SetState(TwitchEventSubState.Error, $"Twitch listening stopped after an unexpected error: {ex.Message}");
+                        return;
                     }
 
                     connection?.Dispose();
@@ -202,11 +257,10 @@ namespace RSMods.Twitch
             }
         }
 
+        // Null credentials keep the session's existing subscriptions (planned reconnect).
         private async Task<Connection> ConnectAsync(
             Uri endpoint,
-            bool createSubscriptions,
-            string accessToken,
-            string broadcasterUserId,
+            TwitchEventSubCredentials credentials,
             CancellationToken cancellationToken)
         {
             ITwitchWebSocket socket = _socketFactory.Create();
@@ -221,16 +275,17 @@ namespace RSMods.Twitch
                 if (!TwitchEventSubMessageParser.TryGetWelcome(welcome, out string sessionId, out TimeSpan keepaliveTimeout))
                     throw new InvalidDataException("Twitch did not send an EventSub welcome message.");
 
-                if (createSubscriptions)
+                IReadOnlyList<TwitchApiException> rejected = [];
+                if (credentials != null)
                 {
-                    await _apiClient.CreateEventSubSubscriptionsAsync(
-                        accessToken,
-                        broadcasterUserId,
+                    rejected = await _apiClient.CreateEventSubSubscriptionsAsync(
+                        credentials.AccessToken,
+                        credentials.BroadcasterUserId,
                         sessionId,
                         cancellationToken).ConfigureAwait(false);
                 }
 
-                return new Connection { Socket = socket, KeepaliveTimeout = keepaliveTimeout };
+                return new Connection { Socket = socket, KeepaliveTimeout = keepaliveTimeout, RejectedSubscriptions = rejected };
             }
             catch
             {
@@ -253,6 +308,13 @@ namespace RSMods.Twitch
 
                 if (TwitchEventSubMessageParser.TryGetRevocation(envelope, out string type, out string status))
                 {
+                    if (!IsAuthorizationRevocation(status))
+                    {
+                        // e.g. version_removed: the login is still good, so maintenance resubscribes later.
+                        SetState(TwitchEventSubState.Error, $"Twitch removed the {type} subscription ({status}).");
+                        throw new SubscriptionRevokedException();
+                    }
+
                     SetState(TwitchEventSubState.Revoked, $"Twitch revoked the {type} subscription ({status}).");
                     Revoked?.Invoke(this, new TwitchRevocationEventArgs(type, status));
                     throw new SubscriptionRevokedException();
@@ -267,6 +329,16 @@ namespace RSMods.Twitch
 
             return null;
         }
+
+        private static bool IsAuthorizationRevocation(string status) =>
+            string.Equals(status, "authorization_revoked", StringComparison.Ordinal) ||
+            string.Equals(status, "user_removed", StringComparison.Ordinal) ||
+            string.Equals(status, "revoked", StringComparison.Ordinal); // The parser's stand-in for a missing status.
+
+        private static string DescribeRejections(IReadOnlyList<TwitchApiException> rejected) =>
+            rejected.Count == 0
+                ? string.Empty
+                : string.Join(" ", rejected.Select(exception => exception.Message)) + " Other Twitch events still arrive.";
 
         private static async Task CloseQuietlyAsync(Connection connection, CancellationToken cancellationToken)
         {
