@@ -135,4 +135,45 @@ public sealed class ProfileBackupServiceTests
 
         Assert.True(Directory.Exists(backup));
     }
+
+    [Fact]
+    public void RestoreBackup_ReplacesTheSavesFilesAndLeavesOthers()
+    {
+        using var temporary = new TemporaryDirectory();
+        var (_, saveFolder, accountFolder) = Layout(temporary);
+        File.WriteAllText(Path.Combine(saveFolder, "other"), "keep");
+        string backup = MakeBackup(accountFolder, ProfileBackupService.BeforeGuiBackups, "2026-09-20_10-00-00");
+        File.WriteAllText(Path.Combine(backup, "profile_PRFLDB"), "backed up");
+        File.WriteAllText(Path.Combine(backup, "localprofiles.json"), "profiles");
+
+        ProfileBackupService.RestoreBackup(backup, saveFolder);
+
+        Assert.Equal("backed up", File.ReadAllText(Path.Combine(saveFolder, "profile_PRFLDB")));
+        Assert.Equal("profiles", File.ReadAllText(Path.Combine(saveFolder, "localprofiles.json")));
+        Assert.Equal("keep", File.ReadAllText(Path.Combine(saveFolder, "other")));
+        Assert.Equal("backed up", File.ReadAllText(Path.Combine(backup, "profile_PRFLDB")));
+        Assert.Equal(["remote"], Directory.GetDirectories(Path.GetDirectoryName(saveFolder)!).Select(Path.GetFileName));
+    }
+
+    // The game holding one profile open mustn't leave the save half old, half restored.
+    [Fact]
+    public void RestoreBackup_ThatFailsPartWayLeavesTheSaveAsItWas()
+    {
+        using var temporary = new TemporaryDirectory();
+        var (_, saveFolder, accountFolder) = Layout(temporary);
+        File.WriteAllText(Path.Combine(saveFolder, "a_PRFLDB"), "save a");
+        File.WriteAllText(Path.Combine(saveFolder, "b_PRFLDB"), "save b");
+        string backup = MakeBackup(accountFolder, ProfileBackupService.BeforeGuiBackups, "2026-09-20_10-00-00");
+        File.WriteAllText(Path.Combine(backup, "a_PRFLDB"), "backup a");
+        File.WriteAllText(Path.Combine(backup, "b_PRFLDB"), "backup b");
+        File.WriteAllText(Path.Combine(backup, "new_PRFLDB"), "backup new");
+
+        using (new FileStream(Path.Combine(saveFolder, "b_PRFLDB"), FileMode.Open, FileAccess.Read, FileShare.None))
+            Assert.ThrowsAny<IOException>(() => ProfileBackupService.RestoreBackup(backup, saveFolder));
+
+        Assert.Equal("save a", File.ReadAllText(Path.Combine(saveFolder, "a_PRFLDB")));
+        Assert.Equal("save b", File.ReadAllText(Path.Combine(saveFolder, "b_PRFLDB")));
+        Assert.False(File.Exists(Path.Combine(saveFolder, "new_PRFLDB")));
+        Assert.Equal(["remote"], Directory.GetDirectories(Path.GetDirectoryName(saveFolder)!).Select(Path.GetFileName));
+    }
 }

@@ -189,10 +189,68 @@ namespace RSMods
             return [.. backups.Values.OrderByDescending(b => b.Utc)];
         }
 
+        /// <summary>
+        /// Puts a backup's files in the save folder. They're copied next to it first, so a copy that fails leaves the save
+        /// untouched, and then swapped in; if a swap fails the files already swapped get their previous versions back.
+        /// </summary>
         public static void RestoreBackup(string sourceDirectory, string targetDirectory)
         {
-            foreach (string file in Directory.EnumerateFiles(sourceDirectory))
-                File.Copy(file, Path.Combine(targetDirectory, Path.GetFileName(file)), true);
+            // A sibling folder: on the save's volume, so the swaps are renames, but outside what Steam Cloud syncs.
+            string staging = targetDirectory.TrimEnd('\\', '/') + ".restore_" + Guid.NewGuid().ToString("N");
+            bool keepStaging = false;
+            Directory.CreateDirectory(staging);
+            try
+            {
+                string[] names = Directory.GetFiles(sourceDirectory).Select(Path.GetFileName).ToArray();
+                foreach (string name in names)
+                    File.Copy(Path.Combine(sourceDirectory, name), Path.Combine(staging, name));
+
+                var swapped = new List<(string Live, string Previous)>();
+                try
+                {
+                    foreach (string name in names)
+                    {
+                        string live = Path.Combine(targetDirectory, name);
+                        string staged = Path.Combine(staging, name);
+                        if (File.Exists(live))
+                        {
+                            string previous = staged + ".previous";
+                            File.Replace(staged, live, previous);
+                            swapped.Add((live, previous));
+                        }
+                        else
+                        {
+                            File.Move(staged, live);
+                            swapped.Add((live, null));
+                        }
+                    }
+                }
+                catch
+                {
+                    for (int i = swapped.Count - 1; i >= 0; i--)
+                    {
+                        try
+                        {
+                            if (swapped[i].Previous != null)
+                                File.Move(swapped[i].Previous, swapped[i].Live, overwrite: true);
+                            else
+                                File.Delete(swapped[i].Live);
+                        }
+                        catch
+                        {
+                            keepStaging = true; // It still holds the previous save, so it mustn't be deleted.
+                        }
+                    }
+                    throw;
+                }
+            }
+            finally
+            {
+                if (!keepStaging)
+                {
+                    try { Directory.Delete(staging, true); } catch { }
+                }
+            }
         }
     }
 }
