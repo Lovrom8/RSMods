@@ -370,4 +370,22 @@ public sealed class IniManagerTests
         Assert.Contains("ExtendedRangeModeAt=-5", lines);
         Assert.Contains("Threshold=-12", lines);
     }
+
+    [Fact]
+    public void CommentingOutARepeatedKeyCommentsOutEveryActiveCopy()
+    {
+        using var dir = new TemporaryDirectory();
+        string path = dir.File("RS_ASIO.ini");
+        File.WriteAllLines(path, ["[Asio.Input.1]", "Driver=First", "Channel=1", "Driver=Second"]);
+        var ini = new IniManager(path);
+        ini.Load();
+
+        ini.SetCommentedString("[Asio.Input.1]", "Driver", "Second", commented: true);
+        ini.Save();
+
+        Assert.Equal<string[]>(["[Asio.Input.1]", ";Driver=First", "Channel=1", ";Driver=Second"], File.ReadAllLines(path));
+        var reloaded = new IniManager(path);
+        reloaded.Load();
+        Assert.True(reloaded.IsCommented("[Asio.Input.1]", "Driver"));
+    }
 }

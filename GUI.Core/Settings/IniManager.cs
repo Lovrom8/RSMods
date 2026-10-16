@@ -674,6 +674,7 @@ namespace RSMods
                         active.Commented = true;
                         active.Value = value;
                         active.Raw = null;
+                        CommentOutEarlierCopies(section, key, active);
                         MarkChanged();
                     }
                     else if (inactive == null)
@@ -700,6 +701,27 @@ namespace RSMods
                 else
                 {
                     SetActiveLocked(section, key, value);
+                }
+            }
+        }
+
+        // A key the file repeats is read from its last active line; the earlier ones would become the value once that
+        // one is commented out, so they're commented out too, keeping their own text.
+        private void CommentOutEarlierCopies(string section, string key, Line last)
+        {
+            foreach (var block in _blocks)
+            {
+                if (!string.Equals(block.Name, section, StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                foreach (var line in block.Lines)
+                {
+                    if (line == last || line.Commented || !string.Equals(line.Key, key, StringComparison.OrdinalIgnoreCase))
+                        continue;
+
+                    line.Commented = true;
+                    if (line.Raw != null)
+                        line.Raw = ";" + line.Raw;
                 }
             }
         }
