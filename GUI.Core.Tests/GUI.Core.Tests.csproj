@@ -30,4 +30,9 @@
     </Reference>
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- The soundpack import tests extract real archives through SevenZipSharp's native library. -->
+    <None Include="..\RuntimeAssets\7z64.dll" Link="7z64.dll" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>
