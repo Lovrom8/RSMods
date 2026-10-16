@@ -249,25 +249,11 @@ internal sealed partial class InstallerViewModel(EmbeddedInstallerResources reso
     private void InstallPayloads(string rocksmithFolder, ExistingNativeMod existing, bool replaceNativeMod)
     {
         PayloadManifest manifest = resources.ReadManifest();
-        string folder = ConfiguratorPaths.RsModsFolder(rocksmithFolder);
-
-        // Before the native mod: an open configurator would fail the payload after a new DLL was already in.
-        ConfiguratorPayloadInstaller.ThrowIfConfiguratorRunning(folder, manifest);
-
-        if (replaceNativeMod)
-        {
-            ReportProgress("Installing the native mod…");
-            NativeModInstallStatus nativeStatus = NativeModInstaller.Install(rocksmithFolder, resources.ReadNativeDll(), resources.ReadNativePdb());
-
-            if (nativeStatus == NativeModInstallStatus.GameRunning)
-                throw new IOException("Rocksmith is open and the native mod files cannot be replaced. Close the game and try again.");
-        }
+        byte[]? nativeDll = replaceNativeMod ? resources.ReadNativeDll() : null;
+        byte[]? nativePdb = replaceNativeMod ? resources.ReadNativePdb() : null;
 
         using Stream payload = resources.OpenPayload();
-        ConfiguratorPayloadInstaller.Install(folder, payload, manifest, ReportProgress);
-
-        if (replaceNativeMod && existing.Kind == ExistingNativeModKind.CustomRsMods)
-            ExistingNativeModInspector.SetAsideCustomManifest(folder);
+        RsModsInstallation.Install(rocksmithFolder, existing, replaceNativeMod, nativeDll, nativePdb, payload, manifest, ReportProgress);
     }
 
     private void ReportProgress(string message) => Dispatcher.UIThread.Post(() => StatusMessage = message);

@@ -76,11 +76,11 @@ public sealed class ExistingNativeModInspectorTests
         File.WriteAllText(temp.Combine("mods.manifest.json"), "custom");
         File.WriteAllText(temp.Combine("mods.manifest.json.bak"), "older");
 
-        ExistingNativeModInspector.SetAsideCustomManifest(temp.Path);
+        Assert.True(ExistingNativeModInspector.SetAsideCustomManifest(temp.Path));
 
         Assert.False(File.Exists(temp.Combine("mods.manifest.json")));
         Assert.Equal("custom", File.ReadAllText(temp.Combine("mods.manifest.json.bak")));
 
-        ExistingNativeModInspector.SetAsideCustomManifest(temp.Path); // nothing to move: no throw
+        Assert.False(ExistingNativeModInspector.SetAsideCustomManifest(temp.Path)); // nothing to move: no throw
     }
 }

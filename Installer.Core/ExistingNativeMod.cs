@@ -55,11 +55,22 @@ namespace RS2014_Mod_Installer.Core
 
         // A custom build ships its own manifest next to the configurator, which would keep listing settings for mods
         // the official DLL doesn't have. Kept as .bak rather than deleted: reinstalling the custom build restores it.
-        public static void SetAsideCustomManifest(string rsModsFolder)
+        // True if there was one to set aside.
+        public static bool SetAsideCustomManifest(string rsModsFolder)
         {
             string manifest = Path.Combine(rsModsFolder, LooseManifestName);
-            if (File.Exists(manifest))
-                File.Move(manifest, manifest + ".bak", overwrite: true);
+            if (!File.Exists(manifest))
+                return false;
+
+            File.Move(manifest, manifest + ".bak", overwrite: true);
+            return true;
+        }
+
+        // Undoes SetAsideCustomManifest when the install that set it aside fails.
+        public static void RestoreCustomManifest(string rsModsFolder)
+        {
+            string manifest = Path.Combine(rsModsFolder, LooseManifestName);
+            File.Move(manifest + ".bak", manifest, overwrite: true);
         }
     }
 }
