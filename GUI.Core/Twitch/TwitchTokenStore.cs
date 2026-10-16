@@ -79,12 +79,18 @@ namespace RSMods.Twitch
 
         public TwitchTokenSet LoadOrImportLegacy(string settingsPath, string clientId = "")
         {
+            var settings = new FlatKeyValueSettingsStore(settingsPath);
+            bool hasLegacyLine = settings.TryGetString("AccessToken", out string legacyAccessToken);
+
             TwitchTokenSet stored = Load();
             if (stored != null)
+            {
+                // An earlier import saved the token but couldn't remove the plaintext copy; finish that now.
+                if (hasLegacyLine)
+                    TryRemoveLegacyToken(settingsPath);
                 return stored;
+            }
 
-            var settings = new FlatKeyValueSettingsStore(settingsPath);
-            string legacyAccessToken = settings.GetString("AccessToken");
             if (string.IsNullOrWhiteSpace(legacyAccessToken))
                 return null;
 
@@ -95,8 +101,20 @@ namespace RSMods.Twitch
             };
             Save(imported);
 
-            FlatKeyValueSettingsStore.UpdateFile(settingsPath, file => file.Remove("AccessToken"));
+            TryRemoveLegacyToken(settingsPath);
             return imported;
+        }
+
+        // A locked settings file must not stop Twitch from loading; the next start tries again.
+        private static void TryRemoveLegacyToken(string settingsPath)
+        {
+            try
+            {
+                FlatKeyValueSettingsStore.UpdateFile(settingsPath, file => file.Remove("AccessToken"));
+            }
+            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
+            {
+            }
         }
 
         public void Clear()

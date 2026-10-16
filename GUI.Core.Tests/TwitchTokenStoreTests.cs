@@ -33,6 +33,27 @@ public sealed class TwitchTokenStoreTests
     }
 
     [Fact]
+    public void LoadOrImportLegacy_RemovesLeftoverPlaintextWhenTokenIsAlreadyStored()
+    {
+        if (!OperatingSystem.IsWindows())
+            return;
+
+        using var temporary = new TemporaryDirectory();
+        string settingsPath = temporary.File("GUI_Settings.ini");
+        var store = new TwitchTokenStore(temporary.File("TwitchAuth.dat"));
+        store.Save(new TwitchTokenSet { AccessToken = "stored-access", RefreshToken = "stored-refresh" });
+        // An earlier import saved the token, then failed to rewrite the settings file.
+        File.WriteAllLines(settingsPath, ["AccessToken = leftover-plaintext", "Unknown = preserved"]);
+
+        TwitchTokenSet? loaded = store.LoadOrImportLegacy(settingsPath, "client-id");
+
+        Assert.NotNull(loaded);
+        Assert.Equal("stored-access", loaded.AccessToken);
+        Assert.DoesNotContain("leftover-plaintext", File.ReadAllText(settingsPath));
+        Assert.Contains("Unknown = preserved", File.ReadAllText(settingsPath));
+    }
+
+    [Fact]
     public void Save_RoundTripsRefreshMetadata()
     {
         if (!OperatingSystem.IsWindows())
