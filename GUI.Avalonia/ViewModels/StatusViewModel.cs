@@ -124,7 +124,15 @@ internal sealed partial class StatusViewModel : ObservableObject
         }
 
         // Pending changes belong to the current folder, so they're written there before it's switched.
-        await _autoSave.FlushAllAsync();
+        if (!await _autoSave.FlushAllAsync())
+        {
+            StatusMessage = "Rocksmith folder unchanged.";
+            await _dialogs.ShowErrorAsync(
+                $"Some settings couldn't be saved, so the Rocksmith folder wasn't changed:\n{_autoSave.LastError?.Message}",
+                "Change Rocksmith folder");
+            return;
+        }
+
         Constants.RSFolder = picked;
         Constants.SaveBaseSettings();
 
@@ -142,6 +150,8 @@ internal sealed partial class StatusViewModel : ObservableObject
             return;
         }
 
+        // Setting SavePath has the main window drop the old account's profiles and back up the new folder's
+        // before profile edits unlock again.
         SavePath = picked;
         SavePathAvailable = true;
         Constants.SaveBaseSettings();

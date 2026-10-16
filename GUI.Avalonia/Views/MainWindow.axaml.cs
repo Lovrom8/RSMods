@@ -8,27 +8,42 @@ namespace RSMods.Views;
 internal sealed partial class MainWindow : Window
 {
     private readonly MainWindowViewModel _viewModel;
-    private readonly AutoSaveService _autoSave;
-    private bool _closingAfterFlush;
+    private bool _closeConfirmed;
+    private bool _confirmingClose;
 
-    public MainWindow(MainWindowViewModel viewModel, AutoSaveService autoSave)
+    public MainWindow(MainWindowViewModel viewModel)
     {
         InitializeComponent();
         _viewModel = viewModel;
-        _autoSave = autoSave;
         DataContext = viewModel;
     }
 
-    /// <summary>Settings save a moment after each change; hold the close until the last one is on disk.</summary>
+    /// <summary>
+    /// Settings save a moment after each change, and some jobs write game files for minutes; hold the close until
+    /// the last change is on disk (or the user chooses to lose it) and nothing is left half-written.
+    /// </summary>
     protected override async void OnClosing(WindowClosingEventArgs e)
     {
         base.OnClosing(e);
-        if (e.Cancel || _closingAfterFlush || !_autoSave.HasUnsavedChanges)
+        if (e.Cancel || _closeConfirmed || !_viewModel.HasWorkBeforeClose)
             return;
 
         e.Cancel = true;
-        await _autoSave.FlushAllAsync();
-        _closingAfterFlush = true;
+        if (_confirmingClose)
+            return; // Already asking; a second close request waits for that answer
+
+        _confirmingClose = true;
+        try
+        {
+            if (!await _viewModel.ConfirmCloseAsync())
+                return;
+        }
+        finally
+        {
+            _confirmingClose = false;
+        }
+
+        _closeConfirmed = true;
         Close();
     }
 

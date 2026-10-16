@@ -16,6 +16,8 @@ internal sealed class StartupResult
     public string RocksmithFolder { get; init; } = string.Empty;
     public string SavePath { get; init; } = string.Empty;
     public bool SavePathAvailable => !string.IsNullOrEmpty(SavePath);
+    /// <summary>The save folder was backed up this session, which profile edits need.</summary>
+    public bool ProfilesBackedUp { get; init; }
     public IReadOnlyList<IniValidationWarning> Warnings { get; init; } = [];
 }
 
@@ -54,13 +56,14 @@ internal sealed class StartupService(IDialogService dialogs, IAppEnvironment env
             RsModsSettings.ValidationWarning -= Collect;
         }
 
-        await BackUpProfilesAsync(rsFolder, savePath);
+        bool backedUp = await BackUpProfilesOnStartupAsync(rsFolder, savePath);
 
         return new StartupResult
         {
             Completed = true,
             RocksmithFolder = rsFolder,
             SavePath = savePath,
+            ProfilesBackedUp = backedUp,
             Warnings = warnings,
         };
     }
@@ -69,27 +72,49 @@ internal sealed class StartupService(IDialogService dialogs, IAppEnvironment env
     /// Backs up the profiles into "Before GUI" before any screen can edit them, so a profile changed here while the
     /// game is closed always has a backup. The DLL makes the in-game backups; both are governed by BackupProfile.
     /// As the old GUI did, the "Before GUI" backups are trimmed to NumberOfBackups on every open, with BackupProfile
-    /// off too, so turning backups off doesn't leave an old pile behind.
+    /// off too, so turning backups off doesn't leave an old pile behind. True when a backup was taken.
     /// </summary>
-    private async Task BackUpProfilesAsync(string rsFolder, string savePath)
+    private async Task<bool> BackUpProfilesOnStartupAsync(string rsFolder, string savePath)
     {
         if (string.IsNullOrEmpty(savePath))
-            return;
+            return false;
+
+        if (RsModsSettings.GUISettings.BackupProfile)
+            return await BackUpProfilesAsync(rsFolder, savePath);
 
         try
         {
-            bool backUp = RsModsSettings.GUISettings.BackupProfile;
             int keep = RsModsSettings.GUISettings.NumberOfBackups;
-            await Task.Run(() =>
-            {
-                if (backUp)
-                    ProfileBackupService.CreateBackup(savePath, rsFolder);
-                ProfileBackupService.DeleteOldBackups(rsFolder, savePath, keep);
-            });
+            await Task.Run(() => ProfileBackupService.DeleteOldBackups(rsFolder, savePath, keep));
         }
         catch (Exception ex)
         {
             await dialogs.ShowErrorAsync($"Could not back up your profiles:\n{ex.Message}");
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Backs up the profiles in <paramref name="savePath"/> into "Before GUI" and trims those backups to
+    /// NumberOfBackups. False, after telling the user, when the backup failed; profile edits then stay locked.
+    /// </summary>
+    public async Task<bool> BackUpProfilesAsync(string rsFolder, string savePath)
+    {
+        try
+        {
+            int keep = RsModsSettings.GUISettings.NumberOfBackups;
+            await Task.Run(() =>
+            {
+                ProfileBackupService.CreateBackup(savePath, rsFolder);
+                ProfileBackupService.DeleteOldBackups(rsFolder, savePath, keep);
+            });
+            return true;
+        }
+        catch (Exception ex)
+        {
+            await dialogs.ShowErrorAsync($"Could not back up your profiles, so editing them stays locked:\n{ex.Message}");
+            return false;
         }
     }
 }

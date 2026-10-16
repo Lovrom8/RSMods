@@ -1,6 +1,8 @@
+using System;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using RSMods.Core;
 using RSMods.Core.Settings;
 using RSMods.Services;
 
@@ -22,7 +24,12 @@ internal sealed partial class MainWindowViewModel : ObservableObject
     private readonly SetAndForgetViewModel _setAndForget;
     private readonly TwitchViewModel _twitch;
     private readonly NavigationService _navigation;
+    private readonly IDialogService _dialogs;
+    private readonly AutoSaveService _autoSave;
     private bool _initialized;
+    private int _navigationCount; // Bumped on every page change, so a slow page load can't pull the user back
+    private bool _profilesBackedUp; // A backup of the current save folder was taken this session
+    private bool _backingUpProfiles;
 
     [ObservableProperty]
     private ObservableObject _currentPage;
@@ -49,6 +56,8 @@ internal sealed partial class MainWindowViewModel : ObservableObject
         !SectionsEnabled ? null
         : !_status.SavePathAvailable ? "Choose your save folder on the Home page to edit profiles."
         : _backupProfile is { Value: false } ? "Turn on Backup Profile in Mod Settings to edit profiles. Edits need a backup to fall back on."
+        : _backingUpProfiles ? "Backing up your profiles before they can be edited…"
+        : !_profilesBackedUp ? "Your profiles couldn't be backed up, so editing them stays locked. Turn Backup Profile off and on again to retry."
         : null;
 
     private bool CanShowProfiles => SectionsEnabled && ProfilesLockedReason is null;
@@ -67,7 +76,9 @@ internal sealed partial class MainWindowViewModel : ObservableObject
         SoundPacksViewModel soundPacks,
         SetAndForgetViewModel setAndForget,
         TwitchViewModel twitch,
-        NavigationService navigation)
+        NavigationService navigation,
+        IDialogService dialogs,
+        AutoSaveService autoSave)
     {
         _startup = startup;
         _warnings = warnings;
@@ -83,6 +94,8 @@ internal sealed partial class MainWindowViewModel : ObservableObject
         _setAndForget = setAndForget;
         _twitch = twitch;
         _navigation = navigation;
+        _dialogs = dialogs;
+        _autoSave = autoSave;
         _currentPage = status;
 
         _navigation.RegisterHandler(HandleNavigationAsync);
@@ -90,7 +103,53 @@ internal sealed partial class MainWindowViewModel : ObservableObject
         {
             if (e.PropertyName == nameof(StatusViewModel.SavePathAvailable))
                 ProfilesLockChanged();
+            else if (e.PropertyName == nameof(StatusViewModel.SavePath) && SectionsEnabled)
+                OnSaveFolderChanged();
         };
+    }
+
+    /// <summary>
+    /// A new save folder is another account: the loaded profile, its backups and the backup that unlocked editing
+    /// all belong to the old one, so they're dropped and the new folder is backed up before edits unlock again.
+    /// </summary>
+    private void OnSaveFolderChanged()
+    {
+        _profilesBackedUp = false;
+        _profiles.Reset();
+        if (CurrentPage == _profiles)
+            ShowStatus();
+        ProfilesLockChanged();
+        _ = BackUpProfilesForEditingAsync();
+    }
+
+    /// <summary>
+    /// Takes the backup profile edits rely on, as the old GUI did when Backup Profile was switched on, for a save
+    /// folder that hasn't been backed up this session. Edits stay locked until it succeeds.
+    /// </summary>
+    private async Task BackUpProfilesForEditingAsync()
+    {
+        if (_backingUpProfiles)
+            return; // The running backup checks for a folder change when it finishes
+
+        _backingUpProfiles = true;
+        ProfilesLockChanged();
+        try
+        {
+            while (!_profilesBackedUp && _status.SavePathAvailable && _backupProfile is { Value: true })
+            {
+                string savePath = _status.SavePath!;
+                bool backedUp = await _startup.BackUpProfilesAsync(_status.RocksmithFolder!, savePath);
+                if (savePath != _status.SavePath)
+                    continue; // The folder changed meanwhile; back up the new one instead
+                _profilesBackedUp = backedUp;
+                break;
+            }
+        }
+        finally
+        {
+            _backingUpProfiles = false;
+            ProfilesLockChanged();
+        }
     }
 
     private void ProfilesLockChanged()
@@ -161,6 +220,7 @@ internal sealed partial class MainWindowViewModel : ObservableObject
         _theme.ApplyFromSettings();
 
         _status.RocksmithFolder = result.RocksmithFolder;
+        _profilesBackedUp = result.ProfilesBackedUp;
         _status.SavePath = result.SavePath;
         _status.SavePathAvailable = result.SavePathAvailable;
         _status.IsReady = true;
@@ -175,8 +235,11 @@ internal sealed partial class MainWindowViewModel : ObservableObject
         {
             _backupProfile.PropertyChanged += (_, e) =>
             {
-                if (e.PropertyName == nameof(BoolSettingFieldViewModel.Value))
-                    ProfilesLockChanged();
+                if (e.PropertyName != nameof(BoolSettingFieldViewModel.Value))
+                    return;
+                ProfilesLockChanged();
+                if (_backupProfile.Value)
+                    _ = BackUpProfilesForEditingAsync();
             };
         }
 
@@ -188,87 +251,107 @@ internal sealed partial class MainWindowViewModel : ObservableObject
         await _warnings.PresentAsync(result.Warnings);
     }
 
+    /// <summary>True when closing has to check something first; see <see cref="ConfirmCloseAsync"/>.</summary>
+    public bool HasWorkBeforeClose =>
+        IsWritingFiles || _twitch.RulesDirty || _autoSave.HasUnsavedChanges;
+
+    private bool IsWritingFiles => _soundPacks.IsBusy || _setAndForget.IsBusy || _profiles.IsBusy;
+
+    /// <summary>
+    /// Run before the window closes: a long job still writing game files, unsaved Twitch reward rules, and settings
+    /// still waiting to save (retried if that fails). False keeps the window open.
+    /// </summary>
+    public async Task<bool> ConfirmCloseAsync()
+    {
+        // Closing kills the background thread mid-write, which can leave audio.psarc, cache.psarc or a profile cut short.
+        if (IsWritingFiles && await _dialogs.ShowChoiceAsync(
+                "RSMods is still working on your game files (sound packs, Set and Forget or a profile). " +
+                "Closing now can leave a file half-written.\n\nWait for it to finish before closing?",
+                "Still working", "Keep RSMods open", "Close anyway"))
+            return false;
+
+        if (_twitch.RulesDirty
+            && await _dialogs.ShowChoiceAsync(
+                "Your Twitch reward rules have changes that aren't saved. Save them before closing?",
+                "Unsaved reward rules", "Save", "Discard")
+            && !await _twitch.SaveRulesBeforeCloseAsync())
+        {
+            ShowTwitch(); // The page says why they weren't saved
+            return false;
+        }
+
+        while (!await _autoSave.FlushAllAsync())
+        {
+            string reason = _autoSave.LastError?.Message ?? "Unknown error.";
+            if (!await _dialogs.ShowChoiceAsync(
+                    $"Some settings couldn't be saved:\n{reason}\n\nClosing now loses those changes.",
+                    "Couldn't save settings", "Retry", "Close anyway"))
+                break;
+        }
+
+        return true;
+    }
+
+    /// <summary>Shows a page once it has loaded, unless the user went to another one while it did.</summary>
+    private async Task ShowPageAsync(ObservableObject page, string section, Func<Task> initialize)
+    {
+        int navigation = ++_navigationCount;
+        await initialize();
+        if (navigation != _navigationCount)
+            return;
+
+        CurrentPage = page;
+        ActiveSection = section;
+    }
+
+    private void ShowPage(ObservableObject page, string section)
+    {
+        _navigationCount++;
+        CurrentPage = page;
+        ActiveSection = section;
+    }
+
     [RelayCommand]
-    private void ShowStatus()
-    {
-        CurrentPage = _status;
-        ActiveSection = "Status";
-    }
+    private void ShowStatus() => ShowPage(_status, "Status");
 
     [RelayCommand(CanExecute = nameof(SectionsEnabled))]
-    private void ShowModSettings()
-    {
-        CurrentPage = _modSettings;
-        ActiveSection = "ModSettings";
-    }
+    private void ShowModSettings() => ShowPage(_modSettings, "ModSettings");
 
     [RelayCommand(CanExecute = nameof(SectionsEnabled))]
-    private async Task ShowColorsAsync()
-    {
+    private Task ShowColorsAsync() =>
         // Colors live in the already-loaded RSMods.ini store; the snapshot is built on first navigation.
-        await _colors.InitializeAsync();
-        CurrentPage = _colors;
-        ActiveSection = "Colors";
-    }
+        ShowPageAsync(_colors, "Colors", _colors.InitializeAsync);
 
     [RelayCommand(CanExecute = nameof(SectionsEnabled))]
-    private async Task ShowRocksmithAsync()
-    {
+    private Task ShowRocksmithAsync() =>
         // Rocksmith.ini is loaded lazily on first navigation; presents its own validation warnings.
-        await _rocksmith.InitializeAsync();
-        CurrentPage = _rocksmith;
-        ActiveSection = "Rocksmith";
-    }
+        ShowPageAsync(_rocksmith, "Rocksmith", _rocksmith.InitializeAsync);
 
     [RelayCommand(CanExecute = nameof(SectionsEnabled))]
-    private async Task ShowAsioAsync()
-    {
+    private Task ShowAsioAsync() =>
         // RS_ASIO.ini + device enumeration are loaded lazily on first navigation.
-        await _asio.InitializeAsync();
-        CurrentPage = _asio;
-        ActiveSection = "Asio";
-    }
+        ShowPageAsync(_asio, "Asio", _asio.InitializeAsync);
 
     [RelayCommand(CanExecute = nameof(SectionsEnabled))]
-    private async Task ShowThemesAsync()
-    {
+    private Task ShowThemesAsync() =>
         // Appearance reads the already-loaded GUI settings; the snapshot is built on first navigation.
-        await _themes.InitializeAsync();
-        CurrentPage = _themes;
-        ActiveSection = "Themes";
-    }
+        ShowPageAsync(_themes, "Themes", _themes.InitializeAsync);
 
     [RelayCommand(CanExecute = nameof(CanShowProfiles))]
-    private async Task ShowProfilesAsync()
-    {
+    private Task ShowProfilesAsync() =>
         // Profiles enumerate from the resolved save folder; the lists are built on first navigation.
-        await _profiles.InitializeAsync();
-        CurrentPage = _profiles;
-        ActiveSection = "Profiles";
-    }
+        ShowPageAsync(_profiles, "Profiles", _profiles.InitializeAsync);
 
     [RelayCommand(CanExecute = nameof(SectionsEnabled))]
-    private async Task ShowSoundPacksAsync()
-    {
+    private Task ShowSoundPacksAsync() =>
         // SoundPacks reads its unpacked state from the resolved Rocksmith folder on first navigation.
-        await _soundPacks.InitializeAsync();
-        CurrentPage = _soundPacks;
-        ActiveSection = "SoundPacks";
-    }
+        ShowPageAsync(_soundPacks, "SoundPacks", _soundPacks.InitializeAsync);
 
     [RelayCommand(CanExecute = nameof(SectionsEnabled))]
-    private async Task ShowSetAndForgetAsync()
-    {
+    private Task ShowSetAndForgetAsync() =>
         // Stock cache-mod files and the tuning database are prepared on first navigation.
-        await _setAndForget.InitializeAsync();
-        CurrentPage = _setAndForget;
-        ActiveSection = "SetAndForget";
-    }
+        ShowPageAsync(_setAndForget, "SetAndForget", _setAndForget.InitializeAsync);
 
     [RelayCommand(CanExecute = nameof(SectionsEnabled))]
-    private void ShowTwitch()
-    {
-        CurrentPage = _twitch;
-        ActiveSection = "Twitch";
-    }
+    private void ShowTwitch() => ShowPage(_twitch, "Twitch");
 }
