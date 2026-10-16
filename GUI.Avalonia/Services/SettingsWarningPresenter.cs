@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using RSMods.Core;
 
@@ -14,13 +15,16 @@ internal sealed class SettingsWarningPresenter(IDialogService dialogs)
 {
     private const int MaxShown = 10;
 
-    public Task PresentAsync(IReadOnlyList<IniValidationWarning> warnings)
+    /// <summary>One dialog per file and outcome, so a reset value is never described as kept or put under the wrong file.</summary>
+    public async Task PresentAsync(IReadOnlyList<IniValidationWarning> warnings)
     {
-        if (warnings.Count == 0)
-            return Task.CompletedTask;
+        foreach (var group in warnings.GroupBy(warning => (warning.FilePath, warning.ValueKept)))
+            await PresentGroupAsync(group.ToList(), group.Key.FilePath, group.Key.ValueKept);
+    }
 
-        string fileName = GetFileName(warnings[0].FilePath);
-        bool kept = warnings[0].ValueKept;
+    private Task PresentGroupAsync(List<IniValidationWarning> warnings, string filePath, bool kept)
+    {
+        string fileName = GetFileName(filePath);
         int shown = System.Math.Min(warnings.Count, MaxShown);
         var text = new StringBuilder();
         text.AppendLine(kept
