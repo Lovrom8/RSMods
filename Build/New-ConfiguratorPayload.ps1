@@ -3,7 +3,7 @@
     Packages the published Avalonia configurator into a single installer payload plus a manifest.
 
 .DESCRIPTION
-    Slice 3 of docs/winforms-retirement-plan.md. Consumes the output of Build/Publish-Configurator.ps1
+    See docs/avalonia-migration.md (Installer section). Consumes the output of Build/Publish-Configurator.ps1
     (Build/Artifacts/configurator/win-x64) and produces:
 
         Build/Artifacts/installer/RSModsGUI.zip

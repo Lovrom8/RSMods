@@ -3,7 +3,7 @@
     Produces the self-contained win-x64 publish of the Avalonia RSMods configurator.
 
 .DESCRIPTION
-    Cutover publish step from docs/winforms-retirement-plan.md (Slice 2). The output is the exact file set
+    Cutover publish step (see docs/avalonia-migration.md, Installer section). The output is the exact file set
     the installer payload is built from, so this script is deliberately strict:
 
       * it removes only its own known staging directory (Build/Artifacts/configurator/win-x64);
