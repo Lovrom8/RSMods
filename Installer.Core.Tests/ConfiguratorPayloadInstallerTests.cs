@@ -348,4 +348,20 @@ public sealed class ConfiguratorPayloadInstallerTests
         Assert.Contains("IconFile=" + target.Replace('\\', '/'), content);
         Assert.EndsWith("RSMods.exe", target);
     }
+
+    [Fact]
+    public void Shortcut_NonAsciiAndUrlSpecialPaths_SurviveTheRoundTrip()
+    {
+        using var temp = new TemporaryDirectory();
+        string url = temp.Combine("RSMods.url");
+        string target = @"C:\Jeux\Rocksmith #2 100% Ünïcode\RSMods\RSMods.exe";
+
+        DesktopShortcut.WriteUrlShortcut(url, target);
+
+        byte[] bytes = File.ReadAllBytes(url);
+        Assert.Equal(new byte[] { 0xFF, 0xFE }, bytes.Take(2).ToArray()); // UTF-16 LE BOM, which the shell's INI reader honours
+        string content = File.ReadAllText(url);
+        Assert.Contains(@"URL=file:///C:\Jeux\Rocksmith %232 100%25 Ünïcode\RSMods\RSMods.exe", content);
+        Assert.Contains("IconFile=C:/Jeux/Rocksmith #2 100% Ünïcode/RSMods/RSMods.exe", content);
+    }
 }
