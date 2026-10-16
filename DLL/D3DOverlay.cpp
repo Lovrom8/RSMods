@@ -18,6 +18,7 @@ namespace {
 		Framework::HudAnchor anchor{};
 		int fontHeight = 0;      // 0 => shared default size
 		ImFont* font = nullptr;  // nullptr => ImGui default font
+		int size = 0;            // Requested size; font may be a nearby baked size drawn scaled
 		ImU32 color = 0;
 	};
 
@@ -59,7 +60,7 @@ void GameOverlay::PrepareImGuiHud() {
 		const int size = e.snapshot.fontHeight > 0 ? e.snapshot.fontHeight : defaultSize;
 		ImFont* font = ImGuiHud::AcquireFont(face, size);
 		g_prepared.push_back(PreparedLine{
-			e.snapshot.text, e.anchor, e.snapshot.fontHeight, font, ArgbToImU32(e.snapshot.colorHex) });
+			e.snapshot.text, e.anchor, e.snapshot.fontHeight, font, size, ArgbToImU32(e.snapshot.colorHex) });
 	}
 
 	if (ImGuiHud::ConsumeAtlasDirty()) {
@@ -94,8 +95,8 @@ void GameOverlay::DrawImGuiHud() {
 		}
 
 		ImFont* font = line.font ? line.font : defaultFont;
-		const float sizePx = line.fontHeight > 0
-			? static_cast<float>(line.fontHeight)
+		const float sizePx = line.fontHeight > 0 || line.font
+			? static_cast<float>(line.fontHeight > 0 ? line.fontHeight : line.size)
 			: font->FontSize;
 
 		const ImVec2 extent = font->CalcTextSizeA(sizePx, FLT_MAX, 0.0f, line.text.c_str());

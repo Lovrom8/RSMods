@@ -4,6 +4,8 @@
 #include <windows.h>
 #include <algorithm>
 #include <cctype>
+#include <climits>
+#include <cstdlib>
 #include <cstdint>
 #include <memory>
 #include <unordered_map>
@@ -165,11 +167,25 @@ namespace {
 		return ok;
 	}
 
+	// One copy of the file per face, shared by every size baked from it. ok=false caches a GDI miss.
+	struct FaceData {
+		std::vector<char> bytes;
+		int fontNo = 0;
+		bool ok = false;
+	};
+
+	// ImGui 1.85 can't drop one font from the atlas, so bound it instead: past this many bakes a new
+	// size reuses the face's nearest baked size, drawn scaled. The size slider bakes once per release.
+	constexpr size_t kMaxBakedFonts = 8;
+	// Above the setting's Range so it never bites normally; stops a hand-edited INI baking a huge atlas.
+	constexpr int kMaxPixelHeight = 128;
+
 	struct Manager {
 		std::unordered_map<Key, ImFont*, KeyHash> fonts;
 		// Atlas doesn't own the font bytes (FontDataOwnedByAtlas=false), and Build() re-reads them on
 		// every rebuild, so keep them alive for the atlas lifetime.
-		std::vector<std::unique_ptr<std::vector<char>>> buffers;
+		std::unordered_map<std::string, std::unique_ptr<FaceData>> faces;
+		size_t baked = 0;
 		bool dirty = false;
 	};
 
@@ -177,32 +193,57 @@ namespace {
 		static Manager m;
 		return m;
 	}
+
+	const FaceData& Face(Manager& m, const std::string& face, const std::string& faceNorm) {
+		auto& data = m.faces[faceNorm];
+		if (!data) {
+			data = std::make_unique<FaceData>();
+			data->ok = LoadFaceBytes(face, data->bytes, data->fontNo);
+		}
+		return *data;
+	}
+
+	// Closest size already baked for this face, or nullptr if none is.
+	ImFont* NearestBaked(const Manager& m, const std::string& faceNorm, int pixelHeight) {
+		ImFont* best = nullptr;
+		int bestDistance = INT_MAX;
+		for (const auto& [key, font] : m.fonts) {
+			if (!font || key.face != faceNorm) continue;
+			const int distance = std::abs(key.size - pixelHeight);
+			if (distance < bestDistance) {
+				best = font;
+				bestDistance = distance;
+			}
+		}
+		return best;
+	}
 }
 
 ImFont* ImGuiHud::AcquireFont(const std::string& face, int pixelHeight) {
-	if (pixelHeight <= 0) pixelHeight = 1;
+	pixelHeight = std::clamp(pixelHeight, 1, kMaxPixelHeight);
 	Key key{ NormalizeFace(face), pixelHeight };
 
 	Manager& m = Mgr();
 	if (auto it = m.fonts.find(key); it != m.fonts.end())
 		return it->second; // hit (possibly a cached nullptr miss)
 
-	auto bytes = std::make_unique<std::vector<char>>();
-	int fontNo = 0;
-	if (!LoadFaceBytes(face, *bytes, fontNo)) {
+	const FaceData& data = Face(m, face, key.face);
+	if (!data.ok) {
 		m.fonts.emplace(key, nullptr); // cache the miss so we don't hammer GDI every frame
 		return nullptr;
 	}
+	if (m.baked >= kMaxBakedFonts)
+		return NearestBaked(m, key.face, pixelHeight); // not cached, so the lookup stays nearest if sizes change
 
 	ImFontConfig cfg;
-	cfg.FontDataOwnedByAtlas = false; // we own the bytes (see Manager::buffers)
-	cfg.FontNo = fontNo;              // sub-font index for TTC collections
+	cfg.FontDataOwnedByAtlas = false; // we own the bytes (see Manager::faces)
+	cfg.FontNo = data.fontNo;         // sub-font index for TTC collections
 	ImFont* font = ImGui::GetIO().Fonts->AddFontFromMemoryTTF(
-		bytes->data(), static_cast<int>(bytes->size()),
+		const_cast<char*>(data.bytes.data()), static_cast<int>(data.bytes.size()),
 		static_cast<float>(pixelHeight), &cfg);
 
-	m.buffers.push_back(std::move(bytes));
 	m.fonts.emplace(key, font);
+	++m.baked;
 	m.dirty = true;
 	return font;
 }
