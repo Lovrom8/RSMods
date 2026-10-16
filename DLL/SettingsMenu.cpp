@@ -30,7 +30,9 @@ namespace SettingsMenu {
 		// Render-thread only: the draw callback is the sole reader and writer.
 		std::unordered_map<std::string, std::string> g_dragging;   // Slider values until release, when they're applied
 		std::unordered_map<std::string, std::array<char, 1024>> g_textBuffers;
-		std::string g_editingText;                                  // Key of the text field being typed into
+		// Text fields being typed into, and whether they were edited. Per field, so moving focus straight to
+		// another field doesn't refill this one from the saved value before its typed text is applied.
+		std::unordered_map<std::string, bool> g_editingText;
 		char g_filter[64] = {};
 
 		bool ContainsNoCase(std::string_view haystack, std::string_view needle) {
@@ -142,17 +144,23 @@ namespace SettingsMenu {
 
 			// Refilled from the setting except while it's being typed into.
 			auto& buffer = g_textBuffers[def.key];
-			if (g_editingText != def.key)
+			if (!g_editingText.contains(def.key))
 				strncpy_s(buffer.data(), buffer.size(), value.c_str(), _TRUNCATE);
 
-			ImGui::InputText(def.label.c_str(), buffer.data(), buffer.size());
-			if (ImGui::IsItemActive())
-				g_editingText = def.key;
-			else if (g_editingText == def.key)
-				g_editingText.clear();
+			const bool changed = ImGui::InputText(def.label.c_str(), buffer.data(), buffer.size());
+			if (ImGui::IsItemActive()) {
+				g_editingText[def.key] |= changed;
+				return;
+			}
 
-			if (ImGui::IsItemDeactivatedAfterEdit())
-				Apply(def, buffer.data());
+			// Applied when we first see the field inactive, not on IsItemDeactivatedAfterEdit: ImGui 1.85 never
+			// reports that for a field drawn above the one focus moved to.
+			if (auto it = g_editingText.find(def.key); it != g_editingText.end()) {
+				const bool edited = it->second || changed;
+				g_editingText.erase(it);
+				if (edited && value != buffer.data())  // Escape restores the saved text; nothing to apply
+					Apply(def, buffer.data());
+			}
 		}
 
 		void DrawSetting(const SettingDef& def) {
