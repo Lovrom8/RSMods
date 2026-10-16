@@ -24,6 +24,26 @@ using Settings::StringColorMode;
 using Settings::NoteColorMode;
 namespace Setting = Settings::Setting;
 
+namespace {
+	// Everything ERMode::RegenerateTextures reads from the settings, flattened so a change is one comparison.
+	std::vector<float> TextureInputs() {
+		std::vector<float> inputs = {
+			Settings::IsOn(Setting::ExtendedRangeEnabled) ? 1.0f : 0.0f,
+			static_cast<float>(Settings::GetStringColorMode()),
+			Settings::IsOn(Setting::SeparateNoteColors) ? 1.0f : 0.0f,
+			static_cast<float>(Settings::GetNoteColorMode()),
+			Settings::IsOn(Setting::RainbowNotesEnabled) ? 1.0f : 0.0f,
+		};
+
+		for (const bool cb : { false, true }) {
+			for (const auto& c : Settings::GetStringColors(cb)) inputs.insert(inputs.end(), { c.r, c.g, c.b });
+			for (const auto& c : Settings::GetNoteColors(cb)) inputs.insert(inputs.end(), { c.r, c.g, c.b });
+		}
+
+		return inputs;
+	}
+}
+
 SettingDefs ExtendedRangeMod::Settings() const {
 	return {
 		Toggle(Setting::ExtendedRangeEnabled, "ExtendedRange", "Extended Range")
@@ -105,7 +125,7 @@ void ExtendedRangeMod::OnInitialize(ModContext& c) {
 		if (!ctx.inSong) return { DrawOutcome::Pass };
 		if (!ERMode::AttemptedERInThisSong || !ERMode::UseEROrColorsInThisSong) return { DrawOutcome::Pass };
 
-		LPDIRECT3DTEXTURE9 tex = s_noteTexture.load(std::memory_order_relaxed);
+		LPDIRECT3DTEXTURE9 tex = NoteTextureForDraw();
 		if (!tex) return { DrawOutcome::Pass };
 
 		if (ctx.path == DrawPath::Primitive) {
@@ -136,25 +156,29 @@ void ExtendedRangeMod::OnInitialize(ModContext& c) {
 	});
 
 	c.Draw().RegisterTextureLifecycle(&ExtendedRangeMod::RegenerateTextures, &ExtendedRangeMod::ReleaseTextures);
+
+	// Built on MainThread, where ApplyColors reads them; OnSettingsChanged keeps them current.
+	ERMode::SetCustomColors();
 }
 
 void ExtendedRangeMod::OnEnabled(ModContext& c) {
 	s_active = true;
 	c.Draw().CancelTextureRelease();
+	textureInputs = TextureInputs();
 	D3DHooks::RecreateTextures = true;
 }
 
 void ExtendedRangeMod::OnDisabled(ModContext& c) {
 	s_active = false;
-	s_noteTexture.store(nullptr, std::memory_order_release);
+	s_noteTexture.store(NoteTexture::None, std::memory_order_relaxed);
 	D3DHooks::RecreateTextures = true;
 	c.Draw().RequestTextureRelease();
 }
 
-void ExtendedRangeMod::OnShutdown(ModContext&) {
+void ExtendedRangeMod::OnShutdown(ModContext& c) {
 	s_active = false;
-	s_noteTexture.store(nullptr, std::memory_order_relaxed);
-	ReleaseTextures();
+	s_noteTexture.store(NoteTexture::None, std::memory_order_relaxed);
+	c.Draw().RequestTextureRelease(); // The game still renders while it closes; free them on its thread.
 	ERMode::StopRainbowThread();
 }
 
@@ -233,7 +257,7 @@ void ExtendedRangeMod::OnMenuTick(ModContext& c) {
 // CleanupSongSpecificStates.
 void ExtendedRangeMod::OnSongExit(ModContext&) {
 	songSettleUntil.reset(); // The player may have backed out mid-settle.
-	s_noteTexture.store(nullptr, std::memory_order_relaxed);
+	s_noteTexture.store(NoteTexture::None, std::memory_order_relaxed);
 
 	if (ERMode::AttemptedERInThisSong) {
 		ERMode::UseERExclusivelyInThisSong = false;
@@ -243,28 +267,46 @@ void ExtendedRangeMod::OnSongExit(ModContext&) {
 }
 
 void ExtendedRangeMod::OnSettingsChanged(ModContext& c) {
+	ERMode::SetCustomColors(); // String colours only change through a settings update; ApplyColors reads them here.
 	UpdateNoteTexture(c);
+
+	// Regenerate only when what the textures are built from changed (an in-game colour or toggle edit);
+	// a regen rebuilds every mod's textures, including the 180 rainbow ones.
+	auto inputs = TextureInputs();
+	if (s_active && inputs != textureInputs) {
+		textureInputs = std::move(inputs);
+		D3DHooks::RecreateTextures = true;
+	}
 }
 
 void ExtendedRangeMod::UpdateNoteTexture(const ModContext& c) {
 	if (!GameState::IsInSong() || !ERMode::AttemptedERInThisSong || !ERMode::UseEROrColorsInThisSong) {
-		s_noteTexture.store(nullptr, std::memory_order_relaxed);
+		s_noteTexture.store(NoteTexture::None, std::memory_order_relaxed);
 		return;
 	}
 
 	switch (c.NoteColorMode()) {
 		case NoteColorMode::SameAsStrings:
-			s_noteTexture.store(ERMode::customStringColorTexture, std::memory_order_relaxed);
+			s_noteTexture.store(NoteTexture::StringColors, std::memory_order_relaxed);
 			break;
 		case NoteColorMode::Custom:
 			if (c.IsOn(Setting::SeparateNoteColors))
-				s_noteTexture.store(ERMode::customNoteColorTexture, std::memory_order_relaxed);
+				s_noteTexture.store(NoteTexture::NoteColors, std::memory_order_relaxed);
 			else
-				s_noteTexture.store(nullptr, std::memory_order_relaxed);
+				s_noteTexture.store(NoteTexture::None, std::memory_order_relaxed);
 			break;
 		default:
-			s_noteTexture.store(nullptr, std::memory_order_relaxed);
+			s_noteTexture.store(NoteTexture::None, std::memory_order_relaxed);
 			break;
+	}
+}
+
+// Render thread only: the textures are swapped and freed there, between draws.
+LPDIRECT3DTEXTURE9 ExtendedRangeMod::NoteTextureForDraw() noexcept {
+	switch (s_noteTexture.load(std::memory_order_relaxed)) {
+		case NoteTexture::StringColors: return ERMode::customStringColorTexture;
+		case NoteTexture::NoteColors:   return ERMode::customNoteColorTexture;
+		default:                        return nullptr;
 	}
 }
 

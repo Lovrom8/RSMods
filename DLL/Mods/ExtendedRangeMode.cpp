@@ -208,7 +208,7 @@ void ERMode::RegenerateTextures(IDirect3DDevice9* pDevice) {
 	GenerateStringTextures(pDevice);
 	GenerateNoteTextures(pDevice);
 	GenerateRainbowTextures(pDevice);
-	SetCustomColors();
+	// customColors is rebuilt on MainThread (ExtendedRangeMod), where SetColors reads it, not here on the render thread.
 }
 
 void ERMode::ReleaseTextures() {
@@ -226,10 +226,13 @@ void ERMode::ReleaseTextures() {
 /// <param name="colorType"> - String of color type</param>
 void ERMode::SetColors(std::vector<uintptr_t> strings, const std::string& colorType) {
 	for (int strIndex = 0; strIndex < 6;strIndex++) {
-		if (strings[strIndex] == NULL)
+		if (strings[strIndex] == NULL || strIndex >= static_cast<int>(customColors.size()))
 			return;
 
-		*(RSColor*)strings[strIndex] = customColors[strIndex][colorType];
+		// find, not operator[]: a read must not insert. A missing key still writes the default colour, as before.
+		const auto& colors = customColors[strIndex];
+		const auto it = colors.find(colorType);
+		*(RSColor*)strings[strIndex] = it != colors.end() ? it->second : RSColor{};
 	}
 }
 

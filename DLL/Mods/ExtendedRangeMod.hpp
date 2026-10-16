@@ -4,6 +4,7 @@
 #include <chrono>
 #include <d3d9.h>
 #include <optional>
+#include <vector>
 
 #include "../Framework/Framework.hpp"
 
@@ -35,8 +36,12 @@ public:
 	static void ReleaseTextures();
 
 private:
+	// Which ERMode texture colours the notes. MainThread picks it; the interceptor looks the texture up at
+	// draw time, on the render thread that regenerates and releases it, so it never sees a freed one.
+	enum class NoteTexture { None, StringColors, NoteColors };
+
 	static inline std::atomic<bool> s_active = false;
-	static inline std::atomic<LPDIRECT3DTEXTURE9> s_noteTexture = nullptr;
+	static inline std::atomic<NoteTexture> s_noteTexture = NoteTexture::None;
 	using Clock = std::chrono::steady_clock;
 
 	// Tuning takes ~1.5s to settle before the game's numbers are trustworthy. This used to be a
@@ -50,8 +55,11 @@ private:
 	std::optional<Clock::time_point> songSettleUntil;
 	std::optional<Clock::time_point> tunerSettleUntil;
 
+	std::vector<float> textureInputs; // The settings the last regen request was for (MainThread).
+
 	void ApplyColors();
 	static void UpdateNoteTexture(const Framework::ModContext& c);
+	static LPDIRECT3DTEXTURE9 NoteTextureForDraw() noexcept;
 	static Clock::time_point SettleDeadline(const Framework::ModContext& c);
 	static bool SkipTuningSettle(const Framework::ModContext& c);
 };
