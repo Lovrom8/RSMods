@@ -275,8 +275,11 @@ namespace ProfileSaveStreaming {
 			va_start(args, format);
 
 			if (format[0] == '%' && format[1] == 'f' && format[2] == '\0') {
-				va_list copy = args;
-				if (WriteWholeNumber(va_arg(copy, double))) {
+				va_list copy;
+				va_copy(copy, args);
+				const bool written = WriteWholeNumber(va_arg(copy, double));
+				va_end(copy);
+				if (written) {
 					va_end(args);
 					return;
 				}
@@ -295,19 +298,32 @@ namespace ProfileSaveStreaming {
 				return;
 			}
 
+			// Each v-call consumes the list it's given, so every one gets its own copy.
 			char buffer[512];
-			const int length = gameVsnprintf(buffer, sizeof(buffer), format, args);
+			va_list attempt;
+			va_copy(attempt, args);
+			const int length = gameVsnprintf(buffer, sizeof(buffer), format, attempt);
+			va_end(attempt);
 			if (length >= 0 && length < static_cast<int>(sizeof(buffer)))
 				Write(buffer, length);
 			else {
-				try {
-					std::vector<char> big(static_cast<size_t>(gameVscprintf(format, args)) + 1);
-					const int bigLength = gameVsnprintf(big.data(), big.size(), format, args);
-					if (bigLength > 0)
-						Write(big.data(), bigLength);
-				}
-				catch (const std::exception&) {
-					streamFailed = true; // We're inside the game's Print, so nothing can be thrown through it.
+				va_list measure;
+				va_copy(measure, args);
+				const int needed = gameVscprintf(format, measure);
+				va_end(measure);
+
+				if (needed < 0)
+					streamFailed = true; // A format the game's printf can't handle; the save is cancelled rather than written short.
+				else {
+					try {
+						std::vector<char> big(static_cast<size_t>(needed) + 1);
+						const int bigLength = gameVsnprintf(big.data(), big.size(), format, args);
+						if (bigLength > 0)
+							Write(big.data(), bigLength);
+					}
+					catch (const std::exception&) {
+						streamFailed = true; // We're inside the game's Print, so nothing can be thrown through it.
+					}
 				}
 			}
 			va_end(args);

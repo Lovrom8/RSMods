@@ -483,7 +483,7 @@ void Settings::UpdateSettings() {
 /// <returns>Color struct</returns>
 RSColor Settings::ConvertHexToColor(const std::string& hexStr) {
 	int r, g, b;
-	if (sscanf_s(hexStr.c_str(), "%02x%02x%02x", &r, &g, &b) != EOF) {
+	if (sscanf_s(hexStr.c_str(), "%02x%02x%02x", &r, &g, &b) == 3) { // Anything short of all three leaves the rest unset
 		RSColor c((float)r / 255, (float)g / 255, (float)b / 255);
 
 		return c;

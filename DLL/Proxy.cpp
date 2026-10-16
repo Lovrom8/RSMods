@@ -55,6 +55,7 @@ bool Proxy::Init() {
 }
 
 
+// Without the system xinput1_3.dll (no DirectX runtime) Init leaves these null: report no controller rather than crash.
 extern "C" {
 	enum XInput_Proxy {
 		Enable,
@@ -69,36 +70,43 @@ extern "C" {
 
 	// Export symbol as XInputEnable, and proxy to the real XInputEnable
 	void __stdcall XInput_XInputEnable(BOOL enable) {
+		if (!proxy[XInput_Proxy::Enable]) return;
 		return ((T_XInput_XInputEnable)proxy[XInput_Proxy::Enable])(enable);
 	}
 
 	// Export symbol as XInputGetBatteryInformation, and proxy to the real XInputGetBatteryInformation
 	DWORD __stdcall XInput_XInputGetBatteryInformation(DWORD dwUserIndex, BYTE devType, XINPUT_BATTERY_INFORMATION* batteryInformation) {
+		if (!proxy[XInput_Proxy::GetBatteryInformation]) return ERROR_DEVICE_NOT_CONNECTED;
 		return ((T_XInput_XInputGetBatteryInformation)proxy[XInput_Proxy::GetBatteryInformation])(dwUserIndex, devType, batteryInformation);
 	}
 
 	// Export symbol as XInputGetCapabilities, and proxy to the real XInputGetCapabilities
 	DWORD __stdcall XInput_XInputGetCapabilities(DWORD dwUserIndex, DWORD dwFlags, XINPUT_CAPABILITIES* capabilities) {
+		if (!proxy[XInput_Proxy::GetCapabilities]) return ERROR_DEVICE_NOT_CONNECTED;
 		return ((T_XInput_XInputGetCapabilities)proxy[XInput_Proxy::GetCapabilities])(dwUserIndex, dwFlags, capabilities);
 	}
 
 	// Export symbol as XInputGetDSoundAudioDeviceGuids, and proxy to the real XInputGetDSoundAudioDeviceGuids
 	DWORD __stdcall XInput_XInputGetDSoundAudioDeviceGuids(DWORD dwUserIndex, GUID* pDSoundRenderGuid, GUID* DSoundCaptureGuid) {
+		if (!proxy[XInput_Proxy::GetDSoundAudioDeviceGuids]) return ERROR_DEVICE_NOT_CONNECTED;
 		return ((T_XInput_XInputGetDSoundAudioDeviceGuids)proxy[XInput_Proxy::GetDSoundAudioDeviceGuids])(dwUserIndex, pDSoundRenderGuid, DSoundCaptureGuid);
 	}
 
 	// Export symbol as XInputGetKeystroke, and proxy to the real XInputGetKeystroke
 	DWORD __stdcall XInput_XInputGetKeystroke(DWORD dwUserIndex, DWORD dwReserved, XINPUT_KEYSTROKE* keystroke) {
+		if (!proxy[XInput_Proxy::GetKeystroke]) return ERROR_DEVICE_NOT_CONNECTED;
 		return ((T_XInput_XInputGetKeystroke)proxy[XInput_Proxy::GetKeystroke])(dwUserIndex, dwReserved, keystroke);
 	}
 
 	// Export symbol as XInputGetState, and proxy to the real XInputGetState
 	DWORD __stdcall XInput_XInputGetState(DWORD dwUserIndex, XINPUT_STATE* state) {
+		if (!proxy[XInput_Proxy::GetState]) return ERROR_DEVICE_NOT_CONNECTED;
 		return ((T_XInput_XInputGetState)proxy[XInput_Proxy::GetState])(dwUserIndex, state);
 	}
 
 	// Export symbol as XInputSetState, and proxy to the real XInputSetState
 	DWORD __stdcall  XInput_XInputSetState(DWORD dwUserIndex, XINPUT_VIBRATION* vibration) {
+		if (!proxy[XInput_Proxy::SetState]) return ERROR_DEVICE_NOT_CONNECTED;
 		return ((T_XInput_XInputSetState)proxy[XInput_Proxy::SetState])(dwUserIndex, vibration);
 	}
 }
