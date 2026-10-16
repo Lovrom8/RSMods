@@ -38,6 +38,11 @@ internal sealed partial class MainWindow : Window
             if (!await _viewModel.ConfirmCloseAsync())
                 return;
         }
+        catch (Exception ex)
+        {
+            // Shown, then the window closes anyway: a check that keeps failing must not trap the user.
+            CrashReporter.Report(ex, fatal: false);
+        }
         finally
         {
             _confirmingClose = false;
@@ -51,6 +56,14 @@ internal sealed partial class MainWindow : Window
     {
         base.OnOpened(e);
         // Run startup resolution once the window exists so its dialogs have an owner.
-        await _viewModel.InitializeAsync();
+        try
+        {
+            await _viewModel.InitializeAsync();
+        }
+        catch (Exception ex)
+        {
+            // E.g. a settings file that can't be written; the pages stay locked, but the user learns why.
+            CrashReporter.Report(ex, fatal: false);
+        }
     }
 }
