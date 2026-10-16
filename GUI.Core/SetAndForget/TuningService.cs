@@ -280,7 +280,7 @@ namespace RSMods.SetAndForget
             {
                 foreach (SongArrangement arrangement in song.Arrangements)
                 {
-                    if (arrangement.Attributes.ArrangementName.IndexOf("bass", StringComparison.OrdinalIgnoreCase) < 0)
+                    if ((arrangement.Attributes.ArrangementName ?? string.Empty).IndexOf("bass", StringComparison.OrdinalIgnoreCase) < 0)
                         continue;
 
                     ArrangementTuning tuning = arrangement.Attributes.Tuning;

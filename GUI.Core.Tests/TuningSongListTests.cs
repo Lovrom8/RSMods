@@ -90,10 +90,19 @@ public sealed class TuningSongListTests : IDisposable
             _service.GetSongsWithSelectedTuning("Standard", songs));
     }
 
+    // A CDLC manifest can leave an arrangement unnamed; the scan skips it rather than failing for every song.
+    [Fact]
+    public void BadBassTuningScanSkipsAnUnnamedArrangement()
+    {
+        SongData[] songs = [Song("Alpha", "One", Part(null, null), Part("Bass", EbBass, bass: true))];
+
+        Assert.Equal(["Bass for Alpha - One"], _service.GetSongsWithBadBassTuning(songs));
+    }
+
     private static SongData Song(string artist, string title, params SongArrangement[] parts) =>
         new() { Artist = artist, Title = title, Arrangements = [.. parts] };
 
-    private static SongArrangement Part(string name, int[]? offsets, bool bass = false, bool alt = false)
+    private static SongArrangement Part(string? name, int[]? offsets, bool bass = false, bool alt = false)
     {
         // The manifest model only lets its JSON reader set Attributes.
         var part = new SongArrangement();
