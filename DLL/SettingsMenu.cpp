@@ -33,6 +33,7 @@ namespace SettingsMenu {
 		// Text fields being typed into, and whether they were edited. Per field, so moving focus straight to
 		// another field doesn't refill this one from the saved value before its typed text is applied.
 		std::unordered_map<std::string, bool> g_editingText;
+		std::unordered_map<std::string, int> g_textDrawnFrame;      // ImGui frame each text field was last drawn in
 		char g_filter[64] = {};
 
 		bool ContainsNoCase(std::string_view haystack, std::string_view needle) {
@@ -145,6 +146,14 @@ namespace SettingsMenu {
 				DrawReadOnly(def, value);
 				return;
 			}
+
+			// A field that wasn't drawn last frame (menu closed, filtered out) lost its focus without us seeing it;
+			// its half-typed text is dropped rather than applied over whatever the setting is now.
+			const int frame = ImGui::GetFrameCount();
+			auto& drawnFrame = g_textDrawnFrame[def.key];
+			if (drawnFrame != frame - 1)
+				g_editingText.erase(def.key);
+			drawnFrame = frame;
 
 			// Refilled from the setting except while it's being typed into.
 			auto& buffer = g_textBuffers[def.key];
