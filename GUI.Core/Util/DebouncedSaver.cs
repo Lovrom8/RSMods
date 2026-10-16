@@ -10,17 +10,18 @@ namespace RSMods.Util
     /// every change, without writing the file (and pinging the game) on every step of a held spinner.
     /// <para>
     /// Saves never overlap: a change made while one is running is saved by one more run afterwards, so the
-    /// last value always reaches disk. A failed save is reported and doesn't stop later ones.
+    /// last value always reaches disk. A failed save is reported and stays unsaved, so the next change or
+    /// flush tries it again and closing the app can tell it never reached disk.
     /// </para>
     /// </summary>
     public sealed class DebouncedSaver(Func<Task> save, TimeSpan delay, Action<Exception>? onError = null)
     {
         private readonly object _gate = new();
         private CancellationTokenSource? _delay;
-        private Task _running = Task.CompletedTask;
+        private Task<bool> _running = Task.FromResult(true);
         private bool _pending;
 
-        /// <summary>True while a change is waiting to be saved or a save is still running.</summary>
+        /// <summary>True while a change is waiting to be saved (or failed to save) or a save is still running.</summary>
         public bool HasUnsavedChanges
         {
             get
@@ -44,18 +45,21 @@ namespace RSMods.Util
             _ = SaveAfterDelayAsync(delayToken.Token);
         }
 
-        /// <summary>Saves any pending change now, and waits for a running save. Used on exit.</summary>
-        public async Task FlushAsync()
+        /// <summary>
+        /// Saves any pending change now, and waits for a running save. Used on exit. False when a save failed,
+        /// in which case the change is still unsaved.
+        /// </summary>
+        public async Task<bool> FlushAsync()
         {
             while (true)
             {
-                Task toAwait;
+                Task<bool> toAwait;
                 lock (_gate)
                 {
                     if (_running.IsCompleted)
                     {
                         if (!_pending)
-                            return;
+                            return true;
 
                         _delay?.Cancel();
                         _pending = false;
@@ -65,7 +69,8 @@ namespace RSMods.Util
                     toAwait = _running;
                 }
 
-                await toAwait;
+                if (!await toAwait)
+                    return false;
             }
         }
 
@@ -83,15 +88,19 @@ namespace RSMods.Util
             await FlushAsync();
         }
 
-        private async Task RunSaveAsync()
+        private async Task<bool> RunSaveAsync()
         {
             try
             {
                 await save();
+                return true;
             }
             catch (Exception ex)
             {
+                lock (_gate)
+                    _pending = true; // Not on disk, so it's still a change to save
                 onError?.Invoke(ex);
+                return false;
             }
         }
     }

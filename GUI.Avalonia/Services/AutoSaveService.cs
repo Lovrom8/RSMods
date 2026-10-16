@@ -17,14 +17,26 @@ internal sealed class AutoSaveService
 
     private readonly List<DebouncedSaver> _savers = [];
 
+    /// <summary>The most recent save failure, for the message shown when closing can't save everything.</summary>
+    public Exception? LastError { get; private set; }
+
     public DebouncedSaver Create(Func<Task> save, Action<Exception> onError)
     {
-        var saver = new DebouncedSaver(save, QuietPeriod, onError);
+        var saver = new DebouncedSaver(save, QuietPeriod, ex =>
+        {
+            LastError = ex;
+            onError(ex);
+        });
         _savers.Add(saver);
         return saver;
     }
 
     public bool HasUnsavedChanges => _savers.Any(saver => saver.HasUnsavedChanges);
 
-    public Task FlushAllAsync() => Task.WhenAll(_savers.Select(saver => saver.FlushAsync()));
+    /// <summary>Saves every screen's pending change; false when any of them couldn't be saved.</summary>
+    public async Task<bool> FlushAllAsync()
+    {
+        bool[] saved = await Task.WhenAll(_savers.Select(saver => saver.FlushAsync()));
+        return saved.All(ok => ok);
+    }
 }
