@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Threading;
 
@@ -75,15 +76,68 @@ namespace RSMods
         private bool _fileOutOfDate;    // Anything the file on disk lacks, seeded defaults and corrections included.
         private long _contentVersion;   // Bumped with each such change, so a write can tell whether it went stale.
 
+        // Set when the file exists but couldn't be read: what memory holds isn't the file, so nothing is written over it.
+        private Exception _loadError;
+
         public string FilePath => filePath;
 
-        public void Load()
+        /// <summary>Why the last <see cref="Load"/> couldn't read the existing file, or null. While set, <see cref="Save"/> throws.</summary>
+        public Exception LoadError
         {
-            lock (_gate)
-                LoadLocked();
+            get
+            {
+                lock (_gate)
+                    return _loadError;
+            }
         }
 
-        private void LoadLocked()
+        /// <summary>
+        /// Reads the file. A missing file loads as empty. One that exists but can't be read keeps what was loaded
+        /// before and sets <see cref="LoadError"/>, so defaults are never saved over a real file nobody could read.
+        /// </summary>
+        public void Load()
+        {
+            string text;
+            try
+            {
+                text = ReadWithRetry();
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+            {
+                Debug.WriteLine($"Failed to load INI file: {ex.Message}");
+                lock (_gate)
+                    _loadError = ex;
+                return;
+            }
+
+            lock (_gate)
+            {
+                LoadLocked(text);
+                _loadError = null;
+            }
+        }
+
+        // Null when there's no file.
+        private string ReadWithRetry()
+        {
+            for (int attempt = 1; ; attempt++)
+            {
+                try
+                {
+                    return File.ReadAllText(filePath);
+                }
+                catch (Exception ex) when (ex is FileNotFoundException or DirectoryNotFoundException)
+                {
+                    return null;
+                }
+                catch (IOException) when (attempt < 5)
+                {
+                    Thread.Sleep(50); // The game or DLL may hold the file without sharing it, but only briefly.
+                }
+            }
+        }
+
+        private void LoadLocked(string text)
         {
             _blocks.Clear();
             _data.Clear();
@@ -96,41 +150,33 @@ namespace RSMods
             var block = new Block();
             _blocks.Add(block);
 
-            try
+            if (text == null) return;
+
+            if (text.Contains('\n') && !text.Contains("\r\n"))
+                _newLine = "\n";
+
+            using var reader = new StringReader(text);
+            for (string line = reader.ReadLine(); line != null; line = reader.ReadLine())
             {
-                if (!File.Exists(filePath)) return;
+                var trimmed = line.Trim();
 
-                string text = File.ReadAllText(filePath);
-                if (text.Contains('\n') && !text.Contains("\r\n"))
-                    _newLine = "\n";
-
-                using var reader = new StringReader(text);
-                for (string line = reader.ReadLine(); line != null; line = reader.ReadLine())
+                if (TryParseSection(trimmed, out string newSection))
                 {
-                    var trimmed = line.Trim();
-
-                    if (TryParseSection(trimmed, out string newSection))
-                    {
-                        block = new Block { Name = newSection, Header = line };
-                        _blocks.Add(block);
-                        continue;
-                    }
-
-                    var entry = new Line { Raw = line };
-                    block.Lines.Add(entry);
-
-                    // Key lines before the first section belong to no section, so they're only kept, never read.
-                    if (block.Name == null || trimmed.Length == 0)
-                        continue;
-
-                    entry.Commented = trimmed.StartsWith(';');
-                    if (TrySplitKeyValue(entry.Commented ? trimmed.Substring(1) : trimmed, out entry.Key, out entry.Value))
-                        GetOrCreateSection(entry.Commented ? _commentedData : _data, block.Name)[entry.Key] = entry;
+                    block = new Block { Name = newSection, Header = line };
+                    _blocks.Add(block);
+                    continue;
                 }
-            }
-            catch (IOException ex)
-            {
-                Debug.WriteLine($"Failed to load INI file: {ex.Message}");
+
+                var entry = new Line { Raw = line };
+                block.Lines.Add(entry);
+
+                // Key lines before the first section belong to no section, so they're only kept, never read.
+                if (block.Name == null || trimmed.Length == 0)
+                    continue;
+
+                entry.Commented = trimmed.StartsWith(';');
+                if (TrySplitKeyValue(entry.Commented ? trimmed.Substring(1) : trimmed, out entry.Key, out entry.Value))
+                    GetOrCreateSection(entry.Commented ? _commentedData : _data, block.Name)[entry.Key] = entry;
             }
         }
 
@@ -222,6 +268,9 @@ namespace RSMods
             long version;
             lock (_gate)
             {
+                if (_loadError != null)
+                    throw new IOException($"{filePath} exists but couldn't be read, so it isn't saved over: {_loadError.Message}", _loadError);
+
                 using var text = new StringWriter();
                 WriteContents(text);
                 contents = text.ToString();
@@ -540,24 +589,30 @@ namespace RSMods
 
         public int GetInt(string section, string key, int defaultValue = 0)
         {
-            var str = GetString(section, key, defaultValue.ToString());
-            if (int.TryParse(str, out var result))
+            var str = GetString(section, key, FormatInt(defaultValue));
+            if (TryParseInt(str, out var result))
                 return result;
             if (string.IsNullOrWhiteSpace(str))
                 return defaultValue;
 
-            ReportInvalid(section, key, str, defaultValue.ToString(), "not a valid integer");
+            ReportInvalid(section, key, str, FormatInt(defaultValue), "not a valid integer");
             return defaultValue;
         }
 
         public void SetInt(string section, string key, int value)
-            => SetString(section, key, value.ToString());
+            => SetString(section, key, FormatInt(value));
+
+        // Invariant, as the DLL and RS_ASIO read them: some cultures (sv, nb, fi) write a minus sign they can't parse.
+        private static string FormatInt(int value) => value.ToString(CultureInfo.InvariantCulture);
+
+        private static bool TryParseInt(string text, out int value)
+            => int.TryParse(text, NumberStyles.Integer, CultureInfo.InvariantCulture, out value);
 
         public decimal GetDecimal(string section, string key, decimal defaultValue = 0)
         {
-            string defaultText = defaultValue.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            string defaultText = defaultValue.ToString(CultureInfo.InvariantCulture);
             string raw = GetString(section, key, defaultText);
-            if (decimal.TryParse(raw, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out decimal result))
+            if (decimal.TryParse(raw, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal result))
                 return result;
             if (string.IsNullOrWhiteSpace(raw))
                 return defaultValue;
@@ -581,13 +636,13 @@ namespace RSMods
         public T GetEnumInt<T>(string section, string key, T defaultValue = default) where T : struct, Enum
         {
             int defaultNumber = Convert.ToInt32(defaultValue);
-            string raw = GetString(section, key, defaultNumber.ToString());
-            if (int.TryParse(raw, out int result) && Enum.IsDefined(typeof(T), result))
+            string raw = GetString(section, key, FormatInt(defaultNumber));
+            if (TryParseInt(raw, out int result) && Enum.IsDefined(typeof(T), result))
                 return (T)Enum.ToObject(typeof(T), result);
             if (string.IsNullOrWhiteSpace(raw))
                 return defaultValue;
 
-            ReportInvalid(section, key, raw, defaultNumber.ToString(), $"not a valid {typeof(T).Name} value");
+            ReportInvalid(section, key, raw, FormatInt(defaultNumber), $"not a valid {typeof(T).Name} value");
             return defaultValue;
         }
 
@@ -619,6 +674,7 @@ namespace RSMods
                         active.Commented = true;
                         active.Value = value;
                         active.Raw = null;
+                        CommentOutEarlierCopies(section, key, active);
                         MarkChanged();
                     }
                     else if (inactive == null)
@@ -645,6 +701,27 @@ namespace RSMods
                 else
                 {
                     SetActiveLocked(section, key, value);
+                }
+            }
+        }
+
+        // A key the file repeats is read from its last active line; the earlier ones would become the value once that
+        // one is commented out, so they're commented out too, keeping their own text.
+        private void CommentOutEarlierCopies(string section, string key, Line last)
+        {
+            foreach (var block in _blocks)
+            {
+                if (!string.Equals(block.Name, section, StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                foreach (var line in block.Lines)
+                {
+                    if (line == last || line.Commented || !string.Equals(line.Key, key, StringComparison.OrdinalIgnoreCase))
+                        continue;
+
+                    line.Commented = true;
+                    if (line.Raw != null)
+                        line.Raw = ";" + line.Raw;
                 }
             }
         }

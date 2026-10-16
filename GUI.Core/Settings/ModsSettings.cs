@@ -90,12 +90,13 @@ namespace RSMods
             if (!_ini.FileOutOfDate)
                 return;
 
-            // Best effort, as before: a locked file mustn't stop the app starting; the next save retries.
+            // Best effort, as before: a locked file mustn't stop the app starting; the next save retries. A file that
+            // couldn't be read is never saved over (Save throws), so its settings aren't replaced by these defaults.
             try
             {
                 _ini.Save();
             }
-            catch (IOException ex)
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
             {
                 Debug.WriteLine($"Failed to save INI file: {ex.Message}");
             }

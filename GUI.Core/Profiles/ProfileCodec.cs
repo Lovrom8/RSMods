@@ -94,8 +94,27 @@ namespace RSMods
             writer.Flush();
             writer.BaseStream.Seek(0, SeekOrigin.Begin);
 
-            using Stream destination = File.Create(fileName);
-            writer.BaseStream.CopyTo(destination);
+            // Truncating the live profile and then failing (disk full, the game holding it) would lose it, so the
+            // new one goes to a file next to it that's swapped in whole.
+            string temporary = fileName + ".tmp";
+            try
+            {
+                using (var destination = new FileStream(temporary, FileMode.Create, FileAccess.Write, FileShare.None))
+                {
+                    writer.BaseStream.CopyTo(destination);
+                    destination.Flush(flushToDisk: true);
+                }
+
+                if (File.Exists(fileName))
+                    File.Replace(temporary, fileName, null);
+                else
+                    File.Move(temporary, fileName);
+            }
+            catch
+            {
+                try { File.Delete(temporary); } catch { }
+                throw;
+            }
         }
 
         private static byte[] DecodeEnvelope(Stream input, Stream output)

@@ -19,7 +19,9 @@ namespace RSMods.Rocksmith
                 throw new ArgumentException("A Rocksmith.ini path is required.", nameof(filePath));
 
             FilePath = filePath;
-            _ini = new IniManager(filePath);
+            // The game owns this file and accepts values the screens can't show (MsaaSamples=2 or 8), so an existing
+            // one only shows defaults for those and keeps them; a missing file is created whole.
+            _ini = new IniManager(filePath, fillDefaults: !File.Exists(filePath));
             _ini.Load();
 
             Audio = new AudioSettings(_ini);

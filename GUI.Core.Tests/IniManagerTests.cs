@@ -1,5 +1,6 @@
 #nullable enable
 using System;
+using System.Globalization;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -278,5 +279,132 @@ public sealed class IniManagerTests
         ini.SetInt("[Asio]", "CustomBufferSize", 128);
         Assert.True(ini.Save());
         Assert.Equal<string[]>(["[Asio]", "CustomBufferSize=128"], File.ReadAllLines(path));
+    }
+
+    // A file that exists but can't be read must not load as empty and then get the defaults saved over it.
+    [Fact]
+    public void AFileThatCantBeReadIsNeverSavedOver()
+    {
+        using var dir = new TemporaryDirectory();
+        string path = dir.File("RSMods.ini");
+        File.WriteAllLines(path, ["[Toggle Switches]", "ExtendedRange=on"]);
+        var ini = new IniManager(path);
+
+        using (new FileStream(path, FileMode.Open, FileAccess.ReadWrite, FileShare.None))
+            ini.Load();
+
+        Assert.NotNull(ini.LoadError);
+        Assert.Equal("off", ini.GetString("[Toggle Switches]", "ExtendedRange", "off"));
+        Assert.True(ini.FileOutOfDate);
+        Assert.ThrowsAny<IOException>(() => ini.Save());
+        Assert.Equal<string[]>(["[Toggle Switches]", "ExtendedRange=on"], File.ReadAllLines(path));
+
+        // Once it reads, it saves as usual.
+        ini.Load();
+        Assert.Null(ini.LoadError);
+        Assert.Equal("on", ini.GetString("[Toggle Switches]", "ExtendedRange", "off"));
+        ini.Save();
+    }
+
+    [Fact]
+    public async Task LoadWaitsOutABriefWriter()
+    {
+        using var dir = new TemporaryDirectory();
+        string path = dir.File("RSMods.ini");
+        File.WriteAllLines(path, ["[Toggle Switches]", "ExtendedRange=on"]);
+        var ini = new IniManager(path);
+
+        var writer = new FileStream(path, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+        Task load = Task.Run(ini.Load);
+        await Task.Delay(80);
+        writer.Dispose();
+        await load;
+
+        Assert.Null(ini.LoadError);
+        Assert.Equal("on", ini.GetString("[Toggle Switches]", "ExtendedRange", "off"));
+    }
+
+    [Fact]
+    public void AMissingFileLoadsEmpty()
+    {
+        using var dir = new TemporaryDirectory();
+        var ini = new IniManager(dir.File("RSMods.ini"));
+        ini.Load();
+
+        Assert.Null(ini.LoadError);
+        Assert.Equal("off", ini.GetString("[Toggle Switches]", "ExtendedRange", "off"));
+        ini.Save();
+        Assert.True(File.Exists(dir.File("RSMods.ini")));
+    }
+
+    // The DLL and RS_ASIO only read an ASCII minus; sv, nb and fi format negative numbers with U+2212.
+    [Theory]
+    [InlineData("sv-SE")]
+    [InlineData("nb-NO")]
+    [InlineData("fi-FI")]
+    public void NumbersAreWrittenAndReadTheSameInEveryCulture(string culture)
+    {
+        using var dir = new TemporaryDirectory();
+        string path = dir.File("RSMods.ini");
+        File.WriteAllLines(path, ["[Config]", "EnableWasapiOutputs=-1"]);
+        CultureInfo previous = CultureInfo.CurrentCulture;
+        CultureInfo.CurrentCulture = new CultureInfo(culture);
+        try
+        {
+            var ini = new IniManager(path);
+            ini.Load();
+
+            Assert.Equal(-1, ini.GetInt("[Config]", "EnableWasapiOutputs"));
+            Assert.Equal(ASIO.WasapiOutputMode.Prompt, ini.GetEnumInt("[Config]", "EnableWasapiOutputs", ASIO.WasapiOutputMode.Off));
+            Assert.Equal(-5, ini.GetInt("[Mod Settings]", "ExtendedRangeModeAt", -5));
+            ini.SetInt("[Mod Settings]", "Threshold", -12);
+            ini.Save();
+        }
+        finally
+        {
+            CultureInfo.CurrentCulture = previous;
+        }
+
+        string[] lines = File.ReadAllLines(path);
+        Assert.Contains("EnableWasapiOutputs=-1", lines);
+        Assert.Contains("ExtendedRangeModeAt=-5", lines);
+        Assert.Contains("Threshold=-12", lines);
+    }
+
+    [Fact]
+    public void CommentingOutARepeatedKeyCommentsOutEveryActiveCopy()
+    {
+        using var dir = new TemporaryDirectory();
+        string path = dir.File("RS_ASIO.ini");
+        File.WriteAllLines(path, ["[Asio.Input.1]", "Driver=First", "Channel=1", "Driver=Second"]);
+        var ini = new IniManager(path);
+        ini.Load();
+
+        ini.SetCommentedString("[Asio.Input.1]", "Driver", "Second", commented: true);
+        ini.Save();
+
+        Assert.Equal<string[]>(["[Asio.Input.1]", ";Driver=First", "Channel=1", ";Driver=Second"], File.ReadAllLines(path));
+        var reloaded = new IniManager(path);
+        reloaded.Load();
+        Assert.True(reloaded.IsCommented("[Asio.Input.1]", "Driver"));
+    }
+
+    // The DLL reads CustomStringColors 0-3; a value it accepts mustn't be "corrected" to Off when the GUI starts.
+    [Theory]
+    [InlineData("1", CustomStringColorMode.Zag)]
+    [InlineData("3", CustomStringColorMode.Test)]
+    public void EveryStringColorModeTheDllReadsIsKept(string raw, CustomStringColorMode expected)
+    {
+        using var dir = new TemporaryDirectory();
+        string path = dir.File("RSMods.ini");
+        File.WriteAllLines(path, ["[Toggle Switches]", "CustomStringColors=" + raw]);
+        var ini = new IniManager(path);
+        ini.Load();
+        IniValidationWarning? warning = null;
+        ini.ValidationWarning += w => warning = w;
+
+        Assert.Equal(expected, ini.GetEnumInt("[Toggle Switches]", "CustomStringColors", CustomStringColorMode.Off));
+        Assert.Null(warning);
+        Assert.False(ini.FileOutOfDate);
     }
 }

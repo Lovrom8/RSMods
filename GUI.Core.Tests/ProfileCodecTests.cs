@@ -29,4 +29,32 @@ public sealed class ProfileCodecTests
 
         Assert.Equal(json, ProfileCodec.Decode(profilePath).Json);
     }
+
+    [Fact]
+    public void Encode_ReplacesTheProfileAndLeavesNoTemporaryFile()
+    {
+        using var temporary = new TemporaryDirectory();
+        string profilePath = temporary.File("profile_PRFLDB");
+
+        ProfileCodec.Encode("{\"Old\":1}", profilePath, [1, 2, 3, 4]);
+        ProfileCodec.Encode("{\"New\":2}", profilePath, [1, 2, 3, 4]);
+
+        Assert.Equal("{\"New\":2}", ProfileCodec.Decode(profilePath).Json);
+        Assert.Equal(["profile_PRFLDB"], Directory.GetFiles(temporary.Path).Select(Path.GetFileName));
+    }
+
+    // The game holds its profile open while it runs; a save that can't replace it mustn't have truncated it first.
+    [Fact]
+    public void Encode_ThatCantReplaceTheProfileLeavesItWhole()
+    {
+        using var temporary = new TemporaryDirectory();
+        string profilePath = temporary.File("profile_PRFLDB");
+        ProfileCodec.Encode("{\"Old\":1}", profilePath, [1, 2, 3, 4]);
+
+        using (new FileStream(profilePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+            Assert.ThrowsAny<IOException>(() => ProfileCodec.Encode("{\"New\":2}", profilePath, [1, 2, 3, 4]));
+
+        Assert.Equal("{\"Old\":1}", ProfileCodec.Decode(profilePath).Json);
+        Assert.Equal(["profile_PRFLDB"], Directory.GetFiles(temporary.Path).Select(Path.GetFileName));
+    }
 }

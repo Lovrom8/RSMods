@@ -130,15 +130,28 @@ namespace RSMods.Rocksmith
             }
         }
 
+        // Extract under the RSMods folder (where the unpacked audio.psarc lives and where Export reads
+        // from), not the current working directory. The original WinForms code extracted CWD-relative,
+        // which only lined up because that build ran from the RSMods folder.
         public static void ImportSoundFile(string fileName)
+            => ImportSoundFile(fileName, Path.Combine(GenUtil.GetRsModsPath(), SoundPackLocationPrefix));
+
+        internal static void ImportSoundFile(string fileName, string destination)
         {
             SevenZipExtractor.SetLibraryPath(SevenZipLibraryPath);
             using SevenZipExtractor extractor = new(fileName);
 
-            // Extract under the RSMods folder (where the unpacked audio.psarc lives and where Export reads
-            // from), not the current working directory. The original WinForms code extracted CWD-relative,
-            // which only lined up because that build ran from the RSMods folder.
-            extractor.ExtractArchive(Path.Combine(GenUtil.GetRsModsPath(), SoundPackLocationPrefix));
+            // SevenZipSharp writes an entry wherever its name points, "..\" and absolute names included, and a pack
+            // can come from anyone, so one that reaches outside the audio folder isn't extracted at all.
+            string root = Path.TrimEndingDirectorySeparator(Path.GetFullPath(destination)) + Path.DirectorySeparatorChar;
+            foreach (ArchiveFileInfo entry in extractor.ArchiveFileData)
+            {
+                string target = Path.GetFullPath(Path.Combine(root, entry.FileName));
+                if (!target.StartsWith(root, StringComparison.OrdinalIgnoreCase))
+                    throw new InvalidDataException($"The soundpack has a file outside the audio folder: {entry.FileName}");
+            }
+
+            extractor.ExtractArchive(destination);
         }
 
         public static void ExportSoundFile(string fileName)

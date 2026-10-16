@@ -40,6 +40,7 @@ namespace RSMods.ASIO
             ]);
 
             Config = new ConfigSettings(_ini);
+            Config.MoveLegacyWasapiOutputs();
             AsioSection = new AsioSectionSettings(_ini);
             Output = new OutputSettings(_ini);
             Input0 = new InputSettings(_ini, "[Asio.Input.0]", 0);
@@ -83,11 +84,29 @@ namespace RSMods.ASIO
                 _section = new IniSection(ini, SectionName, numericBools: true);
             }
 
+            // The screen shows the old key's value, so it's moved where RS_ASIO reads it as soon as the file is
+            // loaded, not only once the setting is edited.
+            internal void MoveLegacyWasapiOutputs()
+            {
+                if (_ini.TryGetString(SectionName, nameof(EnableWasapiOutputs), out _) ||
+                    !_ini.TryGetString(SectionName, LegacyWasapiOutputsKey, out string legacy))
+                    return;
+
+                _ini.SetString(SectionName, nameof(EnableWasapiOutputs), legacy);
+                _ini.RemoveKey(SectionName, LegacyWasapiOutputsKey);
+                try
+                {
+                    _ini.Save();
+                }
+                catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+                {
+                    // The move stays in memory, so the next save writes it.
+                }
+            }
+
             public WasapiOutputMode EnableWasapiOutputs
             {
-                get => !_ini.TryGetString(SectionName, nameof(EnableWasapiOutputs), out _) && _ini.TryGetString(SectionName, LegacyWasapiOutputsKey, out _)
-                    ? _section.GetEnumInt(WasapiOutputMode.Off, LegacyWasapiOutputsKey)
-                    : _section.GetEnumInt(WasapiOutputMode.Off);
+                get => _section.GetEnumInt(WasapiOutputMode.Off);
                 set
                 {
                     _section.SetEnumInt(value);
