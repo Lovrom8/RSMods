@@ -471,7 +471,7 @@
       "name": "ShowSongTimerKey"
     },
     "type": "Key",
-    "default": "N",
+    "default": "I",
     "label": "Show Song Timer",
     "hint": "",
     "category": "Keybinds",
@@ -1430,7 +1430,7 @@
     "type": "Int",
     "default": "0",
     "label": "Tuning Offset",
-    "hint": "What tuning is your guitar / bass set to?\nWe can adjust how we auto tune based on what you specify here.\nThis value can be changed in game by setting the \"Change Tuning Offset\" keybind.\nPress the keybind to go down in tuning; hold Shift while pressing it to go up.",
+    "hint": "What tuning is your guitar / bass set to?\nWe can adjust how we auto tune based on what you specify here.\nThis value can be changed in game by setting the \"Change Tuning Offset\" keybind.\nPress the keybind to go down in tuning; hold Shift (or Control) while pressing it to go up.",
     "category": "Mod Settings",
     "min": -3,
     "max": 12,

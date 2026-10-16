@@ -31,6 +31,11 @@ namespace Loft {
 		uintptr_t noLoft = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_loft, Offsets::ptr_loft_farOffsets);
 
 		if (enable) {
+			if (!noLoft) {
+				LOG_ERROR("Invalid Pointer: ToggleDrunkMode()" << std::endl);
+				return;
+			}
+
 			// Turn on loft so the effects of the mod are actually shown.
 			if (*(float*)noLoft == 1) {
 				s_toggleOffLoftWhenDoneWithMod = true;

@@ -30,7 +30,9 @@ namespace SettingsMenu {
 		// Render-thread only: the draw callback is the sole reader and writer.
 		std::unordered_map<std::string, std::string> g_dragging;   // Slider values until release, when they're applied
 		std::unordered_map<std::string, std::array<char, 1024>> g_textBuffers;
-		std::string g_editingText;                                  // Key of the text field being typed into
+		// Text fields being typed into, and whether they were edited. Per field, so moving focus straight to
+		// another field doesn't refill this one from the saved value before its typed text is applied.
+		std::unordered_map<std::string, bool> g_editingText;
 		char g_filter[64] = {};
 
 		bool ContainsNoCase(std::string_view haystack, std::string_view needle) {
@@ -100,12 +102,16 @@ namespace SettingsMenu {
 			snprintf(format, sizeof(format), "%%.%df", decimals);
 
 			float shown = static_cast<float>(stored * scale);
-			if (def.min && def.max)
-				ImGui::SliderFloat(def.label.c_str(), &shown, static_cast<float>(*def.min * scale), static_cast<float>(*def.max * scale), format);
+			if (def.min && def.max)  // AlwaysClamp: Ctrl+click typing would otherwise go past the Range
+				ImGui::SliderFloat(def.label.c_str(), &shown, static_cast<float>(*def.min * scale), static_cast<float>(*def.max * scale), format, ImGuiSliderFlags_AlwaysClamp);
 			else
 				ImGui::DragFloat(def.label.c_str(), &shown, static_cast<float>(def.scale ? scale * 10 : 1.0), 0.0f, 0.0f, format);
 
-			const std::string edited = std::to_string(std::lround(shown / scale));
+			// Clamp again after rounding back to the stored unit, so float error can't step outside the Range.
+			long editedValue = std::lround(shown / scale);
+			if (def.min) editedValue = (std::max)(editedValue, static_cast<long>(*def.min));
+			if (def.max) editedValue = (std::min)(editedValue, static_cast<long>(*def.max));
+			const std::string edited = std::to_string(editedValue);
 			if (ImGui::IsItemActive())
 				g_dragging[def.key] = edited;
 			else
@@ -142,17 +148,23 @@ namespace SettingsMenu {
 
 			// Refilled from the setting except while it's being typed into.
 			auto& buffer = g_textBuffers[def.key];
-			if (g_editingText != def.key)
+			if (!g_editingText.contains(def.key))
 				strncpy_s(buffer.data(), buffer.size(), value.c_str(), _TRUNCATE);
 
-			ImGui::InputText(def.label.c_str(), buffer.data(), buffer.size());
-			if (ImGui::IsItemActive())
-				g_editingText = def.key;
-			else if (g_editingText == def.key)
-				g_editingText.clear();
+			const bool changed = ImGui::InputText(def.label.c_str(), buffer.data(), buffer.size());
+			if (ImGui::IsItemActive()) {
+				g_editingText[def.key] |= changed;
+				return;
+			}
 
-			if (ImGui::IsItemDeactivatedAfterEdit())
-				Apply(def, buffer.data());
+			// Applied when we first see the field inactive, not on IsItemDeactivatedAfterEdit: ImGui 1.85 never
+			// reports that for a field drawn above the one focus moved to.
+			if (auto it = g_editingText.find(def.key); it != g_editingText.end()) {
+				const bool edited = it->second || changed;
+				g_editingText.erase(it);
+				if (edited && value != buffer.data())  // Escape restores the saved text; nothing to apply
+					Apply(def, buffer.data());
+			}
 		}
 
 		void DrawSetting(const SettingDef& def) {

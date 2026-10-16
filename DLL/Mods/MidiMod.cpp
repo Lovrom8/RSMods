@@ -43,7 +43,7 @@ SettingDefs MidiMod::Settings() const {
 			.Range(0, 5)
 			.ListedUnder(Setting::AutoTuneForSong),
 		Numeric(Setting::TuningOffset, "Tuning Offset")
-			.Hint("What tuning is your guitar / bass set to?\nWe can adjust how we auto tune based on what you specify here.\nThis value can be changed in game by setting the \"Change Tuning Offset\" keybind.\nPress the keybind to go down in tuning; hold Shift while pressing it to go up.")
+			.Hint("What tuning is your guitar / bass set to?\nWe can adjust how we auto tune based on what you specify here.\nThis value can be changed in game by setting the \"Change Tuning Offset\" keybind.\nPress the keybind to go down in tuning; hold Shift (or Control) while pressing it to go up.")
 			.Ini("Mod Settings", "TuningOffset")
 			.Default("0")
 			.Range(-3, 12)
@@ -98,7 +98,8 @@ void MidiMod::OnInitialize(ModContext& c) {
 		KeyEdge::Up,
 		Availability::Active,
 		[](ModContext&, const KeyEvent& event) {
-			Midi::tuningOffset += event.control ? -1 : 1;
+			// A higher offset is a lower tuning. Shift goes up as the hint says; Control did before and still does.
+			Midi::tuningOffset += (event.shift || event.control) ? -1 : 1;
 			Midi::tuningOffset = std::clamp(Midi::tuningOffset, -3, 12);
 			LOG_INFO("Triggered Mod Setting: Tuning Offset is now set to " << Midi::tuningOffset << std::endl);
 		},

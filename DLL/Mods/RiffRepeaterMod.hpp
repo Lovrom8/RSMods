@@ -3,6 +3,9 @@
 #include "../Framework/Framework.hpp"
 #include "RiffRepeater.hpp"
 
+#include <chrono>
+#include <optional>
+
 // Consolidates the Riff Repeater features that used to live in ModManager:
 //   - LinearRiffRepeater: patches the RR speed logic to be linear, kept in sync with the setting.
 //   - RRSpeedAboveOneHundred: enables >100% time stretch in a song and drops it when leaving to a non-score menu.
@@ -34,4 +37,5 @@ private:
 	float loopStart = 0.f;
 	float roughLoopStart = 0.f;
 	float loopEnd = 0.f;
+	std::optional<std::chrono::steady_clock::time_point> loopSeekAt;  // Last seek back, until the timer is seen before loopEnd
 };
