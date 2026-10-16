@@ -102,12 +102,16 @@ namespace SettingsMenu {
 			snprintf(format, sizeof(format), "%%.%df", decimals);
 
 			float shown = static_cast<float>(stored * scale);
-			if (def.min && def.max)
-				ImGui::SliderFloat(def.label.c_str(), &shown, static_cast<float>(*def.min * scale), static_cast<float>(*def.max * scale), format);
+			if (def.min && def.max)  // AlwaysClamp: Ctrl+click typing would otherwise go past the Range
+				ImGui::SliderFloat(def.label.c_str(), &shown, static_cast<float>(*def.min * scale), static_cast<float>(*def.max * scale), format, ImGuiSliderFlags_AlwaysClamp);
 			else
 				ImGui::DragFloat(def.label.c_str(), &shown, static_cast<float>(def.scale ? scale * 10 : 1.0), 0.0f, 0.0f, format);
 
-			const std::string edited = std::to_string(std::lround(shown / scale));
+			// Clamp again after rounding back to the stored unit, so float error can't step outside the Range.
+			long editedValue = std::lround(shown / scale);
+			if (def.min) editedValue = (std::max)(editedValue, static_cast<long>(*def.min));
+			if (def.max) editedValue = (std::min)(editedValue, static_cast<long>(*def.max));
+			const std::string edited = std::to_string(editedValue);
 			if (ImGui::IsItemActive())
 				g_dragging[def.key] = edited;
 			else
