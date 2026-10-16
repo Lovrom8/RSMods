@@ -171,6 +171,9 @@ void TwitchMod::RegenerateTextures(IDirect3DDevice9* pDevice) {
 
 	GenerateRandomTextures(pDevice);
 	RegenerateUserDefinedTexture(pDevice);
+
+	// Regenerating released the textures the draw hook may hold; point it at the new ones before the next draw.
+	SyncState();
 }
 
 void TwitchMod::GenerateRandomTextures(IDirect3DDevice9* pDevice) {
@@ -202,11 +205,6 @@ void TwitchMod::RegenerateUserDefinedTexture(IDirect3DDevice9* pDevice) {
 
 	ColorList customColorList(16, userDefColor);
 	D3D::GenerateGradientTexture(pDevice, &twitchUserDefinedTexture, customColorList);
-
-	ERMode::customSolidColor.clear();
-	for (int str = 0; str < 6; str++) {
-		ERMode::customSolidColor.push_back(userDefColor);
-	}
 }
 
 void TwitchMod::ReleaseTextures() {

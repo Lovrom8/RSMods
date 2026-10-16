@@ -52,7 +52,6 @@ namespace ERMode {
 	inline bool restoreDefaults = false;
 
 	inline std::vector<ColorMap> customColors;
-	inline std::vector<RSColor> customSolidColor;
 	// Written by the rainbow worker, read by the render thread as an index into rainbowTextures.
 	inline std::atomic<int> customNoteColorH = 0;
 

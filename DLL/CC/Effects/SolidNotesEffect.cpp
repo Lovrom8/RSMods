@@ -110,21 +110,15 @@ namespace CrowdControl::Effects {
 		LOG_INFO("SolidNotesRandomEffect - Colors Saved" << std::endl);
 		
 		static std::uniform_real_distribution<> urd(0, TwitchMod::randomTextureCount - 1);
-		TwitchMod::currentRandomTexture = static_cast<int>(urd(rng));
+		const int picked = static_cast<int>(urd(rng));
 
-		LOG_INFO("SolidNotesRandomEffect - Picked color " << TwitchMod::currentRandomTexture << "/" << TwitchMod::randomTextureCount << std::endl);
+		LOG_INFO("SolidNotesRandomEffect - Picked color " << picked << "/" << TwitchMod::randomTextureCount << std::endl);
 
-		// Set random solid color
-		ERMode::customSolidColor.clear();
-		if (TwitchMod::currentRandomTexture >= 0 && TwitchMod::currentRandomTexture < (int)TwitchMod::randomTextureColors.size()) {
-			ERMode::customSolidColor.insert(ERMode::customSolidColor.begin(), 6, TwitchMod::randomTextureColors[TwitchMod::currentRandomTexture]);
-		}
-
-		if (TwitchMod::currentRandomTexture >= 0 && TwitchMod::currentRandomTexture < (int)TwitchMod::randomTextures.size()) {
-			TwitchMod::twitchUserDefinedTexture = TwitchMod::randomTextures[TwitchMod::currentRandomTexture];
-		}
-
-		Framework::Registry().EnqueueSettingsUpdate([] {
+		// TwitchMod draws randomTextures[currentRandomTexture] while the colour is "random". Pointing its user-defined
+		// texture at a random one instead had both release the same texture.
+		Framework::Registry().EnqueueSettingsUpdate([picked] {
+			TwitchMod::currentRandomTexture = picked;
+			Settings::UpdateTwitchSetting(Setting::Twitch::SolidNoteColor, "random");
 			Settings::UpdateTwitchSetting(Setting::Twitch::SolidNotes, "on");
 		});
 

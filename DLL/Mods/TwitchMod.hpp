@@ -31,7 +31,7 @@ public:
 	static inline LPDIRECT3DTEXTURE9 twitchUserDefinedTexture = nullptr;
 	static inline std::vector<LPDIRECT3DTEXTURE9> randomTextures = std::vector<LPDIRECT3DTEXTURE9>(randomTextureCount, nullptr);
 	static inline ColorList randomTextureColors = ColorList(randomTextureCount);
-	static inline int currentRandomTexture = 0;
+	static inline std::atomic<int> currentRandomTexture = 0; // Set on MainThread, read by SyncState on the render thread too
 
 private:
 	static inline std::atomic<bool> s_removeNotes = false;

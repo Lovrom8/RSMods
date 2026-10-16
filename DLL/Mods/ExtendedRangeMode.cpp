@@ -291,18 +291,9 @@ void ERMode::Toggle7StringMode() {
 	InitStrings(pegsTuning, PegsTuning);
 	//InitStrings(stringsBodyPrev, BodyPrev);
 
-	if (ColorsSaved && Settings::IsTwitchSettingEnabled(Setting::Twitch::SolidNotes)) {
-		if (customSolidColor.size() != 6) // JIC
-			return;
-
-		// Don't change string colors with solid notes
-		//SetColors(stringsGlow, customSolidColor);
-		//SetColors(stringsEnabled, customSolidColor);
-		//SetColors(stringsDisabled, customSolidColor);
-		//SetColors(stringsAmb, customSolidColor);
-
+	// Solid notes leave the string colours alone.
+	if (ColorsSaved && Settings::IsTwitchSettingEnabled(Setting::Twitch::SolidNotes))
 		return;
-	}
 
 	if ((ERMode::AttemptedERInThisSong && ERMode::UseERExclusivelyInThisSong) || (AttemptedERInTuner && UseERInTuner)) {
 		switch (Settings::GetStringColorMode()) {
