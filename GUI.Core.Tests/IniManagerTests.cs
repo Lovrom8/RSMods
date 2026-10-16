@@ -1,5 +1,6 @@
 #nullable enable
 using System;
+using System.Globalization;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -334,5 +335,39 @@ public sealed class IniManagerTests
         Assert.Equal("off", ini.GetString("[Toggle Switches]", "ExtendedRange", "off"));
         ini.Save();
         Assert.True(File.Exists(dir.File("RSMods.ini")));
+    }
+
+    // The DLL and RS_ASIO only read an ASCII minus; sv, nb and fi format negative numbers with U+2212.
+    [Theory]
+    [InlineData("sv-SE")]
+    [InlineData("nb-NO")]
+    [InlineData("fi-FI")]
+    public void NumbersAreWrittenAndReadTheSameInEveryCulture(string culture)
+    {
+        using var dir = new TemporaryDirectory();
+        string path = dir.File("RSMods.ini");
+        File.WriteAllLines(path, ["[Config]", "EnableWasapiOutputs=-1"]);
+        CultureInfo previous = CultureInfo.CurrentCulture;
+        CultureInfo.CurrentCulture = new CultureInfo(culture);
+        try
+        {
+            var ini = new IniManager(path);
+            ini.Load();
+
+            Assert.Equal(-1, ini.GetInt("[Config]", "EnableWasapiOutputs"));
+            Assert.Equal(ASIO.WasapiOutputMode.Prompt, ini.GetEnumInt("[Config]", "EnableWasapiOutputs", ASIO.WasapiOutputMode.Off));
+            Assert.Equal(-5, ini.GetInt("[Mod Settings]", "ExtendedRangeModeAt", -5));
+            ini.SetInt("[Mod Settings]", "Threshold", -12);
+            ini.Save();
+        }
+        finally
+        {
+            CultureInfo.CurrentCulture = previous;
+        }
+
+        string[] lines = File.ReadAllLines(path);
+        Assert.Contains("EnableWasapiOutputs=-1", lines);
+        Assert.Contains("ExtendedRangeModeAt=-5", lines);
+        Assert.Contains("Threshold=-12", lines);
     }
 }

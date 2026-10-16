@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Threading;
 
@@ -588,24 +589,30 @@ namespace RSMods
 
         public int GetInt(string section, string key, int defaultValue = 0)
         {
-            var str = GetString(section, key, defaultValue.ToString());
-            if (int.TryParse(str, out var result))
+            var str = GetString(section, key, FormatInt(defaultValue));
+            if (TryParseInt(str, out var result))
                 return result;
             if (string.IsNullOrWhiteSpace(str))
                 return defaultValue;
 
-            ReportInvalid(section, key, str, defaultValue.ToString(), "not a valid integer");
+            ReportInvalid(section, key, str, FormatInt(defaultValue), "not a valid integer");
             return defaultValue;
         }
 
         public void SetInt(string section, string key, int value)
-            => SetString(section, key, value.ToString());
+            => SetString(section, key, FormatInt(value));
+
+        // Invariant, as the DLL and RS_ASIO read them: some cultures (sv, nb, fi) write a minus sign they can't parse.
+        private static string FormatInt(int value) => value.ToString(CultureInfo.InvariantCulture);
+
+        private static bool TryParseInt(string text, out int value)
+            => int.TryParse(text, NumberStyles.Integer, CultureInfo.InvariantCulture, out value);
 
         public decimal GetDecimal(string section, string key, decimal defaultValue = 0)
         {
-            string defaultText = defaultValue.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            string defaultText = defaultValue.ToString(CultureInfo.InvariantCulture);
             string raw = GetString(section, key, defaultText);
-            if (decimal.TryParse(raw, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out decimal result))
+            if (decimal.TryParse(raw, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal result))
                 return result;
             if (string.IsNullOrWhiteSpace(raw))
                 return defaultValue;
@@ -629,13 +636,13 @@ namespace RSMods
         public T GetEnumInt<T>(string section, string key, T defaultValue = default) where T : struct, Enum
         {
             int defaultNumber = Convert.ToInt32(defaultValue);
-            string raw = GetString(section, key, defaultNumber.ToString());
-            if (int.TryParse(raw, out int result) && Enum.IsDefined(typeof(T), result))
+            string raw = GetString(section, key, FormatInt(defaultNumber));
+            if (TryParseInt(raw, out int result) && Enum.IsDefined(typeof(T), result))
                 return (T)Enum.ToObject(typeof(T), result);
             if (string.IsNullOrWhiteSpace(raw))
                 return defaultValue;
 
-            ReportInvalid(section, key, raw, defaultNumber.ToString(), $"not a valid {typeof(T).Name} value");
+            ReportInvalid(section, key, raw, FormatInt(defaultNumber), $"not a valid {typeof(T).Name} value");
             return defaultValue;
         }
 
