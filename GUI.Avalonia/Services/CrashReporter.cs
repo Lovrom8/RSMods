@@ -16,16 +16,9 @@ internal static class CrashReporter
     [DllImport("user32.dll", CharSet = CharSet.Unicode)]
     private static extern int MessageBoxW(IntPtr hWnd, string text, string caption, uint type);
 
-    /// <summary>Hooks the UI thread, background threads and unobserved tasks. Call once, before the app starts.</summary>
+    /// <summary>Hooks background threads and unobserved tasks. Call once, before the app starts.</summary>
     public static void Install()
     {
-        // Errors on the UI thread (button handlers, async void) are shown and the app carries on, as WinForms did.
-        Dispatcher.UIThread.UnhandledException += (_, e) =>
-        {
-            Report(e.Exception, fatal: false);
-            e.Handled = true;
-        };
-
         AppDomain.CurrentDomain.UnhandledException += (_, e) =>
         {
             if (e.ExceptionObject is Exception ex)
@@ -37,6 +30,20 @@ internal static class CrashReporter
         {
             WriteLog(e.Exception);
             e.SetObserved();
+        };
+    }
+
+    /// <summary>
+    /// Hooks the UI thread. Only once Avalonia is set up: touching Dispatcher.UIThread earlier makes it settle on a
+    /// placeholder dispatcher that can't run the main loop, and the app fails to start.
+    /// </summary>
+    public static void InstallUiThread()
+    {
+        // Errors on the UI thread (button handlers, async void) are shown and the app carries on, as WinForms did.
+        Dispatcher.UIThread.UnhandledException += (_, e) =>
+        {
+            Report(e.Exception, fatal: false);
+            e.Handled = true;
         };
     }
 

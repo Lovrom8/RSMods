@@ -11,7 +11,9 @@ internal static class Program
         CrashReporter.Install();
         try
         {
-            BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+            BuildAvaloniaApp()
+                .AfterSetup(_ => CrashReporter.InstallUiThread())
+                .StartWithClassicDesktopLifetime(args);
         }
         catch (Exception ex)
         {
