@@ -21,7 +21,7 @@ SettingDefs ShowSongTimerMod::Settings() const {
 			.Hint("When to show the song timer: always, only in a song, or toggled by a hotkey.")
 			.Choices({ "manual", "automatic" }, "manual")
 			.WithVisibleWhen(Setting::ShowSongTimerEnabled),
-		Framework::KeyBind(Setting::Key::ShowSongTimer, "Show Song Timer", "N"),
+		Framework::KeyBind(Setting::Key::ShowSongTimer, "Show Song Timer", "I"),
 	};
 }
 

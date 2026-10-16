@@ -177,7 +177,7 @@ All keybinds use [Virtual-Key names](https://docs.microsoft.com/en-us/windows/wi
 | Key | DLL fallback | Info |
 | --- | ------------ | ---- |
 | `ToggleLoftKey` | `T` | Toggle loft / black background. Requires `ToggleLoft = on`. |
-| `ShowSongTimerKey` | `N` | Toggle song timer. Requires `ShowSongTimer = on`. |
+| `ShowSongTimerKey` | `I` | Toggle song timer. Requires `ShowSongTimer = on`. |
 | `ForceReEnumerationKey` | `F` | Force DLC re-enumeration. Requires ForceReEnumeration not `off`. |
 | `RainbowStringsKey` | `V` | Toggle rainbow strings. Requires `RainbowStrings = on`. |
 | `RainbowNotesKey` | `N` | Toggle rainbow notes. Requires `RainbowNotes = on`. |
