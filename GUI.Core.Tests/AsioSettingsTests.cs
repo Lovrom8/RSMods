@@ -127,13 +127,28 @@ public sealed class AsioSettingsTests
     {
         using var dir = new TemporaryDirectory();
         string path = dir.File(AsioSettings.DefaultFileName);
-        File.WriteAllLines(path, ["[Config]", "EnableAsio=1", "WasapiOutputs=1"]);
+        File.WriteAllLines(path, ["[Config]", "EnableAsio=1", "WasapiOutputs=-1"]);
         var settings = new AsioSettings(path);
 
-        Assert.Equal(WasapiOutputMode.On, settings.Config.EnableWasapiOutputs);
-        settings.Config.EnableWasapiOutputs = WasapiOutputMode.On;
+        // Moved on load, before the setting is edited, since the screen already shows it.
+        Assert.Equal<string[]>(["[Config]", "EnableAsio=1", "EnableWasapiOutputs=-1"], File.ReadAllLines(path));
+        Assert.Equal(WasapiOutputMode.Prompt, settings.Config.EnableWasapiOutputs);
 
+        settings.Config.EnableWasapiOutputs = WasapiOutputMode.On;
         Assert.Equal<string[]>(["[Config]", "EnableAsio=1", "EnableWasapiOutputs=1"], File.ReadAllLines(path));
+    }
+
+    [Fact]
+    public void TheOldWasapiOutputsKeyIsLeftAloneWhenRsAsiosKeyIsSet()
+    {
+        using var dir = new TemporaryDirectory();
+        string path = dir.File(AsioSettings.DefaultFileName);
+        string[] file = ["[Config]", "EnableWasapiOutputs=0", "WasapiOutputs=1"];
+        File.WriteAllLines(path, file);
+        var settings = new AsioSettings(path);
+
+        Assert.Equal(WasapiOutputMode.Off, settings.Config.EnableWasapiOutputs);
+        Assert.Equal<string[]>(file, File.ReadAllLines(path));
     }
 
     [Fact]
