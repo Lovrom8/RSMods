@@ -24,6 +24,7 @@ internal sealed partial class ProfilesViewModel(
     SongCatalogService songCatalog) : ObservableObject
 {
     private bool _initialized;
+    private int _selectGeneration; // Bumped by every selection, so only the latest one's load updates the page
 
     public ObservableCollection<string> AvailableProfiles { get; } = [];
     public ObservableCollection<ProfileBackup> Backups { get; } = [];
@@ -38,12 +39,31 @@ internal sealed partial class ProfilesViewModel(
     public event EventHandler? SongColumnsChanged;
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(HasSelectedProfile))]
+    [NotifyPropertyChangedFor(nameof(HasSelectedProfile), nameof(IsProfileLoaded))]
     [NotifyCanExecuteChangedFor(
         nameof(UnlockRewardsCommand), nameof(LockRewardsCommand), nameof(AddSongListCommand),
         nameof(ImportJsonTonesCommand), nameof(ImportXmlTonesCommand), nameof(LoadSongsCommand), nameof(RemoveSongListCommand)
     )]
     private string? _selectedProfile;
+
+    /// <summary>The profile the shared service has decoded and made active; null while one loads or after a failed load.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsProfileLoaded))]
+    [NotifyCanExecuteChangedFor(
+        nameof(UnlockRewardsCommand), nameof(LockRewardsCommand), nameof(AddSongListCommand),
+        nameof(ImportJsonTonesCommand), nameof(ImportXmlTonesCommand), nameof(LoadSongsCommand), nameof(RemoveSongListCommand),
+        nameof(SaveSongListsCommand)
+    )]
+    private string? _loadedProfile;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanChangeProfile), nameof(ShowBusy))]
+    [NotifyCanExecuteChangedFor(
+        nameof(UnlockRewardsCommand), nameof(LockRewardsCommand), nameof(AddSongListCommand),
+        nameof(RemoveSongListCommand), nameof(RevertToBackupCommand), nameof(ImportJsonTonesCommand),
+        nameof(ImportXmlTonesCommand), nameof(LoadSongsCommand), nameof(SaveSongListsCommand)
+    )]
+    private bool _isLoadingProfile;
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(RevertToBackupCommand))]
@@ -53,6 +73,7 @@ internal sealed partial class ProfilesViewModel(
     private int _songListCount;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanChangeProfile), nameof(ShowBusy))]
     [NotifyCanExecuteChangedFor(
         nameof(UnlockRewardsCommand), nameof(LockRewardsCommand), nameof(AddSongListCommand),
         nameof(RemoveSongListCommand), nameof(RevertToBackupCommand), nameof(ImportJsonTonesCommand),
@@ -67,10 +88,11 @@ internal sealed partial class ProfilesViewModel(
     private bool _importTonesBulk;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanChangeProfile))]
     [NotifyCanExecuteChangedFor(
         nameof(UnlockRewardsCommand), nameof(LockRewardsCommand), nameof(AddSongListCommand),
-        nameof(RemoveSongListCommand), nameof(ImportJsonTonesCommand), nameof(ImportXmlTonesCommand),
-        nameof(LoadSongsCommand), nameof(SaveSongListsCommand)
+        nameof(RemoveSongListCommand), nameof(RevertToBackupCommand), nameof(ImportJsonTonesCommand),
+        nameof(ImportXmlTonesCommand), nameof(LoadSongsCommand), nameof(SaveSongListsCommand)
     )]
     private bool _isLoadingSongs;
 
@@ -82,6 +104,32 @@ internal sealed partial class ProfilesViewModel(
     private bool _hasLoadedSongs;
 
     public bool HasSelectedProfile => !string.IsNullOrEmpty(SelectedProfile);
+
+    /// <summary>The shown profile is the one edits go to; false while it loads or when it failed to.</summary>
+    public bool IsProfileLoaded => HasSelectedProfile && LoadedProfile == SelectedProfile;
+
+    /// <summary>
+    /// The profile picker and the song grid are locked while anything reads or writes the profile, so a save can't
+    /// run against a profile that is being swapped out.
+    /// </summary>
+    public bool CanChangeProfile => !IsBusy && !IsLoadingProfile && !IsLoadingSongs;
+
+    public bool ShowBusy => IsBusy || IsLoadingProfile;
+
+    /// <summary>
+    /// Forgets the profile lists, the loaded profile and the backups, e.g. after the save folder changed to another
+    /// account's; the next visit builds them again.
+    /// </summary>
+    public void Reset()
+    {
+        _initialized = false;
+        SelectedProfile = null;
+        profiles.ClearActiveProfile();
+        AvailableProfiles.Clear();
+        Backups.Clear();
+        SelectedBackup = null;
+        StatusMessage = string.Empty;
+    }
 
     /// <summary>Builds the profile and backup lists on first navigation; the save folder is resolved by startup.</summary>
     public Task InitializeAsync()
@@ -127,9 +175,14 @@ internal sealed partial class ProfilesViewModel(
     {
         // The loaded grid belongs to the previous profile, so drop it until the user reloads.
         ClearSongGrid();
+        LoadedProfile = null;
 
         if (string.IsNullOrEmpty(value))
         {
+            // Nothing is shown, so nothing may stay active for an edit to write to.
+            _selectGeneration++;
+            profiles.ClearActiveProfile();
+            IsLoadingProfile = false;
             SongListCount = 0;
             return;
         }
@@ -148,29 +201,38 @@ internal sealed partial class ProfilesViewModel(
 
     private async Task SelectProfileAsync(string profileName)
     {
-        IsBusy = true;
+        int generation = ++_selectGeneration;
+        IsLoadingProfile = true;
         StatusMessage = $"Loading profile '{profileName}'…";
         try
         {
-            // Decrypting the profile is file-bound; keep it off the UI thread.
-            await Task.Run(() => profiles.SelectProfile(profileName));
+            // Decrypting the profile is file-bound; keep it off the UI thread. The service drops the previous
+            // profile first, so a failed load leaves nothing active for edits to write to.
+            bool active = await Task.Run(() => profiles.SelectProfile(profileName));
+            if (generation != _selectGeneration || !active)
+                return; // Another profile was selected meanwhile; its load updates the page
 
+            LoadedProfile = profileName;
             SongListCount = profiles.SongListCount;
             StatusMessage = $"Loaded profile '{profileName}'.";
         }
         catch (Exception ex)
         {
+            if (generation != _selectGeneration)
+                return;
+
             SongListCount = 0;
             StatusMessage = "Failed to load the profile.";
             await dialogs.ShowErrorAsync($"Could not load the profile:\n{ex.Message}");
         }
         finally
         {
-            IsBusy = false;
+            if (generation == _selectGeneration)
+                IsLoadingProfile = false;
         }
     }
 
-    private bool CanEditProfile => HasSelectedProfile && !IsBusy && !IsLoadingSongs;
+    private bool CanEditProfile => IsProfileLoaded && !IsBusy && !IsLoadingProfile && !IsLoadingSongs;
 
     [RelayCommand(CanExecute = nameof(CanEditProfile))]
     private Task UnlockRewardsAsync() => ChangeRewardsAsync(unlock: true);
@@ -240,7 +302,7 @@ internal sealed partial class ProfilesViewModel(
         StatusMessage = "Backup list refreshed.";
     }
 
-    private bool CanRevert => SelectedBackup is not null && !IsBusy;
+    private bool CanRevert => SelectedBackup is not null && !IsBusy && !IsLoadingProfile && !IsLoadingSongs;
 
     [RelayCommand(CanExecute = nameof(CanRevert))]
     private async Task RevertToBackupAsync()
@@ -259,11 +321,20 @@ internal sealed partial class ProfilesViewModel(
             return;
         }
 
+        // The decoded profile is about to go stale; drop it first so no later save can write it over the backup.
+        string? reselect = SelectedProfile;
+        SelectedProfile = null;
+
         await RunBusyAsync(async () =>
         {
             await Task.Run(() => ProfileBackupService.RestoreBackup(sourceDir, GenUtil.GetSaveDirectory()));
             StatusMessage = $"Reverted to the backup: {name}";
         }, "Failed to restore the backup");
+
+        // The backup may hold other profiles than before; reload from the restored files either way.
+        LoadAvailableProfiles();
+        if (reselect is not null && AvailableProfiles.Contains(reselect))
+            SelectedProfile = reselect;
     }
 
     [RelayCommand(CanExecute = nameof(CanEditProfile))]
@@ -344,7 +415,7 @@ internal sealed partial class ProfilesViewModel(
         }
     }
 
-    private bool CanLoadSongs => HasSelectedProfile && !IsBusy && !IsLoadingSongs;
+    private bool CanLoadSongs => IsProfileLoaded && !IsBusy && !IsLoadingProfile && !IsLoadingSongs;
 
     [RelayCommand(CanExecute = nameof(CanLoadSongs))]
     private async Task LoadSongsAsync()
@@ -430,7 +501,7 @@ internal sealed partial class ProfilesViewModel(
         return rows;
     }
 
-    private bool CanSaveSongLists => HasLoadedSongs && !IsBusy && !IsLoadingSongs;
+    private bool CanSaveSongLists => HasLoadedSongs && IsProfileLoaded && !IsBusy && !IsLoadingProfile && !IsLoadingSongs;
 
     [RelayCommand(CanExecute = nameof(CanSaveSongLists))]
     private Task SaveSongListsAsync() => RunBusyAsync(async () =>

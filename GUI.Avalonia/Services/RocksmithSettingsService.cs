@@ -13,6 +13,11 @@ internal sealed class RocksmithSettingsService
 {
     private RocksmithSettings? _settings;
 
-    public RocksmithSettings Get() => _settings ??= new RocksmithSettings(
-        Path.Combine(Constants.RSFolder, RocksmithSettings.DefaultFileName));
+    public RocksmithSettings Get() => _settings ??= Load();
+
+    /// <summary>Rereads Rocksmith.ini, picking up what the game wrote to it since it was last read.</summary>
+    public RocksmithSettings Reload() => _settings = Load();
+
+    private static RocksmithSettings Load() =>
+        new(Path.Combine(Constants.RSFolder, RocksmithSettings.DefaultFileName));
 }

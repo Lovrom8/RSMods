@@ -22,6 +22,7 @@ internal sealed partial class ColorsViewModel : ObservableObject
 {
     private readonly SettingsService _settings;
     private readonly DebouncedSaver _saver;
+    private readonly HashSet<string> _changedToggles = []; // Mode toggles the user changed since they were last saved
     private bool _loading;
     private bool _initialized;
 
@@ -122,6 +123,8 @@ internal sealed partial class ColorsViewModel : ObservableObject
             UseSeparateNoteColors = RsModsSettings.Toggles.SeparateNoteColors == OnOffMode.On;
             UseRocksmithNoteColors = RsModsSettings.ModSettings.SeparateNoteColorsMode == NoteColorMode.RocksmithColors;
             UseCustomHighwayColors = RsModsSettings.HighwayColors.CustomHighwayColors;
+            lock (_changedToggles)
+                _changedToggles.Clear();
 
             for (int i = 0; i < StringLabels.Length; i++)
             {
@@ -145,14 +148,27 @@ internal sealed partial class ColorsViewModel : ObservableObject
 
     private async Task SaveAsync()
     {
-        RsModsSettings.Toggles.CustomStringColors =
-            UseCustomStringColors ? CustomStringColorMode.Custom : CustomStringColorMode.Off;
-        RsModsSettings.Toggles.SeparateNoteColors =
-            UseSeparateNoteColors ? OnOffMode.On : OnOffMode.Off;
-        RsModsSettings.ModSettings.SeparateNoteColorsMode = !UseSeparateNoteColors
-            ? NoteColorMode.Off
-            : UseRocksmithNoteColors ? NoteColorMode.RocksmithColors : NoteColorMode.Custom;
-        RsModsSettings.HighwayColors.CustomHighwayColors = UseCustomHighwayColors;
+        // Like the colors, only the toggles the user changed are written: the others may have been changed in game
+        // since this page loaded, and writing the page's old values would undo that.
+        string[] changed;
+        lock (_changedToggles)
+        {
+            changed = [.. _changedToggles];
+            _changedToggles.Clear();
+        }
+
+        if (changed.Contains(nameof(UseCustomStringColors)))
+            RsModsSettings.Toggles.CustomStringColors =
+                UseCustomStringColors ? CustomStringColorMode.Custom : CustomStringColorMode.Off;
+        if (changed.Contains(nameof(UseSeparateNoteColors)))
+            RsModsSettings.Toggles.SeparateNoteColors =
+                UseSeparateNoteColors ? OnOffMode.On : OnOffMode.Off;
+        if (changed.Contains(nameof(UseSeparateNoteColors)) || changed.Contains(nameof(UseRocksmithNoteColors)))
+            RsModsSettings.ModSettings.SeparateNoteColorsMode = !UseSeparateNoteColors
+                ? NoteColorMode.Off
+                : UseRocksmithNoteColors ? NoteColorMode.RocksmithColors : NoteColorMode.Custom;
+        if (changed.Contains(nameof(UseCustomHighwayColors)))
+            RsModsSettings.HighwayColors.CustomHighwayColors = UseCustomHighwayColors;
 
         // Write only complete colors the user changed, so untouched defaults aren't baked into the INI and a
         // half-typed hex waits until it's finished. Each is re-baselined as it's written, before the await, so
@@ -203,7 +219,11 @@ internal sealed partial class ColorsViewModel : ObservableObject
         // Listing what's saved, not what isn't, so a display-only property added later can't start saving.
         if (e.PropertyName is nameof(UseCustomStringColors) or nameof(UseSeparateNoteColors)
             or nameof(UseRocksmithNoteColors) or nameof(UseCustomHighwayColors))
+        {
+            lock (_changedToggles)
+                _changedToggles.Add(e.PropertyName);
             _saver.Request();
+        }
     }
 
     /// <summary>Stores colors as the store expects: 6 upper-case hex digits with no leading #.</summary>

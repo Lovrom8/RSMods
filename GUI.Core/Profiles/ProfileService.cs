@@ -11,9 +11,11 @@ namespace RSMods
     public sealed class ProfileService
     {
         private readonly Func<string> _getSaveDirectory;
-        private DecodedProfile _activeDocument;
-        private JObject _activeProfile;
-        private string _activeProfilePath = string.Empty;
+        private readonly object _gate = new();
+        // Path, file and decoded JSON are swapped as one, so a save running beside a reselect can't write one
+        // profile's JSON into another's file.
+        private volatile Selected _active;
+        private long _selection; // Bumped by every select/clear, so only the latest one is made active
 
         public ProfileService() : this(() => GenUtil.GetSaveDirectory())
         {
@@ -24,8 +26,10 @@ namespace RSMods
             _getSaveDirectory = getSaveDirectory ?? throw new ArgumentNullException(nameof(getSaveDirectory));
         }
 
-        public JObject ActiveProfile => _activeProfile;
-        public int SongListCount => _activeProfile != null ? GetProfileSongLists().Count : 6;
+        private sealed record Selected(string Path, DecodedProfile Document, JObject Profile);
+
+        public JObject ActiveProfile => _active?.Profile;
+        public int SongListCount => _active is { } active ? GetSongLists(active.Profile).Count : 6;
 
         public Dictionary<string, string> GetAvailableProfiles() => GetAvailableProfiles(_getSaveDirectory());
 
@@ -65,15 +69,41 @@ namespace RSMods
             }
         }
 
-        public void SelectProfile(string profileName)
+        /// <summary>
+        /// Decodes a profile and makes it the active one. The previous profile stops being active straight away, so a
+        /// load that fails leaves no profile active rather than the old one. False when a newer select or
+        /// <see cref="ClearActiveProfile"/> came in while this one was decoding; the newer one wins.
+        /// </summary>
+        public bool SelectProfile(string profileName)
         {
+            long selection;
+            lock (_gate)
+            {
+                selection = ++_selection;
+                _active = null;
+            }
+
             string profilePath = GetProfilePath(profileName);
             DecodedProfile document = ProfileCodec.Decode(profilePath);
             JObject profile = JObject.Parse(document.Json);
 
-            _activeProfilePath = profilePath;
-            _activeDocument = document;
-            _activeProfile = profile;
+            lock (_gate)
+            {
+                if (selection != _selection)
+                    return false;
+                _active = new Selected(profilePath, document, profile);
+                return true;
+            }
+        }
+
+        /// <summary>Drops the active profile, e.g. before its files are replaced or the save folder changes.</summary>
+        public void ClearActiveProfile()
+        {
+            lock (_gate)
+            {
+                _selection++;
+                _active = null;
+            }
         }
 
         public int GetSongListCount(string profileName)
@@ -95,30 +125,32 @@ namespace RSMods
             return Path.Combine(saveDirectory, GetAvailableProfiles(saveDirectory)[profileName] + "_PRFLDB");
         }
 
-        public void SaveActiveProfile()
+        public void SaveActiveProfile() => Save(RequireActive());
+
+        private static void Save(Selected active)
         {
-            EnsureActiveProfile();
-            string json = _activeProfile.ToString(Formatting.None);
-            ProfileCodec.Encode(json, _activeProfilePath, _activeDocument);
+            string json = active.Profile.ToString(Formatting.None);
+            ProfileCodec.Encode(json, active.Path, active.Document);
         }
 
         public void SaveTones(List<object> newGuitarTones, List<object> newBassTones)
         {
-            EnsureActiveProfile();
-            var existingGuitarTones = _activeProfile["CustomTones"]?.ToObject<List<object>>() ?? [];
-            var existingBassTones = _activeProfile["BassTones"]?.ToObject<List<object>>() ?? [];
+            Selected active = RequireActive();
+            JObject profile = active.Profile;
+            var existingGuitarTones = profile["CustomTones"]?.ToObject<List<object>>() ?? [];
+            var existingBassTones = profile["BassTones"]?.ToObject<List<object>>() ?? [];
 
             existingGuitarTones.AddRange(newGuitarTones);
             existingBassTones.AddRange(newBassTones);
-            _activeProfile["CustomTones"] = JToken.FromObject(existingGuitarTones);
-            _activeProfile["BassTones"] = JToken.FromObject(existingBassTones);
-            SaveActiveProfile();
+            profile["CustomTones"] = JToken.FromObject(existingGuitarTones);
+            profile["BassTones"] = JToken.FromObject(existingBassTones);
+            Save(active);
         }
 
         public void ChangeRewardStatus(bool unlock)
         {
-            EnsureActiveProfile();
-            JToken prizes = _activeProfile["Prizes"];
+            JObject profile = RequireActive().Profile;
+            JToken prizes = profile["Prizes"];
             prizes["NumPrizePoints"] = unlock ? 1300.0 : 0.0;
             prizes["UnawardedPrizePoints"] = 0.0;
 
@@ -143,7 +175,7 @@ namespace RSMods
                 prizes[$"HasPrizeDialogShown_{index}"] = unlock;
             }
 
-            _activeProfile["Prizes"] = prizes;
+            profile["Prizes"] = prizes;
         }
 
         public static bool ShouldIncludeSong(SongData song, HashSet<string> ownedDlc)
@@ -156,79 +188,79 @@ namespace RSMods
 
         public HashSet<string> GetOwnedRs1Dlc()
         {
-            EnsureActiveProfile();
             return new HashSet<string>(
-                _activeProfile["Stats"]["DLCTag"]
+                RequireActive().Profile["Stats"]["DLCTag"]
                     .Children<JProperty>()
                     .Select(property => property.Name));
         }
 
-        public List<List<string>> GetProfileSongLists()
-        {
-            EnsureActiveProfile();
-            return _activeProfile["SongListsRoot"]["SongLists"].ToObject<List<List<string>>>();
-        }
+        public List<List<string>> GetProfileSongLists() => GetSongLists(RequireActive().Profile);
 
-        public List<string> GetProfileFavoriteSongs()
-        {
-            EnsureActiveProfile();
-            return _activeProfile["FavoritesListRoot"]["FavoritesList"].ToObject<List<string>>();
-        }
+        private static List<List<string>> GetSongLists(JObject profile) =>
+            profile["SongListsRoot"]["SongLists"].ToObject<List<List<string>>>();
+
+        public List<string> GetProfileFavoriteSongs() => GetFavorites(RequireActive().Profile);
+
+        private static List<string> GetFavorites(JObject profile) =>
+            profile["FavoritesListRoot"]["FavoritesList"].ToObject<List<string>>();
 
         public List<List<string>> GetProfileSongListsWithFavorites()
         {
-            List<List<string>> customLists = GetProfileSongLists();
-            List<string> favorites = GetProfileFavoriteSongs();
+            JObject profile = RequireActive().Profile;
+            List<List<string>> customLists = GetSongLists(profile);
+            List<string> favorites = GetFavorites(profile);
             return [favorites, .. customLists];
         }
 
         public void SetSongInList(string dlcKey, int listIndex, bool add)
         {
-            EnsureActiveProfile();
-            List<string> list = _activeProfile["SongListsRoot"]["SongLists"][listIndex].ToObject<List<string>>();
+            JObject profile = RequireActive().Profile;
+            List<string> list = profile["SongListsRoot"]["SongLists"][listIndex].ToObject<List<string>>();
 
             if (add && !list.Contains(dlcKey))
                 list.Add(dlcKey);
             else if (!add && list.Contains(dlcKey))
                 list.Remove(dlcKey);
 
-            _activeProfile["SongListsRoot"]["SongLists"][listIndex] = JToken.FromObject(list);
+            profile["SongListsRoot"]["SongLists"][listIndex] = JToken.FromObject(list);
         }
 
         public void SetSongInFavorites(string dlcKey, bool add)
         {
-            EnsureActiveProfile();
-            List<string> favorites = GetProfileFavoriteSongs();
+            JObject profile = RequireActive().Profile;
+            List<string> favorites = GetFavorites(profile);
 
             if (add && !favorites.Contains(dlcKey))
                 favorites.Add(dlcKey);
             else if (!add && favorites.Contains(dlcKey))
                 favorites.Remove(dlcKey);
 
-            _activeProfile["FavoritesListRoot"]["FavoritesList"] = JToken.FromObject(favorites);
+            profile["FavoritesListRoot"]["FavoritesList"] = JToken.FromObject(favorites);
         }
 
         public bool AddSongList()
         {
-            List<List<string>> lists = GetProfileSongLists();
+            Selected active = RequireActive();
+            List<List<string>> lists = GetSongLists(active.Profile);
             if (lists.Count >= 20)
                 return false;
 
             lists.Add([]);
-            _activeProfile["SongListsRoot"]["SongLists"] = JToken.FromObject(lists);
-            SaveActiveProfile();
+            active.Profile["SongListsRoot"]["SongLists"] = JToken.FromObject(lists);
+            Save(active);
             return true;
         }
 
         public bool RemoveSongList()
         {
-            List<List<string>> lists = GetProfileSongLists();
+            Selected active = RequireActive();
+            List<List<string>> lists = GetSongLists(active.Profile);
             if (lists.Count <= 6)
                 return false;
 
             lists.RemoveAt(lists.Count - 1);
-            _activeProfile["SongListsRoot"]["SongLists"] = JToken.FromObject(lists);
-            SaveActiveProfile();
+            active.Profile["SongListsRoot"]["SongLists"] = JToken.FromObject(lists);
+            Save(active);
             return true;
         }
 
@@ -237,10 +269,8 @@ namespace RSMods
             return ProfileCodec.Decode(GetProfilePath(profileName));
         }
 
-        private void EnsureActiveProfile()
-        {
-            if (_activeProfile == null || _activeDocument == null || string.IsNullOrEmpty(_activeProfilePath))
-                throw new InvalidOperationException("No Rocksmith profile has been selected.");
-        }
+        // Read once per operation: everything an edit or save touches comes from the same selected profile.
+        private Selected RequireActive() =>
+            _active ?? throw new InvalidOperationException("No Rocksmith profile has been selected.");
     }
 }

@@ -12,7 +12,7 @@
             <TextBlock Classes="h1" Text="Profiles" />
 
             <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="10">
-                <ProgressBar Width="120" IsIndeterminate="True" IsVisible="{Binding IsBusy}" />
+                <ProgressBar Width="120" IsIndeterminate="True" IsVisible="{Binding ShowBusy}" />
                 <TextBlock VerticalAlignment="Center" Opacity="0.8" Text="{Binding StatusMessage}" />
             </StackPanel>
 
@@ -26,6 +26,7 @@
                                 Grid.Column="1"
                                 HorizontalAlignment="Stretch"
                                 PlaceholderText="Select a profile"
+                                IsEnabled="{Binding CanChangeProfile}"
                                 ItemsSource="{Binding AvailableProfiles}"
                                 SelectedItem="{Binding SelectedProfile}" />
                         </Grid>
@@ -147,6 +148,7 @@
                         FrozenColumnCount="2"
                         GridLinesVisibility="All"
                         IsVisible="{Binding HasLoadedSongs}"
+                        IsEnabled="{Binding CanChangeProfile}"
                         ItemsSource="{Binding SongRows}" />
                 </Grid>
             </Border>

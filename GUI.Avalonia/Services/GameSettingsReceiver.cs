@@ -14,7 +14,7 @@ namespace RSMods.Services;
 /// sends the game, so the GUI stays the only writer of RSMods.ini while it runs. The game finds this window by the
 /// <see cref="WindowMarker"/> property; with no marked window it writes the file itself (DLL SettingEdits).
 /// </summary>
-internal sealed class GameSettingsReceiver(SettingsCoordinator coordinator, SettingsService settings)
+internal sealed class GameSettingsReceiver(SettingsCoordinator coordinator)
 {
     private const string WindowMarker = "RSModsGUI"; // Must match kGuiWindowMarker in DLL/SettingEdits.cpp
     private const uint WM_COPYDATA = 0x004A;
@@ -39,7 +39,7 @@ internal sealed class GameSettingsReceiver(SettingsCoordinator coordinator, Sett
         };
     }
 
-    // Returns 1 once the edit is in the GUI's settings; 0 and the game writes the line itself.
+    // Returns 1 once the edit is saved to RSMods.ini; 0 and the game writes the line itself.
     private IntPtr WndProc(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam, ref bool handled)
     {
         if (msg != WM_COPYDATA)
@@ -55,20 +55,23 @@ internal sealed class GameSettingsReceiver(SettingsCoordinator coordinator, Sett
         if (GameSettingEdit.Parse(message) is not { } edit || RsModsSettings.Ini is not { } ini || !edit.ApplyTo(ini, coordinator))
             return IntPtr.Zero;
 
-        // Off the UI thread, like a screen's autosave. A failed write keeps the value in memory for the next save.
-        _ = SaveAsync();
-        return 1;
-    }
-
-    private async Task SaveAsync()
-    {
+        // A 1 tells the game not to write the line itself, so the file is written before answering (the game waits
+        // up to 2 seconds). If it fails, 0 has the game write it and report the error; the value also stays in
+        // memory for the GUI's next save.
+        bool changed;
         try
         {
-            await settings.SaveAsync();
+            changed = RsModsSettings.Save();
         }
         catch (Exception e) when (e is IOException or UnauthorizedAccessException)
         {
             Debug.WriteLine($"Couldn't save a setting changed in game: {e.Message}");
+            return IntPtr.Zero;
         }
+
+        // The game rereads the whole INI on "update all"; send it without holding up the game's wait for this answer.
+        if (changed)
+            _ = Task.Run(() => WinMsgUtil.SendMsgToRS("update all"));
+        return 1;
     }
 }

@@ -105,12 +105,52 @@ public sealed class DebouncedSaverTests
         }, Quiet, ex => reported = ex);
 
         saver.Request();
-        await saver.FlushAsync();
+        Assert.False(await saver.FlushAsync());
         saver.Request();
-        await saver.FlushAsync();
+        Assert.True(await saver.FlushAsync());
 
         Assert.IsType<IOException>(reported);
         Assert.Equal(2, attempts);
         Assert.False(saver.HasUnsavedChanges);
+    }
+
+    [Fact]
+    public async Task AFailedSaveStaysUnsavedUntilAFlushSucceeds()
+    {
+        int attempts = 0;
+        var saver = new DebouncedSaver(() =>
+        {
+            if (Interlocked.Increment(ref attempts) == 1)
+                throw new IOException("disk full");
+            return Task.CompletedTask;
+        }, Quiet);
+
+        saver.Request();
+        await Task.Delay(Settle); // The quiet period ends and the save fails.
+
+        Assert.Equal(1, attempts);
+        Assert.True(saver.HasUnsavedChanges);
+
+        // No new change: the flush on close still retries the failed one.
+        Assert.True(await saver.FlushAsync());
+        Assert.Equal(2, attempts);
+        Assert.False(saver.HasUnsavedChanges);
+    }
+
+    [Fact]
+    public async Task FlushReportsAFailureInsteadOfRetryingForever()
+    {
+        int attempts = 0;
+        var saver = new DebouncedSaver(() =>
+        {
+            Interlocked.Increment(ref attempts);
+            throw new UnauthorizedAccessException("read-only");
+        }, TimeSpan.FromSeconds(5));
+
+        saver.Request();
+
+        Assert.False(await saver.FlushAsync());
+        Assert.Equal(1, attempts);
+        Assert.True(saver.HasUnsavedChanges);
     }
 }

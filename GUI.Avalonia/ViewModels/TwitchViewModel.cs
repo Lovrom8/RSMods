@@ -15,6 +15,7 @@ internal sealed partial class TwitchViewModel : ObservableObject, IDisposable
     private readonly IDialogService _dialogs;
     private readonly TwitchRewardRepository _rewardRepository;
     private CancellationTokenSource? _authorizationCancellation;
+    private int _rulesRevision; // Bumped on every rule edit, so a save only clears the edits it wrote
     private bool _initialized;
     private bool _disposed;
 
@@ -168,8 +169,7 @@ internal sealed partial class TwitchViewModel : ObservableObject, IDisposable
         AttachRule(rule);
         RewardRules.Add(rule);
         SelectedRule = rule;
-        RulesDirty = true;
-        RulesStatus = string.Empty;
+        MarkRulesDirty();
     }
 
     private bool CanRemoveRule => !IsBusy && SelectedRule != null;
@@ -182,14 +182,30 @@ internal sealed partial class TwitchViewModel : ObservableObject, IDisposable
         SelectedRule.PropertyChanged -= OnRuleChanged;
         RewardRules.Remove(SelectedRule);
         SelectedRule = null;
-        RulesDirty = true;
-        RulesStatus = string.Empty;
+        MarkRulesDirty();
     }
 
     private bool CanSaveRules => !IsBusy && RulesDirty;
 
     [RelayCommand(CanExecute = nameof(CanSaveRules))]
-    private async Task SaveRulesAsync()
+    private Task SaveRulesAsync() => TrySaveRulesAsync();
+
+    /// <summary>
+    /// Saves unsaved rule edits before the app closes. False when they weren't saved (an invalid rule or a failed
+    /// write, already shown on this page), so the close can be held.
+    /// </summary>
+    public Task<bool> SaveRulesBeforeCloseAsync()
+    {
+        if (IsBusy)
+        {
+            RulesStatus = "Wait for the current Twitch action to finish, then save the reward rules.";
+            return Task.FromResult(false);
+        }
+
+        return TrySaveRulesAsync();
+    }
+
+    private async Task<bool> TrySaveRulesAsync()
     {
         var rewards = new List<TwitchReward>(RewardRules.Count);
         foreach (TwitchRewardRuleViewModel rule in RewardRules)
@@ -198,22 +214,27 @@ internal sealed partial class TwitchViewModel : ObservableObject, IDisposable
             {
                 SelectedRule = rule;
                 RulesStatus = rule.ValidationMessage;
-                return;
+                return false;
             }
             rewards.Add(reward);
         }
 
+        int revision = _rulesRevision;
         IsBusy = true;
         try
         {
             await _rewardRepository.SaveAsync(rewards);
             _service.SetRewards(rewards);
-            RulesDirty = false;
+            // A rule edited while the file was being written isn't in it, so it stays unsaved.
+            if (revision == _rulesRevision)
+                RulesDirty = false;
             RulesStatus = "Reward rules saved.";
+            return true;
         }
         catch (Exception ex)
         {
             await _dialogs.ShowErrorAsync(ex.Message, "Save Twitch rewards");
+            return false;
         }
         finally
         {
@@ -276,6 +297,12 @@ internal sealed partial class TwitchViewModel : ObservableObject, IDisposable
         if (e.PropertyName is nameof(TwitchRewardRuleViewModel.ValidationMessage) or
             nameof(TwitchRewardRuleViewModel.IsValid) or nameof(TwitchRewardRuleViewModel.SwatchHex))
             return;
+        MarkRulesDirty();
+    }
+
+    private void MarkRulesDirty()
+    {
+        _rulesRevision++;
         RulesDirty = true;
         RulesStatus = string.Empty;
     }

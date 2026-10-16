@@ -139,16 +139,24 @@ internal sealed partial class ModSettingsViewModel : ObservableObject
 
     private async void OnCustomEditorRequested(string editorType)
     {
-        switch (editorType)
+        try
         {
-            case "HighwayColors":
-            case "StringColors":
-                await _navigation.NavigateToAsync(NavigationTarget.Colors, editorType);
-                break;
+            switch (editorType)
+            {
+                case "HighwayColors":
+                case "StringColors":
+                    await _navigation.NavigateToAsync(NavigationTarget.Colors, editorType);
+                    break;
 
-            case "Twitch":
-                await _navigation.NavigateToAsync(NavigationTarget.Twitch);
-                break;
+                case "Twitch":
+                    await _navigation.NavigateToAsync(NavigationTarget.Twitch);
+                    break;
+            }
+        }
+        catch (Exception ex)
+        {
+            // async void: nothing awaits this, so an error opening the page is reported here.
+            CrashReporter.Report(ex, fatal: false);
         }
     }
 
