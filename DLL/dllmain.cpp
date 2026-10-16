@@ -28,8 +28,7 @@ bool wwiseLogging = false;
 #endif
 
 /// <summary>
-/// Send Midi Data Async. Only really used in debug builds to test MIDI commands.
-/// Secondary purpose of remaking D3D textures every 32 ticks (~ 1 second).
+/// Send Midi Data Async. Only used by the MIDI debug menu's send buttons, so opening the port stays off the render thread.
 /// </summary>
 /// <returns>NULL. Loops while game is open.</returns>
 unsigned WINAPI MidiThread() {

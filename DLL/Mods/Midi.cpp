@@ -241,17 +241,24 @@ namespace Midi {
 	}
 
 	unsigned WINAPI ListenToMidiInThread() {
-		auto midiin = std::make_unique<RtMidiIn>();
-
 		NumberOfInPorts = midiInGetNumDevs();
 		if (NumberOfInPorts == 0) {
 			LOG_ERROR("No MIDI IN ports available!" << std::endl);
 			return 0u - 1u;
 		}
 
-		midiin->openPort(SelectedMidiInDevice);
-		midiin->setCallback(&RespondToMidiIn);
-		midiin->ignoreTypes(false, false, true);
+		// Its own detached thread, so an unplugged or busy device must not throw out of it (that ends the game).
+		std::unique_ptr<RtMidiIn> midiin;
+		try {
+			midiin = std::make_unique<RtMidiIn>();
+			midiin->openPort(SelectedMidiInDevice);
+			midiin->setCallback(&RespondToMidiIn);
+			midiin->ignoreTypes(false, false, true);
+		}
+		catch (RtMidiError& error) {
+			LOG_ERROR("(MIDI) Couldn't listen to MIDI IN device " << SelectedMidiInDevice << ": " << error.getMessage() << std::endl);
+			return 0u - 1u;
+		}
 
 		while (!GameState::GameClosing) {
 			Sleep(50);
@@ -366,6 +373,7 @@ namespace Midi {
 
 	/// <summary>
 	/// Send a command to the pedal to change to a specific setting based on the current song's tuning.
+	/// The game sets the song's tuning a moment after the song menu is reported, so MidiMod calls this once it has settled.
 	/// </summary>
 	void AutomateTuning() {
 		if (!alreadyAutomatedTuningInThisSong) {
@@ -375,8 +383,6 @@ namespace Midi {
 				LOG_ERROR("Your pedal doesn't support drop tuning." << std::endl);
 				return;
 			}
-
-			Sleep(1500); // The menu is called when the animation starts. The tuning isn't set at that point, so we need to wait to get the value. This doesn't seem to lag the game.
 
 			const bool bass = SongTuning::IsPlayerOnBass();
 			std::array<int, 2> highestLowestTuning = SongTuning::GetHighestLowestString(bass); // Bass has 4 strings; charts often leave 5 and 6 at 0.
@@ -404,53 +410,59 @@ namespace Midi {
 		}
 	}
 
-	void AttemptTuningInTuner() {
-		if (!alreadyAttemptedTuningInTuner) {
-			alreadyAttemptedTuningInTuner = true;
-			tunerAutoTuneFailed = false;
+	bool BeginTuningInTuner() {
+		if (alreadyAttemptedTuningInTuner)
+			return false;
 
-			if (!selectedPedal.supportsDropTuning) {
-				LOG_ERROR("(MIDI) Your pedal doesn't support drop tuning." << std::endl);
-				return;
-			}
+		alreadyAttemptedTuningInTuner = true;
+		tunerAutoTuneFailed = false;
 
-			// The menu is reported as soon as its animation starts, before the tuner has ticked. Give it up to 2 seconds.
-			Tuning tunerTuning;
-			for (int waitedMs = 0; waitedMs < 2000; waitedMs += 100) {
-				tunerTuning = SongTuning::GetTuningAtTuner(false);
-				if (tunerTuning.lowE != Tuning().lowE)
-					break;
-				Sleep(100);
-			}
-			if (tunerTuning.lowE == Tuning().lowE)
-				tunerTuning = SongTuning::GetTuningAtTuner(); // Once more, logging why it failed.
-
-			const bool bass = SongTuning::IsPlayerOnBass();
-			std::array<int, 2> highestLowestTuning = SongTuning::GetHighestLowestString(tunerTuning, bass);
-
-			int highestTuning = highestLowestTuning[0];
-			int lowestTuning = highestLowestTuning[1];
-
-			// Couldn't read the tuner. The player is now tuning by hand to what the tuner shows, so tuning the pedal once the
-			// song starts would stack on top of that. Leave this song alone.
-			if (highestTuning == 666 && lowestTuning == 666) {
-				tunerAutoTuneFailed = true;
-				LOG_ERROR("(MIDI) Cannot read tuning in tuner. Not automating tuning for this song, since it would stack on the manual tuning." << std::endl);
-				return;
-			}
-
-			int TrueTuning_Hertz = SongTuning::GetTrueTuning();
-
-			// Same A220 adjustment as the song path (see AutomateTuning).
-			if (TrueTuning_Hertz < 260)
-				highestTuning -= 12;
-
-			selectedPedal.autoTuneFunction(highestTuning + tuningOffset, static_cast<float>(TrueTuning_Hertz));
-
-			const std::array<byte, 6> tunerStrings = { tunerTuning.lowE, tunerTuning.strA, tunerTuning.strD, tunerTuning.strG, tunerTuning.strB, tunerTuning.highE };
-			LOG_INFO("(MIDI) Triggered Mod: Automated Tuning (Tuner) " << DescribeTuning(tunerStrings, TrueTuning_Hertz, bass) << std::endl);
-			alreadyAutomatedTuningInThisSong = true;
+		if (!selectedPedal.supportsDropTuning) {
+			LOG_ERROR("(MIDI) Your pedal doesn't support drop tuning." << std::endl);
+			return false;
 		}
+
+		return true;
+	}
+
+	/// <summary>
+	/// One try at tuning the pedal from the pre-song tuner. The menu is reported as soon as its animation starts, before
+	/// the tuner has ticked, so MidiMod keeps trying for a while; on the last try an unreadable tuner counts as failed.
+	/// </summary>
+	bool TryTuningInTuner(bool lastTry) {
+		Tuning tunerTuning = SongTuning::GetTuningAtTuner(false);
+		if (tunerTuning.lowE == Tuning().lowE) {
+			if (!lastTry)
+				return false;
+			tunerTuning = SongTuning::GetTuningAtTuner(); // Once more, logging why it failed.
+		}
+
+		const bool bass = SongTuning::IsPlayerOnBass();
+		std::array<int, 2> highestLowestTuning = SongTuning::GetHighestLowestString(tunerTuning, bass);
+
+		int highestTuning = highestLowestTuning[0];
+		int lowestTuning = highestLowestTuning[1];
+
+		// Couldn't read the tuner. The player is now tuning by hand to what the tuner shows, so tuning the pedal once the
+		// song starts would stack on top of that. Leave this song alone.
+		if (highestTuning == 666 && lowestTuning == 666) {
+			tunerAutoTuneFailed = true;
+			LOG_ERROR("(MIDI) Cannot read tuning in tuner. Not automating tuning for this song, since it would stack on the manual tuning." << std::endl);
+			return true;
+		}
+
+		int TrueTuning_Hertz = SongTuning::GetTrueTuning();
+
+		// Same A220 adjustment as the song path (see AutomateTuning).
+		if (TrueTuning_Hertz < 260)
+			highestTuning -= 12;
+
+		selectedPedal.autoTuneFunction(highestTuning + tuningOffset, static_cast<float>(TrueTuning_Hertz));
+
+		const std::array<byte, 6> tunerStrings = { tunerTuning.lowE, tunerTuning.strA, tunerTuning.strD, tunerTuning.strG, tunerTuning.strB, tunerTuning.highE };
+		LOG_INFO("(MIDI) Triggered Mod: Automated Tuning (Tuner) " << DescribeTuning(tunerStrings, TrueTuning_Hertz, bass) << std::endl);
+		alreadyAutomatedTuningInThisSong = true;
+		return true;
 	}
 
 	/// <summary>
@@ -516,8 +528,8 @@ namespace Midi {
 	/// <param name="program"> - Value of PC</param>
 	/// <param name="shouldWeSendPC"> - Should we stop sending PC values?</param>
 	void SendDataToThread_PC(char program, bool shouldWeSendPC) {
-		sendPC = shouldWeSendPC;
 		dataToSendPC = program;
+		sendPC = shouldWeSendPC;
 	}
 
 	/// <summary>
@@ -526,8 +538,8 @@ namespace Midi {
 	/// <param name="toePosition"> - Value of CC</param>
 	/// <param name="shouldWeSendCC"> - Should we stop sending CC values?</param>
 	void SendDataToThread_CC(char toePosition, bool shouldWeSendCC) {
-		sendCC = shouldWeSendCC;
 		dataToSendCC = toePosition;
+		sendCC = shouldWeSendCC;
 	}
 
 	/// <summary>

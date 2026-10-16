@@ -1,5 +1,7 @@
 #pragma once
 
+#include <atomic>
+
 #include "RiffRepeater.hpp"
 #include "../MidiPedal.h"
 #include <mmeapi.h>
@@ -8,8 +10,9 @@ namespace Midi {
 	constexpr char kUnusedMidiSelector = static_cast<char>(-1);
 
 	void InitMidi();
-	void AutomateTuning();
-	void AttemptTuningInTuner();
+	void AutomateTuning(); // Call once the song's tuning has settled; MidiMod waits for that.
+	bool BeginTuningInTuner(); // False when there's nothing to wait for: already attempted, or the pedal can't drop tune.
+	bool TryTuningInTuner(bool lastTry); // False while the tuner has no tuning yet and lastTry is false; MidiMod retries.
 	void RevertAutomatedTuning();
 	void SendDataToThread_PC(char program, bool shouldWeSendPC = true);
 	void SendDataToThread_CC(char toePosition, bool shouldWeSendCC = true);
@@ -30,8 +33,10 @@ namespace Midi {
 	extern std::vector<MIDIOUTCAPSA> midiOutDevices; // All MIDI out devices currently connected
 	extern int SelectedMidiOutDevice, SelectedMidiInDevice;
 	extern unsigned int NumberOfOutPorts, NumberOfInPorts;
-	inline bool sendCC = false, sendPC = false;
-	inline int dataToSendPC = 0, dataToSendCC = 0, lastCC = 0, lastPC = 666;
+	// The debug menu's sends, handed from the render thread to MidiThread: the value is stored before its flag.
+	inline std::atomic<bool> sendCC = false, sendPC = false;
+	inline std::atomic<int> dataToSendPC = 0, dataToSendCC = 0;
+	inline int lastCC = 0, lastPC = 666;
 	inline int lastPC_TUNING = 0; // Only use if the song requires a tuning change AND a true tuning. (Hendrix Eb Standard)
 	inline bool alreadyAttemptedTuningInTuner = false, alreadyAutomatedTuningInThisSong = false, alreadyAutomatedTrueTuningInThisSong = false, userWantsToUseAutoTuning = false;
 	inline bool tunerAutoTuneFailed = false; // The tuner was shown but couldn't be read, so the player tuned by hand. Cleared when the song ends or the next tuner opens.

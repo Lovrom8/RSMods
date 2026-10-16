@@ -1,5 +1,8 @@
 #pragma once
 
+#include <chrono>
+#include <optional>
+
 #include "../Framework/Framework.hpp"
 
 // Drives the MIDI auto-tuning cluster: scans for MIDI devices, auto-tunes the pedal in the pre-song tuner and
@@ -25,8 +28,20 @@ public:
 	void OnSettingsChanged(Framework::ModContext& c) override;
 
 private:
+	using Clock = std::chrono::steady_clock;
+
+	// The game reports the song menu when its intro starts, before it sets the song's tuning, and the tuner menu
+	// before the tuner has ticked. Both waits used to Sleep on MainThread, freezing keybinds and every other mod;
+	// now they're deadlines checked on later ticks, like ExtendedRangeMod's settle wait.
+	static constexpr std::chrono::milliseconds SongTuningSettleTime{ 1500 };
+	static constexpr std::chrono::milliseconds TunerReadTime{ 2000 };
+
+	// Set while a wait is pending; cleared once it runs or the menu or song it belongs to is left.
+	std::optional<Clock::time_point> songTuneAt;
+	std::optional<Clock::time_point> tunerReadUntil;
+
+	void CancelTunerRead();
 	void ScanForMidiDevices(Framework::ModContext& c);
-	void RevertTuningWhenLeavingSong();
 	void AutoTuneInTuner(Framework::ModContext& c);
 	void AutoTuneInSong(Framework::ModContext& c);
 	void RevertTuning();

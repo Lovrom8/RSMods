@@ -153,35 +153,54 @@ void MidiMod::ScanForMidiDevices(ModContext& c) {
 	}
 }
 
-// Once we have left the song (and are not in its tuner), tell the pedal to drop the tuning we applied.
-void MidiMod::RevertTuningWhenLeavingSong() {
-	if ((Midi::alreadyAutomatedTuningInThisSong || Midi::alreadyAttemptedTuningInTuner) &&
-		!GameState::Menus::IsInPreSongTuner()) {
-		Midi::RevertAutomatedTuning();
-		Midi::alreadyAttemptedTuningInTuner = false;
-		Midi::userWantsToUseAutoTuning = false;
-	}
-}
-
 // While the pre-song tuner is up, tune the pedal from the tuner's tuning readout (When == Tuner only).
 void MidiMod::AutoTuneInTuner(ModContext& c) {
-	if (GameState::Menus::IsInPreSongTuner() &&
-		c.IsOn(Setting::AutoTuneForSong) &&
-		c.When(Setting::AutoTuneForSongWhen) == When::Tuner &&
-		!Midi::alreadyAttemptedTuningInTuner &&
-		!Midi::alreadyAutomatedTuningInThisSong) {
-		Midi::AttemptTuningInTuner();
-		Midi::appliedTunerAutoTune = true; // Lets ExtendedRange skip its tuning-settle sleep.
+	if (!tunerReadUntil) {
+		if (!GameState::Menus::IsInPreSongTuner() ||
+			!c.IsOn(Setting::AutoTuneForSong) ||
+			c.When(Setting::AutoTuneForSongWhen) != When::Tuner ||
+			Midi::alreadyAttemptedTuningInTuner ||
+			Midi::alreadyAutomatedTuningInThisSong) {
+			return;
+		}
+
+		if (!Midi::BeginTuningInTuner()) {
+			Midi::appliedTunerAutoTune = true; // Lets ExtendedRange skip its tuning-settle wait.
+			return;
+		}
+
+		tunerReadUntil = Clock::now() + TunerReadTime;
 	}
+
+	if (!Midi::TryTuningInTuner(Clock::now() >= *tunerReadUntil)) {
+		c.RequestFastTick(); // The tuner has no tuning yet; look again soon.
+		return;
+	}
+
+	tunerReadUntil.reset();
+	Midi::appliedTunerAutoTune = true; // Lets ExtendedRange skip its tuning-settle wait.
+}
+
+// The tuner closed before it could be read; nothing was sent to the pedal, so there's nothing to revert.
+void MidiMod::CancelTunerRead() {
+	if (!tunerReadUntil)
+		return;
+
+	tunerReadUntil.reset();
+	Midi::alreadyAttemptedTuningInTuner = false;
 }
 
 // In a song. Tune the pedal from the song's tuning the first time through, honouring the When setting.
 void MidiMod::OnSongTick(ModContext& c) {
+	CancelTunerRead(); // The song started mid-read; the song path tunes instead.
 	AutoTuneInSong(c);
 	PublishHud(c);
 }
 
 void MidiMod::OnMenuTick(ModContext& c) {
+	if (!GameState::Menus::IsInPreSongTuner())
+		CancelTunerRead();
+
 	// The user backed out of the tuner instead of starting a song.
 	if (Midi::alreadyAttemptedTuningInTuner &&
 		!GameState::Menus::IsInPreSongTuner()) {
@@ -193,6 +212,8 @@ void MidiMod::OnMenuTick(ModContext& c) {
 }
 
 void MidiMod::OnDisabled(ModContext&) {
+	CancelTunerRead();
+	songTuneAt.reset();
 	RevertTuning();
 }
 
@@ -208,18 +229,28 @@ void MidiMod::RevertTuning() {
 }
 
 void MidiMod::OnSongExit(ModContext&) {
+	songTuneAt.reset(); // Left before the song's tuning settled; nothing was sent to the pedal.
 	RevertTuning();
 	Midi::tunerAutoTuneFailed = false;
 }
 
 void MidiMod::AutoTuneInSong(ModContext& c) {
+	if (songTuneAt) {
+		if (Clock::now() < *songTuneAt)
+			return; // The song's tuning isn't set yet.
+
+		songTuneAt.reset();
+		Midi::AutomateTuning();
+		return;
+	}
+
 	// When::Tuner falls back to tuning here when the song started without a tuner (same tuning as the last song). If the tuner
 	// was shown and couldn't be read, the player tuned by hand, so don't stack the pedal on top of that.
 	if (c.IsOn(Setting::AutoTuneForSong) &&
 		!Midi::alreadyAutomatedTuningInThisSong &&
 		((c.When(Setting::AutoTuneForSongWhen) == When::Tuner && !Midi::tunerAutoTuneFailed) ||
 			(c.When(Setting::AutoTuneForSongWhen) == When::Manual && Midi::userWantsToUseAutoTuning))) {
-		Midi::AutomateTuning();
+		songTuneAt = Clock::now() + SongTuningSettleTime;
 	}
 }
 
