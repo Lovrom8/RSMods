@@ -20,6 +20,25 @@ public sealed class NativeModInstallerTests
         Assert.Equal(NativeModInstallStatus.Success, status);
         Assert.Equal(Dll, File.ReadAllBytes(Path.Combine(temp.Path, "xinput1_3.dll")));
         Assert.Equal(Pdb, File.ReadAllBytes(Path.Combine(temp.Path, "xinput1_3.pdb")));
+        Assert.Empty(Directory.GetFiles(temp.Path, "*.new")); // the swap's temporary files don't linger
+    }
+
+    [Fact]
+    public void Install_TargetLockedByRunningGame_LeavesBothFilesAlone()
+    {
+        using var temp = new TemporaryDirectory();
+        string dll = Path.Combine(temp.Path, "xinput1_3.dll");
+        string pdb = Path.Combine(temp.Path, "xinput1_3.pdb");
+        File.WriteAllText(dll, "old dll");
+        File.WriteAllText(pdb, "old pdb");
+
+        using (new FileStream(dll, FileMode.Open, FileAccess.Read, FileShare.Read))
+        {
+            Assert.Equal(NativeModInstallStatus.GameRunning, NativeModInstaller.Install(temp.Path, Dll, Pdb));
+        }
+
+        Assert.Equal("old dll", File.ReadAllText(dll));
+        Assert.Equal("old pdb", File.ReadAllText(pdb));
     }
 
     [Fact]

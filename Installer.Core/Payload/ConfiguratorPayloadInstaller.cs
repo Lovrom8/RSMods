@@ -78,10 +78,10 @@ namespace RS2014_Mod_Installer.Payload
                 Report(progress, "Verifying configurator...");
                 VerifyAgainstManifest(stagingFolder, manifest);
 
-                EnsureExecutableNotRunning(installFolder, manifest);
+                ThrowIfConfiguratorRunning(installFolder, manifest);
 
                 Report(progress, "Installing configurator...");
-                Deploy(stagingFolder, installFolder, manifest);
+                Deploy(stagingFolder, installFolder, manifest, stagingFolder + "_previous");
 
                 WriteInstalledManifest(installFolder, manifest);
             }
@@ -194,8 +194,16 @@ namespace RS2014_Mod_Installer.Payload
 
         // --- Running-exe guard ----------------------------------------------------------------------
 
-        private static void EnsureExecutableNotRunning(string rsModsFolder, PayloadManifest manifest)
+        /// <summary>
+        /// Throws <see cref="PayloadInstallException"/> (<see cref="PayloadInstallFailure.ConfiguratorRunning"/>) when the
+        /// installed configurator is open. The installer checks this before touching anything else, so an open
+        /// configurator can't leave a new native mod beside the old configurator.
+        /// </summary>
+        public static void ThrowIfConfiguratorRunning(string rsModsFolder, PayloadManifest manifest)
         {
+            ArgumentNullException.ThrowIfNull(rsModsFolder);
+            ArgumentNullException.ThrowIfNull(manifest);
+
             string exeRelative = string.IsNullOrEmpty(manifest.Executable) ? "RSMods.exe" : ToNativePath(manifest.Executable);
             string exePath = Path.Combine(rsModsFolder, exeRelative);
             if (!File.Exists(exePath))
@@ -224,24 +232,96 @@ namespace RS2014_Mod_Installer.Payload
 
         // --- Deployment -----------------------------------------------------------------------------
 
-        private static void Deploy(string staging, string rsModsFolder, PayloadManifest manifest)
+        // Copies the validated payload over the top. Each file it replaces is moved to backupFolder first, so a copy that
+        // fails partway (a file in use, a full disk) puts the prior install back exactly as it was.
+        private static void Deploy(string staging, string rsModsFolder, PayloadManifest manifest, string backupFolder)
         {
             Directory.CreateDirectory(rsModsFolder);
 
-            RemoveStaleFiles(rsModsFolder, manifest);
-
-            // Copy the validated payload over the top, creating directories as needed.
-            foreach (PayloadFile file in manifest.Files)
+            var replaced = new List<(string Destination, string Backup)>();
+            var added = new List<string>();
+            try
             {
-                string native = ToNativePath(file.Path);
-                string source = Path.Combine(staging, native);
-                string destination = Path.Combine(rsModsFolder, native);
-                Directory.CreateDirectory(Path.GetDirectoryName(destination));
-                File.Copy(source, destination, overwrite: true);
+                foreach (PayloadFile file in manifest.Files)
+                {
+                    string native = ToNativePath(file.Path);
+                    string source = Path.Combine(staging, native);
+                    string destination = Path.Combine(rsModsFolder, native);
+                    Directory.CreateDirectory(Path.GetDirectoryName(destination));
+
+                    if (File.Exists(destination))
+                    {
+                        string backup = Path.Combine(backupFolder, native);
+                        Directory.CreateDirectory(Path.GetDirectoryName(backup));
+                        File.Move(destination, backup);
+                        replaced.Add((destination, backup));
+                    }
+                    else
+                    {
+                        added.Add(destination);
+                    }
+
+                    File.Copy(source, destination);
+                }
             }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+            {
+                if (!RollBack(replaced, added))
+                {
+                    throw new PayloadInstallException(PayloadInstallFailure.IOError,
+                        "Installing the configurator failed and it couldn't be fully undone. The previous files are in " +
+                        backupFolder + ": " + ex.Message, ex);
+                }
+
+                TryDeleteDirectory(backupFolder);
+                throw;
+            }
+
+            TryDeleteDirectory(backupFolder);
+
+            // Only now that every new file is in: a failed upgrade above still has all of the prior install's files.
+            RemoveStaleFiles(rsModsFolder, manifest);
 
             // The configurator expects its user mods directory to exist.
             Directory.CreateDirectory(Path.Combine(rsModsFolder, "CustomMods"));
+        }
+
+        // Newest first: removes what the failed deploy added and moves each replaced file back. False if any of it failed,
+        // which leaves those files in the backup folder.
+        private static bool RollBack(List<(string Destination, string Backup)> replaced, List<string> added)
+        {
+            bool complete = true;
+
+            for (int i = added.Count - 1; i >= 0; i--)
+                complete &= TryDeleteFile(added[i]);
+
+            for (int i = replaced.Count - 1; i >= 0; i--)
+            {
+                (string destination, string backup) = replaced[i];
+                try
+                {
+                    File.Move(backup, destination, overwrite: true);
+                }
+                catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+                {
+                    complete = false;
+                }
+            }
+
+            return complete;
+        }
+
+        private static bool TryDeleteFile(string path)
+        {
+            try
+            {
+                File.Delete(path);
+                return true;
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+            {
+                return false;
+            }
         }
 
         private static void RemoveStaleFiles(string rsModsFolder, PayloadManifest newManifest)

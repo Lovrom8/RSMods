@@ -205,6 +205,38 @@ public sealed class ConfiguratorPayloadInstallerTests
     }
 
     [Fact]
+    public void DeployFailingPartway_RestoresPriorInstall()
+    {
+        using var temp = new TemporaryDirectory();
+        string rsMods = temp.Combine("RSMods");
+        var first = PayloadBuilder.Default();
+        ConfiguratorPayloadInstaller.Install(rsMods, first.BuildZip(), first.BuildManifest());
+        string[] paths = ["RSMods.exe", "RocksmithToolkitLib.dll", "ddc/ddc.exe", "tools/ww2ogg.exe"];
+        string[] before = paths.Select(p => File.ReadAllText(Path.Combine(rsMods, p))).ToArray();
+
+        var next = new PayloadBuilder()
+            .AddText("aa-new.dll", "added before the failure")
+            .AddText("RSMods.exe", "v2")
+            .AddText("RocksmithToolkitLib.dll", "v2")
+            .AddText("ddc/ddc.exe", "v2")
+            .AddText("tools/ww2ogg.exe", "v2");
+
+        // Held open by another program, so it can't be moved aside: the deploy fails after replacing the files before it.
+        PayloadInstallException ex;
+        using (new FileStream(Path.Combine(rsMods, "tools", "ww2ogg.exe"), FileMode.Open, FileAccess.Read, FileShare.Read))
+        {
+            ex = Assert.Throws<PayloadInstallException>(() =>
+                ConfiguratorPayloadInstaller.Install(rsMods, next.BuildZip(), next.BuildManifest()));
+        }
+
+        Assert.Equal(PayloadInstallFailure.IOError, ex.Reason);
+        Assert.Equal(before, paths.Select(p => File.ReadAllText(Path.Combine(rsMods, p))).ToArray());
+        Assert.False(File.Exists(Path.Combine(rsMods, "aa-new.dll")));
+        Assert.Equal("1.0.0", PayloadManifest.Parse(File.ReadAllText(Path.Combine(rsMods, ConfiguratorPayloadInstaller.InstalledManifestName))).ApplicationVersion);
+        Assert.Empty(Directory.GetDirectories(temp.Path, "RSMods._install_*")); // staging and backup both gone
+    }
+
+    [Fact]
     public void LockedExecutable_ThrowsConfiguratorRunning()
     {
         using var temp = new TemporaryDirectory();
