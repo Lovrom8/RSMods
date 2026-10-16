@@ -47,7 +47,17 @@ internal sealed partial class InstallerViewModel(EmbeddedInstallerResources reso
             return;
 
         _initialized = true;
-        RocksmithLocationResult result = RocksmithLocator.Locate();
+        RocksmithLocationResult result;
+        try
+        {
+            result = RocksmithLocator.Locate();
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            // Discovery is a convenience; Browse still works.
+            result = new RocksmithLocationResult(RocksmithLocationStatus.NotFound, string.Empty);
+        }
+
         RocksmithFolder = result.Path;
         StatusMessage = result.Status switch
         {
@@ -71,9 +81,16 @@ internal sealed partial class InstallerViewModel(EmbeddedInstallerResources reso
 
         RocksmithFolder = selected;
         ErrorMessage = string.Empty;
-        StatusMessage = RocksmithLocator.IsRocksmithFolder(selected)
-            ? "Rocksmith 2014 folder selected. Ready to install."
-            : "That folder does not look like a complete Rocksmith 2014 installation.";
+        try
+        {
+            StatusMessage = RocksmithLocator.IsRocksmithFolder(selected)
+                ? "Rocksmith 2014 folder selected. Ready to install."
+                : "That folder does not look like a complete Rocksmith 2014 installation.";
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            StatusMessage = "That folder could not be read: " + ex.Message;
+        }
     }
 
     private bool CanInstall() => !IsBusy && !string.IsNullOrWhiteSpace(RocksmithFolder);
@@ -126,17 +143,23 @@ internal sealed partial class InstallerViewModel(EmbeddedInstallerResources reso
     private bool TryGetRocksmithFolder(out string rocksmithFolder)
     {
         rocksmithFolder = string.Empty;
-        if (!RocksmithLocator.IsRocksmithFolder(RocksmithFolder))
-        {
-            ErrorMessage = "Choose the Rocksmith 2014 folder containing cache.psarc and a non-empty dlc folder.";
-            StatusMessage = "Installation was not started.";
-            return false;
-        }
-
         try
         {
+            if (!RocksmithLocator.IsRocksmithFolder(RocksmithFolder))
+            {
+                ErrorMessage = "Choose the Rocksmith 2014 folder containing cache.psarc and a non-empty dlc folder.";
+                StatusMessage = "Installation was not started.";
+                return false;
+            }
+
             rocksmithFolder = Path.GetFullPath(RocksmithFolder);
             return true;
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            ErrorMessage = "The selected Rocksmith folder could not be read: " + ex.Message;
+            StatusMessage = "Installation was not started.";
+            return false;
         }
         catch (Exception ex) when (ex is ArgumentException or IOException or NotSupportedException)
         {
@@ -206,6 +229,13 @@ internal sealed partial class InstallerViewModel(EmbeddedInstallerResources reso
         {
             StatusMessage = "Creating the desktop shortcut…";
             string desktop = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
+            if (string.IsNullOrEmpty(desktop))
+            {
+                // Without a desktop the shortcut would land in the current directory.
+                warnings.Add("the desktop shortcut was skipped because the desktop folder could not be found.");
+                return;
+            }
+
             DesktopShortcut.WriteUrlShortcut(Path.Combine(desktop, "RSMods.url"), configuratorPath);
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
