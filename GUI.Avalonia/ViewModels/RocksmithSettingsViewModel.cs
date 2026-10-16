@@ -12,14 +12,15 @@ namespace RSMods.ViewModels;
 
 /// <summary>
 /// Edits Rocksmith.ini (the game's own settings) through the path-based <see cref="RocksmithSettings"/>
-/// instance. Holds an editable snapshot loaded from the store and writes it back a moment after each change;
-/// the store's round-trip-safe backend preserves unknown sections, comments, and commented-out values.
+/// instance. Holds an editable snapshot loaded from the store and writes the values the user changed back a moment
+/// after each change; the store's round-trip-safe backend preserves unknown sections, comments, and commented-out values.
 /// </summary>
 internal sealed partial class RocksmithSettingsViewModel : ObservableObject
 {
     private readonly RocksmithSettingsService service;
     private readonly SettingsWarningPresenter _warnings;
     private readonly DebouncedSaver _saver;
+    private readonly HashSet<string> _changed = []; // Properties the user changed since they were last saved
     private bool _loading;
     private bool _initialized;
 
@@ -144,44 +145,68 @@ internal sealed partial class RocksmithSettingsViewModel : ObservableObject
         }
     }
 
+    // How each saved property is written to the store, keyed by property name.
+    private static readonly Dictionary<string, Action<RocksmithSettingsViewModel, RocksmithSettings>> Writers = new()
+    {
+        [nameof(EnableMicrophone)] = (vm, s) => s.Audio.EnableMicrophone = vm.EnableMicrophone,
+        [nameof(ExclusiveMode)] = (vm, s) => s.Audio.ExclusiveMode = vm.ExclusiveMode,
+        [nameof(LatencyBuffer)] = (vm, s) => s.Audio.LatencyBuffer = (int)vm.LatencyBuffer,
+        [nameof(ForceDefaultPlaybackDevice)] = (vm, s) => s.Audio.ForceDefaultPlaybackDevice = vm.ForceDefaultPlaybackDevice,
+        [nameof(ForceWdm)] = (vm, s) => s.Audio.ForceWDM = vm.ForceWdm,
+        [nameof(ForceDirectXSink)] = (vm, s) => s.Audio.ForceDirectXSink = vm.ForceDirectXSink,
+        [nameof(DumpAudioLog)] = (vm, s) => s.Audio.DumpAudioLog = vm.DumpAudioLog,
+        [nameof(MaxOutputBufferSize)] = (vm, s) => s.Audio.MaxOutputBufferSize = (int)vm.MaxOutputBufferSize,
+        [nameof(RealToneCableOnly)] = (vm, s) => s.Audio.RealToneCableOnly = vm.RealToneCableOnly,
+        [nameof(Win32UltraLowLatencyMode)] = (vm, s) => s.Audio.Win32UltraLowLatencyMode = vm.Win32UltraLowLatencyMode,
+
+        [nameof(ShowGamepadUi)] = (vm, s) => s.RendererWin32.ShowGamepadUI = vm.ShowGamepadUi,
+        [nameof(ScreenWidth)] = (vm, s) => s.RendererWin32.ScreenWidth = (int)vm.ScreenWidth,
+        [nameof(ScreenHeight)] = (vm, s) => s.RendererWin32.ScreenHeight = (int)vm.ScreenHeight,
+        [nameof(Fullscreen)] = (vm, s) => s.RendererWin32.Fullscreen = vm.Fullscreen,
+        [nameof(VisualQuality)] = (vm, s) => s.RendererWin32.VisualQuality = vm.VisualQuality,
+        [nameof(RenderingWidth)] = (vm, s) => s.RendererWin32.RenderingWidth = (int)vm.RenderingWidth,
+        [nameof(RenderingHeight)] = (vm, s) => s.RendererWin32.RenderingHeight = (int)vm.RenderingHeight,
+        [nameof(EnablePostEffects)] = (vm, s) => s.RendererWin32.EnablePostEffects = vm.EnablePostEffects,
+        [nameof(EnableShadows)] = (vm, s) => s.RendererWin32.EnableShadows = vm.EnableShadows,
+        [nameof(EnableHighResScope)] = (vm, s) => s.RendererWin32.EnableHighResScope = vm.EnableHighResScope,
+        [nameof(EnableDepthOfField)] = (vm, s) => s.RendererWin32.EnableDepthOfField = vm.EnableDepthOfField,
+        [nameof(EnablePerPixelLighting)] = (vm, s) => s.RendererWin32.EnablePerPixelLighting = vm.EnablePerPixelLighting,
+        [nameof(MsaaSamples)] = (vm, s) => s.RendererWin32.MsaaSamples = vm.MsaaSamples,
+        [nameof(DisableBrowser)] = (vm, s) => s.RendererWin32.DisableBrowser = vm.DisableBrowser,
+
+        [nameof(UseProxy)] = (vm, s) => s.Net.UseProxy = vm.UseProxy,
+    };
+
     private async Task SaveAsync()
     {
-        var s = service.Get();
-
-        // The store's setters persist to disk; run the write off the UI thread. SuspendSave coalesces
-        // the per-property auto-saves into a single file write on scope dispose instead of one per setter.
-        await Task.Run(() =>
+        string[] changed;
+        lock (_changed)
         {
-            using var _ = s.SuspendSave();
+            changed = [.. _changed];
+            _changed.Clear();
+        }
 
-            s.Audio.EnableMicrophone = EnableMicrophone;
-            s.Audio.ExclusiveMode = ExclusiveMode;
-            s.Audio.LatencyBuffer = (int)LatencyBuffer;
-            s.Audio.ForceDefaultPlaybackDevice = ForceDefaultPlaybackDevice;
-            s.Audio.ForceWDM = ForceWdm;
-            s.Audio.ForceDirectXSink = ForceDirectXSink;
-            s.Audio.DumpAudioLog = DumpAudioLog;
-            s.Audio.MaxOutputBufferSize = (int)MaxOutputBufferSize;
-            s.Audio.RealToneCableOnly = RealToneCableOnly;
-            s.Audio.Win32UltraLowLatencyMode = Win32UltraLowLatencyMode;
+        try
+        {
+            // The store's setters persist to disk; run the write off the UI thread. The game rewrites Rocksmith.ini
+            // too (resolution, audio), so the file is reread first and only the values changed here are written:
+            // writing the whole snapshot would undo the game's changes. SuspendSave coalesces the per-property
+            // auto-saves into a single file write on scope dispose instead of one per setter.
+            await Task.Run(() =>
+            {
+                var s = service.Reload();
+                using var _ = s.SuspendSave();
 
-            s.RendererWin32.ShowGamepadUI = ShowGamepadUi;
-            s.RendererWin32.ScreenWidth = (int)ScreenWidth;
-            s.RendererWin32.ScreenHeight = (int)ScreenHeight;
-            s.RendererWin32.Fullscreen = Fullscreen;
-            s.RendererWin32.VisualQuality = VisualQuality;
-            s.RendererWin32.RenderingWidth = (int)RenderingWidth;
-            s.RendererWin32.RenderingHeight = (int)RenderingHeight;
-            s.RendererWin32.EnablePostEffects = EnablePostEffects;
-            s.RendererWin32.EnableShadows = EnableShadows;
-            s.RendererWin32.EnableHighResScope = EnableHighResScope;
-            s.RendererWin32.EnableDepthOfField = EnableDepthOfField;
-            s.RendererWin32.EnablePerPixelLighting = EnablePerPixelLighting;
-            s.RendererWin32.MsaaSamples = MsaaSamples;
-            s.RendererWin32.DisableBrowser = DisableBrowser;
-
-            s.Net.UseProxy = UseProxy;
-        });
+                foreach (string property in changed)
+                    Writers[property](this, s);
+            });
+        }
+        catch
+        {
+            lock (_changed)
+                _changed.UnionWith(changed); // Not written, so still to save
+            throw;
+        }
 
         StatusMessage = $"Saved at {DateTime.Now:HH:mm:ss}";
     }
@@ -190,9 +215,11 @@ internal sealed partial class RocksmithSettingsViewModel : ObservableObject
     {
         base.OnPropertyChanged(e);
 
-        if (_loading || e.PropertyName is nameof(StatusMessage))
+        if (_loading || e.PropertyName is null || !Writers.ContainsKey(e.PropertyName))
             return;
 
+        lock (_changed)
+            _changed.Add(e.PropertyName);
         _saver.Request();
     }
 }
