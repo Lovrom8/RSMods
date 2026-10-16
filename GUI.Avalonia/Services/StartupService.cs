@@ -56,6 +56,15 @@ internal sealed class StartupService(IDialogService dialogs, IAppEnvironment env
             RsModsSettings.ValidationWarning -= Collect;
         }
 
+        // The file is there but couldn't be read: the screens show defaults, and saving is refused so they can't
+        // replace the player's settings. Say so now rather than at the first failed save.
+        if (RsModsSettings.Ini?.LoadError is { } loadError)
+        {
+            await dialogs.ShowErrorAsync(
+                $"RSMods.ini couldn't be read, so your settings are shown as defaults and changes won't be saved " +
+                $"until RSMods is restarted. Close anything that has the file open, such as an editor.\n{loadError.Message}");
+        }
+
         bool backedUp = await BackUpProfilesOnStartupAsync(rsFolder, savePath);
 
         return new StartupResult
