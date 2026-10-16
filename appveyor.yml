@@ -48,11 +48,8 @@
         Invoke-Step 'Verify manifest currency' { & "$root\DLL\Framework\Tests\BuildAndRun.ps1" -VerifyManifest }
 
         Invoke-Step 'Publish installer' { & "$root\Build\Publish-Installer.ps1" }
-  build:
-      parallel: true
-      verbosity: quiet
-  test_script:
-    - ps: .\DLL\Framework\Tests\BuildAndRun.ps1
+  # Every test suite already runs in build_script.
+  test: off
   artifacts:
   - path: 'Build/Artifacts/installer-publish/win-x64/RS2014-Mod-Installer.exe'
     name: Installer

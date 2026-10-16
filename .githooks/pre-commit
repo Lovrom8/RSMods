@@ -30,6 +30,13 @@ changed=$(git diff --cached --name-only --diff-filter=ACMR \
 
 echo "pre-commit: settings schema changed; verifying mods.manifest.json currency..."
 
+# The verifier compares the working-tree manifest; with unstaged edits that isn't the one being committed.
+if ! git diff --quiet -- mods.manifest.json; then
+    echo "  x mods.manifest.json has unstaged changes, so the check wouldn't test what is being committed." >&2
+    echo "    Stage or discard them, then commit again." >&2
+    exit 1
+fi
+
 ps=$(command -v pwsh 2>/dev/null || command -v powershell.exe 2>/dev/null)
 if [ -z "$ps" ]; then
     echo "  ! No PowerShell found; skipping manifest check (CI will still verify)." >&2
