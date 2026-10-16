@@ -75,6 +75,6 @@ namespace RS2014_Mod_Installer.Core
         }
 
         // ERROR_SHARING_VIOLATION and ERROR_LOCK_VIOLATION: another process has the file open.
-        private static bool IsSharingViolation(IOException ex) => (ex.HResult & 0xFFFF) is 32 or 33;
+        internal static bool IsSharingViolation(IOException ex) => (ex.HResult & 0xFFFF) is 32 or 33;
     }
 }
