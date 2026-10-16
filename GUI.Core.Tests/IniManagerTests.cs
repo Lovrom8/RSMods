@@ -279,4 +279,60 @@ public sealed class IniManagerTests
         Assert.True(ini.Save());
         Assert.Equal<string[]>(["[Asio]", "CustomBufferSize=128"], File.ReadAllLines(path));
     }
+
+    // A file that exists but can't be read must not load as empty and then get the defaults saved over it.
+    [Fact]
+    public void AFileThatCantBeReadIsNeverSavedOver()
+    {
+        using var dir = new TemporaryDirectory();
+        string path = dir.File("RSMods.ini");
+        File.WriteAllLines(path, ["[Toggle Switches]", "ExtendedRange=on"]);
+        var ini = new IniManager(path);
+
+        using (new FileStream(path, FileMode.Open, FileAccess.ReadWrite, FileShare.None))
+            ini.Load();
+
+        Assert.NotNull(ini.LoadError);
+        Assert.Equal("off", ini.GetString("[Toggle Switches]", "ExtendedRange", "off"));
+        Assert.True(ini.FileOutOfDate);
+        Assert.ThrowsAny<IOException>(() => ini.Save());
+        Assert.Equal<string[]>(["[Toggle Switches]", "ExtendedRange=on"], File.ReadAllLines(path));
+
+        // Once it reads, it saves as usual.
+        ini.Load();
+        Assert.Null(ini.LoadError);
+        Assert.Equal("on", ini.GetString("[Toggle Switches]", "ExtendedRange", "off"));
+        ini.Save();
+    }
+
+    [Fact]
+    public async Task LoadWaitsOutABriefWriter()
+    {
+        using var dir = new TemporaryDirectory();
+        string path = dir.File("RSMods.ini");
+        File.WriteAllLines(path, ["[Toggle Switches]", "ExtendedRange=on"]);
+        var ini = new IniManager(path);
+
+        var writer = new FileStream(path, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+        Task load = Task.Run(ini.Load);
+        await Task.Delay(80);
+        writer.Dispose();
+        await load;
+
+        Assert.Null(ini.LoadError);
+        Assert.Equal("on", ini.GetString("[Toggle Switches]", "ExtendedRange", "off"));
+    }
+
+    [Fact]
+    public void AMissingFileLoadsEmpty()
+    {
+        using var dir = new TemporaryDirectory();
+        var ini = new IniManager(dir.File("RSMods.ini"));
+        ini.Load();
+
+        Assert.Null(ini.LoadError);
+        Assert.Equal("off", ini.GetString("[Toggle Switches]", "ExtendedRange", "off"));
+        ini.Save();
+        Assert.True(File.Exists(dir.File("RSMods.ini")));
+    }
 }

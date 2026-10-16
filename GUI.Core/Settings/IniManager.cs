@@ -75,15 +75,68 @@ namespace RSMods
         private bool _fileOutOfDate;    // Anything the file on disk lacks, seeded defaults and corrections included.
         private long _contentVersion;   // Bumped with each such change, so a write can tell whether it went stale.
 
+        // Set when the file exists but couldn't be read: what memory holds isn't the file, so nothing is written over it.
+        private Exception _loadError;
+
         public string FilePath => filePath;
 
-        public void Load()
+        /// <summary>Why the last <see cref="Load"/> couldn't read the existing file, or null. While set, <see cref="Save"/> throws.</summary>
+        public Exception LoadError
         {
-            lock (_gate)
-                LoadLocked();
+            get
+            {
+                lock (_gate)
+                    return _loadError;
+            }
         }
 
-        private void LoadLocked()
+        /// <summary>
+        /// Reads the file. A missing file loads as empty. One that exists but can't be read keeps what was loaded
+        /// before and sets <see cref="LoadError"/>, so defaults are never saved over a real file nobody could read.
+        /// </summary>
+        public void Load()
+        {
+            string text;
+            try
+            {
+                text = ReadWithRetry();
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+            {
+                Debug.WriteLine($"Failed to load INI file: {ex.Message}");
+                lock (_gate)
+                    _loadError = ex;
+                return;
+            }
+
+            lock (_gate)
+            {
+                LoadLocked(text);
+                _loadError = null;
+            }
+        }
+
+        // Null when there's no file.
+        private string ReadWithRetry()
+        {
+            for (int attempt = 1; ; attempt++)
+            {
+                try
+                {
+                    return File.ReadAllText(filePath);
+                }
+                catch (Exception ex) when (ex is FileNotFoundException or DirectoryNotFoundException)
+                {
+                    return null;
+                }
+                catch (IOException) when (attempt < 5)
+                {
+                    Thread.Sleep(50); // The game or DLL may hold the file without sharing it, but only briefly.
+                }
+            }
+        }
+
+        private void LoadLocked(string text)
         {
             _blocks.Clear();
             _data.Clear();
@@ -96,41 +149,33 @@ namespace RSMods
             var block = new Block();
             _blocks.Add(block);
 
-            try
+            if (text == null) return;
+
+            if (text.Contains('\n') && !text.Contains("\r\n"))
+                _newLine = "\n";
+
+            using var reader = new StringReader(text);
+            for (string line = reader.ReadLine(); line != null; line = reader.ReadLine())
             {
-                if (!File.Exists(filePath)) return;
+                var trimmed = line.Trim();
 
-                string text = File.ReadAllText(filePath);
-                if (text.Contains('\n') && !text.Contains("\r\n"))
-                    _newLine = "\n";
-
-                using var reader = new StringReader(text);
-                for (string line = reader.ReadLine(); line != null; line = reader.ReadLine())
+                if (TryParseSection(trimmed, out string newSection))
                 {
-                    var trimmed = line.Trim();
-
-                    if (TryParseSection(trimmed, out string newSection))
-                    {
-                        block = new Block { Name = newSection, Header = line };
-                        _blocks.Add(block);
-                        continue;
-                    }
-
-                    var entry = new Line { Raw = line };
-                    block.Lines.Add(entry);
-
-                    // Key lines before the first section belong to no section, so they're only kept, never read.
-                    if (block.Name == null || trimmed.Length == 0)
-                        continue;
-
-                    entry.Commented = trimmed.StartsWith(';');
-                    if (TrySplitKeyValue(entry.Commented ? trimmed.Substring(1) : trimmed, out entry.Key, out entry.Value))
-                        GetOrCreateSection(entry.Commented ? _commentedData : _data, block.Name)[entry.Key] = entry;
+                    block = new Block { Name = newSection, Header = line };
+                    _blocks.Add(block);
+                    continue;
                 }
-            }
-            catch (IOException ex)
-            {
-                Debug.WriteLine($"Failed to load INI file: {ex.Message}");
+
+                var entry = new Line { Raw = line };
+                block.Lines.Add(entry);
+
+                // Key lines before the first section belong to no section, so they're only kept, never read.
+                if (block.Name == null || trimmed.Length == 0)
+                    continue;
+
+                entry.Commented = trimmed.StartsWith(';');
+                if (TrySplitKeyValue(entry.Commented ? trimmed.Substring(1) : trimmed, out entry.Key, out entry.Value))
+                    GetOrCreateSection(entry.Commented ? _commentedData : _data, block.Name)[entry.Key] = entry;
             }
         }
 
@@ -222,6 +267,9 @@ namespace RSMods
             long version;
             lock (_gate)
             {
+                if (_loadError != null)
+                    throw new IOException($"{filePath} exists but couldn't be read, so it isn't saved over: {_loadError.Message}", _loadError);
+
                 using var text = new StringWriter();
                 WriteContents(text);
                 contents = text.ToString();
