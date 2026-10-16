@@ -42,23 +42,15 @@ void TwitchMod::SyncState() {
 	s_fYourFC.store(Settings::IsTwitchSettingEnabled(Setting::Twitch::FYourFC), std::memory_order_relaxed);
 	s_drunkMode.store(Settings::IsTwitchSettingEnabled(Setting::Twitch::DrunkMode), std::memory_order_relaxed);
 
-	if (solid) {
-		if (Settings::TwitchSettingValue(Setting::Twitch::SolidNoteColor) == "random") {
-			int idx = currentRandomTexture;
-			if (idx >= 0 && idx < static_cast<int>(randomTextures.size())) {
-				s_activeSolidTexture.store(randomTextures[idx], std::memory_order_relaxed);
-			}
-			else {
-				s_activeSolidTexture.store(nullptr, std::memory_order_relaxed);
-			}
-		}
-		else {
-			s_activeSolidTexture.store(twitchUserDefinedTexture, std::memory_order_relaxed);
-		}
-	}
-	else {
-		s_activeSolidTexture.store(nullptr, std::memory_order_relaxed);
-	}
+	// Only which texture: MainThread never touches the render-owned texture pointers.
+	s_solidRandom.store(solid && Settings::TwitchSettingValue(Setting::Twitch::SolidNoteColor) == "random", std::memory_order_relaxed);
+}
+
+LPDIRECT3DTEXTURE9 TwitchMod::SolidTextureForDraw() noexcept {
+	if (!s_solidRandom.load(std::memory_order_relaxed)) return twitchUserDefinedTexture;
+
+	const int idx = currentRandomTexture.load(std::memory_order_relaxed);
+	return idx >= 0 && idx < static_cast<int>(randomTextures.size()) ? randomTextures[idx] : nullptr;
 }
 
 void TwitchMod::OnInitialize(ModContext& c) {
@@ -95,7 +87,7 @@ void TwitchMod::OnInitialize(ModContext& c) {
 		}
 
 		if (s_solidNotes.load(std::memory_order_relaxed)) {
-			LPDIRECT3DTEXTURE9 tex = s_activeSolidTexture.load(std::memory_order_relaxed);
+			LPDIRECT3DTEXTURE9 tex = SolidTextureForDraw();
 			if (tex) {
 				if (ctx.path == DrawPath::Primitive) {
 					if (DrawMesh::IsNoteTail(ctx)) return { DrawOutcome::ReplaceTexture, 1, tex };
@@ -117,6 +109,7 @@ void TwitchMod::OnInitialize(ModContext& c) {
 }
 
 void TwitchMod::OnEnabled(ModContext& c) {
+	s_active = true;
 	c.Draw().CancelTextureRelease();
 	SyncState();
 	D3DHooks::RecreateTextures = true;
@@ -153,7 +146,7 @@ void TwitchMod::RunPerFrameEffects(IDirect3DDevice9*) {
 }
 
 void TwitchMod::OnDisabled(ModContext& c) {
-	s_activeSolidTexture.store(nullptr, std::memory_order_release);
+	s_active = false;
 	D3DHooks::RecreateTextures = true;
 	c.Draw().RequestTextureRelease();
 }
@@ -162,18 +155,22 @@ void TwitchMod::OnSettingsChanged(ModContext&) {
 	SyncState();
 }
 
-void TwitchMod::OnShutdown(ModContext&) {
-	ReleaseTextures();
+void TwitchMod::OnShutdown(ModContext& c) {
+	s_active = false;
+	c.Draw().RequestTextureRelease(); // The game still renders while it closes; free them on its thread.
 }
 
 void TwitchMod::RegenerateTextures(IDirect3DDevice9* pDevice) {
 	if (!pDevice) return;
 
-	GenerateRandomTextures(pDevice);
-	RegenerateUserDefinedTexture(pDevice);
+	// Regen runs for every registered mod; a disabled one would recreate textures nothing releases.
+	if (!s_active) {
+		ReleaseTextures();
+		return;
+	}
 
-	// Regenerating released the textures the draw hook may hold; point it at the new ones before the next draw.
-	SyncState();
+	GenerateRandomTextures(pDevice);
+	RegenerateUserDefinedTexture(pDevice); // The draw hook looks these up per draw, so it picks up the new ones.
 }
 
 void TwitchMod::GenerateRandomTextures(IDirect3DDevice9* pDevice) {

@@ -31,13 +31,17 @@ public:
 	static inline LPDIRECT3DTEXTURE9 twitchUserDefinedTexture = nullptr;
 	static inline std::vector<LPDIRECT3DTEXTURE9> randomTextures = std::vector<LPDIRECT3DTEXTURE9>(randomTextureCount, nullptr);
 	static inline ColorList randomTextureColors = ColorList(randomTextureCount);
-	static inline std::atomic<int> currentRandomTexture = 0; // Set on MainThread, read by SyncState on the render thread too
+	static inline std::atomic<int> currentRandomTexture = 0; // Set on MainThread, read by the draw interceptor on the render thread
 
 private:
+	// Render thread only: the textures are regenerated and freed there, between draws.
+	static LPDIRECT3DTEXTURE9 SolidTextureForDraw() noexcept;
+
+	static inline std::atomic<bool> s_active = false;
 	static inline std::atomic<bool> s_removeNotes = false;
 	static inline std::atomic<bool> s_transparentNotes = false;
 	static inline std::atomic<bool> s_solidNotes = false;
+	static inline std::atomic<bool> s_solidRandom = false; // Solid notes use randomTextures[currentRandomTexture], not the user's colour.
 	static inline std::atomic<bool> s_fYourFC = false;
 	static inline std::atomic<bool> s_drunkMode = false;
-	static inline std::atomic<LPDIRECT3DTEXTURE9> s_activeSolidTexture = nullptr;
 };
