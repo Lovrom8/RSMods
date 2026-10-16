@@ -153,6 +153,7 @@ namespace {
 	bool CalculateCRCFromLockedTexture(IDirect3DTexture9* texture, const D3DLOCKED_RECT& lockedRect, DWORD& o_crc) {
 		if (!lockedRect.pBits) {
 			LOG_ERROR("CRCForTexture: lockedRect.pBits is null" << std::endl);
+			texture->UnlockRect(0); // The lock itself succeeded; a texture left locked can't be drawn or locked again.
 			return false;
 		}
 
