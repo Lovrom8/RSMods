@@ -137,7 +137,7 @@ Registered ──OnInitialize──▶ Inactive ──OnEnabled──▶ Active
      │                          ▲                       │
      │ OnInitialize throws      └───────OnDisabled──────┘
      ▼
-  Faulted ◀──── OnEnabled / tick hook / OnSettingsChanged / command throws
+  Faulted ◀──── IsEnabled / OnEnabled / tick hook / OnSettingsChanged / command / render callback throws
      │
      └── Retry faulted (mod status view) ──▶ Registered, OnInitialize again
 ```
@@ -147,8 +147,10 @@ Registered ──OnInitialize──▶ Inactive ──OnEnabled──▶ Active
   transition is identical (the suppressed-vs-disabled distinction lives in the log line and the
   mod status snapshot, not in the state).
 - **Effective activation** = `IsEnabled()` **and** winning every resource it contends for. Only
-  `Active` mods get tick hooks. A mod leaving `Active` reverts **synchronously** (there are no
-  in-flight callbacks to wait for): its `OnDisabled` runs in the same `Tick` that deselects it.
+  `Active` mods get tick hooks. A mod leaving `Active` reverts **synchronously**: its `OnDisabled` runs
+  in the same `Tick` that deselects it, without waiting for the render thread, which may still be in one
+  of its draw or frame callbacks. So textures and other render-side resources are released through the
+  deferred render-thread path (`RequestTextureRelease`), in `OnShutdown` too.
 - **Ordering guarantees** (edges are per-mod, not global phase edges):
   - Activate in a song: `OnEnabled → OnSongEnter → OnTick → OnSongTick`
   - Deactivate in a song: `OnSongExit → OnDisabled`
@@ -159,6 +161,9 @@ Registered ──OnInitialize──▶ Inactive ──OnEnabled──▶ Active
     faulted* in the mod status view ([`docs/mod-status.md`](docs/mod-status.md)). `OnEnabled` must be
     strongly exception-safe, as `OnDisabled` is *not* called on a failed enable.
   - A command binding throws → the mod's remaining key events are dropped and it faults like a hook.
+  - `IsEnabled` throws → faulted like a hook (retryable), not treated as disabled.
+  - A render-thread callback throws → the render thread stops calling the mod at once and the next
+    MainThread pass faults it like a hook ([`docs/draw-registry.md`](docs/draw-registry.md) §8.10).
   - A tick hook (`OnTick`/`OnMenuTick`/`OnSongTick`/`OnSongEnter`/`OnSongExit`) or
     `OnSettingsChanged` throws → the mod is faulted immediately; an `Active` one receives a best-effort
     `OnDisabled` revert first. Only the `OnSongExit`/`OnDisabled` calls made while tearing a mod down

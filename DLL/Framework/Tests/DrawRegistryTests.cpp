@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <iostream>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -418,6 +419,146 @@ int main() {
 		reg.RemoveMod(&modA);
 		channel.Dispatch(e);
 		Check("RemoveMod unpublishes device handlers at once", calls.empty());
+	}
+
+	// RemoveMod unpublishes interceptors and frame callbacks at once, like device handlers: a faulted mod
+	// must stop drawing before the end-of-tick rebuild.
+	{
+		auto* device = reinterpret_cast<IDirect3DDevice9*>(static_cast<std::uintptr_t>(0x1000));
+		DrawRegistry reg;
+		std::vector<std::string> frames;
+		reg.Register(&modA, "a", 0, DrawPath::Both, [](DrawContext&) { return DrawResult{}; });
+		reg.Register(&modB, "b", 0, DrawPath::Both, [](DrawContext&) { return DrawResult{}; });
+		reg.RegisterFrame(&modA, [&](IDirect3DDevice9*) { frames.push_back("A"); });
+		reg.RegisterFrame(&modB, [&](IDirect3DDevice9*) { frames.push_back("B"); });
+		reg.RebuildActive([](const IMod*) { return true; });
+
+		reg.RemoveMod(&modA);
+		const auto indexed = reg.ActiveSnapshot(DrawPath::Indexed);
+		const auto primitive = reg.ActiveSnapshot(DrawPath::Primitive);
+		Check("RemoveMod unpublishes interceptors at once", indexed->size() == 1 && (*indexed)[0].ownerId == "ModB"
+			&& primitive->size() == 1 && (*primitive)[0].ownerId == "ModB");
+		reg.RunFrame(device);
+		Check("RemoveMod unpublishes frame callbacks at once", frames == std::vector<std::string>{ "B" });
+	}
+
+	// An empty interceptor is never published (calling it would throw bad_function_call on the render thread).
+	{
+		DrawRegistry reg;
+		reg.Register(&modA, "empty", 0, DrawPath::Indexed, nullptr);
+		reg.Register(&modB, "real", 0, DrawPath::Indexed, [](DrawContext&) { return DrawResult{}; });
+		reg.RebuildActive([](const IMod*) { return true; });
+		const auto snap = reg.ActiveSnapshot(DrawPath::Indexed);
+		Check("empty interceptor filtered out", snap->size() == 1 && (*snap)[0].ownerId == "ModB");
+		Check("published entries carry their owner", (*snap)[0].owner == &modB);
+	}
+
+	// A throwing interceptor passes the draw, is unpublished, reported once and kept out until RemoveMod.
+	{
+		DrawRegistry reg;
+		int bCalls = 0;
+		reg.Register(&modA, "boom", 0, DrawPath::Indexed, [](DrawContext&) -> DrawResult { throw std::runtime_error("boom"); });
+		reg.Register(&modB, "ok", 1, DrawPath::Indexed, [&](DrawContext&) { ++bCalls; return DrawResult{ DrawOutcome::Hide }; });
+		reg.RebuildActive([](const IMod*) { return true; });
+
+		DrawContext ctx(nullptr, dummyMesh, dummyThicc, DrawPath::Indexed, false);
+		const auto snap = reg.ActiveSnapshot(DrawPath::Indexed);
+		std::vector<DrawOutcome> outcomes;
+		for (const auto& e : *snap) outcomes.push_back(reg.Intercept(e, ctx).outcome);
+		Check("throwing interceptor passes, the next one still runs", outcomes == std::vector<DrawOutcome>{ DrawOutcome::Pass, DrawOutcome::Hide } && bCalls == 1);
+
+		auto after = reg.ActiveSnapshot(DrawPath::Indexed);
+		Check("throwing owner unpublished at once", after->size() == 1 && (*after)[0].owner == &modB);
+
+		const auto faults = reg.TakeFaults();
+		Check("fault reported with owner and message", faults.size() == 1 && faults[0].owner == &modA
+			&& faults[0].where == "draw interceptor" && faults[0].detail == "boom");
+		Check("faults are taken once", reg.TakeFaults().empty());
+
+		reg.RebuildActive([](const IMod*) { return true; });
+		Check("rebuild keeps a faulted owner out", reg.ActiveSnapshot(DrawPath::Indexed)->size() == 1);
+
+		reg.RemoveMod(&modA);
+		reg.Register(&modA, "boom", 0, DrawPath::Indexed, [](DrawContext&) { return DrawResult{}; });
+		reg.RebuildActive([](const IMod*) { return true; });
+		Check("RemoveMod clears the fault, so a retried mod draws again", reg.ActiveSnapshot(DrawPath::Indexed)->size() == 2);
+	}
+
+	// Frame, reset, regen and release callbacks: a throw is caught, the rest still run, the owner is reported.
+	{
+		auto* device = reinterpret_cast<IDirect3DDevice9*>(static_cast<std::uintptr_t>(0x1000));
+		DrawRegistry reg;
+		int framesB = 0, beforeResetB = 0, resetsB = 0;
+		reg.RegisterFrame(&modA, [](IDirect3DDevice9*) { throw std::runtime_error("frame"); });
+		reg.RegisterFrame(&modB, [&](IDirect3DDevice9*) { ++framesB; });
+		reg.RegisterBeforeReset(&modA, [](IDirect3DDevice9*) { throw 42; });
+		reg.RegisterBeforeReset(&modB, [&](IDirect3DDevice9*) { ++beforeResetB; });
+		reg.RegisterDeviceReset(&modC, [](IDirect3DDevice9*) { throw std::runtime_error("reset"); });
+		reg.RegisterDeviceReset(&modB, [&](IDirect3DDevice9*) { ++resetsB; });
+		reg.RebuildActive([](const IMod*) { return true; });
+
+		reg.RunFrame(device);
+		reg.RunFrame(device);
+		Check("throwing frame callback dropped, others keep running", framesB == 2);
+
+		bool escaped = false;
+		try {
+			reg.RunBeforeReset(device);
+		}
+		catch (...) {
+			escaped = true;
+		}
+		Check("throwing before-reset doesn't escape (Reset still runs) or stop the others", !escaped && beforeResetB == 1);
+
+		reg.RunDeviceReset(device);
+		reg.RunDeviceReset(device);
+		Check("throwing reset callback skipped once faulted, others run", resetsB == 2);
+
+		const auto faults = reg.TakeFaults();
+		Check("each throwing owner reported once", faults.size() == 2 && faults[0].owner == &modA && faults[0].where == "frame callback"
+			&& faults[1].owner == &modC && faults[1].where == "device-reset callback");
+	}
+
+	// A throwing device handler is dropped and reported; the others and the game's call go ahead.
+	{
+		using Framework::Observe;
+		using Framework::DeviceEvent::VertexShaderConstants;
+		DrawRegistry reg;
+		auto& channel = reg.Device().vertexShaderConstants;
+		std::vector<std::string> calls;
+
+		channel.Register(&modA, Observe::Always, [&](VertexShaderConstants&) { calls.push_back("A"); throw std::runtime_error("handler"); });
+		channel.Register(&modB, Observe::Always, [&](VertexShaderConstants&) { calls.push_back("B"); });
+		reg.RebuildActive([](const IMod*) { return false; });
+
+		VertexShaderConstants e{ nullptr, 0, nullptr, 1 };
+		channel.Dispatch(e);
+		channel.Dispatch(e);
+		Check("throwing handler dropped, the next still runs", calls == std::vector<std::string>{ "A", "B", "B" });
+
+		const auto faults = reg.TakeFaults();
+		Check("device handler fault reported", faults.size() == 1 && faults[0].owner == &modA
+			&& faults[0].where == "VertexShaderConstants handler");
+
+		calls.clear();
+		reg.RebuildActive([](const IMod*) { return true; });
+		channel.Dispatch(e);
+		Check("rebuild keeps a faulted Always handler out", calls == std::vector<std::string>{ "B" });
+	}
+
+	// A release orphaned by RemoveMod is cancelled when the retried mod re-enables, so it can't free the
+	// textures the retry regenerates.
+	{
+		DrawRegistry reg;
+		int releases = 0;
+		reg.RegisterTextureLifecycle(&modA, [](IDirect3DDevice9*) {}, [&] { ++releases; });
+		reg.RequestTextureRelease(&modA);
+		reg.RemoveMod(&modA);
+
+		reg.RegisterTextureLifecycle(&modA, [](IDirect3DDevice9*) {}, [&] { ++releases; });
+		reg.CancelTextureRelease(&modA);
+		reg.RunPendingReleases();
+		Check("CancelTextureRelease cancels an orphaned release", releases == 0);
 	}
 
 	std::cout << (g_failures == 0 ? "ALL DRAWREGISTRY TESTS PASSED\n" : "DRAWREGISTRY TESTS FAILED\n");

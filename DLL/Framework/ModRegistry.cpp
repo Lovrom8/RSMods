@@ -31,7 +31,9 @@ namespace Framework {
 	PendingRegistration* g_modPendingHead = nullptr;
 
 	// Registered initializes into Inactive; resolution moves Inactive <-> Active. A mod leaving
-	// Active reverts synchronously (there are no in-flight callbacks to wait for). Faulted is terminal.
+	// Active reverts synchronously on MainThread without waiting for the render thread, which may still be
+	// in a draw or frame callback of the mod; so anything those callbacks touch (textures) is freed through
+	// the deferred render-thread release, never here. Faulted is terminal.
 	// The complete lifecycle contract and transition diagram live in README.md.
 	enum class ModState {
 		Registered,
@@ -171,8 +173,8 @@ namespace Framework {
 			Invoke(record, &IMod::OnDisabled, "OnDisabled");
 		}
 
-		// Leaves Active: revert live game state immediately (there are no render callbacks to wait
-		// for), then settle into Inactive - or Faulted when the teardown is itself a fault.
+		// Leaves Active: revert live game state immediately (render callbacks aren't waited for; see
+		// ModState), then settle into Inactive - or Faulted when the teardown is itself a fault.
 		void BeginTeardown(Record& record, DeactivationReason reason) {
 			Revert(record);
 
@@ -196,18 +198,44 @@ namespace Framework {
 			}
 		}
 
+		// An Inactive mod (initialized, not active) has no live game state to revert, so fault it
+		// straight away; an Active one gets a best-effort revert first.
+		void FaultSettled(Record& record, const char* reason) {
+			if (record.state == ModState::Inactive) {
+				Fault(record, reason);
+			}
+			else {
+				EscalateToFaulted(record);
+			}
+		}
+
 		void HandleCommandFaults() {
 			for (const IMod* mod : Commands().TakeFaultedMods()) {
 				Record* record = FindByMod(mod);
 				if (!record) continue;
 
-				// An Inactive mod (initialized, not active) has no live game state to revert, so
-				// fault it straight away; an Active one gets a best-effort revert first.
-				if (record->state == ModState::Inactive) {
-					Fault(*record, "threw in a command");
+				FaultSettled(*record, "threw in a command");
+			}
+
+			HandleRenderFaults();
+		}
+
+		// The render thread already stopped calling the mod; fault it here like a command.
+		void HandleRenderFaults() {
+			for (const RenderFault& fault : Draw().TakeFaults()) {
+				LOG_ERROR("[Framework] " << (fault.owner ? fault.owner->Id() : "host") << " " << fault.where
+					<< " threw on the render thread: " << fault.detail << std::endl);
+
+				Record* record = fault.owner ? FindByMod(fault.owner) : nullptr;
+				if (!record) continue;
+
+				if (record->state == ModState::Inactive || record->state == ModState::Active) {
+					FaultSettled(*record, "threw on the render thread");
 				}
 				else {
-					EscalateToFaulted(*record);
+					// Already faulted or shut down (a before-reset callback outlives both): clear the render-side mark,
+					// or a retry would stay off the render thread for good.
+					Draw().RemoveMod(fault.owner);
 				}
 			}
 		}
