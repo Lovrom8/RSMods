@@ -151,9 +151,9 @@ internal sealed partial class StatusViewModel : ObservableObject
         }
 
         // Setting SavePath has the main window drop the old account's profiles and back up the new folder's
-        // before profile edits unlock again.
-        SavePath = picked;
+        // before profile edits unlock again. Available first: that backup is skipped while no save folder is available.
         SavePathAvailable = true;
+        SavePath = picked;
         Constants.SaveBaseSettings();
 
         StatusMessage = "Save folder updated.";
