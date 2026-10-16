@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <!--
-    Tests for the WinForms-free installer logic in Installer.Core (docs/winforms-retirement-plan.md,
-    Slice 10). Exercises the real Installer.Core project against temporary directories, replacing the
+    Tests for the WinForms-free installer logic in Installer.Core (docs/avalonia-migration.md,
+    Installer section). Exercises the real Installer.Core project against temporary directories, replacing the
     Slice-4 arrangement that linked the payload source files directly.
   -->
   <PropertyGroup>

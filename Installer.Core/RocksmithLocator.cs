@@ -32,43 +32,39 @@ namespace RS2014_Mod_Installer.Core
             if (string.IsNullOrEmpty(steamRoot))
                 return new RocksmithLocationResult(RocksmithLocationStatus.NotFound, string.Empty);
 
+            // A default folder without cache.psarc may be a leftover; another source can still find the real install.
+            string cachePsarcMissing = string.Empty;
+
             string defaultPath = Path.Combine(steamRoot, "steamapps\\common\\Rocksmith2014");
             if (Directory.Exists(defaultPath))
             {
-                return File.Exists(Path.Combine(defaultPath, "cache.psarc"))
-                    ? new RocksmithLocationResult(RocksmithLocationStatus.Found, defaultPath)
-                    : new RocksmithLocationResult(RocksmithLocationStatus.CachePsarcMissing, defaultPath);
+                if (File.Exists(Path.Combine(defaultPath, "cache.psarc")))
+                    return new RocksmithLocationResult(RocksmithLocationStatus.Found, defaultPath);
+
+                cachePsarcMissing = defaultPath;
             }
 
-            // Default Steam path is absent: try each known registry install location, then custom Steam
-            // library folders from libraryfolders.vdf. Any candidate must be a real RS folder to count.
-            string candidate = ParseRSFolderCandidates(steamRoot);
+            // Then each known registry install location, then custom Steam library folders from libraryfolders.vdf.
+            // Any candidate must be a real RS folder to count.
+            string candidate = FindRSFolderCandidate(steamRoot);
+            if (!string.IsNullOrEmpty(candidate))
+                return new RocksmithLocationResult(RocksmithLocationStatus.Found, candidate);
 
-            return !string.IsNullOrEmpty(candidate) && IsRocksmithFolder(candidate)
-                ? new RocksmithLocationResult(RocksmithLocationStatus.Found, candidate)
-                : new RocksmithLocationResult(RocksmithLocationStatus.NotFound, string.Empty);
+            return string.IsNullOrEmpty(cachePsarcMissing)
+                ? new RocksmithLocationResult(RocksmithLocationStatus.NotFound, string.Empty)
+                : new RocksmithLocationResult(RocksmithLocationStatus.CachePsarcMissing, cachePsarcMissing);
         }
 
-        private static string ParseRSFolderCandidates(string steamRoot)
+        private static string FindRSFolderCandidate(string steamRoot)
         {
-            string candidate = string.Empty;
-
             foreach (Tuple<string, string> installRegKey in InstallRegKeys)
             {
                 string path = GetStringValueFromRegistry(installRegKey.Item1, installRegKey.Item2);
-                if (!string.IsNullOrEmpty(path) && Directory.Exists(path))
-                {
-                    candidate = path;
-                    break;
-                }
+                if (IsReadableRocksmithFolder(path))
+                    return path;
             }
 
-            if (string.IsNullOrEmpty(candidate))
-            {
-                candidate = GetCustomRSFolder(steamRoot);
-            }
-
-            return candidate;
+            return GetCustomRSFolder(steamRoot);
         }
 
         // A folder qualifies as a Rocksmith 2014 install if it has a non-empty dlc/ directory and a
@@ -81,6 +77,19 @@ namespace RS2014_Mod_Installer.Core
             string cachePsarcPath = System.IO.Path.Combine(folderPath, "cache.psarc");
 
             return Directory.Exists(dlcFolderPath) && !IsDirectoryEmpty(dlcFolderPath) && File.Exists(cachePsarcPath);
+        }
+
+        // For discovery: a candidate that can't be read (access denied on dlc/) just isn't the one.
+        private static bool IsReadableRocksmithFolder(string folderPath)
+        {
+            try
+            {
+                return IsRocksmithFolder(folderPath);
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+            {
+                return false;
+            }
         }
 
         public static string GetSteamDirectory()
@@ -129,7 +138,7 @@ namespace RS2014_Mod_Installer.Core
                     continue;
 
                 string rsFolderPath = Path.Combine(finalPath, "common", "Rocksmith2014");
-                if (IsRocksmithFolder(rsFolderPath))
+                if (IsReadableRocksmithFolder(rsFolderPath))
                     return rsFolderPath;
             }
 
@@ -138,27 +147,40 @@ namespace RS2014_Mod_Installer.Core
 
         private static List<string> GetCustomSteamappsFolders(string mainSteamPath)
         {
-            const string libRegex = "(^\\t\"[1-9]\").*(\".*\")";
-            var libDirs = new List<string>();
+            string libVdf = Path.Combine(mainSteamPath, "steamapps", "libraryfolders.vdf");
 
-            string steamappsFolder = Path.Combine(mainSteamPath, "steamapps");
-            string libVdf = Path.Combine(steamappsFolder, "libraryfolders.vdf");
-
-            if (!File.Exists(libVdf))
-                return libDirs;
-
-            foreach (string l in File.ReadAllLines(libVdf))
+            try
             {
-                Match reg = Regex.Match(l, libRegex);
-                if (reg.Success)
-                {
-                    string dir = reg.Groups[2].Value;
-                    if (dir != string.Empty)
-                        libDirs.Add(dir.Trim('\"'));
-                }
+                return File.Exists(libVdf) ? ParseLibraryFolders(File.ReadAllLines(libVdf)) : [];
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+            {
+                // Like the old GenUtil.GetRSDirectory: unreadable discovery data just means not found, so Browse still works.
+                return [];
+            }
+        }
+
+        // Steam library roots from libraryfolders.vdf. Current Steam nests each library as "<n>" { "path" "<dir>" ... };
+        // before 2021 it was a one-line "<n>" "<dir>". Values escape backslashes as \\.
+        internal static List<string> ParseLibraryFolders(IEnumerable<string> lines)
+        {
+            var libDirs = new List<string>();
+            foreach (string line in lines)
+            {
+                Match match = NestedLibraryPath.Match(line);
+                if (!match.Success)
+                    match = OneLineLibraryPath.Match(line);
+
+                if (match.Success && match.Groups[1].Value.Length > 0)
+                    libDirs.Add(Regex.Replace(match.Groups[1].Value, @"\\(.)", "$1"));
             }
 
             return libDirs;
         }
+
+        private static readonly Regex NestedLibraryPath = new(@"^\s*""path""\s+""((?:[^""\\]|\\.)*)""", RegexOptions.IgnoreCase);
+
+        // Only at the top level (one tab in): deeper numeric keys are the app lists of the current format.
+        private static readonly Regex OneLineLibraryPath = new(@"^\t""\d+""\s+""((?:[^""\\]|\\.)*)""");
     }
 }

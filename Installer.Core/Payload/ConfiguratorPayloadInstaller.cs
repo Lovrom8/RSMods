@@ -64,11 +64,23 @@ namespace RS2014_Mod_Installer.Payload
         /// <exception cref="PayloadInstallException">On any failure; the prior install is left usable.</exception>
         public static void Install(string rsModsFolder, Stream payloadZip, PayloadManifest manifest, Action<string> progress = null)
         {
+            using StagedConfiguratorPayload staged = Stage(rsModsFolder, payloadZip, manifest, progress);
+            staged.Deploy(progress);
+        }
+
+        /// <summary>
+        /// Extracts and verifies the payload into a sibling staging folder without touching the install, so a caller
+        /// can check it before changing anything else. Disposing the result deletes the staging folder.
+        /// </summary>
+        /// <exception cref="PayloadInstallException">On any failure; nothing under <paramref name="rsModsFolder"/> changed.</exception>
+        public static StagedConfiguratorPayload Stage(string rsModsFolder, Stream payloadZip, PayloadManifest manifest, Action<string> progress = null)
+        {
             ValidateInstallRequest(rsModsFolder, payloadZip, manifest);
 
             string installFolder = Path.GetFullPath(rsModsFolder);
             string stagingFolder = CreateStagingFolderPath(installFolder);
 
+            bool staged = false;
             try
             {
                 Report(progress, "Extracting configurator...");
@@ -78,12 +90,11 @@ namespace RS2014_Mod_Installer.Payload
                 Report(progress, "Verifying configurator...");
                 VerifyAgainstManifest(stagingFolder, manifest);
 
-                ThrowIfConfiguratorRunning(installFolder, manifest);
+                // Written with the payload so Deploy swaps it in with everything else and can roll it back too.
+                File.WriteAllText(Path.Combine(stagingFolder, InstalledManifestName), manifest.ToJson());
 
-                Report(progress, "Installing configurator...");
-                Deploy(stagingFolder, installFolder, manifest, stagingFolder + "_previous");
-
-                WriteInstalledManifest(installFolder, manifest);
+                staged = true;
+                return new StagedConfiguratorPayload(installFolder, stagingFolder, manifest);
             }
             catch (Exception ex) when (ex is UnauthorizedAccessException or IOException)
             {
@@ -91,9 +102,28 @@ namespace RS2014_Mod_Installer.Payload
             }
             finally
             {
-                TryDeleteDirectory(stagingFolder);
+                if (!staged)
+                    TryDeleteDirectory(stagingFolder);
             }
         }
+
+        // Deploys a verified staging folder; see Stage.
+        internal static void DeployStaged(string stagingFolder, string installFolder, PayloadManifest manifest, Action<string> progress)
+        {
+            try
+            {
+                ThrowIfConfiguratorRunning(installFolder, manifest);
+
+                Report(progress, "Installing configurator...");
+                Deploy(stagingFolder, installFolder, manifest, stagingFolder + "_previous");
+            }
+            catch (Exception ex) when (ex is UnauthorizedAccessException or IOException)
+            {
+                throw CreateFileSystemFailure(ex);
+            }
+        }
+
+        internal static void DeleteStaging(string stagingFolder) => TryDeleteDirectory(stagingFolder);
 
         private static void ValidateInstallRequest(string rsModsFolder, Stream payloadZip, PayloadManifest manifest)
         {
@@ -120,9 +150,6 @@ namespace RS2014_Mod_Installer.Payload
 
             return Path.Combine(parentFolder, "RSMods._install_" + Guid.NewGuid().ToString("N"));
         }
-
-        private static void WriteInstalledManifest(string installFolder, PayloadManifest manifest) =>
-            File.WriteAllText(Path.Combine(installFolder, InstalledManifestName), manifest.ToJson());
 
         private static PayloadInstallException CreateFileSystemFailure(Exception exception)
         {
@@ -211,22 +238,32 @@ namespace RS2014_Mod_Installer.Payload
                 return; // fresh install - nothing to lock
             }
 
+            // A read-only exe can't be opened for write, yet Deploy's move replaces it fine; lift the flag just for the probe.
+            FileAttributes attributes = File.GetAttributes(exePath);
+            bool readOnly = attributes.HasFlag(FileAttributes.ReadOnly);
             try
             {
+                if (readOnly)
+                    File.SetAttributes(exePath, attributes & ~FileAttributes.ReadOnly);
+
                 // If the configurator is open, the OS holds an exclusive lock on the image; opening it for write throws.
                 using (new FileStream(exePath, FileMode.Open, FileAccess.ReadWrite, FileShare.None))
                 {
                 }
             }
-            catch (IOException ex)
+            // Only a lock means it's open; access denied or a disk error is thrown for the caller to report as it is.
+            catch (IOException ex) when (Core.NativeModInstaller.IsSharingViolation(ex))
             {
                 throw new PayloadInstallException(PayloadInstallFailure.ConfiguratorRunning,
                     "RSMods is currently open. Please close it and run the installer again.", ex);
             }
-            catch (UnauthorizedAccessException ex)
+            finally
             {
-                throw new PayloadInstallException(PayloadInstallFailure.ConfiguratorRunning,
-                    "RSMods is currently open or read-only. Please close it and run the installer again.", ex);
+                if (readOnly)
+                {
+                    try { File.SetAttributes(exePath, attributes); }
+                    catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { }
+                }
             }
         }
 
@@ -238,15 +275,23 @@ namespace RS2014_Mod_Installer.Payload
         {
             Directory.CreateDirectory(rsModsFolder);
 
+            // Worked out before the new installed manifest replaces the one naming the prior install's files.
+            List<string> stalePaths = FindStaleFiles(rsModsFolder, manifest);
+
             var replaced = new List<(string Destination, string Backup)>();
             var added = new List<string>();
             try
             {
-                foreach (PayloadFile file in manifest.Files)
+                foreach (string relativePath in DeployedFiles(manifest))
                 {
-                    string native = ToNativePath(file.Path);
+                    string native = ToNativePath(relativePath);
                     string source = Path.Combine(staging, native);
                     string destination = Path.Combine(rsModsFolder, native);
+
+                    // The player's own files stay as they are, even if a payload ships one.
+                    if (IsPreserved(relativePath) && File.Exists(destination))
+                        continue;
+
                     Directory.CreateDirectory(Path.GetDirectoryName(destination));
 
                     if (File.Exists(destination))
@@ -263,6 +308,9 @@ namespace RS2014_Mod_Installer.Payload
 
                     File.Copy(source, destination);
                 }
+
+                // The configurator expects its user mods directory to exist.
+                Directory.CreateDirectory(Path.Combine(rsModsFolder, "CustomMods"));
             }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
             {
@@ -280,10 +328,20 @@ namespace RS2014_Mod_Installer.Payload
             TryDeleteDirectory(backupFolder);
 
             // Only now that every new file is in: a failed upgrade above still has all of the prior install's files.
-            RemoveStaleFiles(rsModsFolder, manifest);
+            foreach (string relativePath in stalePaths)
+                TryDeleteOwnedFile(rsModsFolder, relativePath);
+        }
 
-            // The configurator expects its user mods directory to exist.
-            Directory.CreateDirectory(Path.Combine(rsModsFolder, "CustomMods"));
+        // The payload's files, then the installed manifest Stage wrote beside them (always ours, even if a payload lists one).
+        private static IEnumerable<string> DeployedFiles(PayloadManifest manifest)
+        {
+            foreach (PayloadFile file in manifest.Files)
+            {
+                if (!string.Equals(NormalizeRelative(file.Path), InstalledManifestName, StringComparison.OrdinalIgnoreCase))
+                    yield return file.Path;
+            }
+
+            yield return InstalledManifestName;
         }
 
         // Newest first: removes what the failed deploy added and moves each replaced file back. False if any of it failed,
@@ -324,15 +382,14 @@ namespace RS2014_Mod_Installer.Payload
             }
         }
 
-        private static void RemoveStaleFiles(string rsModsFolder, PayloadManifest newManifest)
+        private static List<string> FindStaleFiles(string rsModsFolder, PayloadManifest newManifest)
         {
-            var newPaths = new HashSet<string>(newManifest.Files.Select(f => NormalizeRelative(f.Path)), StringComparer.OrdinalIgnoreCase);
-            var stalePaths = new HashSet<string>(EnumerateStalePaths(rsModsFolder, newPaths), StringComparer.OrdinalIgnoreCase);
-
-            foreach (string relativePath in stalePaths)
+            var newPaths = new HashSet<string>(newManifest.Files.Select(f => NormalizeRelative(f.Path)), StringComparer.OrdinalIgnoreCase)
             {
-                TryDeleteOwnedFile(rsModsFolder, relativePath);
-            }
+                InstalledManifestName
+            };
+
+            return EnumerateStalePaths(rsModsFolder, newPaths).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
         }
 
         private static IEnumerable<string> EnumerateStalePaths(string rsModsFolder, HashSet<string> newPaths)
@@ -507,8 +564,20 @@ namespace RS2014_Mod_Installer.Payload
                     Directory.Delete(path, recursive: true);
                 }
             }
+            catch (UnauthorizedAccessException)
+            {
+                // A read-only file moved aside from the prior install blocks the delete; clear the flag and try once more.
+                try
+                {
+                    foreach (string file in Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories))
+                        File.SetAttributes(file, FileAttributes.Normal);
+
+                    Directory.Delete(path, recursive: true);
+                }
+                catch (IOException) { }
+                catch (UnauthorizedAccessException) { }
+            }
             catch (IOException) { }
-            catch (UnauthorizedAccessException) { }
         }
     }
 }

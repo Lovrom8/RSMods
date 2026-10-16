@@ -257,6 +257,84 @@ public sealed class ConfiguratorPayloadInstallerTests
     }
 
     [Fact]
+    public void ReadOnlyExecutable_IsNotMistakenForOpen_AndUpgrades()
+    {
+        using var temp = new TemporaryDirectory();
+        string rsMods = temp.Combine("RSMods");
+        var first = PayloadBuilder.Default();
+        ConfiguratorPayloadInstaller.Install(rsMods, first.BuildZip(), first.BuildManifest());
+        File.SetAttributes(Exe(rsMods), FileAttributes.ReadOnly);
+
+        var next = new PayloadBuilder().AddText("RSMods.exe", "v-upgrade");
+        ConfiguratorPayloadInstaller.Install(rsMods, next.BuildZip(), next.BuildManifest());
+
+        Assert.Equal("v-upgrade", File.ReadAllText(Exe(rsMods)));
+        Assert.Empty(Directory.GetDirectories(temp.Path, "RSMods._install_*")); // the read-only backup was cleaned up too
+    }
+
+    [Fact]
+    public void InstalledManifestCannotBeReplaced_RollsBackWholeUpgrade()
+    {
+        using var temp = new TemporaryDirectory();
+        string rsMods = temp.Combine("RSMods");
+        var old = new PayloadBuilder()
+            .AddText("RSMods.exe", "old exe")
+            .AddText("OldOnly.dll", "stale");
+        ConfiguratorPayloadInstaller.Install(rsMods, old.BuildZip(), old.BuildManifest("1.0.0"));
+        string manifestPath = Path.Combine(rsMods, ConfiguratorPayloadInstaller.InstalledManifestName);
+
+        var next = PayloadBuilder.Default();
+        PayloadInstallException ex;
+        using (new FileStream(manifestPath, FileMode.Open, FileAccess.Read, FileShare.Read)) // can't be moved aside
+        {
+            ex = Assert.Throws<PayloadInstallException>(() =>
+                ConfiguratorPayloadInstaller.Install(rsMods, next.BuildZip(), next.BuildManifest("2.0.0")));
+        }
+
+        Assert.Equal(PayloadInstallFailure.IOError, ex.Reason);
+        Assert.Equal("old exe", File.ReadAllText(Exe(rsMods)));
+        Assert.True(File.Exists(Path.Combine(rsMods, "OldOnly.dll")));          // stale files only go once the upgrade is in
+        Assert.False(File.Exists(Path.Combine(rsMods, "RocksmithToolkitLib.dll")));
+        Assert.Equal("1.0.0", PayloadManifest.Parse(File.ReadAllText(manifestPath)).ApplicationVersion);
+    }
+
+    [Fact]
+    public void ReadOnlyInstalledManifest_IsReplaced()
+    {
+        using var temp = new TemporaryDirectory();
+        string rsMods = temp.Combine("RSMods");
+        var first = PayloadBuilder.Default();
+        ConfiguratorPayloadInstaller.Install(rsMods, first.BuildZip(), first.BuildManifest("1.0.0"));
+        string manifestPath = Path.Combine(rsMods, ConfiguratorPayloadInstaller.InstalledManifestName);
+        File.SetAttributes(manifestPath, FileAttributes.ReadOnly);
+
+        var next = PayloadBuilder.Default();
+        ConfiguratorPayloadInstaller.Install(rsMods, next.BuildZip(), next.BuildManifest("2.0.0"));
+
+        Assert.Equal("2.0.0", PayloadManifest.Parse(File.ReadAllText(manifestPath)).ApplicationVersion);
+        Assert.Empty(Directory.GetDirectories(temp.Path, "RSMods._install_*"));
+    }
+
+    [Fact]
+    public void PayloadShippingUserFiles_NeverOverwritesThem()
+    {
+        using var temp = new TemporaryDirectory();
+        string rsMods = temp.Combine("RSMods");
+        Directory.CreateDirectory(Path.Combine(rsMods, "CustomMods"));
+        File.WriteAllText(Path.Combine(rsMods, "GUI_Settings.ini"), "mine");
+        File.WriteAllText(Path.Combine(rsMods, "CustomMods", "mymod.txt"), "mine");
+
+        var payload = PayloadBuilder.Default()
+            .AddText("GUI_Settings.ini", "shipped default")
+            .AddText("CustomMods/mymod.txt", "shipped");
+        ConfiguratorPayloadInstaller.Install(rsMods, payload.BuildZip(), payload.BuildManifest());
+
+        Assert.Equal("mine", File.ReadAllText(Path.Combine(rsMods, "GUI_Settings.ini")));
+        Assert.Equal("mine", File.ReadAllText(Path.Combine(rsMods, "CustomMods", "mymod.txt")));
+        Assert.True(File.Exists(Exe(rsMods)));
+    }
+
+    [Fact]
     public void Shortcut_TargetsInstalledRSModsExe()
     {
         using var temp = new TemporaryDirectory();
@@ -269,5 +347,21 @@ public sealed class ConfiguratorPayloadInstallerTests
         Assert.Contains("URL=file:///" + target, content);
         Assert.Contains("IconFile=" + target.Replace('\\', '/'), content);
         Assert.EndsWith("RSMods.exe", target);
+    }
+
+    [Fact]
+    public void Shortcut_NonAsciiAndUrlSpecialPaths_SurviveTheRoundTrip()
+    {
+        using var temp = new TemporaryDirectory();
+        string url = temp.Combine("RSMods.url");
+        string target = @"C:\Jeux\Rocksmith #2 100% Ünïcode\RSMods\RSMods.exe";
+
+        DesktopShortcut.WriteUrlShortcut(url, target);
+
+        byte[] bytes = File.ReadAllBytes(url);
+        Assert.Equal(new byte[] { 0xFF, 0xFE }, bytes.Take(2).ToArray()); // UTF-16 LE BOM, which the shell's INI reader honours
+        string content = File.ReadAllText(url);
+        Assert.Contains(@"URL=file:///C:\Jeux\Rocksmith %232 100%25 Ünïcode\RSMods\RSMods.exe", content);
+        Assert.Contains("IconFile=C:/Jeux/Rocksmith #2 100% Ünïcode/RSMods/RSMods.exe", content);
     }
 }

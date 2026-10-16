@@ -58,6 +58,42 @@ public sealed class NativeModInstallerTests
     }
 
     [Fact]
+    public void Install_PdbLocked_PutsOldDllBack()
+    {
+        using var temp = new TemporaryDirectory();
+        string dll = Path.Combine(temp.Path, "xinput1_3.dll");
+        string pdb = Path.Combine(temp.Path, "xinput1_3.pdb");
+        File.WriteAllText(dll, "old dll");
+        File.WriteAllText(pdb, "old pdb");
+
+        // A debugger holding the PDB: the DLL swap succeeds, replacing the PDB is refused.
+        using (new FileStream(pdb, FileMode.Open, FileAccess.Read, FileShare.Read))
+        {
+            Assert.Throws<UnauthorizedAccessException>(() => NativeModInstaller.Install(temp.Path, Dll, Pdb, out NativeModBackup _));
+        }
+
+        Assert.Equal("old dll", File.ReadAllText(dll));
+        Assert.Equal("old pdb", File.ReadAllText(pdb));
+        Assert.Empty(Directory.GetFiles(temp.Path, "*.rsmods-previous"));
+    }
+
+    [Fact]
+    public void Install_BackupRestore_PutsPriorFilesBack()
+    {
+        using var temp = new TemporaryDirectory();
+        string dll = Path.Combine(temp.Path, "xinput1_3.dll");
+        File.WriteAllText(dll, "old dll"); // no PDB before: restoring removes the new one
+
+        Assert.Equal(NativeModInstallStatus.Success, NativeModInstaller.Install(temp.Path, Dll, Pdb, out NativeModBackup backup));
+        Assert.Equal(Dll, File.ReadAllBytes(dll));
+
+        Assert.True(backup.Restore());
+        Assert.Equal("old dll", File.ReadAllText(dll));
+        Assert.False(File.Exists(Path.Combine(temp.Path, "xinput1_3.pdb")));
+        Assert.Empty(Directory.GetFiles(temp.Path, "*.rsmods-previous"));
+    }
+
+    [Fact]
     public void Install_TargetLockedByRunningGame_ReturnsGameRunning()
     {
         using var temp = new TemporaryDirectory();

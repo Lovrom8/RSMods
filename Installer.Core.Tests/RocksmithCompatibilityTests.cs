@@ -1,4 +1,7 @@
+using System;
 using System.IO;
+using System.Security.AccessControl;
+using System.Security.Principal;
 using RS2014_Mod_Installer.Core;
 using Xunit;
 
@@ -31,6 +34,29 @@ public sealed class RocksmithCompatibilityTests
         using (new FileStream(exe, FileMode.Open, FileAccess.Read, FileShare.None))
         {
             Assert.Equal(ExecutableCheckStatus.Unreadable, RocksmithCompatibility.CheckExecutable(temp.Path));
+        }
+    }
+
+    [Fact]
+    public void CheckExecutable_AccessDenied_IsReportedNotMistakenForRunningGame()
+    {
+        using var temp = new TemporaryDirectory();
+        string exe = Path.Combine(temp.Path, "Rocksmith2014.exe");
+        File.WriteAllText(exe, "unreadable");
+
+        var file = new FileInfo(exe);
+        FileSecurity security = file.GetAccessControl();
+        var deny = new FileSystemAccessRule(WindowsIdentity.GetCurrent().User!, FileSystemRights.ReadData, AccessControlType.Deny);
+        security.AddAccessRule(deny);
+        file.SetAccessControl(security);
+        try
+        {
+            Assert.Throws<UnauthorizedAccessException>(() => RocksmithCompatibility.CheckExecutable(temp.Path));
+        }
+        finally
+        {
+            security.RemoveAccessRule(deny);
+            file.SetAccessControl(security);
         }
     }
 
