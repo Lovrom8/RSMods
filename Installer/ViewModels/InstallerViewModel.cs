@@ -108,7 +108,18 @@ internal sealed partial class InstallerViewModel(EmbeddedInstallerResources reso
         {
             StatusMessage = "Checking the Rocksmith installation…";
 
-            CompatibilityResult compatibility = await Task.Run(() => RocksmithCompatibility.Evaluate(rocksmithFolder));
+            CompatibilityResult compatibility;
+            try
+            {
+                compatibility = await Task.Run(() => RocksmithCompatibility.Evaluate(rocksmithFolder));
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+            {
+                ErrorMessage = "Rocksmith2014.exe could not be checked: " + ex.Message;
+                StatusMessage = "Installation was not started.";
+                return;
+            }
+
             if (!compatibility.IsCompatible)
             {
                 ShowCompatibilityFailure(compatibility);

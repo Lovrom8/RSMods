@@ -19,7 +19,7 @@ namespace RS2014_Mod_Installer.Core
     {
         public bool IsCompatible { get; } = isCompatible;
 
-        // True when the executable could not be hashed because the game is running.
+        // True when the executable could not be hashed because the game is running (another process holds it).
         public bool ExecutableUnreadable { get; } = executableUnreadable;
 
         public IReadOnlyList<string> Reasons { get; } = reasons ?? [];
@@ -74,9 +74,10 @@ namespace RS2014_Mod_Installer.Core
                     ? ExecutableCheckStatus.Valid
                     : ExecutableCheckStatus.Invalid;
             }
-            catch (IOException)
+            catch (IOException ex) when (NativeModInstaller.IsSharingViolation(ex))
             {
-                // The game was open when we tried to hash the executable.
+                // The game was open when we tried to hash the executable. Any other error (access denied, a disk
+                // error) isn't, so it's thrown for the caller to report as it is.
                 return ExecutableCheckStatus.Unreadable;
             }
         }
