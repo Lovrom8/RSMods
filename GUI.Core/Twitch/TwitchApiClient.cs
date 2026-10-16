@@ -94,7 +94,12 @@ namespace RSMods.Twitch
             return ParseTokenSet(json);
         }
 
-        public async Task CreateEventSubSubscriptionsAsync(
+        /// <summary>
+        /// Subscribes the session to every supported event type. A type Twitch refuses (400/403, e.g. channel points on a
+        /// channel without them) is returned rather than thrown so the others keep working; it throws when all were
+        /// refused, on 401, or on any other failure.
+        /// </summary>
+        public async Task<IReadOnlyList<TwitchApiException>> CreateEventSubSubscriptionsAsync(
             string accessToken,
             string broadcasterUserId,
             string sessionId,
@@ -116,8 +121,34 @@ namespace RSMods.Twitch
             Task[] requests = subscriptionTypes
                 .Select(type => CreateEventSubSubscriptionAsync(type, accessToken, broadcasterUserId, sessionId, cancellationToken))
                 .ToArray();
-            await Task.WhenAll(requests).ConfigureAwait(false);
+            try
+            {
+                await Task.WhenAll(requests).ConfigureAwait(false);
+            }
+            catch
+            {
+                // Sorted out per request below.
+            }
+
+            // A rejected token outranks everything else: the caller refreshes it and tries again.
+            Task fatal = requests.FirstOrDefault(request =>
+                    request.Exception?.InnerException is TwitchApiException { StatusCode: HttpStatusCode.Unauthorized }) ??
+                requests.FirstOrDefault(request =>
+                    request.IsCanceled || (request.IsFaulted && !IsSubscriptionRejection(request.Exception.InnerException)));
+            if (fatal != null)
+                await fatal.ConfigureAwait(false);
+
+            List<TwitchApiException> rejected = requests
+                .Where(request => request.IsFaulted)
+                .Select(request => (TwitchApiException)request.Exception.InnerException)
+                .ToList();
+            if (rejected.Count == requests.Length)
+                throw rejected[0];
+            return rejected;
         }
+
+        private static bool IsSubscriptionRejection(Exception exception) =>
+            exception is TwitchApiException { StatusCode: HttpStatusCode.BadRequest or HttpStatusCode.Forbidden };
 
         internal static TwitchTokenSet ParseTokenSet(string json)
         {
@@ -162,7 +193,7 @@ namespace RSMods.Twitch
             using HttpResponseMessage response = await _httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
             await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            EnsureSuccess(response, $"Unable to subscribe to {type} events.");
+            EnsureSuccess(response, $"Unable to subscribe to {type} events ({(int)response.StatusCode}).");
         }
 
         private HttpRequestMessage CreateHelixRequest(HttpMethod method, Uri uri, string accessToken)

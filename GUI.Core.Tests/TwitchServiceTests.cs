@@ -50,8 +50,9 @@ public sealed class TwitchServiceTests
         Assert.Equal(TwitchEventSubState.Connected, service.EventSubState);
         Assert.Equal("Streamer", service.Identity.DisplayName);
         Assert.Equal(1, eventSub.StartCount);
-        Assert.Equal("stored-access", eventSub.AccessToken);
-        Assert.Equal("1234", eventSub.BroadcasterUserId);
+        TwitchEventSubCredentials credentials = await eventSub.GetCredentialsAsync();
+        Assert.Equal("stored-access", credentials.AccessToken);
+        Assert.Equal("1234", credentials.BroadcasterUserId);
         Assert.DoesNotContain(service.GetLogSnapshot(), entry =>
             entry.Message.Contains("stored-access", StringComparison.Ordinal) ||
             entry.Message.Contains("stored-refresh", StringComparison.Ordinal));
