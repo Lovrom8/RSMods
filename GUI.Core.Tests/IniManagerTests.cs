@@ -49,6 +49,11 @@ public sealed class IniManagerTests
 
         using (new FileStream(path, FileMode.Create, FileAccess.ReadWrite, FileShare.None))
             Assert.ThrowsAny<IOException>(() => ini.Save());
+
+        // The failed save didn't use up the change: the next one still reports it, so the game is told to reload.
+        Assert.True(ini.FileOutOfDate);
+        Assert.True(ini.Save());
+        Assert.False(ini.FileOutOfDate);
     }
 
     [Fact]

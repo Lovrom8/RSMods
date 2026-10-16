@@ -65,10 +65,15 @@ namespace RSMods
         // default), so every access goes through this. Events fire after it's released.
         private readonly object _gate = new();
 
+        // Serializes writes to disk, which happen outside _gate so a slow disk doesn't hold up the screens reading values.
+        // Always taken before _gate, never while holding it.
+        private readonly object _writeGate = new();
+
         private int _saveSuspendCount;
         private bool _saveDeferred;
         private bool _changedSinceSave; // A value was set to something new; reading or seeding a default doesn't count.
         private bool _fileOutOfDate;    // Anything the file on disk lacks, seeded defaults and corrections included.
+        private long _contentVersion;   // Bumped with each such change, so a write can tell whether it went stale.
 
         public string FilePath => filePath;
 
@@ -146,17 +151,21 @@ namespace RSMods
 
         private void EndSuspendSave()
         {
-            lock (_gate)
+            lock (_writeGate)
             {
-                if (_saveSuspendCount == 0)
-                    return;
-
-                _saveSuspendCount--;
-                if (_saveSuspendCount == 0 && _saveDeferred)
+                lock (_gate)
                 {
+                    if (_saveSuspendCount == 0)
+                        return;
+
+                    _saveSuspendCount--;
+                    if (_saveSuspendCount != 0 || !_saveDeferred)
+                        return;
+
                     _saveDeferred = false;
-                    WriteLocked(); // Leaves _changedSinceSave for the next Save() to report.
                 }
+
+                Write(); // Leaves _changedSinceSave for the next Save() to report.
             }
         }
 
@@ -166,18 +175,32 @@ namespace RSMods
         /// </summary>
         public bool Save()
         {
-            lock (_gate)
+            lock (_writeGate)
             {
-                if (_saveSuspendCount > 0)
+                bool changed;
+                lock (_gate)
                 {
-                    _saveDeferred = true;
-                    return false;
+                    if (_saveSuspendCount > 0)
+                    {
+                        _saveDeferred = true;
+                        return false;
+                    }
+
+                    changed = _changedSinceSave;
+                    _changedSinceSave = false;
                 }
 
-                WriteLocked();
+                try
+                {
+                    Write();
+                }
+                catch
+                {
+                    lock (_gate)
+                        _changedSinceSave |= changed; // Still unsaved, so the next Save() reports it
+                    throw;
+                }
 
-                bool changed = _changedSinceSave;
-                _changedSinceSave = false;
                 return changed;
             }
         }
@@ -192,9 +215,31 @@ namespace RSMods
             }
         }
 
+        // Callers hold _writeGate. The contents are taken under _gate and written after releasing it.
+        private void Write()
+        {
+            string contents;
+            long version;
+            lock (_gate)
+            {
+                using var text = new StringWriter();
+                WriteContents(text);
+                contents = text.ToString();
+                version = _contentVersion;
+            }
+
+            WriteFile(contents);
+
+            lock (_gate)
+            {
+                if (_contentVersion == version)
+                    _fileOutOfDate = false; // Nothing changed while it was written
+            }
+        }
+
         // The DLL rereads RSMods.ini whenever it likes, and a crash mid-write used to leave it truncated, so the
         // new contents go to a temporary file that's swapped in whole.
-        private void WriteLocked()
+        private void WriteFile(string contents)
         {
             string temporary = filePath + ".tmp";
             try
@@ -202,7 +247,7 @@ namespace RSMods
                 using (var stream = new FileStream(temporary, FileMode.Create, FileAccess.Write, FileShare.None))
                 using (var sw = new StreamWriter(stream))
                 {
-                    WriteContents(sw);
+                    sw.Write(contents);
                     sw.Flush();
                     stream.Flush(flushToDisk: true);
                 }
@@ -211,15 +256,13 @@ namespace RSMods
             {
                 // A folder that lets us edit the file but not create one next to it: write in place as before.
                 using (var sw = new StreamWriter(filePath))
-                    WriteContents(sw);
-                _fileOutOfDate = false;
+                    sw.Write(contents);
                 return;
             }
 
             try
             {
                 ReplaceWithRetry(temporary);
-                _fileOutOfDate = false;
             }
             catch
             {
@@ -247,7 +290,7 @@ namespace RSMods
             }
         }
 
-        private void WriteContents(StreamWriter sw)
+        private void WriteContents(TextWriter sw)
         {
             sw.NewLine = _newLine;
 
@@ -342,7 +385,13 @@ namespace RSMods
         private void MarkChanged()
         {
             _changedSinceSave = true;
+            MarkFileOutOfDate();
+        }
+
+        private void MarkFileOutOfDate()
+        {
             _fileOutOfDate = true;
+            _contentVersion++;
         }
 
         private static string ShownDefaultId(string section, string key) => section + "\n" + key;
@@ -360,7 +409,7 @@ namespace RSMods
                     // Seed the default so Save() persists it, but a read must never count as a
                     // change (that would trigger a spurious save and game reload).
                     AddLine(section, key, defaultValue, commented: false);
-                    _fileOutOfDate = true;
+                    MarkFileOutOfDate();
                 }
                 else
                 {
@@ -446,13 +495,13 @@ namespace RSMods
                 if (line == null)
                 {
                     AddLine(section, key, value, commented: false);
-                    _fileOutOfDate = true;
+                    MarkFileOutOfDate();
                 }
                 else if (line.Value != value)
                 {
                     line.Value = value;
                     line.Raw = null;
-                    _fileOutOfDate = true;
+                    MarkFileOutOfDate();
                 }
             }
         }
@@ -624,10 +673,14 @@ namespace RSMods
                 {
                     // Self-heal: overwrite the invalid raw value with the default in memory so the next
                     // Save() persists the correction.
+                    // Null when another thread removed the key since it was read; there's nothing left to correct.
                     var line = Find(_data, section, key);
-                    line.Value = defaultValue;
-                    line.Raw = null;
-                    _fileOutOfDate = true;
+                    if (line != null)
+                    {
+                        line.Value = defaultValue;
+                        line.Raw = null;
+                        MarkFileOutOfDate();
+                    }
                 }
                 else
                 {
