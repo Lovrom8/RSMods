@@ -388,4 +388,23 @@ public sealed class IniManagerTests
         reloaded.Load();
         Assert.True(reloaded.IsCommented("[Asio.Input.1]", "Driver"));
     }
+
+    // The DLL reads CustomStringColors 0-3; a value it accepts mustn't be "corrected" to Off when the GUI starts.
+    [Theory]
+    [InlineData("1", CustomStringColorMode.Zag)]
+    [InlineData("3", CustomStringColorMode.Test)]
+    public void EveryStringColorModeTheDllReadsIsKept(string raw, CustomStringColorMode expected)
+    {
+        using var dir = new TemporaryDirectory();
+        string path = dir.File("RSMods.ini");
+        File.WriteAllLines(path, ["[Toggle Switches]", "CustomStringColors=" + raw]);
+        var ini = new IniManager(path);
+        ini.Load();
+        IniValidationWarning? warning = null;
+        ini.ValidationWarning += w => warning = w;
+
+        Assert.Equal(expected, ini.GetEnumInt("[Toggle Switches]", "CustomStringColors", CustomStringColorMode.Off));
+        Assert.Null(warning);
+        Assert.False(ini.FileOutOfDate);
+    }
 }
