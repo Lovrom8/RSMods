@@ -22,6 +22,21 @@ namespace RSMods.Twitch.EffectServer
 
         /// <summary>The wait before accepting connections again after the listener fails.</summary>
         public TimeSpan ListenerRetryDelay { get; set; } = TimeSpan.FromSeconds(1);
+
+        /// <summary>
+        /// Asks the game to connect. It dials in once when it loads and never again after a failed or dropped
+        /// connection, so the server asks when it starts and while an effect is waiting for the game. Null asks nothing.
+        /// </summary>
+        public Action RequestGameConnection { get; set; }
+
+        /// <summary>How long an effect waits for the game after asking it to connect before asking again.</summary>
+        public TimeSpan ConnectionRequestInterval { get; set; } = TimeSpan.FromSeconds(5);
+
+        /// <summary>
+        /// How long the game gets to answer an effect request. Past it the connection is dropped (a late answer would be
+        /// read as the next request's) and the effect retried once the game reconnects.
+        /// </summary>
+        public TimeSpan ResponseTimeout { get; set; } = TimeSpan.FromSeconds(10);
     }
 
     /// <summary>
@@ -76,6 +91,10 @@ namespace RSMods.Twitch.EffectServer
                 throw new ArgumentOutOfRangeException(nameof(options), "MaximumRetryCount cannot be negative.");
             if (_options.FirstRetryDelay < TimeSpan.Zero)
                 throw new ArgumentOutOfRangeException(nameof(options), "FirstRetryDelay cannot be negative.");
+            if (_options.ConnectionRequestInterval <= TimeSpan.Zero)
+                throw new ArgumentOutOfRangeException(nameof(options), "ConnectionRequestInterval must be positive.");
+            if (_options.ResponseTimeout <= TimeSpan.Zero)
+                throw new ArgumentOutOfRangeException(nameof(options), "ResponseTimeout must be positive.");
         }
 
         public event Action<string> LogMessage;
@@ -105,6 +124,10 @@ namespace RSMods.Twitch.EffectServer
             }
 
             Log($"Started the Rocksmith effect server on 127.0.0.1:{ListeningPort}.");
+
+            // A game that's already past loading tried once, before this was listening. Off the caller's thread: asking
+            // waits on the game's window.
+            _ = Task.Run(RequestGameConnection);
             return Task.CompletedTask;
         }
 
@@ -244,7 +267,7 @@ namespace RSMods.Twitch.EffectServer
 
                     Log($"Sending effect request {requestId} ({request.Code}, {requestJson.Length} JSON characters).");
                     await connection.Frames.WriteFrameAsync(requestJson, cancellationToken).ConfigureAwait(false);
-                    string responseJson = await connection.Frames.ReadFrameAsync(cancellationToken).ConfigureAwait(false);
+                    string responseJson = await ReadResponseAsync(connection, cancellationToken).ConfigureAwait(false);
                     RocksmithEffectResponse response = JsonConvert.DeserializeObject<RocksmithEffectResponse>(responseJson);
                     if (response == null || response.Id != requestId)
                         throw new InvalidDataException("Rocksmith returned an invalid effect response.");
@@ -266,7 +289,11 @@ namespace RSMods.Twitch.EffectServer
                 {
                     break;
                 }
+                // InvalidDataException isn't an IOException: a wrong-id or oversized answer. Like a timeout, the stream
+                // can't be trusted to line up with the next request any more, so it's dropped too.
                 catch (Exception ex) when (ex is IOException ||
+                                              ex is InvalidDataException ||
+                                              ex is TimeoutException ||
                                               ex is SocketException ||
                                               ex is ObjectDisposedException ||
                                               ex is JsonException)
@@ -278,6 +305,26 @@ namespace RSMods.Twitch.EffectServer
                 {
                     Log($"Dropped '{queuedEffect.Reward.Name}' because its effect request is invalid: {ex.Message}");
                 }
+                catch (Exception ex) when (!cancellationToken.IsCancellationRequested)
+                {
+                    // Anything else drops this one effect; letting it out would end this loop and every later effect with it.
+                    Log($"Dropped '{queuedEffect.Reward.Name}' after an unexpected error: {ex.Message}");
+                }
+            }
+        }
+
+        private async Task<string> ReadResponseAsync(ConnectionContext connection, CancellationToken cancellationToken)
+        {
+            using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            timeout.CancelAfter(_options.ResponseTimeout);
+
+            try
+            {
+                return await connection.Frames.ReadFrameAsync(timeout.Token).ConfigureAwait(false);
+            }
+            catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+            {
+                throw new TimeoutException($"Rocksmith didn't answer within {_options.ResponseTimeout.TotalSeconds:0.##} s.");
             }
         }
 
@@ -291,7 +338,24 @@ namespace RSMods.Twitch.EffectServer
                         return _connection;
                 }
 
-                await _connectionSignal.WaitAsync(cancellationToken).ConfigureAwait(false);
+                RequestGameConnection();
+                await _connectionSignal.WaitAsync(_options.ConnectionRequestInterval, cancellationToken).ConfigureAwait(false);
+            }
+        }
+
+        private void RequestGameConnection()
+        {
+            Action request = _options.RequestGameConnection;
+            if (request == null)
+                return;
+
+            try
+            {
+                request();
+            }
+            catch (Exception ex)
+            {
+                Log($"Couldn't ask Rocksmith to connect: {ex.Message}");
             }
         }
 

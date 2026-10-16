@@ -58,12 +58,22 @@ namespace RSMods.Util
 
             public static CopyData CreateForString(int dwData, string value, bool Unicode = false)
             {
+                IntPtr data = Unicode ? Marshal.StringToCoTaskMemUni(value) : Marshal.StringToCoTaskMemAnsi(value);
                 return new CopyData
                 {
                     dwData = (IntPtr)dwData,
-                    lpData = Unicode ? Marshal.StringToCoTaskMemUni(value) : Marshal.StringToCoTaskMemAnsi(value),
-                    cbData = value.Length + 1
+                    lpData = data,
+                    // In bytes, with the terminator: a character is two in UTF-16, and can be two in an ANSI code page.
+                    cbData = Unicode ? (value.Length + 1) * 2 : AnsiLength(data) + 1
                 };
+            }
+
+            private static int AnsiLength(IntPtr data)
+            {
+                int length = 0;
+                while (Marshal.ReadByte(data, length) != 0)
+                    length++;
+                return length;
             }
 
             public static UIntPtr Send(IntPtr targetHandle, int dwData, string value, uint timeoutMs = 1000, bool Unicode = false)
@@ -78,6 +88,8 @@ namespace RSMods.Util
         public static void SendMsgToRS(string msg)
         {
             IntPtr rsHandle = FindWindow("Rocksmith 2014", null);
+            if (rsHandle == IntPtr.Zero)
+                return; // The game isn't running
 
             CopyData.Send(rsHandle, 1, msg);
         }

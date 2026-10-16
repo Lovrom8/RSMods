@@ -409,36 +409,6 @@ void Settings::ParseSettingUpdate(const std::string& updateMessage) {
 }
 
 /// <summary>
-/// Read twitch message and edit effect
-/// </summary>
-/// <param name="twitchMsg"> - twitch message with mod</param>
-/// <param name="toggleType"> - "enable" / "disable"</param>
-void Settings::ParseTwitchToggle(const std::string& twitchMsg, const std::string_view& toggleType) {
-	auto msgParts = SplitByWhitespace(twitchMsg);
-
-	if (msgParts.size() < 2)
-		return;
-
-	std::string effectName = msgParts[1];
-
-	std::unique_lock lock(g_settingsMutex);
-	twitchSettings[effectName] = toggleType == "enable" ? "on" : "off";
-}
-
-/// <summary>
-/// Twitch: Solid note color
-/// </summary>
-/// <param name="twitchMsg"> - twitch message with new color</param>
-void Settings::ParseSolidColorsMessage(const std::string& twitchMsg) {
-	auto msgParts = SplitByWhitespace(twitchMsg);
-
-	if (msgParts.size() < 3)
-		return;
-
-	UpdateTwitchSetting(Setting::Twitch::SolidNoteColor, msgParts[2]);
-}
-
-/// <summary>
 /// Get color list of strings
 /// </summary>
 /// <param name="CB"> - colorblind or not</param>

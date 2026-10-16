@@ -216,21 +216,6 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 }
 
 /// <summary>
-/// Manage Queue of Twitch Effects.
-/// </summary>
-/// <returns>NULL. Loops while game is open.</returns>
-unsigned WINAPI HandleEffectQueueThread() {
-	while (!GameState::GameClosing) {
-		if (Twitch::effectQueue.empty() && GameState::IsInSong()) {
-			Twitch::ParseEffectQueue();
-		}
-
-		Sleep(250);
-	}
-	return 0;
-}
-
-/// <summary>
 /// Reports a mod hook or command that has stopped returning. It can't unstick MainThread, only name the culprit in the log.
 /// </summary>
 /// <returns>NULL. Loops while game is open.</returns>
@@ -316,7 +301,6 @@ void Initialize() {
 
 	std::thread(MainThread).detach(); // Mod Toggle based on menus
 	std::thread(StallMonitorThread).detach(); // Logs a MainThread hook that never returns
-	std::thread(HandleEffectQueueThread).detach(); // Twitch Effects
 	std::thread(MidiThread).detach(); // MIDI Auto Tuning / True Tuning
 	std::thread(RiffRepeaterThread).detach(); // RR Speed Above 100% Log
 }

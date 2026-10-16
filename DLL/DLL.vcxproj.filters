@@ -414,9 +414,6 @@
     <ClCompile Include="Keybindings.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Twitch.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ModManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -951,9 +948,6 @@
       <Filter>Main Headers</Filter>
     </ClInclude>
     <ClInclude Include="Keybindings.hpp">
-      <Filter>Main Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Twitch.hpp">
       <Filter>Main Headers</Filter>
     </ClInclude>
     <ClInclude Include="ModManager.hpp">

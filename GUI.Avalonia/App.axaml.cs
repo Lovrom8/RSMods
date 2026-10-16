@@ -70,6 +70,10 @@ public sealed class App : Application
                 provider.GetRequiredService<TwitchApiClient>(),
                 provider.GetRequiredService<TwitchOptions>(),
                 clock: provider.GetRequiredService<ITwitchClock>()));
+            services.AddSingleton(new RocksmithEffectServerOptions
+            {
+                RequestGameConnection = () => WinMsgUtil.SendMsgToRS("Reconnect to CC")
+            });
             services.AddSingleton<RocksmithEffectServer>();
             services.AddSingleton<TwitchService>();
             services.AddTransient<StatusViewModel>();

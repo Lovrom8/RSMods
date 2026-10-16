@@ -6,7 +6,6 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using RSMods.Util;
 
 namespace RSMods.Twitch
 {
@@ -40,7 +39,6 @@ namespace RSMods.Twitch
         private string _stateDetail = string.Empty;
         private bool _started;
         private bool _disposed;
-        private bool? _turboSpeedEnabled;
 
         public TwitchService(
             TwitchOptions options,
@@ -288,18 +286,8 @@ namespace RSMods.Twitch
             if (rewards == null)
                 throw new ArgumentNullException(nameof(rewards));
             List<TwitchReward> snapshot = rewards.Where(reward => reward != null).ToList();
-            bool turboEnabled = snapshot.Any(reward =>
-                reward.Enabled && string.Equals(reward.InternalMsgEnable, "turbospeed", StringComparison.OrdinalIgnoreCase));
-            bool updateTurbo;
             lock (_rewardSync)
-            {
                 _rewards = snapshot;
-                updateTurbo = !_turboSpeedEnabled.HasValue || _turboSpeedEnabled.Value != turboEnabled;
-                _turboSpeedEnabled = turboEnabled;
-            }
-
-            if (updateTurbo)
-                WinMsgUtil.SendMsgToRS(turboEnabled ? "enable TurboSpeed" : "disable TurboSpeed");
         }
 
         private async Task ActivateStoredAuthorizationAsync(CancellationToken cancellationToken)

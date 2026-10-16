@@ -35,6 +35,7 @@ namespace CrowdControl {
 		std::mutex effectsMutex;
 
 		std::atomic<SOCKET> activeSocket{ INVALID_SOCKET };
+		bool reconnectRequested = false; // Under waitMutex.
 
 		bool WaitFor(std::stop_token stop, std::chrono::milliseconds duration) {
 			std::unique_lock lock(waitMutex);
@@ -126,6 +127,8 @@ namespace CrowdControl {
 				return;
 			}
 
+			Request request{};
+			Response response;
 			try {
 				const std::string command(buffer.data(), currentMessageLength);
 				const json j = json::parse(command);
@@ -133,24 +136,69 @@ namespace CrowdControl {
 				LOG_INFO("Received command:" << std::endl);
 				LOG_INFO(j.dump(2) << std::endl);
 
-				Request request;
 				CrowdControl::Structs::from_json_request(j, request);
 
 				LOG_INFO("Running command" << std::endl);
-				const Response response = RunCommand(request);
+				response = RunCommand(request);
+			}
+			catch (const std::exception& ex) {
+				LOG_ERROR("Invalid Crowd Control request: " << ex.what() << std::endl);
 
+				// Answer anyway: the client waits for a reply to every request. The id is the request's if it was read.
+				response = Response{ request.id, request.code, EffectStatus::Failure, 0, ResponseType::EffectRequest };
+			}
+
+			try {
 				LOG_INFO("Responding to command" << std::endl);
 				SendResponse(socket, response);
 			}
 			catch (const std::exception& ex) {
-				LOG_ERROR("Invalid Crowd Control request: " << ex.what() << std::endl);
+				LOG_ERROR("Couldn't answer a Crowd Control request: " << ex.what() << std::endl);
 			}
 		}
 	}
 
 	/// <summary>
-	/// Opens a TCP socket on localhost, port 45659
-	/// If a socket has been successfully opened, it connects to the effect client (CrowdControl or RSMods GUI)
+	/// One connection to the effect client (CrowdControl or RSMods GUI) on localhost, port 45659: connect, then serve
+	/// requests until it drops, fails, or a reconnect closes it.
+	/// </summary>
+	void ConnectAndServe(std::stop_token stop, const sockaddr_in& serverAddress) {
+		LOG_INFO("Trying to connect to crowd control" << std::endl);
+
+		//Open socket
+		const SOCKET socket = ::socket(AF_INET, SOCK_STREAM, 0);
+		if (socket == INVALID_SOCKET) {
+			LOG_ERROR("Unable to open socket for crowd control" << std::endl);
+			return;
+		}
+
+		activeSocket.store(socket);
+		if (stop.stop_requested()) {
+			CloseActiveSocket();
+			return;
+		}
+
+		//Connect
+		const int connectErr = connect(socket, reinterpret_cast<const sockaddr*>(&serverAddress), sizeof(serverAddress));
+		if (connectErr == SOCKET_ERROR) {
+			const int err = WSAGetLastError();
+			LOG_ERROR("Unable to connect to crowd control - " << err << std::endl);
+			CloseActiveSocket();
+			return;
+		}
+
+		LOG_INFO("Connected to crowd control" << std::endl);
+
+		//Do client loop
+		ClientLoop(stop, socket);
+		CloseActiveSocket();
+
+		LOG_INFO("Disconnected from crowd control" << std::endl);
+	}
+
+	/// <summary>
+	/// Connects once the game has loaded, then only again when asked: the client asks (WM_COPYDATA "Reconnect") once
+	/// it's listening. Lives as long as the server, so a reconnect never starts or joins a thread.
 	/// </summary>
 	void CrowdControlThread(std::stop_token stop) {
 		using namespace std::chrono_literals;
@@ -174,38 +222,15 @@ namespace CrowdControl {
 		}
 
 		while (!stop.stop_requested()) {
-			LOG_INFO("Trying to connect to crowd control" << std::endl);
-
-			//Open socket
-			const SOCKET socket = ::socket(AF_INET, SOCK_STREAM, 0);
-			if (socket == INVALID_SOCKET) {
-				LOG_ERROR("Unable to open socket for crowd control" << std::endl);
-				return;
+			{
+				std::lock_guard lock(waitMutex);
+				reconnectRequested = false; // This attempt answers every request made so far.
 			}
 
-			activeSocket.store(socket);
-			if (stop.stop_requested()) {
-				CloseActiveSocket();
-				return;
-			}
+			ConnectAndServe(stop, server_address);
 
-			//Connect
-			const int connectErr = connect(socket, reinterpret_cast<const sockaddr*>(&server_address), sizeof(server_address));
-			if (connectErr == SOCKET_ERROR) {
-				const int err = WSAGetLastError();
-				LOG_ERROR("Unable to connect to crowd control - " << err << std::endl);
-				CloseActiveSocket();
-				return;
-			}
-
-			LOG_INFO("Connected to crowd control" << std::endl);
-
-			//Do client loop
-			ClientLoop(stop, socket);
-			CloseActiveSocket();
-
-			LOG_INFO("Disconnected from crowd control" << std::endl);
-			break;
+			std::unique_lock lock(waitMutex);
+			wake.wait(lock, stop, [] { return reconnectRequested; });
 		}
 
 		LOG_INFO("Crowd control stopping" << std::endl);
@@ -256,15 +281,17 @@ namespace CrowdControl {
 	}
 
 	/// <summary>
-	/// Starts or restarts only the TCP connection worker.
+	/// Drops the current connection, if any, and connects again. Called from the game's window thread when the client
+	/// asks, so it only flags the connection thread instead of restarting it.
 	/// </summary>
-	void StartServerLoop() {
-		connectionThread.request_stop();
-		CloseActiveSocket();
-		wake.notify_all();
+	void RequestReconnect() {
+		{
+			std::lock_guard lock(waitMutex);
+			reconnectRequested = true;
+		}
 
-		if (connectionThread.joinable()) connectionThread.join();
-		connectionThread = std::jthread(CrowdControlThread);
+		CloseActiveSocket(); // Ends a live connection's recv, so the thread comes round to connect again.
+		wake.notify_all();
 	}
 
 	/// <summary>
@@ -273,7 +300,7 @@ namespace CrowdControl {
 	void StartServer() {
 		if (connectionThread.joinable()) return;
 
-		StartServerLoop();
+		connectionThread = std::jthread(CrowdControlThread);
 		effectThread = std::jthread(EffectRunThread);
 		objectUpdateThread = std::jthread(ObjectUtilUpdateThread);
 

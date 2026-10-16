@@ -152,6 +152,116 @@ public sealed class RocksmithEffectServerTests
         await server.StopAsync().WaitAsync(TimeSpan.FromSeconds(5));
     }
 
+    [Fact]
+    public async Task Server_AsksTheGameToConnect_OnStartAndWhileAnEffectWaits()
+    {
+        // The game dials in once when it loads, so a server started later must ask, and keep asking while an effect waits.
+        var asked = new SemaphoreSlim(0);
+        var options = new RocksmithEffectServerOptions
+        {
+            Port = 0,
+            ConnectionRequestInterval = TimeSpan.FromMilliseconds(20),
+            RequestGameConnection = () => asked.Release()
+        };
+        await using var server = new RocksmithEffectServer(options);
+        await server.StartAsync();
+        Assert.True(await asked.WaitAsync(TimeSpan.FromSeconds(5)), "Not asked on start");
+
+        Assert.True(server.TryQueueEffect(new TwitchReward { Name = "Rainbow Strings", InternalMsgEnable = "rainbowstrings", Length = 3 }));
+        Assert.True(await asked.WaitAsync(TimeSpan.FromSeconds(5)), "Not asked while the effect waited");
+        Assert.True(await asked.WaitAsync(TimeSpan.FromSeconds(5)), "Not asked again");
+
+        using var client = new TcpClient();
+        await client.ConnectAsync("127.0.0.1", server.ListeningPort);
+        string json = await ReadFrameAsync(client.GetStream()).WaitAsync(TimeSpan.FromSeconds(5));
+        Assert.Equal("rainbowstrings", JsonConvert.DeserializeObject<RocksmithEffectRequest>(json)!.Code);
+
+        await server.StopAsync().WaitAsync(TimeSpan.FromSeconds(5));
+    }
+
+    [Fact]
+    public async Task Server_KeepsRunningWhenAskingTheGameThrows()
+    {
+        var logged = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
+        await using var server = new RocksmithEffectServer(new RocksmithEffectServerOptions
+        {
+            Port = 0,
+            RequestGameConnection = () => throw new InvalidOperationException("no window")
+        });
+        server.LogMessage += message =>
+        {
+            if (message.StartsWith("Couldn't ask Rocksmith", StringComparison.Ordinal))
+                logged.TrySetResult(message);
+        };
+        await server.StartAsync();
+
+        Assert.Contains("no window", await logged.Task.WaitAsync(TimeSpan.FromSeconds(5)));
+        Assert.True(server.IsRunning);
+        await server.StopAsync().WaitAsync(TimeSpan.FromSeconds(5));
+    }
+
+    [Fact]
+    public async Task Server_DropsTheConnectionAndRetries_WhenRocksmithDoesNotAnswer()
+    {
+        var options = new RocksmithEffectServerOptions
+        {
+            Port = 0,
+            ResponseTimeout = TimeSpan.FromMilliseconds(100),
+            FirstRetryDelay = TimeSpan.FromMilliseconds(1)
+        };
+        await using var server = new RocksmithEffectServer(options);
+        await server.StartAsync();
+
+        using var silent = new TcpClient();
+        await silent.ConnectAsync("127.0.0.1", server.ListeningPort);
+        NetworkStream silentStream = silent.GetStream();
+        Assert.True(server.TryQueueEffect(new TwitchReward { Name = "Rainbow Strings", InternalMsgEnable = "rainbowstrings", Length = 3 }));
+        await ReadFrameAsync(silentStream).WaitAsync(TimeSpan.FromSeconds(5));
+
+        // Never answered: the server hangs up rather than wait forever.
+        await Assert.ThrowsAsync<EndOfStreamException>(() => ReadFrameAsync(silentStream).WaitAsync(TimeSpan.FromSeconds(5)));
+
+        using var reconnected = new TcpClient();
+        await reconnected.ConnectAsync("127.0.0.1", server.ListeningPort);
+        string retried = await ReadFrameAsync(reconnected.GetStream()).WaitAsync(TimeSpan.FromSeconds(5));
+        Assert.Equal("rainbowstrings", JsonConvert.DeserializeObject<RocksmithEffectRequest>(retried)!.Code);
+
+        await server.StopAsync().WaitAsync(TimeSpan.FromSeconds(5));
+    }
+
+    [Fact]
+    public async Task Server_KeepsSending_AfterAnAnswerForTheWrongRequest()
+    {
+        var options = new RocksmithEffectServerOptions { Port = 0, FirstRetryDelay = TimeSpan.FromMilliseconds(1) };
+        await using var server = new RocksmithEffectServer(options);
+        await server.StartAsync();
+
+        using var confused = new TcpClient();
+        await confused.ConnectAsync("127.0.0.1", server.ListeningPort);
+        NetworkStream confusedStream = confused.GetStream();
+        Assert.True(server.TryQueueEffect(new TwitchReward { Name = "Rainbow Strings", InternalMsgEnable = "rainbowstrings", Length = 3 }));
+
+        RocksmithEffectRequest request = JsonConvert.DeserializeObject<RocksmithEffectRequest>(
+            await ReadFrameAsync(confusedStream).WaitAsync(TimeSpan.FromSeconds(5)))!;
+        await WriteFrameFragmentedAsync(confusedStream, JsonConvert.SerializeObject(new RocksmithEffectResponse
+        {
+            Id = request.Id + 1,
+            Code = request.Code,
+            Status = 0,
+            Type = 0
+        }));
+
+        // The worker survives the mismatch: it hangs up and sends the effect again on the next connection.
+        await Assert.ThrowsAsync<EndOfStreamException>(() => ReadFrameAsync(confusedStream).WaitAsync(TimeSpan.FromSeconds(5)));
+
+        using var reconnected = new TcpClient();
+        await reconnected.ConnectAsync("127.0.0.1", server.ListeningPort);
+        string retried = await ReadFrameAsync(reconnected.GetStream()).WaitAsync(TimeSpan.FromSeconds(5));
+        Assert.Equal("rainbowstrings", JsonConvert.DeserializeObject<RocksmithEffectRequest>(retried)!.Code);
+
+        await server.StopAsync().WaitAsync(TimeSpan.FromSeconds(5));
+    }
+
     // Reads the next request and answers it with status 3 (retry); returns the request's effect code.
     private static async Task<string> AnswerRetryAsync(Stream stream)
     {

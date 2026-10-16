@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "Keybindings.hpp"
-#include "Mods/RiffRepeater.hpp"
 
 namespace {
 	Framework::KeyEvent CaptureKeyEvent(WPARAM keyPressed, LPARAM lParam, Framework::KeyEdge edge) {
@@ -52,9 +51,11 @@ namespace Keybindings {
 
 	void UpdateSettingsOnGUIChange(LPARAM lParam) {
 		auto pcds = reinterpret_cast<COPYDATASTRUCT*>(lParam);
-		if (pcds->dwData != 1) return;
+		if (pcds->dwData != 1 || !pcds->lpData) return;
 
-		std::string currMsg = static_cast<char*>(pcds->lpData);
+		// Any process can send this, so read only the bytes it says it sent; the terminator is optional.
+		const char* data = static_cast<const char*>(pcds->lpData);
+		std::string currMsg(data, strnlen(data, pcds->cbData));
 		LOG_INFO(currMsg << std::endl);
 
 		if (Contains(currMsg, "update")) {
@@ -68,15 +69,7 @@ namespace Keybindings {
 			if (msgParts.size() == 2)
 				VoiceOverControl::PlayVoiceOver(msgParts[1]);
 		}
-		else if (Contains(currMsg, "TurboSpeed")) { // Deprecated - use CrowdControl
-			if (Contains(currMsg, "enable"))
-				RiffRepeater::EnableTimeStretch();
-			else
-				RiffRepeater::DisableTimeStretch();
-		}
-		else if (Contains(currMsg, "enable"))
-			Twitch::effectQueue.push_back(currMsg);
 		else if (Contains(currMsg, "Reconnect"))
-			CrowdControl::StartServerLoop();
+			CrowdControl::RequestReconnect();
 	}
 }

@@ -5,7 +5,7 @@
 
 namespace CrowdControl {
 	void StartServer();
-	void StartServerLoop();
+	void RequestReconnect(); // Any thread; returns at once.
 	void StopServer();
 	Structs::Response RunCommand(const Structs::Request& request);
 

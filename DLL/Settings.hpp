@@ -247,8 +247,6 @@ namespace Settings {
 	void UpdateCustomSetting(const std::string& name, int newValue);
 	void UpdateTwitchSetting(const std::string& name, const std::string_view& newValue);
 	void ParseSettingUpdate(const std::string& updateMessage);
-	void ParseTwitchToggle(const std::string& twitchMsg, const std::string_view& toggleType);
-	void ParseSolidColorsMessage(const std::string& twitchMsg);
 	bool IsTwitchSettingEnabled(const std::string& name);
 	std::string TwitchSettingValue(const std::string& name);
 	std::vector<std::string> SplitByWhitespace(const std::string& input);
