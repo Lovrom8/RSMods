@@ -139,12 +139,14 @@ void RiffRepeaterMod::OnSongExit(ModContext&) {
 	loopStart = 0.f;
 	roughLoopStart = 0.f;
 	loopEnd = 0.f;
+	loopSeekAt.reset();
 }
 
 void RiffRepeaterMod::OnDisabled(ModContext&) {
 	loopStart = 0.f;
 	roughLoopStart = 0.f;
 	loopEnd = 0.f;
+	loopSeekAt.reset();
 }
 
 void RiffRepeaterMod::ChangeSpeed(const ModContext& c, const KeyEvent& event) {
@@ -230,8 +232,16 @@ void RiffRepeaterMod::UpdateLoopState(ModContext& c) {
 			// then seek once we reach the end. The request self-clears when the loop is cleared.
 			else if (loopStart != 0.f && loopEnd != 0.f) {
 				c.RequestFastTick();
-				if (SongTimer::SongTimer() >= loopEnd) {
+				// The timer can lag the seek by a few fast ticks, so seek once and wait to see it back before loopEnd.
+				// Retry after a while in case the seek didn't take.
+				constexpr auto kLoopSeekRetry = std::chrono::milliseconds(500);
+				const auto now = std::chrono::steady_clock::now();
+				if (SongTimer::SongTimer() < loopEnd) {
+					loopSeekAt.reset();
+				}
+				else if (!loopSeekAt || now - *loopSeekAt >= kLoopSeekRetry) {
 					Wwise::SoundEngine::SeekOnEvent(std::string("Play_" + GameState::GetSongKey()).c_str(), 0x1234, static_cast<AkTimeMs>(roughLoopStart * 1000), false);
+					loopSeekAt = now;
 				}
 			}
 		}
