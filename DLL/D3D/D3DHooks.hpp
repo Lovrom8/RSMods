@@ -12,7 +12,7 @@ namespace D3DHooks {
 	inline D3DVERTEXBUFFER_DESC vdesc;
 
 	inline IDirect3DVertexDeclaration9* pDecl;
-	inline D3DVERTEXELEMENT9 decl[MAXD3DDECLLENGTH];
+	inline D3DVERTEXELEMENT9 decl[MAXD3DDECLLENGTH + 1]; // + D3DDECL_END, which GetDeclaration writes too
 	inline UINT NumElements;
 
 	inline IDirect3DVertexShader9* vShader;

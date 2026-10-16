@@ -28,7 +28,7 @@ void D3DHooks::InitializeCrcProvider() {
 /// <param name="PrimCount"> - Number of primitives to render.</param>
 /// <returns>If the method succeeds, the return value is D3D_OK. If the method fails, the return value can be D3DERR_INVALIDCALL.</returns>
 HRESULT APIENTRY D3DHooks::Hook_DP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE PrimType, UINT StartIndex, UINT PrimCount) { // Mainly used for Note Tails
-	if (pDevice->GetStreamSource(0, &Stream_Data, &Offset, &Stride) == D3D_OK)
+	if (pDevice->GetStreamSource(0, &Stream_Data, &Offset, &Stride) == D3D_OK && Stream_Data) // Succeeds with no buffer when none is bound
 		Stream_Data->Release();
 
 	Mesh currentMesh(Stride, PrimCount, 0);
@@ -264,20 +264,8 @@ HRESULT APIENTRY D3DHooks::Hook_Reset(IDirect3DDevice9* pDevice, D3DPRESENT_PARA
 /// <param name="PrimCount"> - Number of primitives to render.</param>
 /// <returns>If the method succeeds, the return value is D3D_OK. If the method fails, the return value can be the following: D3DERR_INVALIDCALL.</returns>
 HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE PrimType, INT BaseVertexIndex, UINT MinVertexIndex, UINT NumVertices, UINT StartIndex, UINT PrimCount) { // Draw things on screen
-	if (pDevice->GetStreamSource(0, &Stream_Data, &Offset, &Stride) == D3D_OK)
+	if (pDevice->GetStreamSource(0, &Stream_Data, &Offset, &Stride) == D3D_OK && Stream_Data) // Succeeds with no buffer when none is bound
 		Stream_Data->Release();
-
-	// This could potentially lead to game locking up (because DIP is called multiple times per frame) if that value is not filled, but generally it should work 
-	if (Settings::ReturnSettingValue(Settings::Setting::ExtendedRangeEnabled).length() < 2) { // Due to some weird reasons, sometimes settings decide to go missing - this may solve the problem
-		static std::atomic_bool reloadQueued = false;
-		if (!reloadQueued.exchange(true)) {
-			Framework::Registry().EnqueueSettingsUpdate([] {
-				Settings::UpdateSettings();
-				reloadQueued.store(false);
-				LOG_INFO("Reloaded settings" << std::endl);
-			});
-		}
-	}
 
 	Mesh current(Stride, PrimCount, NumVertices);
 	ThiccMesh currentThicc(Stride, PrimCount, NumVertices, StartIndex, StartRegister, PrimType, decl->Type, VectorCount, NumElements);
@@ -313,27 +301,24 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 			}
 		}
 
-		if (GetAsyncKeyState(VK_CONTROL) & 1)
-			//Log("{ %d, %d, %d, %d, %d, %d, %d, %d, %d }, ", Stride, PrimCount, NumVertices, StartIndex, StartRegister, PrimType, decl->Type, VectorCount, NumElements);
-
-			if (startLogging) {
-				if (std::ranges::find(allMeshes, currentThicc) == allMeshes.end()) // Make sure we don't log what we'd already logged
-					allMeshes.push_back(currentThicc);
-				if (NOTE_STEMS) // Criteria for search
-					LOG_INFO("{ " << Stride << ", "
-									  << PrimCount << ", "
-									  << NumVertices << ", "
-									  << StartIndex << ", "
-									  << StartRegister << ", "
-									  << (UINT)PrimType << ", "
-									  << (UINT)decl->Type << ", "
-									  << VectorCount << ", "
-									  << NumElements << " },"
-									  << std::endl); // Thicc Mesh -> Log
-				
-				//_LOG("{ "<< Stride << ", " << PrimCount << ", " << NumVertices << " }," std::endl; // Mesh -> Console
-				//_LOG(std::hex << crc << std::endl);
-			}
+		if (startLogging) {
+			if (std::ranges::find(allMeshes, currentThicc) == allMeshes.end()) // Make sure we don't log what we'd already logged
+				allMeshes.push_back(currentThicc);
+			if (NOTE_STEMS) // Criteria for search
+				LOG_INFO("{ " << Stride << ", "
+								  << PrimCount << ", "
+								  << NumVertices << ", "
+								  << StartIndex << ", "
+								  << StartRegister << ", "
+								  << (UINT)PrimType << ", "
+								  << (UINT)decl->Type << ", "
+								  << VectorCount << ", "
+								  << NumElements << " },"
+								  << std::endl); // Thicc Mesh -> Log
+			
+			//_LOG("{ "<< Stride << ", " << PrimCount << ", " << NumVertices << " }," std::endl; // Mesh -> Console
+			//_LOG(std::hex << crc << std::endl);
+		}
 
 		if (std::size(allMeshes) > 0 && allMeshes.at(currIdx) == currentThicc) {
 			currStride = Stride;
