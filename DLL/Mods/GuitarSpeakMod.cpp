@@ -50,17 +50,30 @@ void GuitarSpeakMod::OnMenuTick(ModContext& c) {
 		return;
 	}
 
-	if (listener.joinable())
+	if (listener.joinable()) {
+		if (!listenerDone.load(std::memory_order_acquire))
+			return;
+
+		// The loop ended by itself. A throw comes back here so the framework faults the mod (and Retry restarts
+		// it) instead of Guitar Speak going quiet with nothing to show for it.
+		listener.join();
+		if (std::exception_ptr error = std::exchange(listenerError, nullptr))
+			std::rethrow_exception(error);
+	}
+
+	if (GameState::GameClosing)
 		return;
 
 	GuitarSpeak::keysDirty = true;
-	listener = std::jthread([](std::stop_token stop) {
+	listenerDone.store(false, std::memory_order_relaxed);
+	listener = std::jthread([this](std::stop_token stop) {
 		try {
 			GuitarSpeak::RunGuitarSpeak(stop);
 		}
-		catch (const std::exception& e) {
-			LOG_ERROR("(GS) Guitar Speak stopped: " << e.what() << std::endl);
+		catch (...) {
+			listenerError = std::current_exception();
 		}
+		listenerDone.store(true, std::memory_order_release);
 	});
 }
 
@@ -83,6 +96,7 @@ void GuitarSpeakMod::StopListening() {
 
 	listener.request_stop();
 	listener.join();
+	listenerError = nullptr; // Stopped on purpose; whatever it threw on the way out doesn't matter now.
 }
 
 

@@ -2,6 +2,8 @@
 
 #include "../Framework/Framework.hpp"
 
+#include <atomic>
+#include <exception>
 #include <thread>
 
 class GuitarSpeakMod : public Framework::IMod {
@@ -17,6 +19,11 @@ public:
 
 private:
 	void StopListening();
+
+	// Written by the listener before listenerDone, read by MainThread after it. Declared before the thread, so they
+	// outlive its join on destruction.
+	std::atomic<bool> listenerDone{ false };
+	std::exception_ptr listenerError;
 
 	// The listen loop polls the guitar every 50 ms, so it gets its own thread rather than MainThread.
 	std::jthread listener;
