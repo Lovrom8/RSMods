@@ -186,6 +186,10 @@ namespace Framework {
 		// reported through TakeFaults, and the draw goes on as Pass.
 		DrawResult Intercept(const ActiveEntry& entry, DrawContext& ctx);
 
+		// Render thread: a mod callback run outside this registry (an ImGui menu, overlay or font load) threw. Its owner
+		// is handled like one whose interceptor threw: dropped from the snapshots and reported through TakeFaults.
+		void ReportFault(const IMod* owner, const char* where, const char* detail);
+
 		// Every Run* below catches a throwing callback the same way and carries on with the rest.
 
 		// Render thread (EndScene): run enabled mods' frame callbacks, lock-free.

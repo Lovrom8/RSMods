@@ -3,6 +3,7 @@
 #include "DirectInputCapture.hpp"
 #include "Framework/Framework.hpp"
 #include "D3DOverlay.hpp"
+#include "Lib/ImGUI/imgui_internal.h" // ErrorCheckEndWindowRecover, after a callback throws mid-window
 
 #include <string>
 #include <vector>
@@ -29,6 +30,47 @@ namespace Menu {
 			case Framework::ModStatusKind::Registered: return ImVec4(0.60f, 0.70f, 0.90f, 1.0f); // blue
 			}
 			return ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+		}
+
+		// After a callback threw partway through its ImGui calls: close what it left open down to `windowDepth`, so
+		// the frame's Begin/End and Push/Pop stacks still balance.
+		void RecoverImGuiStack(int windowDepth) {
+			ImGuiContext& g = *ImGui::GetCurrentContext();
+			while (g.CurrentWindowStack.Size > windowDepth) {
+				ImGui::ErrorCheckEndWindowRecover(nullptr);
+				if (g.CurrentWindow->Flags & ImGuiWindowFlags_ChildWindow) ImGui::EndChild();
+				else ImGui::End();
+			}
+			ImGui::ErrorCheckEndWindowRecover(nullptr);
+		}
+
+		// A mod's throw is handled like a throwing draw callback's: the next MainThread tick faults it (logging why
+		// once) and drops its entries; until then it may throw again and is recovered the same way. A host entry has
+		// no mod to fault, so it's only logged.
+		void ReportThrow(const Framework::IMod* owner, const std::string& id, const char* where, const char* detail) {
+			if (owner) {
+				Framework::Draw().ReportFault(owner, where, detail);
+			}
+			else {
+				LOG_ERROR("Exception in " << where << " '" << id << "': " << detail << std::endl);
+			}
+		}
+
+		// Runs one ImGui callback inside the frame; see ReportThrow for what a throw does.
+		template <typename Fn>
+		void RunGuarded(const Framework::IMod* owner, const std::string& id, const char* where, Fn&& fn) {
+			const int windowDepth = ImGui::GetCurrentContext()->CurrentWindowStack.Size;
+			try {
+				fn();
+				return;
+			}
+			catch (const std::exception& e) {
+				ReportThrow(owner, id, where, e.what());
+			}
+			catch (...) {
+				ReportThrow(owner, id, where, "threw an unknown exception");
+			}
+			RecoverImGuiStack(windowDepth);
 		}
 
 		// View over the registry's status snapshot, gated behind the opt-in toggle below. Its only
@@ -100,16 +142,16 @@ namespace Menu {
 		// Mods' fonts go in outside the frame, where the atlas isn't locked; NewFrame then re-uploads the texture.
 		auto fontLoads = Framework::Menus().TakePendingFonts();
 		if (!fontLoads.empty()) {
+			// Outside a frame there's no window stack to recover, so not RunGuarded.
 			for (const auto& load : fontLoads) {
-				const std::string owner = load.owner ? std::string(load.owner->Id()) : "(host)";
 				try {
 					load.fn();
 				}
 				catch (const std::exception& e) {
-					LOG_ERROR("Exception adding fonts for '" << owner << "': " << e.what() << std::endl);
+					ReportThrow(load.owner, "fonts", "font load", e.what());
 				}
 				catch (...) {
-					LOG_ERROR("Unknown exception adding fonts for '" << owner << "'" << std::endl);
+					ReportThrow(load.owner, "fonts", "font load", "threw an unknown exception");
 				}
 			}
 
@@ -128,15 +170,7 @@ namespace Menu {
 		for (const auto& entry : entries) {
 			if (!entry.overlay || !entry.drawFn) continue;
 
-			try {
-				entry.drawFn();
-			}
-			catch (const std::exception& e) {
-				LOG_ERROR("Exception rendering overlay '" << entry.id << "': " << e.what() << std::endl);
-			}
-			catch (...) {
-				LOG_ERROR("Unknown exception rendering overlay '" << entry.id << "'" << std::endl);
-			}
+			RunGuarded(entry.owner, entry.id, "overlay", entry.drawFn);
 		}
 
 		if (Menu::menuEnabled) {
@@ -147,32 +181,17 @@ namespace Menu {
 				for (const auto& entry : entries) {
 					if (entry.standaloneWindow || entry.overlay || !entry.drawFn) continue;
 
-					try {
+					RunGuarded(entry.owner, entry.id, "menu", [&] {
 						if (ImGui::CollapsingHeader(entry.title.c_str(), ImGuiTreeNodeFlags_DefaultOpen)) {
 							entry.drawFn();
 						}
-					}
-					catch (const std::exception& e) {
-						LOG_ERROR("Exception rendering menu '" << entry.id << "': " << e.what() << std::endl);
-					}
-					catch (...) {
-						LOG_ERROR("Unknown exception rendering menu '" << entry.id << "'" << std::endl);
-					}
+					});
 				}
 
 				ImGui::Separator();
 				ImGui::Checkbox("Mod status", &g_showModStatus);
-				if (g_showModStatus) {
-					try {
-						DrawModStatus();
-					}
-					catch (const std::exception& e) {
-						LOG_ERROR("Exception rendering mod status: " << e.what() << std::endl);
-					}
-					catch (...) {
-						LOG_ERROR("Unknown exception rendering mod status" << std::endl);
-					}
-				}
+				if (g_showModStatus)
+					RunGuarded(nullptr, "status", "mod status", DrawModStatus);
 				ImGui::End();
 			}
 
@@ -180,17 +199,8 @@ namespace Menu {
 				if (!entry.standaloneWindow || entry.overlay || !entry.drawFn) continue;
 				if (!entry.playerFacing && !D3DHooks::debug) continue;
 
-				if (ImGui::Begin(entry.title.c_str())) {
-					try {
-						entry.drawFn();
-					}
-					catch (const std::exception& e) {
-						LOG_ERROR("Exception rendering standalone menu '" << entry.id << "': " << e.what() << std::endl);
-					}
-					catch (...) {
-						LOG_ERROR("Unknown exception rendering standalone menu '" << entry.id << "'" << std::endl);
-					}
-				}
+				if (ImGui::Begin(entry.title.c_str()))
+					RunGuarded(entry.owner, entry.id, "standalone menu", entry.drawFn);
 				ImGui::End();
 			}
 		}

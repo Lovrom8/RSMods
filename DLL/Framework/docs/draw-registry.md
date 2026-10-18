@@ -557,7 +557,8 @@ per callback. The one that threw is skipped and the rest run; a draw goes on as 
 ahead. The registry unpublishes everything its owner has on the render thread at once and keeps it out of
 rebuilds, then MainThread faults the mod on its next pass (`Draw().TakeFaults()`), with the usual
 best-effort `OnDisabled` for an Active one. `RemoveMod` clears the mark, so *Retry faulted* works.
-Empty interceptors are never published.
+Empty interceptors are never published. ImGui menus, overlays and font loads run outside this registry,
+and `Menu.cpp` reports their throws through `ReportFault` to be handled the same way.
 
 ---
 

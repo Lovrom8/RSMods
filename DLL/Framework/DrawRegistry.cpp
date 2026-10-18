@@ -343,6 +343,10 @@ namespace Framework {
 		return result;
 	}
 
+	void DrawRegistry::ReportFault(const IMod* owner, const char* where, const char* detail) {
+		impl->NoteFault(owner, where, detail);
+	}
+
 	void DrawRegistry::RunFrame(IDirect3DDevice9* pDevice) {
 		if (!pDevice) return;
 

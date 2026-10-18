@@ -162,7 +162,8 @@ Registered ──OnInitialize──▶ Inactive ──OnEnabled──▶ Active
     strongly exception-safe, as `OnDisabled` is *not* called on a failed enable.
   - A command binding throws → the mod's remaining key events are dropped and it faults like a hook.
   - `IsEnabled` throws → faulted like a hook (retryable), not treated as disabled.
-  - A render-thread callback throws → the render thread stops calling the mod at once and the next
+  - A render-thread callback (draw, frame, device, ImGui menu, overlay or font load) throws → the render
+    thread stops calling the mod at once and the next
     MainThread pass faults it like a hook ([`docs/draw-registry.md`](docs/draw-registry.md) §8.10).
   - A tick hook (`OnTick`/`OnMenuTick`/`OnSongTick`/`OnSongEnter`/`OnSongExit`) or
     `OnSettingsChanged` throws → the mod is faulted immediately; an `Active` one receives a best-effort

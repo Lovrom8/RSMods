@@ -85,6 +85,7 @@ namespace {
 		bool probeStall = false;   // Poll the stall monitor from inside OnTick and the command.
 		bool throwInIsEnabled = false;
 		bool throwingInterceptor = false; // Registers a draw interceptor that throws.
+		bool hasOverlay = false;          // Registers an ImGui overlay.
 		std::optional<Framework::StallMonitor::Report> stallInTick;
 		std::optional<Framework::StallMonitor::Report> stallInCommand;
 
@@ -115,6 +116,7 @@ namespace {
 					throw std::runtime_error("injected failure in a draw interceptor");
 				});
 			}
+			if (hasOverlay) c.Menu().RegisterOverlay("hud", 0, [] {});
 			if (!commandSetting.empty()) {
 				c.Commands().BindSetting(commandSetting, Framework::KeyEdge::Up, availability,
 					[this](Framework::ModContext&, const Framework::KeyEvent& event) {
@@ -655,6 +657,37 @@ static void Test_RenderFaultFaultsMod() {
 	reg.Shutdown();
 }
 
+// An ImGui overlay throwing (Menu.cpp reports it) faults its mod like a draw interceptor, and a retry brings it back.
+static void Test_MenuFaultFaultsMod() {
+	ClearEvents();
+	ModRegistry reg;
+	TestMod* drawer = Add(reg, "Drawer"); drawer->hasOverlay = true;
+	reg.DispatchInitialize();
+	reg.Tick(GamePhase::Menu);
+
+	const auto drawerEntries = [&] {
+		const auto entries = Framework::Menus().GetEntries();
+		return std::count_if(entries.begin(), entries.end(), [&](const Framework::MenuEntry& e) { return e.owner == drawer; });
+	};
+	Expect(drawerEntries() == 1, "the overlay shows while its mod is Active");
+
+	Framework::Draw().ReportFault(drawer, "overlay", "injected failure in an overlay");
+	reg.Tick(GamePhase::Menu);
+	auto status = reg.StatusSnapshot();
+	const auto* d = FindStatus(status, "Drawer");
+	Expect(d && d->kind == Framework::ModStatusKind::Faulted, "the next tick faults the mod");
+	Expect(Has("Drawer:OnDisabled"), "with a best-effort revert");
+	Expect(drawerEntries() == 0, "and its overlay is no longer drawn");
+
+	reg.RequestRetryFaulted();
+	reg.Tick(GamePhase::Menu);
+	status = reg.StatusSnapshot();
+	d = FindStatus(status, "Drawer");
+	Expect(d && d->kind == Framework::ModStatusKind::Active && drawerEntries() == 1, "a retried mod's overlay shows again");
+
+	reg.Shutdown();
+}
+
 // The ledger is published before OnEnabled; a winner faulting there must not keep its claim.
 static void Test_FaultedWinnerDropsLedgerClaim() {
 	ClearEvents();
@@ -718,6 +751,7 @@ int main() {
 	Test_FaultKeepsSettingsSchema();
 	Test_IsEnabledThrowFaults();
 	Test_RenderFaultFaultsMod();
+	Test_MenuFaultFaultsMod();
 	Test_FaultedWinnerDropsLedgerClaim();
 
 	std::cout << (g_failures == 0 ? "\nALL PASS\n" : "\nFAILURES: " + std::to_string(g_failures) + "\n");

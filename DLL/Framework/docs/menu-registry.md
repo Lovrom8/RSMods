@@ -21,7 +21,7 @@ The framework-managed surface for in-game settings and debug menus, decoupling [
    - `MenuRegistry::GetEntries()` snapshots registered entries under an internal mutex, filtered against the published availability snapshot, and sorts them by `order asc`, then `title asc` without querying `ModRegistry` from the render thread.
 3. **Execution & Fault Isolation:**
    - For non-standalone entries (`standaloneWindow = false`), `Menu.cpp` opens the unified `"RS Mods"` window and wraps each drawer in an `ImGui::CollapsingHeader(entry.title.c_str(), ImGuiTreeNodeFlags_DefaultOpen)`.
-   - Each drawer invocation is wrapped in a `try / catch` block so an exception or widget error in one mod's menu does not crash the render frame, corrupt DirectX state, or disrupt other mod menus.
+   - Every drawer, overlay and font load runs in a `try / catch`. A throw faults its mod like a throwing draw callback ([draw-registry.md](draw-registry.md) §8.10): `Draw().ReportFault` hands it to MainThread, whose next tick faults the mod and drops its entries; until then the drawer may throw again and is handled the same way. Inside a frame, `Menu.cpp` also closes the windows and pops the pushes the drawer left open, so the frame still balances. A host entry (no owner) is only logged.
 
 ---
 
