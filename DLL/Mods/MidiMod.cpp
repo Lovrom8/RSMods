@@ -199,13 +199,23 @@ void MidiMod::OnSongTick(ModContext& c) {
 	PublishHud(c);
 }
 
+namespace {
+	// Menus the game passes through between the pre-song tuner and the song (the calibration meter when it asks for one).
+	// Leaving the tuner for these is starting the song, not backing out, so the tuned pedal stays as it is.
+	bool IsSongLaunchTransition() {
+		return GameState::currentMenu == "LearnASong_CalibrationMeter_PreGame" ||
+			GameState::currentMenu == "NonStopPlay_CalibrationMeter_PreGame";
+	}
+}
+
 void MidiMod::OnMenuTick(ModContext& c) {
 	if (!GameState::Menus::IsInPreSongTuner())
 		CancelTunerRead();
 
 	// The user backed out of the tuner instead of starting a song.
 	if (Midi::alreadyAttemptedTuningInTuner &&
-		!GameState::Menus::IsInPreSongTuner()) {
+		!GameState::Menus::IsInPreSongTuner() &&
+		!IsSongLaunchTransition()) {
 		RevertTuning();
 	}
 

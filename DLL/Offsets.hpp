@@ -36,6 +36,7 @@ namespace Offsets {
 	inline VersioningStruct<uintptr_t> ptr_tunerTickSlot;
 	inline VersioningStruct<uintptr_t> func_tunerTick;
 	inline VersioningStruct<uintptr_t> func_resolveGuitarClass;
+	inline VersioningStruct<uintptr_t> func_playerRoute;
 	extern std::vector<unsigned int> ptr_tuningTextOffsets;
 
 	// Current Note (Midi value: https://djip.co/w/wp-content/uploads/drupal/blog/logic-midi-note-numbers.png | 0 - 96 are used in Rocksmith).

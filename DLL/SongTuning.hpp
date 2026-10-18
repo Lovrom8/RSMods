@@ -15,5 +15,9 @@ namespace SongTuning {
 	void InstallTunerHook();
 	Tuning GetTuningAtTuner(bool logFailures = true);
 	bool IsPlayerOnBass();
+
+	enum class Path { Unknown = -1, Lead = 0, Rhythm = 1, Bass = 2 };
+	Path GetPath(bool* resolved, unsigned playerIndex = 0); // The arrangement route; works in songs too, unlike the tuner.
+	bool IsOnBassPath(); // GetPath when the game can tell, else what the last tuner saw.
 	bool IsExtendedRangeTuner();
 };

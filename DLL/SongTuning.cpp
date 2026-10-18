@@ -96,6 +96,65 @@ bool SongTuning::IsPlayerOnBass() {
 	return tunerPlayerOnBass.load(std::memory_order_relaxed);
 }
 
+namespace {
+	// Both builds open with these five bytes; the next differs (0x0C Sept 2022, 0x08 Dec 2024).
+	bool PlayerRouteLooksRight(uintptr_t address) {
+		static constexpr unsigned char prologue[] = { 0x55, 0x8B, 0xEC, 0x83, 0xEC };
+		return address && !MemUtil::IsBadReadPtr(reinterpret_cast<void*>(address))
+			&& memcmp(reinterpret_cast<const void*>(address), prologue, sizeof(prologue)) == 0;
+	}
+
+	// The route lookup takes the player in EAX (Sept 2022) or on the stack (Dec 2024) and leaves the stack to the caller
+	// in both, so passing it both ways works for either, like CallResolveGuitarClass.
+	unsigned char CallPlayerRoute(uintptr_t address, unsigned player, bool* ok) {
+		*ok = false;
+		unsigned char route = 0xFF;
+		__try {
+			__asm {
+				mov eax, player
+				push eax
+				call address
+				add esp, 4
+				mov route, al
+			}
+			*ok = true;
+		}
+		__except (EXCEPTION_EXECUTE_HANDLER) {}
+		return route;
+	}
+}
+
+/// <summary>
+/// The player's arrangement route, straight from the game. Unlike IsPlayerOnBass it doesn't need a tuner to have opened,
+/// so it's right on a song started without one, and on bass whether the game emulates it on a guitar or not.
+/// </summary>
+SongTuning::Path SongTuning::GetPath(bool* resolved, unsigned playerIndex) {
+	*resolved = false;
+	const uintptr_t address = Offsets::func_playerRoute;
+	if (!PlayerRouteLooksRight(address))
+		return Path::Unknown;
+
+	const unsigned char route = CallPlayerRoute(address, playerIndex, resolved);
+	if (!*resolved)
+		return Path::Unknown;
+
+	switch (route) {
+	case 0: return Path::Lead;
+	case 1: return Path::Rhythm;
+	case 2: return Path::Bass;
+	default:
+		*resolved = false;
+		return Path::Unknown;
+	}
+}
+
+/// <returns>Is the player on a bass arrangement, so the tuning has four strings? Falls back to the last tuner's answer.</returns>
+bool SongTuning::IsOnBassPath() {
+	bool resolved = false;
+	const Path path = GetPath(&resolved);
+	return resolved ? path == Path::Bass : IsPlayerOnBass();
+}
+
 /// <summary>
 /// Hooks the single-player tuner menu's per-frame tick so GetTuningAtTuner can find the open tuner.
 /// </summary>

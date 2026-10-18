@@ -429,7 +429,7 @@ namespace Midi {
 				return;
 			}
 
-			const bool bass = SongTuning::IsPlayerOnBass();
+			const bool bass = SongTuning::IsOnBassPath();
 			std::array<int, 2> highestLowestTuning = SongTuning::GetHighestLowestString(bass); // Bass has 4 strings; charts often leave 5 and 6 at 0.
 
 			int highestTuning = highestLowestTuning[0];
@@ -482,7 +482,7 @@ namespace Midi {
 			tunerTuning = SongTuning::GetTuningAtTuner(); // Once more, logging why it failed.
 		}
 
-		const bool bass = SongTuning::IsPlayerOnBass();
+		const bool bass = SongTuning::IsOnBassPath();
 		std::array<int, 2> highestLowestTuning = SongTuning::GetHighestLowestString(tunerTuning, bass);
 
 		int highestTuning = highestLowestTuning[0];
