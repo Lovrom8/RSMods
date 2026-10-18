@@ -21,6 +21,7 @@ public:
 	Framework::SettingDefs Settings() const override;
 
 	void OnInitialize(Framework::ModContext& c) override;
+	void OnEnabled(Framework::ModContext& c) override;  // Lets the pedal pass the pre-song tuner.
 	void OnTick(Framework::ModContext& c) override;     // Device scanning (post-load only).
 	void OnMenuTick(Framework::ModContext& c) override; // Pedal revert + tuner auto-tune.
 	void OnSongTick(Framework::ModContext& c) override; // In-song auto-tune.

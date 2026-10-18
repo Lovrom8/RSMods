@@ -2,6 +2,8 @@
 #include "MidiMod.hpp"
 #include "Midi.hpp"
 
+#include <atomic>
+
 using Framework::SettingDefs;
 using Framework::SettingDef;
 using Framework::Toggle;
@@ -79,6 +81,196 @@ SettingDefs MidiMod::Settings() const {
 	};
 }
 
+namespace {
+	std::atomic<bool> gateActive = false, tunesInTuner = false;
+
+	// The game's functions, through their Detours trampolines.
+	uintptr_t hasTuningChanged = 0, hasCentsOffsetChanged = 0;
+
+	constexpr double kOctaveDownCents = -1200.0;
+
+	// The game's tuning objects: string0..string5 and CentOffset as numbers.
+	struct JsonNode {
+		struct VTable {
+			void(__thiscall* addRef)(JsonNode*);
+			void(__thiscall* release)(JsonNode*);
+			void* unused[3];
+			JsonNode* (__thiscall* child)(JsonNode*, const char* key); // +0x14
+			void* unused2[14];
+			JsonNode* (__thiscall* asNumber)(JsonNode*);                 // +0x50
+		}* vtable;
+	};
+
+	struct GameTuning {
+		int offsets[6] = {};
+		double cents = 0.0;
+	};
+
+	JsonNode* ResolveTuning(unsigned player, bool previous) {
+		JsonNode* tuning = nullptr;
+		if (previous) {
+			const uintptr_t address = Offsets::func_resolvePreviousTuning.GetValue();
+			__asm {
+				lea eax, tuning
+				push eax
+				mov eax, player
+				call address
+				add esp, 4
+			}
+		}
+		else {
+			const uintptr_t address = Offsets::func_resolveCurrentTuning.GetValue();
+			__asm {
+				push edi
+				mov eax, player
+				lea edi, tuning
+				call address
+				pop edi
+			}
+		}
+		return tuning;
+	}
+
+	bool ReadNumber(JsonNode* tuning, const char* key, double* value) {
+		JsonNode* child = tuning->vtable->child(tuning, key);
+		JsonNode* number = child ? child->vtable->asNumber(child) : nullptr;
+		if (!number)
+			return false;
+		*value = *reinterpret_cast<const double*>(reinterpret_cast<const char*>(number) + 8);
+		return true;
+	}
+
+	// An A220 chart raises every string by 12 to sound the same as at A440, so it comes back as A440 offsets.
+	bool ReadTuning(unsigned player, bool previous, GameTuning* out) {
+		bool read = false;
+		__try {
+			JsonNode* tuning = ResolveTuning(player, previous);
+			if (!tuning)
+				return false;
+
+			read = true;
+			for (int i = 0; i < 6 && read; i++) {
+				char key[] = "string0";
+				key[6] = static_cast<char>('0' + i);
+				double value = 0.0;
+				read = ReadNumber(tuning, key, &value);
+				out->offsets[i] = static_cast<int>(value);
+			}
+			if (!ReadNumber(tuning, "CentOffset", &out->cents))
+				out->cents = 0.0;
+			tuning->vtable->release(tuning);
+		}
+		__except (EXCEPTION_EXECUTE_HANDLER) {
+			return false;
+		}
+
+		if (out->cents == kOctaveDownCents) {
+			for (int& offset : out->offsets)
+				offset -= 12;
+		}
+		return read;
+	}
+
+	bool IsOctaveReference(double cents) {
+		return cents == 0.0 || cents == kOctaveDownCents;
+	}
+
+	bool PedalPlaysCurrentTuning(unsigned player, GameTuning* current) {
+		return gateActive && tunesInTuner && player == 0 && ReadTuning(player, false, current) && Midi::PedalCoversTuning(current->offsets);
+	}
+
+	// Each is asked only once the game found a change since the player last tuned. When the pedal alone plays the new
+	// tuning, the guitar itself hasn't changed. The game still requires the tuner after a reboot, for a capo, and for a
+	// cent offset other than A220, which only moves the chart's numbers, not the pitches.
+	bool __cdecl PedalPlaysTuningChange(unsigned player) {
+		GameTuning current;
+		if (!PedalPlaysCurrentTuning(player, &current))
+			return false;
+
+		LOG_INFO("(MIDI) No tuner needed: the pedal plays this tuning" << std::endl);
+		return true;
+	}
+
+	bool __cdecl PedalPlaysReferenceChange(unsigned player) {
+		GameTuning current, previous;
+		if (!PedalPlaysCurrentTuning(player, &current) || !ReadTuning(player, true, &previous))
+			return false;
+
+		return IsOctaveReference(current.cents) && IsOctaveReference(previous.cents);
+	}
+
+	__declspec(naked) void HasTuningChanged() {
+		__asm {
+			push ecx
+			call dword ptr [hasTuningChanged]
+			pop ecx
+			test al, al
+			jz done
+			push ecx
+			call PedalPlaysTuningChange
+			add esp, 4
+			xor al, 1
+		done:
+			ret
+		}
+	}
+
+	__declspec(naked) void HasCentsOffsetChanged() {
+		__asm {
+			push eax
+			call dword ptr [hasCentsOffsetChanged]
+			pop ecx
+			test al, al
+			jz done
+			push ecx
+			call PedalPlaysReferenceChange
+			add esp, 4
+			xor al, 1
+		done:
+			ret
+		}
+	}
+
+	uintptr_t Hook(uintptr_t target, void* hook) {
+		return reinterpret_cast<uintptr_t>(DetourFunction(reinterpret_cast<PBYTE>(target), reinterpret_cast<PBYTE>(hook)));
+	}
+
+	// Stays in place once installed; with the gate off it answers exactly as the game would.
+	void InstallTunerGate() {
+		static bool attempted = false;
+		if (std::exchange(attempted, true))
+			return;
+
+		const uintptr_t tuningChanged = Offsets::func_hasTuningChanged.GetValue();
+		const uintptr_t centsChanged = Offsets::func_hasCentsOffsetChanged.GetValue();
+		const uintptr_t current = Offsets::func_resolveCurrentTuning.GetValue();
+		const uintptr_t previous = Offsets::func_resolvePreviousTuning.GetValue();
+		if (!tuningChanged || !centsChanged || !current || !previous) {
+			LOG_WARNING("(MIDI) Tuner skip not installed: offsets not ported for this version" << std::endl);
+			return;
+		}
+
+		static constexpr unsigned char tuningChangedPrologue[] = { 0x55, 0x8B, 0xEC, 0x83, 0xEC, 0x2C, 0xA1 };
+		static constexpr unsigned char centsChangedPrologue[] = { 0x55, 0x8B, 0xEC, 0x83, 0xEC, 0x08, 0x56, 0x57 };
+		static constexpr unsigned char currentPrologue[] = { 0x55, 0x8B, 0xEC, 0x83, 0xEC, 0x14, 0x56, 0x8B, 0xF0 };
+		static constexpr unsigned char previousPrologue[] = { 0x55, 0x8B, 0xEC, 0x83, 0xEC, 0x10, 0x53, 0x56, 0x57, 0x8B, 0xF8 };
+		if (!MemUtil::MatchesBytes(tuningChanged, tuningChangedPrologue) || !MemUtil::MatchesBytes(centsChanged, centsChangedPrologue) ||
+			!MemUtil::MatchesBytes(current, currentPrologue) || !MemUtil::MatchesBytes(previous, previousPrologue)) {
+			LOG_WARNING("(MIDI) Tuner skip not installed: unexpected bytes in the game's tuning checks" << std::endl);
+			return;
+		}
+
+		hasTuningChanged = Hook(tuningChanged, &HasTuningChanged);
+		hasCentsOffsetChanged = hasTuningChanged ? Hook(centsChanged, &HasCentsOffsetChanged) : 0;
+		if (!hasCentsOffsetChanged) {
+			LOG_ERROR("(MIDI) Tuner skip not installed: hooking the game's tuning checks failed" << std::endl);
+			return;
+		}
+
+		LOG_INFO("(MIDI) Tuner skip installed" << std::endl);
+	}
+}
+
 // Every feature here serves auto-tune, and OnDisabled reverts the pedal, so switching it off needs no latch of its
 // own. Gating also keeps the tuning-controller claim honest: it only contends while auto-tune is actually on.
 bool MidiMod::IsEnabled(const ModContext& c) const {
@@ -126,6 +318,14 @@ void MidiMod::OnInitialize(ModContext& c) {
 
 void MidiMod::OnSettingsChanged(ModContext& c) {
 	Midi::tuningOffset = c.Int(Setting::TuningOffset);
+	tunesInTuner = c.When(Setting::AutoTuneForSongWhen) == When::Tuner;
+}
+
+// The pedal is tuned in the song when no tuner opens (AutoTuneInSong), so only When == Tuner can pass the tuner.
+void MidiMod::OnEnabled(ModContext& c) {
+	InstallTunerGate();
+	tunesInTuner = c.When(Setting::AutoTuneForSongWhen) == When::Tuner;
+	gateActive = true;
 }
 
 void MidiMod::OnTick(ModContext& c) {
@@ -224,6 +424,7 @@ void MidiMod::OnMenuTick(ModContext& c) {
 }
 
 void MidiMod::OnDisabled(ModContext&) {
+	gateActive = false;
 	CancelTunerRead();
 	songTuneAt.reset();
 	RevertTuning();

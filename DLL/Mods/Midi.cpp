@@ -510,6 +510,20 @@ namespace Midi {
 		return true;
 	}
 
+	bool PedalCoversTuning(const int offsets[6]) {
+		if (selectedPedal.pedalName == MidiPedal().pedalName || !selectedPedal.supportsDropTuning)
+			return false;
+
+		// A drop tuning moves strings by different amounts, which the pedal can't do. Bass charts leave strings 5 and 6 at 0.
+		const int strings = SongTuning::IsOnBassPath() ? 4 : 6;
+		for (int i = 1; i < strings; i++) {
+			if (offsets[i] != offsets[0])
+				return false;
+		}
+
+		return std::abs(offsets[0] + tuningOffset) <= 12;
+	}
+
 	/// <summary>
 	/// Send a command to the pedal to turn off the modifications we did for the current song's tuning, and true-tuning.
 	/// </summary>

@@ -14,6 +14,7 @@ namespace Midi {
 	void AutomateTuning(); // Call once the song's tuning has settled; MidiMod waits for that.
 	bool BeginTuningInTuner(); // False when there's nothing to wait for: already attempted, or the pedal can't drop tune.
 	bool TryTuningInTuner(bool lastTry); // False while the tuner has no tuning yet and lastTry is false; MidiMod retries.
+	bool PedalCoversTuning(const int offsets[6]); // The pedal alone plays these per-string offsets from the player's tuning.
 	void RevertAutomatedTuning();
 	void SendDataToThread_PC(char program, bool shouldWeSendPC = true);
 	void SendDataToThread_CC(char toePosition, bool shouldWeSendCC = true);
