@@ -224,6 +224,7 @@ namespace Framework {
 			}
 
 			HandleRenderFaults();
+			HandleAudioFaults();
 		}
 
 		// The render thread already stopped calling the mod; fault it here like a command.
@@ -243,6 +244,18 @@ namespace Framework {
 					// or a retry would stay off the render thread for good.
 					Draw().RemoveMod(fault.owner);
 				}
+			}
+		}
+
+		// The audio thread already aborted the processor; fault its owner like a render fault.
+		void HandleAudioFaults() {
+			for (const AudioFault& fault : AudioInput().TakeFaults()) {
+				LOG_ERROR("[Framework] " << (fault.owner ? fault.owner->Id() : "host") << " on audio input " << fault.input
+					<< ": " << fault.detail << std::endl);
+
+				Record* record = fault.owner ? FindByMod(fault.owner) : nullptr;
+				if (record && (record->state == ModState::Inactive || record->state == ModState::Active))
+					FaultSettled(*record, "faulted on the audio thread");
 			}
 		}
 

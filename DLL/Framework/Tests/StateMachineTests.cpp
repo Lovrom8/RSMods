@@ -4,6 +4,7 @@
 #include "../ResourceLedger.hpp"
 
 #include <iostream>
+#include <limits>
 #include <mutex>
 #include <optional>
 #include <stdexcept>
@@ -86,6 +87,7 @@ namespace {
 		bool throwInIsEnabled = false;
 		bool throwingInterceptor = false; // Registers a draw interceptor that throws.
 		bool hasOverlay = false;          // Registers an ImGui overlay.
+		Framework::IInputProcessor* processor = nullptr; // Added to the audio input chain.
 		std::optional<Framework::StallMonitor::Report> stallInTick;
 		std::optional<Framework::StallMonitor::Report> stallInCommand;
 
@@ -117,6 +119,7 @@ namespace {
 				});
 			}
 			if (hasOverlay) c.Menu().RegisterOverlay("hud", 0, [] {});
+			if (processor) c.Audio().AddInputProcessor(*processor);
 			if (!commandSetting.empty()) {
 				c.Commands().BindSetting(commandSetting, Framework::KeyEdge::Up, availability,
 					[this](Framework::ModContext&, const Framework::KeyEvent& event) {
@@ -689,6 +692,41 @@ static void Test_MenuFaultFaultsMod() {
 }
 
 // The ledger is published before OnEnabled; a winner faulting there must not keep its claim.
+// Writes NaN into every block it's given.
+class PoisonProcessor : public Framework::IInputProcessor {
+public:
+	void Prepare(std::uint32_t, const Framework::CaptureFormat&) override {}
+	bool Process(std::uint32_t, float* const* channels, std::uint32_t, std::uint32_t, bool) noexcept override {
+		channels[0][0] = std::numeric_limits<float>::quiet_NaN();
+		return true;
+	}
+	std::uint32_t GetLatencyFrames(std::uint32_t) const override { return 0; }
+};
+
+// A processor the audio thread takes out faults its mod on the next tick. Runs last: it fixes the shared chain.
+static void Test_AudioFaultFaultsMod() {
+	ClearEvents();
+	ModRegistry reg;
+	PoisonProcessor poison;
+	TestMod* audio = Add(reg, "Audio"); audio->processor = &poison;
+	reg.DispatchInitialize();
+	reg.Tick(GamePhase::Menu);
+
+	Framework::AudioInput().PrepareTap(0, { 48000, 1, 16 });
+	float block[16]{};
+	float* channels[] = { block };
+	(void)Framework::AudioInput().ProcessTap(0, channels, 16);
+
+	reg.Tick(GamePhase::Menu);
+	const auto status = reg.StatusSnapshot();
+	const auto* a = FindStatus(status, "Audio");
+	Expect(a && a->kind == Framework::ModStatusKind::Faulted, "an audio-thread fault faults the mod on the next tick");
+	Expect(Has("Audio:OnDisabled"), "with a best-effort revert");
+
+	Framework::AudioInput().ReleaseTap(0);
+	reg.Shutdown();
+}
+
 static void Test_FaultedWinnerDropsLedgerClaim() {
 	ClearEvents();
 	ModRegistry reg;
@@ -753,6 +791,7 @@ int main() {
 	Test_RenderFaultFaultsMod();
 	Test_MenuFaultFaultsMod();
 	Test_FaultedWinnerDropsLedgerClaim();
+	Test_AudioFaultFaultsMod();
 
 	std::cout << (g_failures == 0 ? "\nALL PASS\n" : "\nFAILURES: " + std::to_string(g_failures) + "\n");
 	return g_failures == 0 ? 0 : 1;

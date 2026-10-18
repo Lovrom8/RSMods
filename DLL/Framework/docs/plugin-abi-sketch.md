@@ -214,8 +214,9 @@ typedef struct {
 	uint32_t structSize;
 	RSResult (RSCALL *prepare)(void* self, uint32_t input,                 // Off that input's audio thread
 	                           const RSCaptureFormat* fmt);
-	void     (RSCALL *process)(void* self, uint32_t input, float* samples, // Audio thread: must not
-	                           uint32_t frames, int32_t active);           // allocate, lock or fail
+	int32_t  (RSCALL *process)(void* self, uint32_t input,                 // Audio thread: must not
+	                           float* const* channels, uint32_t channelCount, // allocate, lock or fail;
+	                           uint32_t frames, int32_t active);           // planar float, 1 = changed
 	uint32_t (RSCALL *latencyFrames)(void* self, uint32_t input);          // Constant, active or not
 } RSInputProcessor;
 
@@ -228,7 +229,7 @@ typedef struct {
 ```
 
 The tap side (`PrepareTap`/`ProcessTap`/`ReleaseTap`) isn't in v1: the only tap so far is an external
-source mod. A binary tap would add `prepareTap(input, fmt)`, `processTap(input, samples, frames)` and
+source mod. A binary tap would add `prepareTap(input, fmt)`, `processTap(input, channels, frames)` and
 `releaseTap(input)` here as a minor version.
 
 ### `rsmods.imgui` v1 — optional (mirrors `MenuBinder`)

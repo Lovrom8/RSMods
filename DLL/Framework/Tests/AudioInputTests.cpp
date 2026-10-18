@@ -3,6 +3,8 @@
 
 #include <atomic>
 #include <chrono>
+#include <cmath>
+#include <limits>
 #include <iostream>
 #include <stdexcept>
 #include <string>
@@ -46,9 +48,10 @@ namespace {
 			++prepareCount;
 		}
 
-		void Process(std::uint32_t input, float* samples, std::uint32_t, bool active) noexcept override {
+		bool Process(std::uint32_t input, float* const* channels, std::uint32_t, std::uint32_t, bool active) noexcept override {
 			log.push_back(name + (active ? "+" : "-") + (input ? std::to_string(input) : ""));
-			if (active) samples[0] += 1.0f;
+			if (active) channels[0][0] += 1.0f;
+			return active;
 		}
 
 		std::uint32_t GetLatencyFrames(std::uint32_t input) const override {
@@ -74,10 +77,11 @@ namespace {
 
 		void Prepare(std::uint32_t input, const CaptureFormat&) override { ++prepareCount[input]; }
 
-		void Process(std::uint32_t input, float*, std::uint32_t, bool) noexcept override {
-			if (input != blockedInput) return;
+		bool Process(std::uint32_t input, float* const*, std::uint32_t, std::uint32_t, bool) noexcept override {
+			if (input != blockedInput) return false;
 			entered = true;
 			while (!open) std::this_thread::yield();
+			return false;
 		}
 
 		std::uint32_t GetLatencyFrames(std::uint32_t) const override { return 0; }
@@ -88,7 +92,56 @@ namespace {
 		std::atomic<int> prepareCount[Framework::kMaxAudioInputs]{};
 	};
 
+	// Passes audio through unchanged, reporting whatever latency it's told to. Can fail its prepare, poison its
+	// output or take too long.
+	class Tunable : public IInputProcessor {
+	public:
+		explicit Tunable(std::uint32_t latency) : latency(latency) {}
+
+		void Prepare(std::uint32_t, const CaptureFormat&) override {
+			if (failPrepare) throw std::runtime_error("no");
+		}
+
+		bool Process(std::uint32_t, float* const* channels, std::uint32_t, std::uint32_t frames, bool) noexcept override {
+			++processCount;
+			frameSizes.push_back(frames);
+			if (writeNaN) channels[0][0] = std::numeric_limits<float>::quiet_NaN();
+			const auto until = std::chrono::steady_clock::now() + spin;
+			while (std::chrono::steady_clock::now() < until) {}
+			return writeNaN;
+		}
+
+		std::uint32_t GetLatencyFrames(std::uint32_t) const override { return latency; }
+
+		std::uint32_t latency;
+		bool failPrepare = false;
+		bool writeNaN = false;
+		std::chrono::steady_clock::duration spin{};
+		int processCount = 0;
+		std::vector<std::uint32_t> frameSizes;
+	};
+
+	std::vector<float> Impulse(size_t frames) {
+		std::vector<float> block(frames, 0.0f);
+		block[0] = 1.0f;
+		return block;
+	}
+
+	// Where the impulse ended up, or -1.
+	int ImpulseAt(const std::vector<float>& block) {
+		for (size_t i = 0; i < block.size(); ++i)
+			if (block[i] == 1.0f) return static_cast<int>(i);
+		return -1;
+	}
+
 	const CaptureFormat kFormat{ 48000, 1, 480 };
+
+	// One mono block through the chain.
+	bool Tap(AudioInputChain& chain, std::uint32_t input, float* samples, std::uint32_t frames) {
+		float* channels[] = { samples };
+		return chain.ProcessTap(input, channels, frames);
+	}
+
 	auto AllActive = [](const IMod*) { return true; };
 }
 
@@ -110,11 +163,11 @@ int main() {
 		chain.PublishActive(AllActive);
 
 		float sample = 0;
-		chain.ProcessTap(0, &sample, 1);
+		Tap(chain, 0, &sample, 1);
 		Check("nothing runs before the tap prepares", log.empty() && !chain.TapLive());
 
 		chain.PrepareTap(0, kFormat);
-		chain.ProcessTap(0, &sample, 1);
+		Tap(chain, 0, &sample, 1);
 		Check("runs in order, ties by owner Id", log == std::vector<std::string>{ "c+", "a+", "b+" });
 		Check("each processor edits the same buffer", sample == 3.0f);
 		Check("prepare sees the tap's format", a.prepared.sampleRate == 48000 && a.prepared.maxFrames == 480);
@@ -133,7 +186,7 @@ int main() {
 
 		chain.PublishActive([&](const IMod* m) { return m == &modB; });
 		float sample = 0;
-		chain.ProcessTap(0, &sample, 1);
+		Tap(chain, 0, &sample, 1);
 		Check("inactive owner still runs, told it's inactive", log == std::vector<std::string>{ "a-", "b+" });
 		Check("latency unchanged by deactivation", chain.LatencyFrames(0) == 544);
 	}
@@ -149,7 +202,7 @@ int main() {
 		chain.PublishActive(AllActive);
 
 		float sample = 0;
-		chain.ProcessTap(0, &sample, 1);
+		Tap(chain, 0, &sample, 1);
 		Check("a processor added after the tap started is ignored", log == std::vector<std::string>{ "a+" });
 	}
 
@@ -167,7 +220,7 @@ int main() {
 		chain.RemoveMod(&modB);
 		chain.PublishActive(AllActive);
 		float sample = 0;
-		chain.ProcessTap(0, &sample, 1);
+		Tap(chain, 0, &sample, 1);
 		Check("removed after: stays in, inactive even when reported active", log == std::vector<std::string>{ "b-" });
 		Check("removed after: latency kept", chain.LatencyFrames(0) == 20);
 
@@ -175,7 +228,7 @@ int main() {
 		chain.Add(&modB, b, 1);
 		chain.PublishActive(AllActive);
 		log.clear();
-		chain.ProcessTap(0, &sample, 1);
+		Tap(chain, 0, &sample, 1);
 		Check("re-adding the same processor after removal reactivates it", log == std::vector<std::string>{ "b+" });
 	}
 
@@ -189,7 +242,7 @@ int main() {
 		chain.PublishActive(AllActive);
 		chain.PrepareTap(0, kFormat);
 		float sample = 0;
-		chain.ProcessTap(0, &sample, 1);
+		Tap(chain, 0, &sample, 1);
 		Check("same processor added twice runs once", log.size() == 1);
 	}
 
@@ -203,7 +256,7 @@ int main() {
 		chain.PublishActive(AllActive);
 		Check("failed prepare adds no latency", chain.PrepareTap(0, kFormat) == 7);
 		float sample = 0;
-		chain.ProcessTap(0, &sample, 1);
+		Tap(chain, 0, &sample, 1);
 		Check("failed prepare is skipped", log == std::vector<std::string>{ "good+" });
 	}
 
@@ -218,7 +271,7 @@ int main() {
 		chain.PublishActive(AllActive);
 		Check("failed latency adds no latency", chain.PrepareTap(0, kFormat) == 7);
 		float sample = 0;
-		chain.ProcessTap(0, &sample, 1);
+		Tap(chain, 0, &sample, 1);
 		Check("failed latency is skipped", log == std::vector<std::string>{ "good+" });
 	}
 
@@ -232,7 +285,7 @@ int main() {
 		chain.PrepareTap(0, kFormat);
 		chain.ReleaseTap(0);
 		float sample = 0;
-		chain.ProcessTap(0, &sample, 1);
+		Tap(chain, 0, &sample, 1);
 		Check("released tap processes nothing", log.empty() && !chain.TapLive());
 
 		chain.PrepareTap(0, { 44100, 2, 256 });
@@ -253,15 +306,15 @@ int main() {
 		Check("preparing input 1 leaves input 0 down", chain.TapLive(1) && !chain.TapLive(0) && chain.TapLive());
 
 		float sample = 0;
-		chain.ProcessTap(0, &sample, 1);
-		chain.ProcessTap(1, &sample, 1);
+		Tap(chain, 0, &sample, 1);
+		Tap(chain, 1, &sample, 1);
 		Check("only the prepared input runs, told its index", log == std::vector<std::string>{ "a+1" });
 
 		chain.PrepareTap(0, kFormat);
 		chain.ReleaseTap(1);
 		log.clear();
-		chain.ProcessTap(0, &sample, 1);
-		chain.ProcessTap(1, &sample, 1);
+		Tap(chain, 0, &sample, 1);
+		Tap(chain, 1, &sample, 1);
 		Check("releasing input 1 leaves input 0 running", log == std::vector<std::string>{ "a+" } && chain.LatencyFrames(0) == 100);
 	}
 
@@ -274,7 +327,7 @@ int main() {
 		chain.PublishActive(AllActive);
 		float sample = 0;
 		Check("out of range prepare returns 0", chain.PrepareTap(Framework::kMaxAudioInputs, kFormat) == 0);
-		chain.ProcessTap(Framework::kMaxAudioInputs, &sample, 1);
+		Tap(chain, Framework::kMaxAudioInputs, &sample, 1);
 		Check("out of range does nothing", log.empty() && !chain.TapLive() && a.prepareCount == 0);
 	}
 
@@ -288,7 +341,7 @@ int main() {
 		chain.PrepareTap(1, kFormat);
 
 		float sample = 0;
-		std::thread audio([&] { chain.ProcessTap(0, &sample, 1); });
+		std::thread audio([&] { Tap(chain, 0, &sample, 1); });
 		while (!gate.entered) std::this_thread::yield();
 
 		chain.PrepareTap(1, kFormat);
@@ -303,6 +356,146 @@ int main() {
 		audio.join();
 		main.join();
 		Check("then prepares", prepared && gate.prepareCount[0] == 2 && chain.TapLive(0));
+	}
+
+	// MainThread's PublishActive never waits for an audio block, even while a re-prepare does.
+	{
+		AudioInputChain chain;
+		Gate gate(0);
+		chain.Add(&modA, gate, 0);
+		chain.PublishActive(AllActive);
+		chain.PrepareTap(0, kFormat);
+
+		float sample = 0;
+		std::thread audio([&] { Tap(chain, 0, &sample, 1); });
+		while (!gate.entered) std::this_thread::yield();
+
+		std::thread prepare([&] { chain.PrepareTap(0, kFormat); });
+		std::this_thread::sleep_for(std::chrono::milliseconds(20));
+
+		std::atomic<bool> published{ false };
+		std::thread mainThread([&] { chain.PublishActive(AllActive); published = true; });
+		std::this_thread::sleep_for(std::chrono::milliseconds(50));
+		Check("PublishActive returns while a prepare waits on the audio thread", published.load());
+
+		gate.open = true;
+		audio.join();
+		prepare.join();
+		mainThread.join();
+	}
+
+	// A stream's latency holds: a processor that fails or changes its latency on a re-prepare becomes a plain delay.
+	{
+		AudioInputChain chain;
+		Tunable tunable(4);
+		chain.Add(&modA, tunable, 0);
+		chain.PublishActive(AllActive);
+		const CaptureFormat format{ 48000, 1, 16 };
+		Check("first prepare fixes the stream's latency", chain.PrepareTap(0, format) == 4);
+
+		tunable.failPrepare = true;
+		Check("a failed re-prepare keeps the latency", chain.PrepareTap(0, format) == 4 && chain.LatencyFrames(0) == 4);
+		auto block = Impulse(16);
+		Tap(chain, 0, block.data(), 16);
+		Check("and a plain delay of that length stands in", ImpulseAt(block) == 4 && tunable.processCount == 0);
+
+		tunable.failPrepare = false;
+		tunable.latency = 8;
+		Check("a changed latency on a re-prepare keeps the old one", chain.PrepareTap(0, format) == 4);
+		block = Impulse(16);
+		Tap(chain, 0, block.data(), 16);
+		Check("and is bypassed the same way", ImpulseAt(block) == 4 && tunable.processCount == 0);
+
+		chain.ReleaseTap(0);
+		Check("a new stream fixes the new latency", chain.PrepareTap(0, format) == 8);
+		block = Impulse(16);
+		Tap(chain, 0, block.data(), 16);
+		Check("and runs the processor again", ImpulseAt(block) == 0 && tunable.processCount == 1);
+	}
+
+	// NaN or infinity out of a processor: zeroed, the processor taken out as a delay, the fault reported once.
+	{
+		AudioInputChain chain;
+		Tunable poison(2);
+		chain.Add(&modA, poison, 0);
+		chain.PublishActive(AllActive);
+		chain.PrepareTap(0, { 48000, 1, 8 });
+
+		poison.writeNaN = true;
+		auto block = Impulse(8);
+		Tap(chain, 0, block.data(), 8);
+		bool finite = true;
+		for (float s : block) finite = finite && std::isfinite(s);
+		Check("non-finite output never reaches the game", finite);
+
+		auto faults = chain.TakeFaults();
+		Check("reported once, with its owner and input", faults.size() == 1 && faults[0].owner == &modA && faults[0].input == 0
+			&& chain.TakeFaults().empty());
+
+		const int callsBefore = poison.processCount;
+		block = Impulse(8);
+		Tap(chain, 0, block.data(), 8);
+		Check("then bypassed as a delay of its latency", poison.processCount == callsBefore && ImpulseAt(block) == 2);
+
+		poison.writeNaN = false;
+		chain.PrepareTap(0, { 48000, 1, 8 });
+		block = Impulse(8);
+		Tap(chain, 0, block.data(), 8);
+		Check("the next prepare gives it another chance", poison.processCount == callsBefore + 1);
+	}
+
+	// A processor that keeps running over half the block's real time is taken out.
+	{
+		AudioInputChain chain;
+		Tunable slow(0);
+		slow.spin = std::chrono::milliseconds(2); // A 16-frame block at 48 kHz lasts a third of a millisecond.
+		chain.Add(&modA, slow, 0);
+		chain.PublishActive(AllActive);
+		chain.PrepareTap(0, { 48000, 1, 16 });
+
+		float block[16]{};
+		for (int i = 0; i < 5; ++i) Tap(chain, 0, block, 16);
+		const auto faults = chain.TakeFaults();
+		Check("three over-budget blocks in a row take it out", slow.processCount == 3 && faults.size() == 1
+			&& faults[0].detail.find("overloaded") != std::string::npos);
+	}
+
+	// Blocks bigger than the prepared maximum reach processors in pieces.
+	{
+		AudioInputChain chain;
+		Tunable sizes(0);
+		chain.Add(&modA, sizes, 0);
+		chain.PublishActive(AllActive);
+		chain.PrepareTap(0, { 48000, 1, 4 });
+
+		float block[10]{};
+		Tap(chain, 0, block, 10);
+		Check("a 10-frame block with a 4-frame maximum arrives as 4, 4, 2",
+			sizes.frameSizes == std::vector<std::uint32_t>{ 4, 4, 2 });
+	}
+
+	// The tap learns whether to write the block back.
+	{
+		AudioInputChain chain;
+		std::vector<std::string> log;
+		Recorder a("a", log);
+		chain.Add(&modA, a, 0);
+		chain.PublishActive([](const IMod*) { return false; });
+		chain.PrepareTap(0, kFormat);
+
+		float sample = 0;
+		Check("nothing changed: the tap keeps its original packet", !Tap(chain, 0, &sample, 1));
+		chain.PublishActive(AllActive);
+		Check("a processor that changed samples says so", Tap(chain, 0, &sample, 1));
+	}
+
+	// A format the chain can't run is refused.
+	{
+		AudioInputChain chain;
+		Tunable any(3);
+		chain.Add(&modA, any, 0);
+		Check("no channels: refused, input stays off", chain.PrepareTap(0, { 48000, 0, 16 }) == 0 && !chain.TapLive(0));
+		Check("too many channels: refused", chain.PrepareTap(0, { 48000, Framework::kMaxInputChannels + 1, 16 }) == 0);
 	}
 
 	if (g_failures) {
