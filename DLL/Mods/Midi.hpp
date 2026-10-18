@@ -1,6 +1,7 @@
 #pragma once
 
 #include <atomic>
+#include <stop_token>
 
 #include "RiffRepeater.hpp"
 #include "../MidiPedal.h"
@@ -21,14 +22,16 @@ namespace Midi {
 	bool SendControlChange(char toePosition = '\000', char alternativeBank = kUnusedMidiSelector, char alternativeChannel = kUnusedMidiSelector);
 	std::string GetTuningOffsetName(int offset);
 	bool IsValidMidiMessage(std::vector<unsigned char>* message);
-	unsigned WINAPI ListenToMidiInThread();
-	void RespondToMidiIn(double deltaTime, std::vector<unsigned char>* message, void* userData);
+	void ListenToMidiIn(std::stop_token stop); // Owns the MIDI IN port until stopped; run it on its own thread.
+	void RespondToMidiIn(double deltaTime, std::vector<unsigned char>* message, void* userData); // RtMidi's thread: queues only
+	void ProcessMidiInputEvents(); // MainThread: handles what RespondToMidiIn queued.
+	void ClearMidiInputEvents();
 	void FindMidiInDevices(const std::string& deviceToLookFor);
 	void FindMidiOutDevices(const std::string& deviceToLookFor);
 
 	inline bool disableMidiIn = false;
 	extern int MidiCC, MidiPC;
-	inline bool scannedForMidiDevices = false, attemptedToDetachMidiInThread = false;
+	inline bool scannedForMidiDevices = false;
 	extern std::vector<MIDIINCAPSA> midiInDevices; // All MIDI in devices currently connected
 	extern std::vector<MIDIOUTCAPSA> midiOutDevices; // All MIDI out devices currently connected
 	extern int SelectedMidiOutDevice, SelectedMidiInDevice;

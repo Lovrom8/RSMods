@@ -2,6 +2,7 @@
 
 #include <chrono>
 #include <optional>
+#include <thread>
 
 #include "../Framework/Framework.hpp"
 
@@ -24,6 +25,7 @@ public:
 	void OnMenuTick(Framework::ModContext& c) override; // Pedal revert + tuner auto-tune.
 	void OnSongTick(Framework::ModContext& c) override; // In-song auto-tune.
 	void OnDisabled(Framework::ModContext& c) override;
+	void OnShutdown(Framework::ModContext& c) override;
 	void OnSongExit(Framework::ModContext& c) override;
 	void OnSettingsChanged(Framework::ModContext& c) override;
 
@@ -40,6 +42,11 @@ private:
 	std::optional<Clock::time_point> songTuneAt;
 	std::optional<Clock::time_point> tunerReadUntil;
 
+	// The MIDI IN listener: started once a MidiInDevice is configured, stopped when the mod leaves Active.
+	std::jthread midiIn;
+	bool midiInStarted = false; // One attempt per activation; a device that failed to open isn't retried every tick.
+
+	void StopMidiIn();
 	void CancelTunerRead();
 	void ScanForMidiDevices(Framework::ModContext& c);
 	void AutoTuneInTuner(Framework::ModContext& c);

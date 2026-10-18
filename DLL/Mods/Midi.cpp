@@ -1,6 +1,9 @@
 #include "../stdafx.h"
 #include "Midi.hpp"
 
+#include <deque>
+#include <mutex>
+
 namespace Setting = Settings::Setting;
 
 namespace {
@@ -236,18 +239,56 @@ namespace Midi {
 		return true;
 	}
 
-	void RespondToMidiIn(double, std::vector<unsigned char>* message, void*) {
-		IsValidMidiMessage(message);
+	namespace {
+		// RtMidi calls back on its own thread, but handling a message touches game state (Riff Repeater speed, Wwise),
+		// so the callback only queues and MainThread handles the queue. Bounded, oldest dropped, so a flooding
+		// controller can't grow it without limit.
+		constexpr size_t kMaxPendingMidiInputEvents = 256;
+		std::mutex midiInputMutex;
+		std::deque<std::vector<unsigned char>> midiInputEvents;
+		std::atomic<unsigned> droppedMidiInputEvents{ 0 };
 	}
 
-	unsigned WINAPI ListenToMidiInThread() {
+	void RespondToMidiIn(double, std::vector<unsigned char>* message, void*) {
+		if (!message || message->empty())
+			return;
+
+		std::scoped_lock lock(midiInputMutex);
+		if (midiInputEvents.size() >= kMaxPendingMidiInputEvents) {
+			midiInputEvents.pop_front();
+			droppedMidiInputEvents.fetch_add(1, std::memory_order_relaxed);
+		}
+		midiInputEvents.push_back(*message);
+	}
+
+	void ProcessMidiInputEvents() {
+		std::deque<std::vector<unsigned char>> pending;
+		{
+			std::scoped_lock lock(midiInputMutex);
+			pending.swap(midiInputEvents);
+		}
+
+		if (const unsigned dropped = droppedMidiInputEvents.exchange(0, std::memory_order_relaxed))
+			LOG_WARNING("(MIDI IN) Dropped " << dropped << " queued messages" << std::endl);
+
+		for (auto& message : pending)
+			IsValidMidiMessage(&message);
+	}
+
+	void ClearMidiInputEvents() {
+		std::scoped_lock lock(midiInputMutex);
+		midiInputEvents.clear();
+		droppedMidiInputEvents.store(0, std::memory_order_relaxed);
+	}
+
+	void ListenToMidiIn(std::stop_token stop) {
 		NumberOfInPorts = midiInGetNumDevs();
 		if (NumberOfInPorts == 0) {
 			LOG_ERROR("No MIDI IN ports available!" << std::endl);
-			return 0u - 1u;
+			return;
 		}
 
-		// Its own detached thread, so an unplugged or busy device must not throw out of it (that ends the game).
+		// An unplugged or busy device must not throw out of this thread (that ends the game).
 		std::unique_ptr<RtMidiIn> midiin;
 		try {
 			midiin = std::make_unique<RtMidiIn>();
@@ -257,13 +298,12 @@ namespace Midi {
 		}
 		catch (RtMidiError& error) {
 			LOG_ERROR("(MIDI) Couldn't listen to MIDI IN device " << SelectedMidiInDevice << ": " << error.getMessage() << std::endl);
-			return 0u - 1u;
+			return;
 		}
 
-		while (!GameState::GameClosing) {
-			Sleep(50);
-		}
-		return 0;
+		// The port stays open (and the callback live) until MidiMod stops this thread; closing it goes with midiin.
+		while (!stop.stop_requested() && !GameState::GameClosing)
+			std::this_thread::sleep_for(std::chrono::milliseconds(50));
 	}
 
 	/// <summary>
@@ -303,7 +343,10 @@ namespace Midi {
 			LOG_INFO("Sent Midi Message: PC" << (int)channel << ": " << (int)programChange << std::endl);
 		}
 		catch (RtMidiError& error) {
+			// Not sent: callers decide whether it's safe to go on (e.g. leaving emulation alone), so say so.
 			LOG_ERROR("(MIDI) Error: " << error.getMessage() << std::endl);
+			sendPC = false;
+			return false;
 		}
 
 		sendPC = false;
@@ -352,6 +395,8 @@ namespace Midi {
 		}
 		catch (RtMidiError& error) {
 			LOG_ERROR("(MIDI) Error: " << error.getMessage() << std::endl);
+			sendCC = false;
+			return false;
 		}
 
 		sendCC = false;
@@ -505,8 +550,10 @@ namespace Midi {
 			char originalPC = AsMidiByte(lastPC);
 
 			// If the user was in a song that requires a down tune AND true tuning, we use this. Ex: If 6 was 9 (Eb Standard AND A431)
-			if (lastPC_TUNING != 0 && lastPC_TUNING != lastPC)  
-				SendProgramChange(activeBypassMap.find(AsMidiByte(lastPC_TUNING))->second);
+			if (lastPC_TUNING != 0 && lastPC_TUNING != lastPC) {
+				if (auto it = activeBypassMap.find(AsMidiByte(lastPC_TUNING)); it != activeBypassMap.end())
+					SendProgramChange(it->second);
+			}
 
 			// Send the bypass code to revert back to normal guitar.
 			if (auto it = activeBypassMap.find(originalPC); it != activeBypassMap.end())

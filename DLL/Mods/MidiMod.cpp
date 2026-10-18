@@ -133,6 +133,7 @@ void MidiMod::OnTick(ModContext& c) {
 		return;
 
 	ScanForMidiDevices(c);
+	Midi::ProcessMidiInputEvents();
 }
 
 // Two independent one-time setup steps: load the auto-tune pedal settings once AutoTuneForSong is on, 
@@ -147,10 +148,10 @@ void MidiMod::ScanForMidiDevices(ModContext& c) {
 			c.Value(Setting::MidiInDevice));
 	}
 
-	if (!Midi::attemptedToDetachMidiInThread && c.IsOn(Setting::AutoTuneForSong) && c.Value(Setting::MidiInDevice) != "") {
-		Midi::attemptedToDetachMidiInThread = true;
+	if (!midiInStarted && c.IsOn(Setting::AutoTuneForSong) && c.Value(Setting::MidiInDevice) != "") {
+		midiInStarted = true;
 		Midi::FindMidiInDevices(c.Value(Setting::MidiInDevice));
-		std::thread(Midi::ListenToMidiInThread).detach();
+		midiIn = std::jthread(Midi::ListenToMidiIn);
 	}
 }
 
@@ -216,6 +217,22 @@ void MidiMod::OnDisabled(ModContext&) {
 	CancelTunerRead();
 	songTuneAt.reset();
 	RevertTuning();
+	StopMidiIn();
+}
+
+void MidiMod::OnShutdown(ModContext&) {
+	StopMidiIn();
+}
+
+// Closes the MIDI IN port (at most one 50 ms wait) and drops what it queued; the next activation listens again.
+void MidiMod::StopMidiIn() {
+	if (midiIn.joinable()) {
+		midiIn.request_stop();
+		midiIn.join();
+	}
+
+	Midi::ClearMidiInputEvents();
+	midiInStarted = false;
 }
 
 void MidiMod::RevertTuning() {
