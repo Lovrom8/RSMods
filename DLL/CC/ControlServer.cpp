@@ -30,9 +30,11 @@ namespace CrowdControl {
 		std::jthread effectThread;
 		std::jthread objectUpdateThread;
 
-		std::mutex waitMutex;
-		std::condition_variable_any wake;
-		std::mutex effectsMutex;
+		// Keep these alive until process exit. The worker threads are terminated while parked in wake.wait_for, which leaves the condition
+		// variable's internal mutex owned. The Debug CRT aborts from the static destructor, then the abort dialog can call WndProc after Settings is gone.
+		std::mutex& waitMutex = *new std::mutex;
+		std::condition_variable_any& wake = *new std::condition_variable_any;
+		std::mutex& effectsMutex = *new std::mutex;
 
 		std::mutex socketMutex;  // Held to close the socket, so another thread never shuts down a closed (reused) handle
 		std::atomic<SOCKET> activeSocket{ INVALID_SOCKET };
