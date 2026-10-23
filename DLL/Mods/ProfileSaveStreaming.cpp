@@ -4,9 +4,10 @@
 #include "../MemUtil.hpp"
 #include "../EngineString.hpp"
 #include "../SamplingProfiler.hpp"
+#include <TlHelp32.h>
 #include <atomic>
+#include <array>
 #include <condition_variable>
-#include <deque>
 #include <mutex>
 
 namespace ProfileSaveStreaming {
@@ -159,32 +160,43 @@ namespace ProfileSaveStreaming {
 		std::vector<char> sinkBuffers[sinkBufferCount];
 		std::mutex sinkMutex;
 		std::condition_variable sinkChanged;
-		std::deque<std::pair<size_t, size_t>> filledBuffers; // Index, bytes used
-		std::deque<size_t> freeBuffers;
+		std::array<std::pair<size_t, size_t>, sinkBufferCount> filledBuffers{};
+		std::array<size_t, sinkBufferCount> freeBuffers{};
+		size_t filledHead = 0, filledCount = 0;
+		size_t freeHead = 0, freeCount = 0;
 		bool sinkFinished = false;
 		size_t sinkIndex = 0;
 		size_t sinkUsed = 0;
 
 		void Compressor() {
-			while (true) {
-				std::pair<size_t, size_t> filled;
-				{
-					std::unique_lock lock(sinkMutex);
-					sinkChanged.wait(lock, [] { return !filledBuffers.empty() || sinkFinished; });
-					if (filledBuffers.empty())
-						return;
-					filled = filledBuffers.front();
-					filledBuffers.pop_front();
-				}
+			try {
+				while (true) {
+					std::pair<size_t, size_t> filled;
+					{
+						std::unique_lock lock(sinkMutex);
+						sinkChanged.wait(lock, [] { return filledCount != 0 || sinkFinished; });
+						if (filledCount == 0)
+							return;
+						filled = filledBuffers[filledHead];
+						filledHead = (filledHead + 1) % sinkBufferCount;
+						--filledCount;
+					}
 
-				if (!streamFailed && !Feed(reinterpret_cast<const uint8_t*>(sinkBuffers[filled.first].data()), static_cast<uint32_t>(filled.second), Z_NO_FLUSH))
-					streamFailed = true;
-				save.uncompressedSize += static_cast<uint32_t>(filled.second);
+					if (!streamFailed && !Feed(reinterpret_cast<const uint8_t*>(sinkBuffers[filled.first].data()), static_cast<uint32_t>(filled.second), Z_NO_FLUSH))
+						streamFailed = true;
+					if (!streamFailed)
+						save.uncompressedSize += static_cast<uint32_t>(filled.second);
 
-				{
-					std::lock_guard lock(sinkMutex);
-					freeBuffers.push_back(filled.first);
+					{
+						std::lock_guard lock(sinkMutex);
+						freeBuffers[(freeHead + freeCount) % sinkBufferCount] = filled.first;
+						++freeCount;
+					}
+					sinkChanged.notify_all();
 				}
+			}
+			catch (...) {
+				streamFailed = true;
 				sinkChanged.notify_all();
 			}
 		}
@@ -192,20 +204,27 @@ namespace ProfileSaveStreaming {
 		/// <summary>
 		/// Hand the current buffer to the compressor and take a free one, waiting if it is behind.
 		/// </summary>
-		void FlushSink() {
+		bool FlushSink() {
 			if (sinkUsed == 0)
-				return;
+				return !streamFailed;
 
 			std::unique_lock lock(sinkMutex);
-			filledBuffers.push_back({ sinkIndex, sinkUsed });
+			filledBuffers[(filledHead + filledCount) % sinkBufferCount] = { sinkIndex, sinkUsed };
+			++filledCount;
 			sinkChanged.notify_all();
-			sinkChanged.wait(lock, [] { return !freeBuffers.empty(); });
-			sinkIndex = freeBuffers.front();
-			freeBuffers.pop_front();
+			sinkChanged.wait(lock, [] { return freeCount != 0 || streamFailed.load(); });
+			if (freeCount == 0)
+				return false;
+			sinkIndex = freeBuffers[freeHead];
+			freeHead = (freeHead + 1) % sinkBufferCount;
+			--freeCount;
 			sinkUsed = 0;
+			return true;
 		}
 
 		void Write(const char* bytes, size_t length) {
+			if (streamFailed)
+				return;
 			while (length != 0) {
 				std::vector<char>& buffer = sinkBuffers[sinkIndex];
 				const size_t chunk = (std::min)(length, buffer.size() - sinkUsed);
@@ -213,8 +232,8 @@ namespace ProfileSaveStreaming {
 				sinkUsed += chunk;
 				bytes += chunk;
 				length -= chunk;
-				if (sinkUsed == buffer.size())
-					FlushSink();
+				if (sinkUsed == buffer.size() && !FlushSink())
+					return;
 			}
 		}
 
@@ -227,13 +246,16 @@ namespace ProfileSaveStreaming {
 				return false;
 			}
 
-			filledBuffers.clear();
-			freeBuffers.clear();
+			filledHead = 0;
+			filledCount = 0;
+			freeHead = 0;
+			freeCount = 0;
 			for (size_t i = 1; i < sinkBufferCount; i++)
-				freeBuffers.push_back(i);
+				freeBuffers[freeCount++] = i;
 			sinkIndex = 0;
 			sinkUsed = 0;
 			sinkFinished = false;
+			streamFailed = false;
 			return true;
 		}
 
@@ -318,8 +340,10 @@ namespace ProfileSaveStreaming {
 					try {
 						std::vector<char> big(static_cast<size_t>(needed) + 1);
 						const int bigLength = gameVsnprintf(big.data(), big.size(), format, args);
-						if (bigLength > 0)
-							Write(big.data(), bigLength);
+						if (bigLength < 0 || bigLength > needed)
+							streamFailed = true;
+						else
+							Write(big.data(), static_cast<size_t>(bigLength));
 					}
 					catch (const std::exception&) {
 						streamFailed = true; // We're inside the game's Print, so nothing can be thrown through it.
@@ -543,9 +567,28 @@ namespace ProfileSaveStreaming {
 			}
 		}
 
-		uintptr_t CallTarget(VersioningStruct<uintptr_t>& callSite) {
+		constexpr uint8_t expectedCloneSection[] = { 0x8B, 0x13, 0x8B, 0x52, 0x10 };
+		constexpr uint8_t expectedPrintRoot[] = { 0x8B, 0x45, 0xC4, 0x8B, 0x13 };
+		// cmp dword ptr [profile adapter], 0. The absolute operand differs per build: 2022 0x01374E94, LP base + 0xF75E94.
+		constexpr uint8_t expectedLoadTick[] = { 0x83, 0x3D, 0x94, 0x4E, 0x37, 0x01, 0x00 };
+		constexpr uint8_t expectedLoadTickLP[] = { 0x83, 0x3D, 0x94, 0x5E, 0x14, 0x01, 0x00 };
+		constexpr uint8_t expectedClearDocument[] = { 0x8B, 0x56, 0x14, 0x8D, 0x4E, 0x10 };
+		constexpr uint8_t expectedNumberHash[] = { 0x55, 0x8B, 0xEC, 0x83, 0xEC, 0x10 };
+		constexpr uint8_t expectedPlaynextTrim[] = { 0x55, 0x8B, 0xEC, 0x83, 0xEC, 0x18 };
+
+		// The reviewed target of each redirected CALL, per build (decoded 2026-10-23: same prologue bytes on both builds).
+		// An unknown site returns 0, which fails validation and leaves the group off.
+		uintptr_t ExpectedCallTarget(VersioningStruct<uintptr_t>& callSite, uintptr_t site2022, uintptr_t target2022, uintptr_t siteRvaLP, uintptr_t targetRvaLP) {
 			const uintptr_t site = callSite.Get();
-			return site + 5 + *reinterpret_cast<int32_t*>(site + 1);
+			if (site == site2022)
+				return target2022;
+			if (site == Offsets::baseHandle + siteRvaLP)
+				return Offsets::baseHandle + targetRvaLP;
+			return 0;
+		}
+
+		const uint8_t* ExpectedLoadTickBytes() {
+			return Offsets::ptr_profileLoadTick.Get() == 0x008CB326 ? expectedLoadTick : expectedLoadTickLP;
 		}
 
 		/// <summary>
@@ -557,29 +600,57 @@ namespace ProfileSaveStreaming {
 				uint8_t bytes[8];
 				size_t length;
 			};
-			std::vector<Saved> saved;
+			// Fixed storage, so placing a hook never allocates: an allocation can't fail halfway through a group, and the
+			// allocator groups place theirs while every other thread is suspended, possibly inside the heap.
+			std::array<Saved, 4> saved{};
+			size_t savedCount = 0;
 
-			void Save(uintptr_t address, size_t length) {
-				Saved entry{ address, {}, length };
-				memcpy(entry.bytes, reinterpret_cast<void*>(address), length);
-				saved.push_back(entry);
+			bool Save(uintptr_t address, size_t length) {
+				if (savedCount == saved.size() || length > sizeof(Saved::bytes))
+					return false;
+				saved[savedCount] = { address, {}, length };
+				memcpy(saved[savedCount].bytes, reinterpret_cast<void*>(address), length);
+				savedCount++;
+				return true;
 			}
 
 		public:
-			bool Hook(VersioningStruct<uintptr_t>& at, void* hook, int length) {
-				Save(at.Get(), length);
+			bool ValidateHook(VersioningStruct<uintptr_t>& at, const uint8_t* expected, size_t length) {
+				return MemUtil::MatchesBytes(at.Get(), std::span<const unsigned char>(expected, length));
+			}
+
+			bool ValidateRedirect(VersioningStruct<uintptr_t>& callSite, uintptr_t expectedTarget) {
+				if (!expectedTarget)
+					return false;
+
+				const uintptr_t site = callSite.Get();
+				const int64_t difference = static_cast<int64_t>(expectedTarget) - static_cast<int64_t>(site + 5);
+				if (difference < INT32_MIN || difference > INT32_MAX)
+					return false;
+				const int32_t relative = static_cast<int32_t>(difference);
+				uint8_t expected[5] = { 0xE8 };
+				memcpy(expected + 1, &relative, sizeof(relative));
+				return MemUtil::MatchesBytes(site, expected);
+			}
+
+			bool Hook(VersioningStruct<uintptr_t>& at, void* hook, int length, const uint8_t* expected) {
+				if (!ValidateHook(at, expected, length))
+					return false;
+				if (!Save(at.Get(), length))
+					return false;
 				if (!MemUtil::PlaceHook(at, hook, length))
 					return false;
 				FlushInstructionCache(GetCurrentProcess(), (void*)at.Get(), length);
 				return true;
 			}
 
-			/// <summary>
-			/// Point a CALL rel32 somewhere else. Read the original target with CallTarget first.
-			/// </summary>
-			bool Redirect(VersioningStruct<uintptr_t>& callSite, void* newTarget) {
+			// Point a validated CALL rel32 somewhere else.
+			bool Redirect(VersioningStruct<uintptr_t>& callSite, void* newTarget, uintptr_t expectedTarget) {
 				const uintptr_t site = callSite.Get();
-				Save(site + 1, sizeof(int32_t));
+				if (!ValidateRedirect(callSite, expectedTarget))
+					return false;
+				if (!Save(site, 5))
+					return false;
 				const int32_t relative = static_cast<int32_t>(reinterpret_cast<uintptr_t>(newTarget) - (site + 5));
 				if (!MemUtil::PatchAdr(site + 1, &relative, sizeof(relative), false))
 					return false;
@@ -587,14 +658,354 @@ namespace ProfileSaveStreaming {
 				return true;
 			}
 
-			void Undo() {
-				for (auto it = saved.rbegin(); it != saved.rend(); it++) {
-					MemUtil::PatchAdr(reinterpret_cast<LPVOID>(it->address), it->bytes, it->length);
-					FlushInstructionCache(GetCurrentProcess(), (void*)it->address, it->length);
+			// False if any original could not be put back.
+			bool Undo() {
+				bool restored = true;
+				while (savedCount > 0) {
+					const Saved& entry = saved[--savedCount];
+					restored &= MemUtil::PatchAdr(reinterpret_cast<LPVOID>(entry.address), entry.bytes, entry.length);
 				}
-				saved.clear();
+				return restored;
 			}
 		};
+
+		// Every other thread in the process, suspended while allocator code is rewritten. The allocator runs on all of them, so
+		// none may execute a span while it is half written. Nothing in between may allocate or log: a suspended thread can
+		// hold the heap or log lock.
+		class OtherThreadsSuspended {
+			std::vector<HANDLE> threads_;
+
+			void ResumeAll() {
+				for (HANDLE thread : threads_) {
+					ResumeThread(thread);
+					CloseHandle(thread);
+				}
+				threads_.clear();
+			}
+
+			bool AnyInside(std::span<const std::pair<uintptr_t, size_t>> spans) {
+				for (HANDLE thread : threads_) {
+					CONTEXT context{};
+					context.ContextFlags = CONTEXT_CONTROL;
+					// Also waits for the suspension to take effect.
+					if (!GetThreadContext(thread, &context))
+						return true;
+					for (const auto& [start, length] : spans) {
+						if (context.Eip > start && context.Eip < start + length)
+							return true;
+					}
+				}
+				return false;
+			}
+
+		public:
+			// True once every other thread is stopped outside the spans. Retries for about a second.
+			bool Suspend(std::span<const std::pair<uintptr_t, size_t>> spans) {
+				for (int attempt = 0; attempt < 100; ++attempt) {
+					HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPTHREAD, 0);
+					if (snapshot == INVALID_HANDLE_VALUE)
+						return false;
+					std::vector<DWORD> ids;
+					THREADENTRY32 entry{ sizeof(entry) };
+					for (BOOL more = Thread32First(snapshot, &entry); more; more = Thread32Next(snapshot, &entry)) {
+						if (entry.th32OwnerProcessID == GetCurrentProcessId() && entry.th32ThreadID != GetCurrentThreadId())
+							ids.push_back(entry.th32ThreadID);
+					}
+					CloseHandle(snapshot);
+
+					threads_.reserve(ids.size());
+					for (DWORD id : ids) {
+						HANDLE thread = OpenThread(THREAD_SUSPEND_RESUME | THREAD_GET_CONTEXT, FALSE, id);
+						if (!thread)
+							continue;
+						if (SuspendThread(thread) == static_cast<DWORD>(-1)) {
+							CloseHandle(thread);
+							continue;
+						}
+						threads_.push_back(thread);
+					}
+					if (!AnyInside(spans))
+						return true;
+					ResumeAll();
+					Sleep(10);
+				}
+				return false;
+			}
+
+			~OtherThreadsSuspended() {
+				ResumeAll();
+			}
+		};
+
+		// Runs place with every other thread suspended outside the spans. place must not allocate or log.
+		template <typename Place>
+		bool WithOthersSuspended(std::span<const std::pair<uintptr_t, size_t>> spans, Place place) {
+			OtherThreadsSuspended others;
+			return others.Suspend(spans) && place();
+		}
+
+		// ---- Allocator chunk table growth ----
+
+		// efd::FixedSizeAllocator keeps one 8-byte descriptor per chunk in an array (this+0x14, count this+0x18, capacity this+0x1C).
+		// When FillCache adds a chunk (2022 0x0091FD5A) it asks for capacity count + 1, so every new chunk reallocates and copies the
+		// whole array: O(chunks^2) bytes moved over a big profile load. This grows the capacity to at least double instead. The code
+		// after it already reallocates and refreshes every pointer into the array, so only the size it asks for changes.
+		uintptr_t g_chunkGrowthResume = 0;
+
+		void __declspec(naked) chunkGrowthHook() {
+			__asm {
+				// The replaced instructions: capacity, count + 1, compare
+				mov eax, dword ptr [esi + 0x1C]
+				inc edi
+				cmp edi, eax
+				jbe fits
+				push eax
+				// Grow to at least twice the old capacity
+				add eax, eax
+				cmp edi, eax
+				jae keep
+				mov edi, eax
+			keep:
+				pop eax
+				// Flags for the game's jbe: above, so it reallocates to EDI
+				cmp edi, eax
+			fits:
+				jmp dword ptr [g_chunkGrowthResume]
+			}
+		}
+
+		// mov eax,[esi+1C]; inc edi; cmp edi,eax; jbe; push file; add eax,eax; push 0x120; add eax,eax; push func; add eax,eax
+		constexpr uint8_t kChunkGrowthPattern[] = {
+			0x8B, 0x46, 0x1C, 0x47, 0x3B, 0xF8, 0x76, 0x00, 0x68, 0x00, 0x00, 0x00, 0x00, 0x03, 0xC0, 0x68, 0x20, 0x01, 0x00, 0x00,
+			0x03, 0xC0, 0x68, 0x00, 0x00, 0x00, 0x00, 0x03, 0xC0
+		};
+		constexpr char kChunkGrowthMask[] = "xxxxxxx?x????xxxxxxxxxx????xx";
+		static_assert(sizeof(kChunkGrowthPattern) == sizeof(kChunkGrowthMask) - 1);
+		constexpr uint8_t kChunkGrowthHookBytes[] = { 0x8B, 0x46, 0x1C, 0x47, 0x3B, 0xF8 };
+
+		// The only match in the game's code, or 0 when there is none or more than one.
+		uintptr_t FindUniquePattern(const uint8_t* pattern, const char* mask) {
+			const uint32_t start = MemUtil::GetTextSectionAddress();
+			const uint32_t length = MemUtil::GetTextSectionLength();
+			const size_t patternLength = strlen(mask);
+			if (!start || length <= patternLength)
+				return 0;
+
+			const size_t searchable = length - patternLength;
+			const uintptr_t first = MemUtil::FindPattern<uintptr_t>(start, searchable, const_cast<PBYTE>(pattern), mask);
+			if (!first)
+				return 0;
+			const uint32_t next = static_cast<uint32_t>(first + 1);
+			const uintptr_t second = MemUtil::FindPattern<uintptr_t>(next, searchable - (next - start), const_cast<PBYTE>(pattern), mask);
+			return second ? 0 : first;
+		}
+
+		void InitializeChunkTableGrowth() {
+			const uintptr_t site = FindUniquePattern(kChunkGrowthPattern, kChunkGrowthMask);
+			if (!site) {
+				LOG_WARNING("(PROFILE SAVE) Allocator chunk table growth site not found exactly once, leaving the allocator unchanged" << std::endl);
+				return;
+			}
+
+			g_chunkGrowthResume = site + sizeof(kChunkGrowthHookBytes);
+			VersioningStruct<uintptr_t> hook({ site, site });
+			PatchGroup patches;
+			const std::pair<uintptr_t, size_t> spans[] = { { site, sizeof(kChunkGrowthHookBytes) } };
+			bool restored = true;
+			const bool hooked = WithOthersSuspended(spans, [&] {
+				if (patches.Hook(hook, chunkGrowthHook, sizeof(kChunkGrowthHookBytes), kChunkGrowthHookBytes))
+					return true;
+				restored = patches.Undo();
+				return false;
+			});
+			if (!hooked) {
+				LOG_ERROR("(PROFILE SAVE) Failed to hook the allocator chunk table growth, leaving the allocator unchanged"
+					<< (restored ? "" : " (original bytes NOT restored)") << std::endl);
+				return;
+			}
+
+			LOG_INFO("(PROFILE SAVE) Allocator chunk tables grow geometrically (hook at 0x" << std::hex << site << std::dec << ")" << std::endl);
+		}
+
+		// ---- Allocator chunk scan ----
+
+		// efd::FixedSizeAllocator::FillCache (2022 0x0091FD00) refills a free-list cache. Once its current chunk is used up it scans
+		// every chunk for the lowest-addressed one with a free block, and only then adds a new chunk. A profile load frees almost
+		// nothing, so each new chunk costs a scan of all the full ones before it: O(chunks^2), about 15% of a big profile's parse.
+		// The hint remembers "every chunk is full" per allocator, keyed by the chunk count it expects after the new chunk is added,
+		// and is dropped whenever a full chunk gets a block back. A stale hint can only make the allocator add a chunk instead of
+		// reusing a freed block; it never hands out a used one. Both sites run under the allocator's own lock (this+0x2C).
+		struct AllocatorChunk {
+			uint8_t* data;
+			uint8_t firstFree;
+			uint8_t freeBlocks;
+			uint16_t padding;
+		};
+		static_assert(sizeof(AllocatorChunk) == 8);
+
+		constexpr size_t kAllocatorHintSlots = 512;
+		std::array<std::atomic<uint64_t>, kAllocatorHintSlots> g_allocatorFullHints{};
+		uintptr_t g_allocatorScanResume = 0, g_allocatorDoDeallocate = 0;
+
+		std::atomic<uint64_t>& AllocatorHintSlot(const uint8_t* allocator) {
+			return g_allocatorFullHints[(reinterpret_cast<uintptr_t>(allocator) * 2654435761u >> 16) % kAllocatorHintSlots];
+		}
+
+		uint64_t AllocatorHint(const uint8_t* allocator, uint32_t chunkCount) {
+			return (static_cast<uint64_t>(chunkCount) << 32) | reinterpret_cast<uintptr_t>(allocator);
+		}
+
+		void __cdecl ScanAllocatorChunks(uint8_t* allocator) {
+			const uint32_t count = *reinterpret_cast<uint32_t*>(allocator + 0x18);
+			std::atomic<uint64_t>& slot = AllocatorHintSlot(allocator);
+
+			if (slot.load(std::memory_order_relaxed) == AllocatorHint(allocator, count)) {
+				slot.store(AllocatorHint(allocator, count + 1), std::memory_order_relaxed);
+				// this+0x20 is already null, so the game goes on to add a chunk, as its own scan would have.
+				return;
+			}
+
+			// The game's scan (0x0091FD32..0x0091FD4E): the lowest-addressed chunk that has a free block.
+			AllocatorChunk* chunks = *reinterpret_cast<AllocatorChunk**>(allocator + 0x14);
+			AllocatorChunk* best = nullptr;
+			for (uint32_t i = 0; i < count; ++i) {
+				if (chunks[i].freeBlocks && (!best || chunks[i].data < best->data))
+					best = &chunks[i];
+			}
+
+			*reinterpret_cast<AllocatorChunk**>(allocator + 0x20) = best;
+			if (!best)
+				slot.store(AllocatorHint(allocator, count + 1), std::memory_order_relaxed);
+		}
+
+		void __cdecl NoteAllocatorDeallocate(uint8_t* allocator) {
+			// this+0x24 is the chunk the block goes back to (FindContainingPage, set just before the call).
+			const AllocatorChunk* chunk = *reinterpret_cast<AllocatorChunk**>(allocator + 0x24);
+			if (chunk && chunk->freeBlocks != 0)
+				// It already had room, so no "all full" hint can cover it.
+				return;
+
+			std::atomic<uint64_t>& slot = AllocatorHintSlot(allocator);
+			uint64_t current = slot.load(std::memory_order_relaxed);
+			if (static_cast<uint32_t>(current) == static_cast<uint32_t>(reinterpret_cast<uintptr_t>(allocator)))
+				slot.compare_exchange_strong(current, 0, std::memory_order_relaxed);
+		}
+
+		void __declspec(naked) allocatorScanHook() {
+			__asm {
+				pushad
+				// The allocator
+				push esi
+				call ScanAllocatorChunks
+				add esp, 4
+				popad
+				// The replaced instruction; the game's new-chunk path expects the count in EDI
+				mov edi, dword ptr [esi + 0x18]
+				jmp dword ptr [g_allocatorScanResume]
+			}
+		}
+
+		void __declspec(naked) allocatorDeallocHook() {
+			__asm {
+				pushad
+				// The allocator
+				push esi
+				call NoteAllocatorDeallocate
+				add esp, 4
+				popad
+				jmp dword ptr [g_allocatorDoDeallocate]
+			}
+		}
+
+		// From FillCache's cache check through its scan loop to "found one?". The far jnz is relative, so it is masked.
+		constexpr uint8_t kAllocatorScanPattern[] = {
+			0x8B, 0x46, 0x20, 0x33, 0xD2, 0x3B, 0xC2, 0x74, 0x0C, 0x38, 0x50, 0x05, 0x0F, 0x85, 0x00, 0x00, 0x00, 0x00, 0x89, 0x56, 0x20,
+			0x8B, 0x7E, 0x18, 0x3B, 0xFA, 0x76, 0x21, 0x8B, 0x46, 0x14, 0x80, 0x78, 0x05, 0x00, 0x74, 0x10, 0x8B, 0x4E, 0x20, 0x85, 0xC9,
+			0x74, 0x06, 0x8B, 0x18, 0x3B, 0x19, 0x73, 0x03, 0x89, 0x46, 0x20, 0x42, 0x83, 0xC0, 0x08, 0x3B, 0xD7, 0x72, 0xE2, 0x83, 0x7E,
+			0x20, 0x00
+		};
+		constexpr char kAllocatorScanMask[] = "xxxxxxxxxxxxxx????xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+		static_assert(sizeof(kAllocatorScanPattern) == sizeof(kAllocatorScanMask) - 1);
+		// mov edi,[esi+18]; cmp edi,edx; jbe
+		constexpr size_t kAllocatorScanHookOffset = 0x15;
+		// cmp dword ptr [esi+20],0
+		constexpr size_t kAllocatorScanResumeOffset = 0x3D;
+		constexpr uint8_t kAllocatorScanHookBytes[] = { 0x8B, 0x7E, 0x18, 0x3B, 0xFA, 0x76, 0x21 };
+
+		// DoDeallocate (2022 0x0091FB70) from its entry.
+		constexpr uint8_t kAllocatorDeallocPattern[] = {
+			0x8B, 0x4E, 0x24, 0x8A, 0x51, 0x04, 0x57, 0x8B, 0x7E, 0x0C, 0x88, 0x10, 0x2B, 0x01, 0x33, 0xD2, 0xF7, 0xF7, 0xFE, 0x41, 0x05,
+			0x88, 0x41, 0x04
+		};
+		constexpr char kAllocatorDeallocMask[] = "xxx???????xxxxxxxxxxxxxx";
+		static_assert(sizeof(kAllocatorDeallocPattern) == sizeof(kAllocatorDeallocMask) - 1);
+
+		void InitializeAllocatorScanHint() {
+			const uintptr_t scanSite = FindUniquePattern(kAllocatorScanPattern, kAllocatorScanMask);
+			const uintptr_t deallocSite = FindUniquePattern(kAllocatorDeallocPattern, kAllocatorDeallocMask);
+			if (!scanSite || !deallocSite) {
+				LOG_WARNING("(PROFILE SAVE) Allocator scan signatures not unique; hint disabled" << std::endl);
+				return;
+			}
+			std::array<uintptr_t, 3> calls{};
+			size_t count = 0;
+			const uintptr_t start = MemUtil::GetTextSectionAddress();
+			const size_t length = MemUtil::GetTextSectionLength();
+			for (size_t i = 0; i + 5 <= length; ++i) {
+				const auto* bytes = reinterpret_cast<const uint8_t*>(start + i);
+				if (bytes[0] != 0xE8)
+					continue;
+				int32_t relative;
+				memcpy(&relative, bytes + 1, sizeof(relative));
+				if (start + i + 5 + relative != deallocSite)
+					continue;
+				if (count == calls.size()) {
+					LOG_WARNING("(PROFILE SAVE) Too many allocator deallocate calls; hint disabled" << std::endl);
+					return;
+				}
+				calls[count++] = start + i;
+			}
+			if (count != calls.size()) {
+				LOG_WARNING("(PROFILE SAVE) Expected three allocator deallocate calls, found " << count << std::endl);
+				return;
+			}
+			PatchGroup patches;
+			VersioningStruct<uintptr_t> scan({ scanSite + kAllocatorScanHookOffset,
+				scanSite + kAllocatorScanHookOffset });
+			if (!patches.ValidateHook(scan, kAllocatorScanHookBytes, sizeof(kAllocatorScanHookBytes)))
+				return;
+			for (uintptr_t site : calls) {
+				VersioningStruct<uintptr_t> call({ site, site });
+				if (!patches.ValidateRedirect(call, deallocSite))
+					return;
+			}
+			g_allocatorScanResume = scanSite + kAllocatorScanResumeOffset;
+			g_allocatorDoDeallocate = deallocSite;
+			const std::pair<uintptr_t, size_t> spans[] = {
+				{ scan.Get(), sizeof(kAllocatorScanHookBytes) }, { calls[0], 5 }, { calls[1], 5 }, { calls[2], 5 }
+			};
+			// Built out here: a VersioningStruct allocates.
+			std::array<VersioningStruct<uintptr_t>, 3> callSites{ VersioningStruct<uintptr_t>({ calls[0], calls[0] }),
+				VersioningStruct<uintptr_t>({ calls[1], calls[1] }), VersioningStruct<uintptr_t>({ calls[2], calls[2] }) };
+			bool restored = true;
+			const bool hooked = WithOthersSuspended(spans, [&] {
+				bool placed = true;
+				for (auto& call : callSites)
+					placed = placed && patches.Redirect(call, allocatorDeallocHook, deallocSite);
+				if (placed && patches.Hook(scan, allocatorScanHook, sizeof(kAllocatorScanHookBytes), kAllocatorScanHookBytes))
+					return true;
+				restored = patches.Undo();
+				return false;
+			});
+			if (!hooked) {
+				LOG_ERROR("(PROFILE SAVE) Failed to install the allocator chunk scan hint, leaving the allocator unchanged"
+					<< (restored ? "" : " (original bytes NOT restored)") << std::endl);
+				return;
+			}
+			LOG_INFO("(PROFILE SAVE) Allocator chunk scan hint installed: scan 0x" << std::hex
+				<< scanSite << ", deallocate 0x" << deallocSite << ", callers 0x"
+				<< calls[0] << ", 0x" << calls[1] << ", 0x" << calls[2] << std::dec << std::endl);
+		}
 
 		// ---- Loading ----
 
@@ -616,11 +1027,16 @@ namespace ProfileSaveStreaming {
 			Parsing,	// The JSON is being parsed on parseThread.
 		};
 
+		constexpr ULONGLONG kSlowLoadWarningMs = 30'000;
+
 		LoadState loadState = LoadState::Idle;
+		int loadIndex = -1;
 		HANDLE parseThread = nullptr;
+		// Borrowed from the engine profile document until parseThread signals.
 		const char* parseText = nullptr;
 		void* parsedRoot = nullptr;
 		ULONGLONG loadStartTime = 0, parseStartTime = 0, parseEndTime = 0;
+		bool g_readSlowWarningLogged = false, g_parseSlowWarningLogged = false;
 		tJsonParse origParse = nullptr;
 		tSaveCall origSave = nullptr;
 
@@ -640,6 +1056,7 @@ namespace ProfileSaveStreaming {
 			return allocator;
 		}
 
+
 		DWORD WINAPI ParseProfile(LPVOID) {
 			AllocatorPerThread(slotAllocatorPerThreadInit);
 
@@ -650,6 +1067,16 @@ namespace ProfileSaveStreaming {
 
 			AllocatorPerThread(slotAllocatorPerThreadShutdown); // Hands the cached blocks back to the pools.
 			return 0;
+		}
+
+		void WarnIfLoadIsSlow(const char* stage, ULONGLONG startTime, bool& alreadyLogged) {
+			const ULONGLONG elapsed = GetTickCount64() - startTime;
+			if (alreadyLogged || elapsed < kSlowLoadWarningMs)
+				return;
+
+			alreadyLogged = true;
+			LOG_WARNING("(PROFILE SAVE) Profile " << stage << " is still running after " << elapsed / 1000.0
+				<< "s; keeping its input alive and continuing to wait" << std::endl);
 		}
 
 		/// <summary>
@@ -686,27 +1113,34 @@ namespace ProfileSaveStreaming {
 		void __stdcall LoadTick(uint8_t* profileService) {
 			void* adapter = *reinterpret_cast<void**>(Offsets::ptr_profileAdapter.Get());
 			void** vtable = VTable(adapter);
-			const int index = *reinterpret_cast<int*>(profileService + 0x5C);
 
 			if (loadState == LoadState::Idle) {
+				loadIndex = *reinterpret_cast<int*>(profileService + 0x5C);
 				loadStartTime = GetTickCount64();
-				reinterpret_cast<tProfileCall>(vtable[slotLoadStart])(adapter, nullptr, index);
+				g_readSlowWarningLogged = false;
+				g_parseSlowWarningLogged = false;
+				// Stays on the game thread: load start also empties the live profile database (2022 0x008971C0).
+				reinterpret_cast<tProfileCall>(vtable[slotLoadStart])(adapter, nullptr, loadIndex);
 				loadState = LoadState::Reading;
 			}
 
 			if (loadState == LoadState::Reading) {
-				if (!reinterpret_cast<tProfileReady>(vtable[slotLoadReady])(adapter, nullptr, index))
+				if (!reinterpret_cast<tProfileReady>(vtable[slotLoadReady])(adapter, nullptr, loadIndex)) {
+					WarnIfLoadIsSlow("file read and decompression", loadStartTime, g_readSlowWarningLogged);
 					return;
+				}
 
-				if (StartParse(index)) {
+				if (StartParse(loadIndex)) {
 					loadState = LoadState::Parsing;
 					return;
 				}
 			}
 
 			if (loadState == LoadState::Parsing) {
-				if (WaitForSingleObject(parseThread, 0) != WAIT_OBJECT_0)
+				if (WaitForSingleObject(parseThread, 0) != WAIT_OBJECT_0) {
+					WarnIfLoadIsSlow("JSON parse", parseStartTime, g_parseSlowWarningLogged);
 					return;
+				}
 				SamplingProfiler::Stop();
 				CloseHandle(parseThread);
 				parseThread = nullptr;
@@ -715,7 +1149,7 @@ namespace ProfileSaveStreaming {
 				parseStartTime = GetTickCount64();
 			parseEndTime = GetTickCount64();
 
-			reinterpret_cast<tProfileCall>(vtable[slotLoadFinish])(adapter, nullptr, index);
+			reinterpret_cast<tProfileCall>(vtable[slotLoadFinish])(adapter, nullptr, loadIndex);
 
 			if (parsedRoot) { // Finish didn't take it (it only deserializes a good read).
 				Release(parsedRoot);
@@ -723,13 +1157,15 @@ namespace ProfileSaveStreaming {
 			}
 			parseText = nullptr;
 
-			*reinterpret_cast<int*>(profileService + 0x6C) = reinterpret_cast<tProfileResult>(vtable[slotLoadResult])(adapter, nullptr, index);
+			*reinterpret_cast<int*>(profileService + 0x6C) = reinterpret_cast<tProfileResult>(vtable[slotLoadResult])(adapter, nullptr, loadIndex);
 			profileService[0x68] = 0;
 			loadState = LoadState::Idle;
+			loadIndex = -1;
 
 			const ULONGLONG now = GetTickCount64();
 			LOG_INFO("(PROFILE SAVE) Loaded profile in " << (now - loadStartTime) / 1000.0 << "s (read " << (parseStartTime - loadStartTime) / 1000.0
-				<< "s, parse " << (parseEndTime - parseStartTime) / 1000.0 << "s, finish " << (now - parseEndTime) / 1000.0 << "s)" << std::endl);
+				<< "s, parse " << (parseEndTime - parseStartTime) / 1000.0
+				<< "s, finish " << (now - parseEndTime) / 1000.0 << "s)" << std::endl);
 		}
 
 		/// <summary>
@@ -841,7 +1277,13 @@ namespace ProfileSaveStreaming {
 			}
 		}
 
-		void InitializeNumberHash() {
+		bool InitializeNumberHash() {
+			PatchGroup patches;
+			if (!patches.ValidateHook(Offsets::func_jsonNumberHash, expectedNumberHash, sizeof(expectedNumberHash))) {
+				LOG_ERROR("(PROFILE SAVE) JSON number hash site did not match the reviewed bytes, leaving background loading unchanged" << std::endl);
+				return false;
+			}
+
 			CRITICAL_SECTION* lock = *reinterpret_cast<CRITICAL_SECTION**>(Offsets::ptr_jsonNumberTableLock.Get());
 			uint8_t* table = *reinterpret_cast<uint8_t**>(Offsets::ptr_jsonNumberTable.Get());
 
@@ -849,10 +1291,10 @@ namespace ProfileSaveStreaming {
 			if (lock)
 				EnterCriticalSection(lock);
 
-			const bool hooked = MemUtil::PlaceHook(Offsets::func_jsonNumberHash, numberHashHook, 6);
+			const bool hooked = patches.Hook(Offsets::func_jsonNumberHash, numberHashHook, sizeof(expectedNumberHash), expectedNumberHash);
+			if (!hooked)
+				patches.Undo();
 			if (hooked) {
-				FlushInstructionCache(GetCurrentProcess(), (void*)Offsets::func_jsonNumberHash.Get(), 6);
-
 				const uint32_t size = table ? *reinterpret_cast<uint32_t*>(table + 0x8) : 0;
 				const uint32_t buckets = table ? *reinterpret_cast<uint32_t*>(table + 0x24) : 0;
 				if (size != 0 && buckets != 0) {
@@ -873,6 +1315,7 @@ namespace ProfileSaveStreaming {
 				LOG_INFO("(PROFILE SAVE) Replaced the JSON number hash" << std::endl);
 			else
 				LOG_ERROR("(PROFILE SAVE) Failed to replace the JSON number hash" << std::endl);
+			return hooked;
 		}
 
 		// ---- Playnext stats trim ----
@@ -1031,21 +1474,34 @@ namespace ProfileSaveStreaming {
 
 		void InitializePlaynextTrim() {
 			// The replacement has the same cdecl signature, so the hook just jumps to it.
-			if (MemUtil::PlaceHook(Offsets::func_playnextTrim, TrimPlaynext, 6)) {
-				FlushInstructionCache(GetCurrentProcess(), (void*)Offsets::func_playnextTrim.Get(), 6);
+			PatchGroup patches;
+			if (!patches.ValidateHook(Offsets::func_playnextTrim, expectedPlaynextTrim, sizeof(expectedPlaynextTrim))) {
+				LOG_ERROR("(PROFILE SAVE) Playnext trim site did not match the reviewed bytes, leaving it unchanged" << std::endl);
+				return;
+			}
+
+			if (patches.Hook(Offsets::func_playnextTrim, TrimPlaynext, sizeof(expectedPlaynextTrim), expectedPlaynextTrim)) {
 				LOG_INFO("(PROFILE SAVE) Replaced the PlaynextStats trim" << std::endl);
 			}
-			else
+			else {
+				patches.Undo();
 				LOG_ERROR("(PROFILE SAVE) Failed to replace the PlaynextStats trim" << std::endl);
+			}
 		}
 
 		/// <summary>
 		/// SaveWrapper: the load's save guard, and the owner of each streamed save. Both of the groups below need it.
 		/// </summary>
 		bool InitializeSaveWrapper() {
-			origSave = reinterpret_cast<tSaveCall>(CallTarget(Offsets::ptr_profileSaveCall));
+			const uintptr_t expectedTarget = ExpectedCallTarget(Offsets::ptr_profileSaveCall, 0x007CD730, 0x007CD7D0, 0x003CE330, 0x003CE3D0);
 			PatchGroup patches;
-			if (!patches.Redirect(Offsets::ptr_profileSaveCall, SaveWrapper)) {
+			if (!patches.ValidateRedirect(Offsets::ptr_profileSaveCall, expectedTarget)) {
+				LOG_ERROR("(PROFILE SAVE) Profile save call did not match the reviewed E8 target, leaving profile load and save unchanged" << std::endl);
+				return false;
+			}
+
+			origSave = reinterpret_cast<tSaveCall>(expectedTarget);
+			if (!patches.Redirect(Offsets::ptr_profileSaveCall, SaveWrapper, expectedTarget)) {
 				patches.Undo();
 				LOG_ERROR("(PROFILE SAVE) Failed to hook profile saves, not streaming saves or loading profiles in the background" << std::endl);
 				return false;
@@ -1064,15 +1520,25 @@ namespace ProfileSaveStreaming {
 				return;
 			}
 
-			origCompressBound = reinterpret_cast<tCompressBound>(CallTarget(Offsets::ptr_profileSaveCompressBoundCall));
-			origCompress2 = reinterpret_cast<tCompress2>(CallTarget(Offsets::ptr_profileSaveCompress2Call));
+			const uintptr_t expectedBoundTarget = ExpectedCallTarget(Offsets::ptr_profileSaveCompressBoundCall, 0x007CE0F7, 0x00E31830, 0x003CEC87, 0x00A308E0);
+			const uintptr_t expectedCompressTarget = ExpectedCallTarget(Offsets::ptr_profileSaveCompress2Call, 0x007CE147, 0x00E31790, 0x003CECD7, 0x00A30840);
 
 			// All or nothing: the clone hook without the others would save an empty profile.
 			PatchGroup patches;
-			if (!patches.Redirect(Offsets::ptr_profileSaveCompressBoundCall, CompressBound)
-				|| !patches.Redirect(Offsets::ptr_profileSaveCompress2Call, Compress2)
-				|| !patches.Hook(Offsets::ptr_profileSavePrintRoot, printRootHook, 5)
-				|| !patches.Hook(Offsets::ptr_profileSaveCloneSection, cloneSectionHook, 5)) {
+			if (!patches.ValidateRedirect(Offsets::ptr_profileSaveCompressBoundCall, expectedBoundTarget)
+				|| !patches.ValidateRedirect(Offsets::ptr_profileSaveCompress2Call, expectedCompressTarget)
+				|| !patches.ValidateHook(Offsets::ptr_profileSavePrintRoot, expectedPrintRoot, sizeof(expectedPrintRoot))
+				|| !patches.ValidateHook(Offsets::ptr_profileSaveCloneSection, expectedCloneSection, sizeof(expectedCloneSection))) {
+				LOG_ERROR("(PROFILE SAVE) Profile save sites did not match the reviewed bytes and call targets, leaving streaming saves unchanged" << std::endl);
+				return;
+			}
+
+			origCompressBound = reinterpret_cast<tCompressBound>(expectedBoundTarget);
+			origCompress2 = reinterpret_cast<tCompress2>(expectedCompressTarget);
+			if (!patches.Redirect(Offsets::ptr_profileSaveCompressBoundCall, CompressBound, expectedBoundTarget)
+				|| !patches.Redirect(Offsets::ptr_profileSaveCompress2Call, Compress2, expectedCompressTarget)
+				|| !patches.Hook(Offsets::ptr_profileSavePrintRoot, printRootHook, sizeof(expectedPrintRoot), expectedPrintRoot)
+				|| !patches.Hook(Offsets::ptr_profileSaveCloneSection, cloneSectionHook, sizeof(expectedCloneSection), expectedCloneSection)) {
 				patches.Undo();
 				LOG_ERROR("(PROFILE SAVE) Failed to hook the profile save, not streaming profile saves" << std::endl);
 				return;
@@ -1081,24 +1547,37 @@ namespace ProfileSaveStreaming {
 			LOG_INFO("(PROFILE SAVE) Streaming profile saves" << std::endl);
 		}
 
-		void InitializeLoading() {
-			origParse = reinterpret_cast<tJsonParse>(CallTarget(Offsets::ptr_profileParseCall));
+		bool InitializeLoading() {
+			const uintptr_t expectedTarget = ExpectedCallTarget(Offsets::ptr_profileParseCall, 0x00896CDC, 0x00889010, 0x0049681C, 0x00488A90);
 
 			// The parse redirect only hands over what the tick parsed, and the tick needs it to use that parse.
 			PatchGroup patches;
-			if (!patches.Redirect(Offsets::ptr_profileParseCall, Parse)
-				|| !patches.Hook(Offsets::ptr_profileLoadTick, loadTickHook, 7)) {
+			if (!patches.ValidateRedirect(Offsets::ptr_profileParseCall, expectedTarget)
+				|| !patches.ValidateHook(Offsets::ptr_profileLoadTick, ExpectedLoadTickBytes(), sizeof(expectedLoadTick))) {
+				LOG_ERROR("(PROFILE SAVE) Profile load sites did not match the reviewed bytes and call target, leaving background loading unchanged" << std::endl);
+				return false;
+			}
+
+			origParse = reinterpret_cast<tJsonParse>(expectedTarget);
+			if (!patches.Redirect(Offsets::ptr_profileParseCall, Parse, expectedTarget)
+				|| !patches.Hook(Offsets::ptr_profileLoadTick, loadTickHook, sizeof(expectedLoadTick), ExpectedLoadTickBytes())) {
 				patches.Undo();
 				LOG_ERROR("(PROFILE SAVE) Failed to hook the profile load, loading profiles on the main thread" << std::endl);
-				return;
+				return false;
 			}
 
 			LOG_INFO("(PROFILE SAVE) Loading profiles in the background" << std::endl);
+			return true;
 		}
 
 		void InitializeClearDocument() {
 			PatchGroup patches;
-			if (!patches.Hook(Offsets::ptr_profileLoadClearDocument, loadClearDocumentHook, 6)) {
+			if (!patches.ValidateHook(Offsets::ptr_profileLoadClearDocument, expectedClearDocument, sizeof(expectedClearDocument))) {
+				LOG_ERROR("(PROFILE SAVE) Profile document site did not match the reviewed bytes, leaving loaded text unchanged" << std::endl);
+				return;
+			}
+
+			if (!patches.Hook(Offsets::ptr_profileLoadClearDocument, loadClearDocumentHook, sizeof(expectedClearDocument), expectedClearDocument)) {
 				patches.Undo();
 				LOG_ERROR("(PROFILE SAVE) Failed to free the loaded profile text" << std::endl);
 			}
@@ -1142,16 +1621,14 @@ namespace ProfileSaveStreaming {
 			return;
 		}
 
-		// The read and decompress before the parse still happen on the main thread and can take a few seconds on a big profile.
-		// Without this, Windows swaps the window for a "Not Responding" ghost (and offers to close the game) while they run.
-		DisableProcessWindowsGhosting();
-
-		InitializeNumberHash();
+		const bool numberHashHooked = InitializeNumberHash();
+		InitializeChunkTableGrowth();
+		InitializeAllocatorScanHint();
 		InitializePlaynextTrim();
-		InitializeClearDocument();
 		if (InitializeSaveWrapper()) {
 			InitializeSaving();
-			InitializeLoading();
+			if (numberHashHooked && InitializeLoading())
+				InitializeClearDocument();
 		}
 	}
 }
