@@ -2,6 +2,7 @@
 #include "ProfileBackups.hpp"
 #include <algorithm>
 #include <atomic>
+#include <cwchar>
 #include <mutex>
 
 namespace fs = std::filesystem;
@@ -67,10 +68,38 @@ namespace ProfileBackups {
 			return std::string(text.begin(), text.end());
 		}
 
-		/// <summary>
-		/// The save folder of the Steam account that's logged in: <Steam>\userdata\<account>\221680\remote.
-				/// </summary>
-		bool FindSaveFolder(fs::path& folder, DWORD& account) {
+		// A folder the game may read profiles from. Which one it reads depends on whether its own Steam initialization worked,
+		// which isn't known this early, so each one that has profiles is backed up.
+		struct Source {
+			// Local profiles sit in the game folder among the game's own files.
+			bool local;
+			fs::path folder;
+			// 0 for the local folder.
+			DWORD account = 0;
+			bool found = false;
+		};
+		Source g_steamSource{ false }, g_localSource{ true };
+
+		bool SteamLaunch() {
+			wchar_t appId[16]{};
+			const DWORD appIdLength = GetEnvironmentVariableW(L"SteamAppId", appId, std::size(appId));
+			return appIdLength > 0 && appIdLength < std::size(appId) && std::wcscmp(appId, L"221680") == 0;
+		}
+
+		bool ReadFolder(const fs::path& folder, FolderState& state, bool local = false);
+
+		// The game folder, once it holds a local profile.
+		bool FindLocalFolder(fs::path& folder) {
+			wchar_t executable[MAX_PATH]{};
+			if (!GetModuleFileNameW(NULL, executable, MAX_PATH))
+				return false;
+			folder = fs::path(executable).parent_path();
+			FolderState state;
+			return ReadFolder(folder, state, true) && !state.empty();
+		}
+
+		// The save folder of the Steam account that's logged in: <Steam>\userdata\<account>\221680\remote.
+		bool FindSteamFolder(fs::path& folder, DWORD& account) {
 			DWORD size = sizeof(account);
 			if (RegGetValueW(HKEY_CURRENT_USER, L"Software\\Valve\\Steam\\ActiveProcess", L"ActiveUser", RRF_RT_REG_DWORD, nullptr, &account, &size) != ERROR_SUCCESS || account == 0)
 				return false;
@@ -88,13 +117,21 @@ namespace ProfileBackups {
 		fs::path BackupRoot(DWORD account) {
 			wchar_t executable[MAX_PATH]{};
 			GetModuleFileNameW(NULL, executable, MAX_PATH);
-			return fs::path(executable).parent_path() / L"Profile_AutoBackups" / std::to_wstring(account);
+			return fs::path(executable).parent_path() / L"Profile_AutoBackups" / (account ? std::to_wstring(account) : L"nosteam");
 		}
 
-		bool ReadFolder(const fs::path& folder, FolderState& state) {
+		bool IsProfileFile(const fs::path& path) {
+			const std::wstring name = path.filename().wstring();
+			return name == L"LocalProfiles.json" || name.ends_with(L"_PRFLDB");
+		}
+
+		// `local` reads only the profile files.
+		bool ReadFolder(const fs::path& folder, FolderState& state, bool local) {
 			state.clear();
 			std::error_code error;
 			for (fs::directory_iterator it(folder, error), end; !error && it != end; it.increment(error)) {
+				if (local && !IsProfileFile(it->path()))
+					continue;
 				if (!it->is_regular_file(error))
 					continue;
 				const uintmax_t size = it->file_size(error);
@@ -169,9 +206,9 @@ namespace ProfileBackups {
 		/// leaves the others intact. The copy goes to a ".partial_" folder that's renamed when it's complete, so a copy cut short
 		/// never looks like a backup.
 		/// </summary>
-		bool CopyBackup(const fs::path& source, const fs::path& tierFolder, const std::wstring& name, const fs::path* sameFilesIn, fs::path& made) {
+		bool CopyBackup(const fs::path& source, bool local, const fs::path& tierFolder, const std::wstring& name, const fs::path* sameFilesIn, fs::path& made) {
 			FolderState before, same;
-			if (!ReadFolder(source, before) || before.empty())
+			if (!ReadFolder(source, before, local) || before.empty())
 				return false;
 			if (sameFilesIn && !ReadFolder(*sameFilesIn, same))
 				same.clear();
@@ -196,7 +233,7 @@ namespace ProfileBackups {
 
 			// Something outside the save wrapper (LocalProfiles.json, a deleted profile) may have written while we copied.
 			FolderState after, copy;
-			copied = copied && ReadFolder(source, after) && after == before && ReadFolder(partial, copy) && copy == before;
+			copied = copied && ReadFolder(source, after, local) && after == before && ReadFolder(partial, copy) && copy == before;
 
 			made = tierFolder / name;
 			if (!copied || fs::exists(made, error)) {
@@ -226,21 +263,20 @@ namespace ProfileBackups {
 			}
 		}
 
-		// Steam can't switch accounts while the game runs, so once we've found the folder it stays the same.
-		fs::path saveFolder;
-		DWORD account = 0;
+		// Steam can't switch accounts while the game runs, so once a folder is found it stays the same.
+		bool Find(Source& source) {
+			if (!source.found)
+				source.found = source.local ? FindLocalFolder(source.folder) : FindSteamFolder(source.folder, source.account);
+			return source.found;
+		}
 
 		/// <summary>
 		/// Backs up the profiles if they changed since the last backup and it's a new 10 minutes. Makes one backup at most, however long
 		/// it's been since the last. `evenIfRecent` skips the 10 minutes, for when the profiles as they are right now must have a backup.
 		/// </summary>
-		void BackupIfDue(bool evenIfRecent = false) {
-			if (account == 0 && !FindSaveFolder(saveFolder, account)) {
-				account = 0;
-				return; // Steam hasn't said who's logged in yet. Try again next time.
-			}
-
-			const fs::path root = BackupRoot(account);
+		void BackupIfDue(const Source& source, bool evenIfRecent) {
+			const fs::path& saveFolder = source.folder;
+			const fs::path root = BackupRoot(source.account);
 			std::error_code error;
 			fs::create_directories(root, error);
 			if (!fs::is_directory(root, error)) {
@@ -256,7 +292,7 @@ namespace ProfileBackups {
 					return; // Already have these 10 minutes.
 
 				FolderState current, last;
-				if (ReadFolder(saveFolder, current) && ReadFolder(newest->path, last) && current == last)
+				if (ReadFolder(saveFolder, current, source.local) && ReadFolder(newest->path, last) && current == last)
 					return; // Nothing changed since the last backup.
 			}
 
@@ -264,7 +300,7 @@ namespace ProfileBackups {
 			fs::path made;
 			{
 				std::unique_lock lock(filesMutex);
-				if (!CopyBackup(saveFolder, root / newestTier.folder, name, newest ? &newest->path : nullptr, made)) {
+				if (!CopyBackup(saveFolder, source.local, root / newestTier.folder, name, newest ? &newest->path : nullptr, made)) {
 					LOG_WARNING("(PROFILE BACKUP) Couldn't back up the profiles this time, will try again" << std::endl);
 					return;
 				}
@@ -280,7 +316,7 @@ namespace ProfileBackups {
 						continue; // Already has this period. (>= also covers the clock going backwards.)
 
 					fs::path linked;
-					if (!CopyBackup(made, tierFolder, name, &made, linked)) {
+					if (!CopyBackup(made, false, tierFolder, name, &made, linked)) {
 						LOG_WARNING("(PROFILE BACKUP) Couldn't add the backup to " << Utf8(tier.folder) << std::endl);
 						continue; // Don't prune a tier that didn't get the new backup.
 					}
@@ -290,22 +326,36 @@ namespace ProfileBackups {
 
 			WriteHowTo(root, saveFolder);
 		}
+
+		// Until Steam says who's logged in, its folder isn't found; it's tried again next time.
+		void BackupIfDue(bool evenIfRecent = false) {
+			for (Source* source : { &g_steamSource, &g_localSource }) {
+				if (Find(*source))
+					BackupIfDue(*source, evenIfRecent);
+			}
+		}
+
+		// The newest backup must be the profiles exactly as they are now, not just some older backup.
+		bool BackedUp(const Source& source) {
+			const std::vector<Backup> backups = ListBackups(BackupRoot(source.account) / newestTier.folder);
+			FolderState current, newest;
+			return !backups.empty() && ReadFolder(source.folder, current, source.local) && ReadFolder(backups.back().path, newest) && current == newest;
+		}
 	}
 
 	bool BackUpBeforeHooking() {
 		try {
 			BackupIfDue(true);
-			if (account == 0) {
-				LOG_ERROR("(PROFILE BACKUP) Couldn't find the Steam save folder" << std::endl);
+			if (!g_steamSource.found && (SteamLaunch() || !g_localSource.found)) {
+				LOG_ERROR("(PROFILE BACKUP) Couldn't find the profile folder" << std::endl);
 				return false;
 			}
 
-			// The newest backup must be the profiles exactly as they are now, not just some older backup.
-			const std::vector<Backup> backups = ListBackups(BackupRoot(account) / newestTier.folder);
-			FolderState current, newest;
-			if (backups.empty() || !ReadFolder(saveFolder, current) || !ReadFolder(backups.back().path, newest) || current != newest) {
-				LOG_ERROR("(PROFILE BACKUP) Couldn't back up the profiles" << std::endl);
-				return false;
+			for (const Source* source : { &g_steamSource, &g_localSource }) {
+				if (source->found && !BackedUp(*source)) {
+					LOG_ERROR("(PROFILE BACKUP) Couldn't back up the profiles in " << Utf8(source->folder) << std::endl);
+					return false;
+				}
 			}
 		}
 		catch (const std::exception& e) {
