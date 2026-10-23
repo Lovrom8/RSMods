@@ -6,11 +6,8 @@
 #include "UltrawideState.hpp"
 
 using Framework::ModContext;
-using Framework::SettingDef;
-using Framework::SettingDefs;
 using Framework::Observe;
 namespace DeviceEvent = Framework::DeviceEvent;
-namespace Setting = Settings::Setting;
 
 namespace {
 	// Makes the game build its camera frustums at the display aspect instead of the 16:9 it
@@ -40,8 +37,7 @@ namespace {
 
 		// Only widen. A narrower-than-16:9 display gives a scale above 1.0, which would push the
 		// camera frustum and the remapped viewport outside the backbuffer, so the mod stays inert.
-		const bool isActive = settingOn.load(std::memory_order_relaxed)
-			&& backBufferValid && AspectRatio::IsWiderThanReference(clipXScale);
+		const bool isActive = backBufferValid && AspectRatio::IsWiderThanReference(clipXScale);
 
 		active.store(isActive, std::memory_order_relaxed);
 
@@ -208,29 +204,9 @@ namespace {
 	}
 }
 
-SettingDefs UltrawideMod::Settings() const {
-	return {
-		SettingDef::Toggle(Setting::Ultrawide, "Ultrawide", "Ultrawide")
-			.Hint("Ultrawide (21:9 / 32:9) display support. The interface stays 16:9.")
-			.Heading(Framework::SettingHeading::GameAndWindow)
-	};
-}
-
-bool UltrawideMod::IsEnabled(const ModContext& c) const {
-	return c.IsOn(Setting::Ultrawide);
-}
-
 void UltrawideMod::OnInitialize(ModContext& c) {
 	c.Draw().RegisterFrame([](IDirect3DDevice9* device) {
 		UpdateState(device);
-
-		// A disable can land while this runs. OnDisabled clears the setting flag before the state, so
-		// re-checking the flag after publishing means whichever side finishes last leaves it off.
-		std::atomic_thread_fence(std::memory_order_seq_cst);
-		if (!UltrawideState::settingOn.load()) {
-			PublishInactive();
-			return;
-		}
 
 		Framework::Hud().SetLayoutAspect(UltrawideState::active.load(std::memory_order_relaxed)
 			? static_cast<float>(sixteenByNine) : 0.0f);
@@ -262,25 +238,22 @@ void UltrawideMod::OnInitialize(ModContext& c) {
 }
 
 void UltrawideMod::OnEnabled(ModContext&) {
-	UltrawideState::settingOn = true;
+	// Installed once and left in place. Both are inert at 16:9 and narrower: the frustum
+	// constant stays 16:9 and the RR dim gate follows UltrawideState::active.
 	SetPatched(true);
-	// Installed once and left in place; the gate below makes it inert when the correction
-	// is not active, so toggling the setting never rewrites game code.
 	UltrawideRRDim::Install();
 }
 
 void UltrawideMod::OnDisabled(ModContext&) {
-	// The frame callback stops once disabled, so undo what it published here (flag first, see OnInitialize).
-	UltrawideState::settingOn = false;
-	std::atomic_thread_fence(std::memory_order_seq_cst);
+	// The frame callback stops once disabled, so undo what it published here.
 	PublishInactive();
 	SetPatched(false);
 	UltrawideRRDim::SetActive(false);
 }
 
 void UltrawideMod::OnTick(ModContext&) {
-	// UltrawideState::active is decided per frame on the render thread from the setting and the
-	// backbuffer aspect, so it is the one flag that already means "corrections apply".
+	// UltrawideState::active is decided per frame on the render thread from the backbuffer
+	// aspect, which a device reset re-reads, so it is the one flag that means "corrections apply".
 	UltrawideRRDim::SetActive(UltrawideState::active.load(std::memory_order_relaxed));
 }
 

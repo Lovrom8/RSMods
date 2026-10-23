@@ -2956,29 +2956,5 @@
     "entry": "BackupProfile",
     "heading": null,
     "entryTitle": null
-  },
-  {
-    "key": "Ultrawide",
-    "ini": {
-      "section": "Toggle Switches",
-      "name": "Ultrawide"
-    },
-    "type": "Bool",
-    "default": "off",
-    "label": "Ultrawide",
-    "hint": "Ultrawide (21:9 / 32:9) display support. The interface stays 16:9.",
-    "category": "Toggle Switches",
-    "min": null,
-    "max": null,
-    "scale": null,
-    "choices": [],
-    "choicesSource": null,
-    "visibleWhen": null,
-    "editor": null,
-    "editedBy": null,
-    "mod": "UltrawideMod",
-    "entry": "Ultrawide",
-    "heading": "Game & Window",
-    "entryTitle": "Ultrawide"
   }
 ]

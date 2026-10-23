@@ -5,8 +5,6 @@
 class UltrawideMod : public Framework::IMod {
 public:
 	MOD_ID(UltrawideMod)
-	Framework::SettingDefs Settings() const override;
-	bool IsEnabled(const Framework::ModContext& c) const override;
 	std::vector<std::string_view> ClaimsExclusive() const override {
 		return { "loft-post-effects-state" };
 	}

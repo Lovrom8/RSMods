@@ -151,9 +151,6 @@ namespace Settings {
 		inline constexpr char UseCustomNSPTimer[]      = "UseCustomNSPTimer";
 		inline constexpr char CustomNSPTimeLimit[]     = "CustomNSPTimeLimit";
 
-		// Ultrawide support
-		inline constexpr char Ultrawide[]               = "Ultrawide";
-
 		// Wwise RTPC channel names passed to SetRTPCValue / GetRTPCValue.
 		namespace Channel {
 			inline constexpr char Master[]    = "Master_Volume";
