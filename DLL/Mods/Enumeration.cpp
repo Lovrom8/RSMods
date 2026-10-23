@@ -1,5 +1,6 @@
 #include "../stdafx.h"
 #include "Enumeration.hpp"
+#include <climits>
 
 void SaveSteamServicePointer(uint32_t eax) {
 	if (Enumeration::rsSteamServiceFlagsPtr == nullptr) {
@@ -78,8 +79,20 @@ void Enumeration::ForceEnumeration() {
 /// <param name="path"> - Path</param>
 /// <returns>Amount of files</returns>
 int Enumeration::GetFileCount(std::filesystem::path path) {
-	using std::filesystem::recursive_directory_iterator;
-	return std::distance(recursive_directory_iterator(path, std::filesystem::directory_options::follow_directory_symlink), recursive_directory_iterator{});
+	int count = 0;
+	try {
+		std::error_code error;
+		const auto options = std::filesystem::directory_options::skip_permission_denied;
+		std::filesystem::recursive_directory_iterator it(path, options, error), end;
+		for (; !error && it != end; it.increment(error)) {
+			if (count < INT_MAX)
+				++count;
+		}
+	}
+	catch (...) {
+		LOG_ERROR("(ENUMERATION) Failed to count DLC files; using the count collected so far" << std::endl);
+	}
+	return count;
 }
 
 /// <summary>
@@ -87,15 +100,22 @@ int Enumeration::GetFileCount(std::filesystem::path path) {
 /// </summary>
 /// <returns>Amount of files in the Rocksmith2014/dlc folder. Recursive.</returns>
 int Enumeration::GetCurrentDLCCount() {
-	std::filesystem::path dlcFolderPath = std::filesystem::current_path(); //tread carefully, this stuff likes to crash if the path is wrong
-	dlcFolderPath /= "dlc";
+	try {
+		std::error_code error;
+		std::filesystem::path dlcFolderPath = std::filesystem::current_path(error);
+		if (error)
+			return 0;
+		dlcFolderPath /= "dlc";
 
-	// If the user does not have a dlc folder, return 0.
-	if (!std::filesystem::exists(dlcFolderPath)) {
+		if (!std::filesystem::exists(dlcFolderPath, error) || error)
+			return 0;
+
+		return GetFileCount(dlcFolderPath);
+	}
+	catch (...) {
+		LOG_ERROR("(ENUMERATION) Failed to resolve the DLC folder" << std::endl);
 		return 0;
 	}
-
-	return GetFileCount(dlcFolderPath);
 }
 
 
