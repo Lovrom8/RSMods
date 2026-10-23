@@ -131,9 +131,38 @@ namespace {
 		renderTargetHeight = height;
 	}
 
+	// A StretchRect destination is a render-target copy even when the game never binds it as a target. With
+	// depth of field off the scene reaches the backbuffer as such a copy drawn on one quad; registered here,
+	// that quad samples a scene target and ConfineDraw leaves it full width.
+	void RegisterCopyTarget(IDirect3DSurface9* dest) {
+		D3DSURFACE_DESC description{};
+		if (!dest || FAILED(dest->GetDesc(&description)))
+			return;
+
+		IDirect3DTexture9* container = nullptr;
+		if (FAILED(dest->GetContainer(__uuidof(IDirect3DTexture9), reinterpret_cast<void**>(&container))) || !container)
+			return;
+
+		const std::pair<UINT, UINT> size{ description.Width, description.Height };
+		try {
+			const auto existing = UltrawideState::renderTargetTextures.find(container);
+			if (existing == UltrawideState::renderTargetTextures.end() || existing->second != size) {
+				UltrawideState::renderTargetTextures[container] = size;
+				UltrawideShaders::TextureStages::Invalidate();
+			}
+		}
+		catch (...) {
+			container->Release();
+			throw;
+		}
+		container->Release();
+	}
+
 	// Widens the game's 16:9 letterbox composite. The video player composites its frame through the
 	// same path at its own aspect; leave it.
 	void WidenLetterbox(DeviceEvent::StretchRect& e) {
+		RegisterCopyTarget(e.dest);
+
 		if (!UltrawideState::active.load(std::memory_order_relaxed) || UltrawideState::inVideoPlayer.load(std::memory_order_relaxed)
 			|| !e.destRect || !e.dest)
 			return;
@@ -209,7 +238,8 @@ void UltrawideMod::OnInitialize(ModContext& c) {
 
 	// All paths: parts of the interface are drawn through the UP calls.
 	c.Draw().Register("UltrawideConfine", Framework::DrawPriority::DeviceState, Framework::DrawPath::All, ConfineDraw);
-	c.Draw().OnStretchRect(WidenLetterbox);
+	// Always, like the bind mirrors below: the copy-target registry must not miss copies made while disabled.
+	c.Draw().OnStretchRect(WidenLetterbox, Observe::Always);
 
 	// Mirrors of what is bound. They run while disabled too: enabling mid-frame must not start
 	// from a stale texture stage or render-target map.
