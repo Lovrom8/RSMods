@@ -45,8 +45,6 @@ internal sealed partial class RocksmithSettingsViewModel : ObservableObject
     [ObservableProperty] private decimal _screenHeight;
     [ObservableProperty] private FullscreenMode _fullscreen;
     [ObservableProperty] private VisualQualityMode _visualQuality;
-    [ObservableProperty] private decimal _renderingWidth;
-    [ObservableProperty] private decimal _renderingHeight;
     [ObservableProperty] private bool _enablePostEffects;
     [ObservableProperty] private bool _enableShadows;
     [ObservableProperty] private bool _enableHighResScope;
@@ -126,8 +124,6 @@ internal sealed partial class RocksmithSettingsViewModel : ObservableObject
             ScreenHeight = s.RendererWin32.ScreenHeight;
             Fullscreen = s.RendererWin32.Fullscreen;
             VisualQuality = s.RendererWin32.VisualQuality;
-            RenderingWidth = s.RendererWin32.RenderingWidth;
-            RenderingHeight = s.RendererWin32.RenderingHeight;
             EnablePostEffects = s.RendererWin32.EnablePostEffects;
             EnableShadows = s.RendererWin32.EnableShadows;
             EnableHighResScope = s.RendererWin32.EnableHighResScope;
@@ -164,8 +160,6 @@ internal sealed partial class RocksmithSettingsViewModel : ObservableObject
         [nameof(ScreenHeight)] = (vm, s) => s.RendererWin32.ScreenHeight = (int)vm.ScreenHeight,
         [nameof(Fullscreen)] = (vm, s) => s.RendererWin32.Fullscreen = vm.Fullscreen,
         [nameof(VisualQuality)] = (vm, s) => s.RendererWin32.VisualQuality = vm.VisualQuality,
-        [nameof(RenderingWidth)] = (vm, s) => s.RendererWin32.RenderingWidth = (int)vm.RenderingWidth,
-        [nameof(RenderingHeight)] = (vm, s) => s.RendererWin32.RenderingHeight = (int)vm.RenderingHeight,
         [nameof(EnablePostEffects)] = (vm, s) => s.RendererWin32.EnablePostEffects = vm.EnablePostEffects,
         [nameof(EnableShadows)] = (vm, s) => s.RendererWin32.EnableShadows = vm.EnableShadows,
         [nameof(EnableHighResScope)] = (vm, s) => s.RendererWin32.EnableHighResScope = vm.EnableHighResScope,

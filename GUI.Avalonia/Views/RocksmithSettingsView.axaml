@@ -195,17 +195,6 @@
                                     <NumericUpDown Classes="dimension" AutomationProperties.Name="Screen height" Value="{Binding ScreenHeight}" />
                                 </StackPanel>
                             </Grid>
-                            <Grid Classes="field" ColumnDefinitions="*,Auto">
-                                <StackPanel>
-                                    <TextBlock Text="Rendering resolution" />
-                                    <TextBlock Classes="hint" Text="The size the game renders at; 0 turns this off." />
-                                </StackPanel>
-                                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6">
-                                    <NumericUpDown Classes="dimension" AutomationProperties.Name="Rendering width" Value="{Binding RenderingWidth}" />
-                                    <TextBlock VerticalAlignment="Center" Opacity="0.7" Text="×" />
-                                    <NumericUpDown Classes="dimension" AutomationProperties.Name="Rendering height" Value="{Binding RenderingHeight}" />
-                                </StackPanel>
-                            </Grid>
 
                             <Border Classes="divider" />
 
