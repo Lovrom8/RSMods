@@ -20,6 +20,7 @@ Feel free to try the 1.2.8.0 version if you are on the Learn & Play version.
       
 * **Custom Song List Titles**
   * Normally those are not customizable in-game and simply listed as SONG LIST 1 to SONG LIST 6. Now you can customize those, making for example, a song list for only B Standard songs, only Exercise songs, etc.
+  * Extra song lists (up to 20, added in the GUI under Profile Edits) can be filled with the in-game Song List Editor, used as a filter in Learn a Song and Song Arcade, and picked in Non-Stop Play. Without RSMods, Non-Stop Play only offers the first 6.
   
 * **Add/Decrease Song Volume**
   * In case you are playing a song which is unusually low in volume, or is ear-piercingly loud, by invoking the functions of AudioKinetic audio engine used by the game, you can now modify volume of the music on the fly, without going in to the mixer. 

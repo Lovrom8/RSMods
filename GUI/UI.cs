@@ -782,6 +782,7 @@ namespace RSMods
                 RsModsLimits.OverrideInputVolumeMin, RsModsLimits.OverrideInputVolumeMax,
                 src, ReadSettings.OverrideInputVolumeIdentifier);
             checkBox_ER_SeparateNoteColors.Checked = ReadSettings.ProcessSettings(ReadSettings.SeparateNoteColorsIdentifier) == "on";
+            checkBox_UseExactColors.Checked = ReadSettings.ProcessSettings(ReadSettings.UseExactColorsIdentifier) == "on";
             groupBox_NoteColors.Visible = checkBox_ER_SeparateNoteColors.Checked;
             checkBox_BackupProfile.Checked = ReadSettings.ProcessSettings(ReadSettings.BackupProfileIdentifier) == "on";
             checkBox_ModsLog.Checked = File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "RSMods_debug.txt"));
@@ -1049,6 +1050,9 @@ namespace RSMods
             checkBox_Rocksmith_RTCOnly.Checked = SettingsSanitizer.SanitizeBool01(
                 Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.RealToneCableOnlyIdentifier),
                 false, src, Rocksmith.ReadSettings.RealToneCableOnlyIdentifier);
+            checkBox_Rocksmith_RightInputChannel.Checked = SettingsSanitizer.SanitizeBool01(
+                Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.MonoToStereoChannelIdentifier),
+                false, src, Rocksmith.ReadSettings.MonoToStereoChannelIdentifier);
             checkBox_Rocksmith_LowLatencyMode.Checked = SettingsSanitizer.SanitizeBool01(
                 Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.Win32UltraLowLatencyModeIdentifier),
                 true, src, Rocksmith.ReadSettings.Win32UltraLowLatencyModeIdentifier);
@@ -2805,6 +2809,7 @@ namespace RSMods
 
         private void Save_DisplaySongAccuracy(object sender, EventArgs e) => SaveSettings_Save(ReadSettings.DisplayCurrentAccuracyIdentifier, checkBox_DisplayCurrentAccuracy.Checked.ToString().ToLower());
         private void Save_PreventMidSongPause(object sender, EventArgs e) => SaveSettings_Save(ReadSettings.PreventMidSongPauseIdentifier, checkBox_PreventMidSongPause.Checked.ToString().ToLower());
+        private void Save_UseExactColors(object sender, EventArgs e) => SaveSettings_Save(ReadSettings.UseExactColorsIdentifier, checkBox_UseExactColors.Checked.ToString().ToLower());
         private void Save_Ultrawide(object sender, EventArgs e) => SaveSettings_Save(ReadSettings.UltrawideIdentifier, checkBox_Ultrawide.Checked.ToString().ToLower());
 
         private void Save_NSPTimer(object sender, EventArgs e) => SaveSettings_Save(ReadSettings.CustomNSPTimeLimitIdentifier, ((int)(nUpDown_NSPTimer.Value * 1000)).ToString());
@@ -3574,6 +3579,7 @@ namespace RSMods
                 checkBox_Rocksmith_Override_MaxOutputBufferSize.Checked = true;
         }
         private void Rocksmith_RTCOnly(object sender, EventArgs e) => SaveSettings_Rocksmith_Middleware(Rocksmith.ReadSettings.RealToneCableOnlyIdentifier, checkBox_Rocksmith_RTCOnly.Checked.ToString().ToLower());
+        private void Rocksmith_RightInputChannel(object sender, EventArgs e) => SaveSettings_Rocksmith_Middleware(Rocksmith.ReadSettings.MonoToStereoChannelIdentifier, checkBox_Rocksmith_RightInputChannel.Checked.ToString().ToLower());
         private void Rocksmith_LowLatencyMode(object sender, EventArgs e) => SaveSettings_Rocksmith_Middleware(Rocksmith.ReadSettings.Win32UltraLowLatencyModeIdentifier, checkBox_Rocksmith_LowLatencyMode.Checked.ToString().ToLower());
 
         private void Rocksmith_AutomateMaxBufferSize(object sender, EventArgs e)

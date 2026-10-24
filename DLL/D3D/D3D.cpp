@@ -300,7 +300,161 @@ void GenerateColorTexture(IDirect3DDevice9* pDevice, IDirect3DTexture9** ppTextu
 	colorSet.insert(colorSet.end(), colorsNormal.begin(), colorsNormal.end());
 	colorSet.insert(colorSet.end(), colorsColorBlind.begin(), colorsColorBlind.end());
 
-	D3D::GenerateTexture(pDevice, ppTexture, colorSet);
+	if (Settings::IsOn(Settings::Setting::UseExactColors))
+		D3D::GenerateExactColorTexture(pDevice, ppTexture, colorSet);
+	else
+		D3D::GenerateTexture(pDevice, ppTexture, colorSet);
+}
+
+namespace {
+	/// <returns>The colors each row of the game's note color ramp was made for (8 normal rows, then 8 colorblind rows).</returns>
+	ColorList NoteColorRampAnchors() {
+		ColorList anchors;
+		anchors.reserve(noteColorRampRows);
+
+		for (const std::string& hex : Settings::defaultStrColors)
+			anchors.push_back(Settings::ConvertHexToColor(hex));
+
+		for (const std::string& hex : Settings::defaultStrColorsCB)
+			anchors.push_back(Settings::ConvertHexToColor(hex));
+
+		return anchors;
+	}
+
+	bool IsOurTexture(IDirect3DBaseTexture9* pTexture) {
+		auto matches = [pTexture](IDirect3DTexture9* ours) { return ours && static_cast<IDirect3DBaseTexture9*>(ours) == pTexture; };
+
+		if (matches(customStringColorTexture) || matches(customNoteColorTexture) || matches(twitchUserDefinedTexture) || matches(nonexistentTexture))
+			return true;
+
+		for (IDirect3DTexture9* ours : randomTextures)
+			if (matches(ours)) return true;
+
+		for (IDirect3DTexture9* ours : rainbowTextures)
+			if (matches(ours)) return true;
+
+		return false;
+	}
+
+	BYTE ToByte(float value) {
+		if (value <= 0.0f) return 0;
+		if (value >= 1.0f) return 255;
+		return static_cast<BYTE>(value * 255.0f + 0.5f);
+	}
+}
+
+/// <summary>
+/// Use Exact Colors: build a note color texture by recoloring the game's own note color ramp, so the shading
+/// (dark -> fully saturated -> white) matches the game. A row whose color is one of the game's own string colors
+/// comes out identical to the game's row. Until the game's ramp has been read, a plain dark -> color -> white
+/// ramp in HSL is used instead.
+/// </summary>
+/// <param name="pDevice"> - Device Pointer</param>
+/// <param name="ppTexture"> - Output Texture</param>
+/// <param name="colorSet"> - 8 normal colors, then 8 colorblind colors</param>
+void D3D::GenerateExactColorTexture(IDirect3DDevice9* pDevice, IDirect3DTexture9** ppTexture, const ColorList& colorSet) {
+	ReleaseTexture(ppTexture);
+
+	if (FAILED(pDevice->CreateTexture(noteColorRampWidth, noteColorRampHeight, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, ppTexture, nullptr)) || !*ppTexture) {
+		LOG_ERROR("Use Exact Colors: failed to create the note color texture" << std::endl);
+		*ppTexture = nullptr;
+		return;
+	}
+
+	D3DLOCKED_RECT lockedRect;
+	if (FAILED((*ppTexture)->LockRect(0, &lockedRect, nullptr, 0))) {
+		LOG_ERROR("Use Exact Colors: failed to lock the note color texture" << std::endl);
+		ReleaseTexture(ppTexture);
+		return;
+	}
+
+	const ColorList anchors = NoteColorRampAnchors();
+	const bool haveGameRamp = noteColorRamp.size() == noteColorRampWidth * noteColorRampRows;
+
+	for (int row = 0; row < noteColorRampRows; row++) {
+		const RSColor target = row < static_cast<int>(colorSet.size()) ? colorSet[row] : anchors[row];
+
+		// Shade from the game row whose color is closest to the one we want. Its own row wins ties.
+		const size_t templateRow = CollectColors::NearestColor(target, anchors, row);
+		const CollectColors::HSLColor targetHSL = CollectColors::ToHSL(target);
+
+		for (UINT x = 0; x < noteColorRampWidth; x++) {
+			RSColor texel;
+
+			if (haveGameRamp)
+				texel = CollectColors::Recolor(noteColorRamp[templateRow * noteColorRampWidth + x], anchors[templateRow], target);
+			else
+				texel = CollectColors::FromHSL({ targetHSL.h, targetHSL.s, static_cast<float>(x) / (noteColorRampWidth - 1) });
+
+			const D3DCOLOR pixel = D3DCOLOR_ARGB(255, ToByte(texel.r), ToByte(texel.g), ToByte(texel.b));
+
+			for (int y = row * noteColorRampRowHeight; y < (row + 1) * noteColorRampRowHeight; y++)
+				reinterpret_cast<D3DCOLOR*>(static_cast<BYTE*>(lockedRect.pBits) + y * lockedRect.Pitch)[x] = pixel;
+		}
+	}
+
+	(*ppTexture)->UnlockRect(0);
+
+	SetCustomColors();
+}
+
+/// <summary>
+/// Use Exact Colors: read the game's note color ramp from texture stage 1. Call this while a note head is being drawn.
+/// </summary>
+/// <returns>True if the ramp was read by this call (so the note color textures should be rebuilt).</returns>
+bool D3D::CaptureNoteColorRamp(IDirect3DDevice9* pDevice) {
+	if (!noteColorRamp.empty() || noteColorRampUnsupported)
+		return false;
+
+	IDirect3DBaseTexture9* pBase = nullptr;
+	if (FAILED(pDevice->GetTexture(1, &pBase)) || !pBase)
+		return false;
+
+	bool captured = false;
+
+	// Skip our own textures: a previous draw may have left one bound.
+	if (pBase->GetType() == D3DRTYPE_TEXTURE && !IsOurTexture(pBase)) {
+		auto* pTexture = static_cast<IDirect3DTexture9*>(pBase);
+		D3DSURFACE_DESC desc;
+
+		if (SUCCEEDED(pTexture->GetLevelDesc(0, &desc)) && desc.Width == noteColorRampWidth && desc.Height == noteColorRampHeight) {
+			UINT bytesPerTexel = 0;
+
+			if (desc.Format == D3DFMT_A8R8G8B8 || desc.Format == D3DFMT_X8R8G8B8)
+				bytesPerTexel = 4;
+			else if (desc.Format == D3DFMT_R8G8B8)
+				bytesPerTexel = 3;
+
+			D3DLOCKED_RECT lockedRect;
+
+			if (bytesPerTexel == 0) {
+				LOG_ERROR("Use Exact Colors: unsupported note color ramp format " << desc.Format << ". Using the fallback ramp." << std::endl);
+				noteColorRampUnsupported = true;
+			}
+			else if (SUCCEEDED(pTexture->LockRect(0, &lockedRect, nullptr, D3DLOCK_READONLY))) {
+				ColorList ramp;
+				ramp.reserve(noteColorRampWidth * noteColorRampRows);
+
+				for (int row = 0; row < noteColorRampRows; row++) {
+					const int y = row * noteColorRampRowHeight + noteColorRampRowHeight / 2; // Middle of the row
+					const BYTE* line = static_cast<const BYTE*>(lockedRect.pBits) + y * lockedRect.Pitch;
+
+					for (UINT x = 0; x < noteColorRampWidth; x++) {
+						const BYTE* texel = line + x * bytesPerTexel; // B, G, R(, A)
+						ramp.emplace_back(texel[2] / 255.0f, texel[1] / 255.0f, texel[0] / 255.0f);
+					}
+				}
+
+				pTexture->UnlockRect(0);
+				noteColorRamp = std::move(ramp);
+				captured = true;
+				LOG_INFO("Use Exact Colors: read the game's note color ramp" << std::endl);
+			}
+		}
+	}
+
+	pBase->Release();
+	return captured;
 }
 
 void GenerateNotewayTexture(IDirect3DDevice9* pDevice) {

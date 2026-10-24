@@ -7,12 +7,12 @@ void Offsets::Initialize() {
 	baseEnd = { {0x04F80000, baseHandle + MemUtil::GetTextSectionLength()  } };			// End of Rocksmith /* or close enough */
 	ptr_loft = { {0x00F5F56C, 0x00F6056C} };											// Memory | Scan for a float, rounded (default), of 10000. Grab all of them. Then in chunks set them to 1. Once the loft turns off, narrow down to the specific one. Pointer map to far offsets.
 	ptr_tuning = { {0x00F5F62C, 0x00F6062C} };											// Memory | Interpolated from Loft. +0x1000.
-	// LoftManager::SetLoftState (0x00775370) dispatches the selected state to the lights manager
+	// The loft manager's "set state" (0x00775370) dispatches the selected state to the lights manager
 	// and then, at this site, to the post-effects manager. The site is +0x7A into the
 	// function on both builds.
 	// Code | 8b 4d 0c 8b 53 0c 8b 42 20 51 50 8b c7 e8 51 17 00 00 (the e8 is the site)
 	hook_loftPostFxSetState = { {0x007753EA, baseHandle + 0x00375B5A} };
-	// LoftPostEffectsManager::SetLoftState. EAX = requested state, [esp+4] = manager,
+	// The loft post-effects manager's "set state". EAX = requested state, [esp+4] = manager,
 	// [esp+8] = immediate flag, RET 8.
 	// Code | 55 8b ec 53 8b 5d 08 83 7b 0c 00 56 57 8b f0
 	func_loftPostFxSetState = { {0x00776B40, baseHandle + 0x00377360} };
@@ -46,6 +46,18 @@ void Offsets::Initialize() {
 	patch_addedSpaces = { {0x00551234, baseHandle + 0x00152544 } };			// Code | 8d 45 b0 8d 55 a8 8d 4d c0 89 45 c0 89 4d c4 8b c6 39 55 ac (function call right before these bytes)
 	patch_addedNumbers = { {0x00551275, baseHandle + 0x00152585 } };		// Code | 8b d6 3b d7 74 19 8d 45 c0 39 45 c4 (function call right before these bytes)
 	patch_sprintfArg = { {0x00832653, baseHandle + 0x00432923 } };			// Code | 83 c4 0c 8b 44 24 18 8b 48 4c 2b 48 48 b8 ab aa aa 2a (we want byte 0c)
+	// Non-Stop Play song list choice, built in one function of the Non-Stop Play menu (0x0067A630 / +0x0027B370).
+	ptr_songListService = { {0x0135F5A8, baseHandle + 0x00F605A8 } };				// Static Memory | a1 ? ? ? ? at the start of that function (read before the 8 option ids are pushed)
+	ptr_nspSongListIdsLoop = { {0x0067A6B7, baseHandle + 0x0027B3F7 } };			// Code | 43 83 fb 08 72 d8 8b 5d a8 b8 08 00 00 00 (the 43)
+	ptr_nspSongListIdsLoopTop = { {0x0067A695, baseHandle + 0x0027B3D5 } };		// Code | Target of the 72 d8 above
+	ptr_nspSongListIdsLoopExit = { {0x0067A6BD, baseHandle + 0x0027B3FD } };		// Code | The 8b 5d a8 above
+	ptr_nspSongListLabelsLoop = { {0x0067A855, baseHandle + 0x0027B595 } };		// Code | 8b 4d a0 41 89 4d a0 83 f9 08 0f 85 (the first 8b)
+	ptr_nspSongListLabelsLoopTop = { {0x0067A6EF, baseHandle + 0x0027B42F } };	// Code | Target of the 0f 85 above (8b 55 ac 52 8d 7d b4 e8, the call that names one option)
+	ptr_nspSongListLabelsLoopExit = { {0x0067A865, baseHandle + 0x0027B5A5 } };	// Code | The instruction after the 0f 85 above (8b fb)
+	ptr_nspPoolSongListSwitch = { {0x004EEACE, baseHandle + 0x000EF6CE } };		// Code | 8b 86 a4 00 00 00 83 f8 07 0f 87 ? ? ? ? ff 24 85 (the 83 - the Non-Stop Play pool builder's switch on the chosen id)
+	ptr_nspPoolDispatch = { {0x004EEAD7, baseHandle + 0x000EF6D7 } };				// Code | The ff 24 85 above
+	ptr_nspPoolSongList = { {0x004EEB08, baseHandle + 0x000EF708 } };				// Code | Jump table entries 2-7 (8b 0d, song list service, then song list id - 2)
+	ptr_nspPoolEmpty = { {0x004EEC6B, baseHandle + 0x000EF86B } };					// Code | Target of the 0f 87 above
 	hookAddr_DirectInput8 = { {0x00C019EC, baseHandle + 0x00800B0C } };		// Code | 56 6a 00 8d b7 80 00 00 00 56 (we want 6 bytes after)
 	hookBackAddr_DirectInput8 = { {0x00C019F1, baseHandle + 0x00800B11 } };	// Code | 56 6a 00 8d b7 80 00 00 00 56 (we want 11 bytes after)
 	xinputModule = { {0x01360e98, baseHandle + 0x00F61E98 } };				// Code | 56 6a 00 8d b7 80 00 00 00 56 68 ? ? ? ? 68 00 08 00 00 50 (we want the static variable set at the end)
@@ -82,6 +94,10 @@ void Offsets::Initialize() {
 	ptr_InvalidInputTreeRootCheck = { {0x0092DB50, baseHandle + 0x00570130} };
 	ptr_InvalidInputTreeRootJmpBck = { {0x0092DB58, baseHandle + 0x00570138} };
 	ptr_InvalidInputTreeRootEmptyJmpBck = { {0x0092DBF0, baseHandle + 0x005701D0} };
+	// Input manager "lost focus" event. Tells the menus the game lost focus, and a song pauses on it.
+	// Every automatic pause goes through here: the window losing focus, and a Real Tone Cable being added or removed.
+	// Pausing by hand doesn't.
+	func_FocusLostEvent = { {0x005E2D60, baseHandle + 0x001E3D50} };				// Code | 55 8b ec 8b 55 08 8b 82 0c 01 00 00 83 ec 14 81 c2 08 01 00 00 (start of function)
 	ptr_IsWindowInFocus = { {0x1251A78, baseHandle + 0x00E52A78} };						// Static Memory | 00 00 00 80 01 00 00 00 04 00 00 00 01 00 00 00 (second variable)
 	ptr_WindowNotInFocusValue = { {0xEC5D46, baseHandle + 0x00AC5496} };    // Code | c6 05 78 2a 02 01 00 (we want to change that 00 to an 01).
 
@@ -179,6 +195,14 @@ void Offsets::Initialize() {
 	func_showBanner = { {0x007524A0, baseHandle + 0x00352F80} };			// Code | Target of the e8 above
 	ptr_assetLoaderStepCall = { {0x0090ADF2, baseHandle + 0x00509A02} };				// Code | 83 be 84 00 00 00 00 74 1e 56 e8 ? ? ? ? 56 e8 ? ? ? ? 84 c0 75 06 56 e8 (the last e8)
 	func_assetLoaderStep = { {0x0090B570, baseHandle + 0x0050A180} };				// Code | Target of the e8 above. stdcall(this), returns AL = made progress
+
+	ptr_renderer = { {0x01360AF0, baseHandle + 0x00F61AF0} };				// Static Memory | a1 ? ? ? ? 8d 4e 3c 51 (the a1, in the display settings getter; flags at +0x910)
+	// Four stereo to mono conversions in a row, 0x30 apart: 8 bit, 16 bit, 32 bit (and 24 bit), 32 bit float. cdecl (to, from, frames)
+	func_stereoToMono8 = { {0x00E712F0, baseHandle + 0x00A70320} };		// Code | 8a 11 88 10 40 83 c1 02 (function starts 0x14 before)
+	func_stereoToMono16 = { {0x00E71320, baseHandle + 0x00A70350} };		// Code | 66 8b 31 66 89 30 83 c0 02 (function starts 0x14 before)
+	func_stereoToMono32 = { {0x00E71350, baseHandle + 0x00A70380} };		// Code | 8b 31 89 30 83 c0 04 83 c1 08 (function starts 0x14 before)
+	func_stereoToMonoFloat = { {0x00E71380, baseHandle + 0x00A703B0} };	// Code | d9 01 83 c0 04 d9 58 fc (function starts 0x13 before)
+	ptr_iniSettings = { {0x0138ABF0, baseHandle + 0x00F8BBF0} };			// Static Memory | c7 05 ? ? ? ? 01 01 00 00 66 89 0d (the c7 05's address, in the settings getter)
 }
 
 namespace Offsets { // Addresses for pre-2021 patch are in the comments

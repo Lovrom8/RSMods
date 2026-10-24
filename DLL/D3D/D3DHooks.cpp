@@ -27,6 +27,7 @@ namespace {
 		bool customHighwayGutter = false;
 		NoteColorMode noteColorMode = NoteColorMode::Default;
 		bool separateNoteColors = false;
+		bool useExactColors = false;
 		bool solidNoteColorRandom = false;
 		bool greenScreenWall = false;
 		bool fretless = false;
@@ -64,6 +65,7 @@ namespace {
 		cached.customHighwayGutter = !Settings::ReturnNotewayColor("CustomHighwayGutter").empty();
 		cached.noteColorMode = Settings::GetNoteColorMode();
 		cached.separateNoteColors = Settings::IsOn(Setting::SeparateNoteColors);
+		cached.useExactColors = Settings::IsOn(Setting::UseExactColors);
 		cached.solidNoteColorRandom = Settings::ReturnSettingValue(Setting::SolidNoteColor) == "random";
 		cached.greenScreenWall = Settings::IsOn(Setting::GreenScreenWallEnabled);
 		cached.fretless = Settings::IsOn(Setting::FretlessModeEnabled);
@@ -768,6 +770,14 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 
 		// Color notes like strings (SameAsStrings) || Use Custom Note Color Scheme (Custom)
 		if (settings.noteColorMode == NoteColorMode::SameAsStrings || (settings.separateNoteColors && settings.noteColorMode == NoteColorMode::Custom)) {
+			const bool isNoteHead = IsToBeRemoved(sevenstring, current) || IsExtraRemoved(noteModifiers, currentThicc);
+
+			// Use Exact Colors: the game's note color ramp is still bound here, so read it once and rebuild our textures from it.
+			// Done before picking the texture below, since rebuilding replaces it.
+			if (isNoteHead && settings.useExactColors && D3D::CaptureNoteColorRamp(pDevice)) {
+				D3D::GenerateTextures(pDevice, D3D::Strings);
+				D3D::GenerateTextures(pDevice, D3D::Notes);
+			}
 
 			// Color notes like string colors
 			LPDIRECT3DTEXTURE9 textureToUseOnNotes = customStringColorTexture;
@@ -777,7 +787,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 				textureToUseOnNotes = customNoteColorTexture;
 
 			// Change all pieces of note head's textures
-			if (IsToBeRemoved(sevenstring, current) || IsExtraRemoved(noteModifiers, currentThicc))  
+			if (isNoteHead)
 				pDevice->SetTexture(1, textureToUseOnNotes);
 
 			// Colors for note stems (part below the note), bends, slides, and accents

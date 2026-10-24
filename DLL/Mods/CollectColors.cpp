@@ -445,3 +445,134 @@ void CollectColors::SetColors(RSColor color) {
 
 	RGB2HSL(R, G, B, H, S, L);
 }
+
+// Use Exact Colors
+
+namespace {
+	float WrapHue(float hue) {
+		hue = fmodf(hue, 360.0f);
+
+		if (hue < 0.0f)
+			hue += 360.0f;
+
+		return hue;
+	}
+
+	float Clamp01(float value) {
+		if (value < 0.0f) return 0.0f;
+		if (value > 1.0f) return 1.0f;
+		return value;
+	}
+}
+
+/// <summary>
+/// Convert RGB to HSL, keeping the hue as a float.
+/// </summary>
+CollectColors::HSLColor CollectColors::ToHSL(const RSColor& color) {
+	const float maxVal = Max(color.r, color.g, color.b);
+	const float minVal = Min(color.r, color.g, color.b);
+	const float delta = maxVal - minVal;
+
+	HSLColor out;
+	out.l = (maxVal + minVal) / 2.0f;
+
+	if (delta <= 0.0f) // Grey, so there is no hue or saturation.
+		return out;
+
+	out.s = (out.l <= 0.5f) ? delta / (maxVal + minVal) : delta / (2.0f - maxVal - minVal);
+
+	float hue;
+	if (color.r == maxVal)
+		hue = (color.g - color.b) / delta;
+	else if (color.g == maxVal)
+		hue = 2.0f + (color.b - color.r) / delta;
+	else
+		hue = 4.0f + (color.r - color.g) / delta;
+
+	out.h = WrapHue(hue * 60.0f);
+	return out;
+}
+
+/// <summary>
+/// Convert HSL to RGB. Any hue is accepted (it's wrapped), and saturation / lightness are clamped to [0, 1].
+/// </summary>
+RSColor CollectColors::FromHSL(const HSLColor& color) {
+	const float s = Clamp01(color.s);
+	const float l = Clamp01(color.l);
+
+	if (s <= 0.0f)
+		return RSColor(l, l, l);
+
+	const float q = (l < 0.5f) ? l * (1.0f + s) : l + s - l * s;
+	const float p = 2.0f * l - q;
+	const float h = WrapHue(color.h) / 360.0f;
+
+	auto channel = [p, q](float t) {
+		if (t < 0.0f) t += 1.0f;
+		if (t > 1.0f) t -= 1.0f;
+
+		if (t < 1.0f / 6.0f) return p + (q - p) * 6.0f * t;
+		if (t < 0.5f) return q;
+		if (t < 2.0f / 3.0f) return p + (q - p) * (2.0f / 3.0f - t) * 6.0f;
+		return p;
+	};
+
+	return RSColor(channel(h + 1.0f / 3.0f), channel(h), channel(h - 1.0f / 3.0f));
+}
+
+/// <summary>
+/// Move a color from one color scheme to another. "anchor" is the color the pixel was made for, "target" is the color we want instead.
+/// The hue moves by the anchor -> target hue difference, the saturation scales by target / anchor, and the lightness is remapped
+/// so the anchor's lightness lands on the target's (black stays black, white stays white).
+/// When target == anchor the pixel comes back unchanged.
+/// </summary>
+/// <param name="pixel"> - Color to move</param>
+/// <param name="anchor"> - The color scheme the pixel belongs to</param>
+/// <param name="target"> - The color scheme we want the pixel to belong to</param>
+RSColor CollectColors::Recolor(const RSColor& pixel, const RSColor& anchor, const RSColor& target) {
+	const HSLColor p = ToHSL(pixel);
+	const HSLColor a = ToHSL(anchor);
+	const HSLColor t = ToHSL(target);
+
+	HSLColor out;
+	out.h = p.h + (t.h - a.h);
+	out.s = (a.s > 0.0001f) ? p.s * (t.s / a.s) : t.s;
+
+	if (p.l <= a.l)
+		out.l = (a.l > 0.0f) ? p.l * (t.l / a.l) : t.l;
+	else
+		out.l = (a.l < 1.0f) ? t.l + (p.l - a.l) * (1.0f - t.l) / (1.0f - a.l) : t.l;
+
+	return FromHSL(out);
+}
+
+/// <summary>
+/// How different two colors look. Hue only counts as much as both colors are saturated, so greys match on lightness alone.
+/// </summary>
+float CollectColors::ColorDistance(const RSColor& a, const RSColor& b) {
+	const HSLColor x = ToHSL(a);
+	const HSLColor y = ToHSL(b);
+
+	float hueDelta = fabsf(x.h - y.h);
+	if (hueDelta > 180.0f)
+		hueDelta = 360.0f - hueDelta;
+
+	return 2.0f * (hueDelta / 180.0f) * (std::min)(x.s, y.s) + fabsf(x.s - y.s) + fabsf(x.l - y.l);
+}
+
+/// <returns>Index of the candidate closest to target. Ties go to "preferred".</returns>
+size_t CollectColors::NearestColor(const RSColor& target, const ColorList& candidates, size_t preferred) {
+	size_t best = preferred;
+	float bestDistance = ColorDistance(target, candidates[preferred]);
+
+	for (size_t idx = 0; idx < candidates.size(); idx++) {
+		const float distance = ColorDistance(target, candidates[idx]);
+
+		if (distance < bestDistance) {
+			best = idx;
+			bestDistance = distance;
+		}
+	}
+
+	return best;
+}

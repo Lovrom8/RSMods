@@ -6,4 +6,6 @@ namespace QualityOfLife {
 	void StopTwoRSInstances();
 	void LowerNoteDetectionFloor();
 	void RetryFastLoadUponSoftLock();
+	void FixNonExclusiveFullscreen();
+	void SupportMonoToStereoChannel();
 }

@@ -103,6 +103,7 @@ namespace RSMods
                     { ReadSettings.ExtendedRangeFixBassTuningIdentifier, CreateDefaultOnOldINI(ReadSettings.ExtendedRangeFixBassTuningIdentifier, "off") }, // Fix bad chart's tuning being wrong for strings 4 and 5.
                     { ReadSettings.CustomStringColorNumberIndetifier, CreateDefaultOnOldINI(ReadSettings.CustomStringColorNumberIndetifier, "0") }, // Custom String Colors (0 - Default, 1 - ZZ, 2 - Custom Colors)
                     { ReadSettings.SeparateNoteColorsIdentifier, CreateDefaultOnOldINI(ReadSettings.SeparateNoteColorsIdentifier, "off") }, // Should we use Separate Note Colors?
+                    { ReadSettings.UseExactColorsIdentifier, CreateDefaultOnOldINI(ReadSettings.UseExactColorsIdentifier, "off") }, // Shade custom string / note colors the way the game shades its own colors (off = original RSMods shading)
                     //{ ReadSettings.DiscoModeIdentifier, CreateDefaultOnOldINI(ReadSettings.DiscoModeIdentifier, "off") }, // Disco Mode Enabled / Disabled
                     { ReadSettings.RemoveHeadstockIdentifier, CreateDefaultOnOldINI(ReadSettings.RemoveHeadstockIdentifier, "off") }, // Remove Headstock Enabled / Disabled
                     { ReadSettings.RemoveSkylineIdentifier, CreateDefaultOnOldINI(ReadSettings.RemoveSkylineIdentifier, "off") }, // Remove Skyline Enabled / Disabled

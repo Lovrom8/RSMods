@@ -9,6 +9,7 @@
 #include "Keybindings.hpp"
 #include "Mods/ExtendedRangeMode.hpp"
 #include "Mods/CustomSongTitles.hpp"
+#include "Mods/ExtraSongLists.hpp"
 #include "Mods/Enumeration.hpp"
 #include "Mods/EnumerationDrain.hpp"
 #include "Mods/JsonNumberHash.hpp"

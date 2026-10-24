@@ -35,6 +35,97 @@ uintptr_t GetStringColor(uintptr_t stringnum, int state) {
 	return currentStringColor;
 }
 
+namespace {
+	// Every string state Use Exact Colors writes.
+	constexpr int exactColorStates[] = { Ambient, Enabled, Disabled, Glow, PegsTuning, PegsInTune, PegsNotInTune, Text, BodyNorm, BodyAcc };
+
+	// The game's own string colors, per color mode (0 = normal, 1 = colorblind) and state, saved before anything recolors them.
+	std::map<int, std::array<RSColor, 6>> gameStringColors[2];
+	bool gameStringColorsSaved = false;
+
+	/// <returns>The color mode (0 = normal, 1 = colorblind) the game is using, or -1 if it isn't available yet.</returns>
+	int GetActiveColorMode() {
+		const uintptr_t pointerValue = MemUtil::ReadPtr(Offsets::ptr_stringColor);
+
+		if (!pointerValue)
+			return -1;
+
+		const uintptr_t mode = MemUtil::ReadPtr(pointerValue + 0x348);
+		return mode < 2 ? static_cast<int>(mode) : -1;
+	}
+
+	/// <returns>Pointer to a string color in a specific color mode, or NULL.</returns>
+	uintptr_t GetStringColorInMode(int mode, uintptr_t stringnum, int state) {
+		const uintptr_t pointerValue = MemUtil::ReadPtr(Offsets::ptr_stringColor);
+
+		if (!pointerValue || mode < 0 || mode >= 2)
+			return NULL;
+
+		return MemUtil::ReadPtr(pointerValue + (mode * 0xA8 + stringnum) * 0x4 + state);
+	}
+}
+
+/// <summary>
+/// Save the game's own string colors (both color modes), once. Use Exact Colors builds every string color from these,
+/// so it has to happen before anything recolors the strings.
+/// </summary>
+void ERMode::SaveGameStringColors() {
+	if (gameStringColorsSaved)
+		return;
+
+	std::map<int, std::array<RSColor, 6>> saved[2];
+
+	for (int mode = 0; mode < 2; mode++) {
+		for (int state : exactColorStates) {
+			for (int strIndex = 0; strIndex < 6; strIndex++) {
+				const uintptr_t color = GetStringColorInMode(mode, strIndex, state);
+
+				if (!color) // Not loaded yet. Try again next time.
+					return;
+
+				saved[mode][state][strIndex] = *(RSColor*)color;
+			}
+		}
+	}
+
+	gameStringColors[0] = std::move(saved[0]);
+	gameStringColors[1] = std::move(saved[1]);
+	gameStringColorsSaved = true;
+}
+
+/// <summary>
+/// Use Exact Colors: set every string state from the user's string colors, shaded the way the game shades its own colors.
+/// Each state starts from the game's color for the string whose color is closest to the user's, and is moved to the user's color
+/// (see CollectColors::Recolor). Picking one of the game's own string colors gives exactly the game's colors.
+/// </summary>
+/// <param name="colorBlind"> - Use the colorblind (Extended Range) string colors from the INI</param>
+void ERMode::SetExactColors(bool colorBlind) {
+	const int mode = GetActiveColorMode();
+
+	if (!gameStringColorsSaved || mode < 0)
+		return;
+
+	const std::vector<RSColor> targets = Settings::GetStringColors(colorBlind);
+	if (targets.size() < 6)
+		return;
+
+	const auto& gameColors = gameStringColors[mode];
+	const ColorList gameEnabled(gameColors.at(Enabled).begin(), gameColors.at(Enabled).end());
+
+	for (int state : exactColorStates) {
+		std::vector<uintptr_t> strings;
+		InitStrings(strings, state);
+
+		for (int strIndex = 0; strIndex < 6; strIndex++) {
+			if (strings[strIndex] == NULL)
+				return;
+
+			const size_t templateString = CollectColors::NearestColor(targets[strIndex], gameEnabled, strIndex);
+			*(RSColor*)strings[strIndex] = CollectColors::Recolor(gameColors.at(state)[templateString], gameEnabled[templateString], targets[strIndex]);
+		}
+	}
+}
+
 /// <summary>
 /// Store backup of original string color.
 /// </summary>
@@ -128,6 +219,9 @@ std::vector<std::vector<RSColor>> defaultColors;
 void ERMode::Toggle7StringMode() {
 	std::vector<uintptr_t> stringsTest, stringsGlow, stringsDisabled, stringsAmb, stringsEnabled, stringsPegInTune, stringsPegNotInTune, pegsTuning, stringsText, stringsPart, stringsBodyNorm, stringsBodyAcc, stringsBodyPrev;
 
+	// Always, even with Use Exact Colors off, so turning it on later still has the game's colors to work from.
+	SaveGameStringColors();
+
 	// Get the original values for the strings.
 	InitStrings(stringsGlow, Glow);
 	InitStrings(stringsDisabled, Disabled);
@@ -171,6 +265,11 @@ void ERMode::Toggle7StringMode() {
 				SetColors(pegsTuning, colorsPegsTuning);
 				break;
 			case StringColorMode::Custom: // User wants their own custom (ER) colors
+				if (Settings::IsOn(Setting::UseExactColors)) {
+					SetExactColors(true);
+					break;
+				}
+
 				SetColors(stringsEnabled, "Enabled_CB");
 				SetColors(stringsGlow, "Glow_CB");
 				SetColors(stringsDisabled, "Disabled_CB");
@@ -197,7 +296,9 @@ void ERMode::Toggle7StringMode() {
 			ColorsSaved = true;
 		}
 
-		if (Settings::GetStringColorMode() == StringColorMode::Custom) { // User wants their own custom (non-ER) colors
+		if (Settings::GetStringColorMode() == StringColorMode::Custom && Settings::IsOn(Setting::UseExactColors)) // Same, shaded like the game's colors
+			SetExactColors(false);
+		else if (Settings::GetStringColorMode() == StringColorMode::Custom) { // User wants their own custom (non-ER) colors
 			SetColors(stringsEnabled, "Enabled_N");
 			SetColors(stringsGlow, "Glow_N");
 			SetColors(stringsDisabled, "Disabled_N");

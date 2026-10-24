@@ -17,8 +17,8 @@ namespace Offsets {
 	inline VersioningStruct<uintptr_t> ptr_tuning;
 
 	// Ultrawide: Riff Repeater post-effects state substitution (Mods/UltrawideRRDim.cpp).
-	inline VersioningStruct<uintptr_t> hook_loftPostFxSetState;   // CALL rel32 inside LoftManager::SetLoftState
-	inline VersioningStruct<uintptr_t> func_loftPostFxSetState;   // LoftPostEffectsManager::SetLoftState, the call's target
+	inline VersioningStruct<uintptr_t> hook_loftPostFxSetState;   // CALL rel32 inside the loft manager's "set state"
+	inline VersioningStruct<uintptr_t> func_loftPostFxSetState;   // The loft post-effects manager's "set state", the call's target
 	extern std::vector<unsigned int> ptr_tuningOffsets;
 
 	// True Tuning
@@ -87,6 +87,12 @@ namespace Offsets {
 	extern const char* patch_ListSpaces;
 	extern const char* patch_ListNumbers;
 	extern const char* patch_SprintfArgs;
+
+	// Non-Stop Play: extra song lists (Mods/ExtraSongLists.cpp)
+	inline VersioningStruct<uintptr_t> ptr_songListService;				// Static Memory | Song list service; +0x10 holds the song lists object, whose +0x0C is the array of lists
+	inline VersioningStruct<uintptr_t> ptr_nspSongListIdsLoop, ptr_nspSongListIdsLoopTop, ptr_nspSongListIdsLoopExit;
+	inline VersioningStruct<uintptr_t> ptr_nspSongListLabelsLoop, ptr_nspSongListLabelsLoopTop, ptr_nspSongListLabelsLoopExit;
+	inline VersioningStruct<uintptr_t> ptr_nspPoolSongListSwitch, ptr_nspPoolDispatch, ptr_nspPoolSongList, ptr_nspPoolEmpty;
 
 	// Disable Controllers
 	inline VersioningStruct<uintptr_t> hookAddr_DirectInput8, hookBackAddr_DirectInput8;
@@ -183,6 +189,7 @@ namespace Offsets {
 	inline VersioningStruct<uintptr_t> ptr_InvalidInputTreeRootEmptyJmpBck;
 
 	// Audio In Background
+	inline VersioningStruct<uintptr_t> func_FocusLostEvent;
 	inline VersioningStruct<uintptr_t> ptr_IsWindowInFocus;
 	inline VersioningStruct<uintptr_t> ptr_WindowNotInFocusValue;
 
@@ -280,6 +287,19 @@ namespace Offsets {
 	inline VersioningStruct<uintptr_t> func_showBanner;
 	inline VersioningStruct<uintptr_t> ptr_assetLoaderStepCall;
 	inline VersioningStruct<uintptr_t> func_assetLoaderStep;
+
+	// Non-Exclusive Fullscreen: the renderer, and its current display flags (0x80 non-exclusive fullscreen, 0x04 exclusive fullscreen)
+	inline VersioningStruct<uintptr_t> ptr_renderer;
+	inline constexpr unsigned int rendererDisplayFlagsOffset = 0x910;
+
+	// MonoToStereoChannel: the audio input's stereo to mono conversions (used when a stereo input device is opened as mono, they keep the left channel),
+	// and the Rocksmith.ini settings as the game loaded them (MonoToStereoChannel at +0x10)
+	inline VersioningStruct<uintptr_t> func_stereoToMono8;
+	inline VersioningStruct<uintptr_t> func_stereoToMono16;
+	inline VersioningStruct<uintptr_t> func_stereoToMono32;
+	inline VersioningStruct<uintptr_t> func_stereoToMonoFloat;
+	inline VersioningStruct<uintptr_t> ptr_iniSettings;
+	inline constexpr unsigned int iniSettingsMonoToStereoChannelOffset = 0x10;
 
 	// Runtime data.
 	inline uintptr_t runtimeVersionStructValue;

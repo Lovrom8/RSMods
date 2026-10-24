@@ -3,9 +3,9 @@
 
 namespace {
 	// Decoded from the September 2022 remaster; the state id offset is the one the game reads
-	// in LoftManager::PushLoftState (0x00775550) at +0x14.
-	constexpr unsigned int off_state_id = 0x14;         // GRLoftState +0x14: state ID
-	constexpr unsigned int off_manager_fromState = 0x0C; // LoftPostEffectsManager +0x0C: the state a transition starts from
+	// when the loft manager pushes a new state (0x00775550), at +0x14.
+	constexpr unsigned int off_state_id = 0x14;         // Loft state +0x14: state ID
+	constexpr unsigned int off_manager_fromState = 0x0C; // Loft post-effects manager +0x0C: the state a transition starts from
 	constexpr unsigned int riffRepeaterStateId = 0x13;
 
 	constexpr unsigned char opcode_callRel32 = 0xE8;
