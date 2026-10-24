@@ -20,6 +20,9 @@
 //     opening them again.
 //   - The native "Enumerating downloadable content..." banner is replaced with a progress bar (Menu::RenderImGuiMenu).
 //   - The background asset loader handles more than one load per tick while the scan runs (AssetLoadDrain).
+//   - Background threads open each queued psarc ahead of the game (warm-up), and the game thread only installs files that are
+//     warm. A real-time scanner reads a file on its first open; on an HDD that was 80-900 ms per package, now paid off the game
+//     thread instead of once per frame on it. The tick's own install call is held while its next file isn't warm.
 //
 // Based on ffio's private EnumerationDrain. Every address was re-checked on both supported builds.
 //
@@ -32,8 +35,10 @@
 //   FastEnumerationSkipShaderScan       on/off, skip the per-package shader cache scan (default on)
 //   FastEnumerationStreamLimit          CRT stream cap, 512..2048 (default 2048)
 //   FastEnumerationFileCeiling          open CRT handles at which the scan pauses (default 1792)
-//   FastEnumerationPrefetchKB           read-ahead per package on a background thread (default 128, 0 off)
+//   FastEnumerationPrefetchKB           warm-up read per package on the background threads (default 128, 0 turns the warm-up off)
 //   FastEnumerationPrefetchHddOnly      on/off, only read ahead when a DLC volume is a spinning disk (default off)
+//   FastEnumerationBootWarmup           on/off, open every psarc in the dlc folder at game start, in the background, so a real-time
+//                                       scanner has checked them before the first scan (default on)
 //   FastEnumerationEarlyScan            on/off, scan at the DLC service's first tick instead of after the profile screens (default off)
 //   FastEnumerationEarlyScanMax         largest library the early scan runs for (default 1500)
 //   FastEnumerationBootBudgetMs / FastEnumerationBootInstallsPerTick   budget and installs per frame for the early scan (default 30 / 32)

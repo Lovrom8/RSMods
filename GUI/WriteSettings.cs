@@ -263,6 +263,7 @@ namespace RSMods
                     { ReadSettings.FastEnumerationFileCeilingIdentifier, CreateDefaultOnOldINI(ReadSettings.FastEnumerationFileCeilingIdentifier, "1792") }, // Open CRT handles at which the scan pauses.
                     { ReadSettings.FastEnumerationPrefetchKBIdentifier, CreateDefaultOnOldINI(ReadSettings.FastEnumerationPrefetchKBIdentifier, "128") }, // Read-ahead per package on a background thread, in KB. 0 turns it off.
                     { ReadSettings.FastEnumerationPrefetchHddOnlyIdentifier, CreateDefaultOnOldINI(ReadSettings.FastEnumerationPrefetchHddOnlyIdentifier, "off") }, // Only read ahead when a DLC volume is a spinning disk (or won't say).
+                    { ReadSettings.FastEnumerationBootWarmupIdentifier, CreateDefaultOnOldINI(ReadSettings.FastEnumerationBootWarmupIdentifier, "on") }, // Open every DLC file in the background at game start, so a real-time scanner checks them before the scan.
                     { ReadSettings.FastEnumerationEarlyScanIdentifier, CreateDefaultOnOldINI(ReadSettings.FastEnumerationEarlyScanIdentifier, "off") }, // Scan at the title screen instead of after the profile screens.
                     { ReadSettings.FastEnumerationEarlyScanMaxIdentifier, CreateDefaultOnOldINI(ReadSettings.FastEnumerationEarlyScanMaxIdentifier, "1500") }, // Largest library the early scan runs for.
                     { ReadSettings.FastEnumerationBootBudgetMsIdentifier, CreateDefaultOnOldINI(ReadSettings.FastEnumerationBootBudgetMsIdentifier, "30") }, // Time per frame for the early scan, in ms.

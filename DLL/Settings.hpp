@@ -56,6 +56,7 @@ namespace Settings {
 		inline constexpr char FastEnumerationFileCeiling[]          = "FastEnumerationFileCeiling";
 		inline constexpr char FastEnumerationPrefetchKB[]           = "FastEnumerationPrefetchKB";
 		inline constexpr char FastEnumerationPrefetchHddOnly[]      = "FastEnumerationPrefetchHddOnly";
+		inline constexpr char FastEnumerationBootWarmup[]           = "FastEnumerationBootWarmup";
 		inline constexpr char FastEnumerationEarlyScan[]            = "FastEnumerationEarlyScan";
 		inline constexpr char FastEnumerationEarlyScanMax[]         = "FastEnumerationEarlyScanMax";
 		inline constexpr char FastEnumerationBootBudgetMs[]         = "FastEnumerationBootBudgetMs";

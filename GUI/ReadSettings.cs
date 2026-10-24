@@ -34,7 +34,7 @@ namespace RSMods
                              AllowAudioInBackground, BypassTwoRTCMessageBox, LinearRiffRepeater, UseAlternativeOutputSampleRate, AllowLooping, AllowRewind, FixOculusCrash, FixBrokenTones, UseCustomNSPTimer, DisplayCurrentAccuracy, PreventMidSongPause, RemoveFingerprints, Ultrawide, FastProfileLoadAndSave, FastEnumeration,
 
                              // Fast Enumeration tuning (hidden, INI only)
-                             FastEnumerationInstallsPerTick, FastEnumerationLoadsPerTick, FastEnumerationBudgetMs, FastEnumerationMenuBudgetMs, FastEnumerationSkipUnchanged, FastEnumerationSkipShaderScan, FastEnumerationStreamLimit, FastEnumerationFileCeiling, FastEnumerationPrefetchKB, FastEnumerationPrefetchHddOnly, FastEnumerationEarlyScan, FastEnumerationEarlyScanMax, FastEnumerationBootBudgetMs, FastEnumerationBootInstallsPerTick, FastEnumerationAssetLoadsPerTick,
+                             FastEnumerationInstallsPerTick, FastEnumerationLoadsPerTick, FastEnumerationBudgetMs, FastEnumerationMenuBudgetMs, FastEnumerationSkipUnchanged, FastEnumerationSkipShaderScan, FastEnumerationStreamLimit, FastEnumerationFileCeiling, FastEnumerationPrefetchKB, FastEnumerationPrefetchHddOnly, FastEnumerationBootWarmup, FastEnumerationEarlyScan, FastEnumerationEarlyScanMax, FastEnumerationBootBudgetMs, FastEnumerationBootInstallsPerTick, FastEnumerationAssetLoadsPerTick,
 
 
                              // String Colors
@@ -184,6 +184,7 @@ namespace RSMods
             FastEnumerationFileCeilingIdentifier         = "FastEnumerationFileCeiling = ",
             FastEnumerationPrefetchKBIdentifier          = "FastEnumerationPrefetchKB = ",
             FastEnumerationPrefetchHddOnlyIdentifier     = "FastEnumerationPrefetchHddOnly = ",
+            FastEnumerationBootWarmupIdentifier          = "FastEnumerationBootWarmup = ",
             FastEnumerationEarlyScanIdentifier           = "FastEnumerationEarlyScan = ",
             FastEnumerationEarlyScanMaxIdentifier        = "FastEnumerationEarlyScanMax = ",
             FastEnumerationBootBudgetMsIdentifier        = "FastEnumerationBootBudgetMs = ",
@@ -559,6 +560,8 @@ namespace RSMods
                     return FillSettingVariable(FastEnumerationPrefetchKBIdentifier, SettingType.STRING, currentLine, out FastEnumerationPrefetchKB);
                 if (IdentifierIsFound(currentLine, FastEnumerationPrefetchHddOnlyIdentifier, identifierToGrab))
                     return FillSettingVariable(FastEnumerationPrefetchHddOnlyIdentifier, SettingType.ON_OFF, currentLine, out FastEnumerationPrefetchHddOnly);
+                if (IdentifierIsFound(currentLine, FastEnumerationBootWarmupIdentifier, identifierToGrab))
+                    return FillSettingVariable(FastEnumerationBootWarmupIdentifier, SettingType.ON_OFF, currentLine, out FastEnumerationBootWarmup);
                 if (IdentifierIsFound(currentLine, FastEnumerationEarlyScanIdentifier, identifierToGrab))
                     return FillSettingVariable(FastEnumerationEarlyScanIdentifier, SettingType.ON_OFF, currentLine, out FastEnumerationEarlyScan);
                 if (IdentifierIsFound(currentLine, FastEnumerationEarlyScanMaxIdentifier, identifierToGrab))

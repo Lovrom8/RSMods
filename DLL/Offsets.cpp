@@ -168,6 +168,7 @@ void Offsets::Initialize() {
 	func_dlcServiceLoadTick = { {0x008C6FD0, baseHandle + 0x004C6570} };				// Code | First e8 in func_dlcServiceTick (8b f1 e8 ? ? ? ? e8, the first e8). thiscall, service in ECX
 	func_dlcScanInstallNext = { {0x008C9F20, baseHandle + 0x004C9580} };				// Code | Second e8 in func_dlcServiceTick. Service in ESI, no stack args
 	func_dlcScanQueueRemoveLast = { {0x008CA8B0, baseHandle + 0x004C9F10} };				// Code | 8d 86 e0 00 00 00 89 5d fc e8 (the e8 target) in func_dlcScanInstallNext. Vector in EAX
+	func_fileExistsCheck = { {0x00499C30, baseHandle + 0x0009A470} };				// Code | 55 8b ec 8b 4d 0c 33 c0 85 c9 74 02 8b 01 50 8b 45 08 50 ff 15 (start of function). The VFS existence check: calls the native access probe through a pointer (the ff 15 at +0x13), which opens the file and closes it again
 	ptr_packageList = { {0x0135F51C, baseHandle + 0x00F6051C} };					// Static Memory | a1 ? ? ? ? 53 8b 18 3b 58 04 74 ? 56 8b ff 8b 03 80 78 38 00 (the a1 operand)
 	ptr_packageLoadQueue = { {0x0135F520, baseHandle + 0x00F60520} };				// Static Memory | 83 be d0 00 00 00 00 75 ? e8 ? ? ? ? 8b 15 ? ? ? ? (the 8b 15 operand) in func_dlcServiceLoadTick
 	ptr_dlcInstallRegisterCall = { {0x008CA7EA, baseHandle + 0x004C9E4A} };		// Code | 8b c6 32 c9 c6 45 fc 0a e8 (the e8) - the package install calling func_registerPackage

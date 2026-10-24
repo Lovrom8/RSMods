@@ -8,7 +8,6 @@
 #include <intrin.h>
 #include <memory>
 #include <string_view>
-#include <winioctl.h>
 
 namespace {
 	// The DLC service object, as its tick and install step use it.
@@ -264,6 +263,48 @@ namespace {
 		}
 	}
 
+	// ---- Existence check timing ----
+	// The install step first asks the VFS whether the psarc exists. The check does that through a pointer
+	// the VFS fills in at startup, to a probe that opens the file read-only and closes it again. On a tester's HDD library under
+	// Defender that open was 87% of the game thread's time, before any read. Its CALL [ptr] is pointed at a slot of ours, so the
+	// check is timed on its own and still calls whatever the VFS installed, read at every call (so it doesn't matter whether the
+	// VFS has started yet). Timed only during drained installs, on the game thread.
+
+	constexpr unsigned char existsPrologue[] = { 0x55, 0x8B, 0xEC, 0x8B, 0x4D, 0x0C, 0x33, 0xC0, 0x85, 0xC9, 0x74, 0x02, 0x8B, 0x01, 0x50, 0x8B, 0x45, 0x08, 0x50, 0xFF, 0x15 };
+	uintptr_t* existsGameSlot = nullptr;	// The VFS's pointer.
+	uintptr_t existsHookSlot = 0;			// What the patched CALL reads.
+	bool existsHooked = false;
+	DWORD gameThreadId = 0;
+	bool timingInstall = false;
+	long long existsTicks = 0;				// Time in the check during the current drained install.
+	unsigned int existsCalls = 0;
+
+	using ExistsProbeFn = int(__cdecl*)(const char* path, int mode);
+
+	int __cdecl ExistsProbeTimed(const char* path, int mode) {
+		const auto original = reinterpret_cast<ExistsProbeFn>(*existsGameSlot);
+		if (!timingInstall || GetCurrentThreadId() != gameThreadId)
+			return original(path, mode);
+		const long long start = Now();
+		const int result = original(path, mode);
+		existsTicks += Now() - start;
+		++existsCalls;
+		return result;
+	}
+
+	bool HookExistsCheck() {
+		const uintptr_t func = Offsets::func_fileExistsCheck;
+		if (!func || MemUtil::IsBadReadPtr(reinterpret_cast<void*>(func)) || memcmp(reinterpret_cast<const void*>(func), existsPrologue, sizeof(existsPrologue)) != 0) {
+			LOG_WARNING("(ENUMERATION) Existence check doesn't look as expected, it isn't timed" << std::endl);
+			return false;
+		}
+		const uintptr_t operand = func + sizeof(existsPrologue);
+		existsGameSlot = *reinterpret_cast<uintptr_t* const*>(operand);
+		existsHookSlot = reinterpret_cast<uintptr_t>(&ExistsProbeTimed);
+		const uintptr_t slot = reinterpret_cast<uintptr_t>(&existsHookSlot);
+		return MemUtil::PatchAdr(reinterpret_cast<LPVOID>(operand), &slot, sizeof(slot));
+	}
+
 	// ---- Native banner ----
 	// The game's notification banner function (cdecl, the caller pops 0x30 bytes). The callee constructs an out-string at
 	// ESI (inline, empty) and returns it in EAX, which the caller copies. It also owns a by-value string arg at [esp+0x1C] and
@@ -272,6 +313,11 @@ namespace {
 	bool bannerHooked = false;
 	int32_t bannerOriginalRel = 0;
 	unsigned int bannerSkips = 0;
+
+	// The tick's own install step call, held while its next file isn't warm (see "Holding the game's own install").
+	constexpr uintptr_t stockInstallCallOffset = 0x11;
+	bool stockInstallHooked = false;
+	int32_t stockInstallOriginalRel = 0;
 
 	extern "C" void __cdecl EnumNoteBannerSkip() {
 		if (++bannerSkips == 1)
@@ -504,50 +550,66 @@ namespace {
 		return cyclesPerMs > 0.0 ? cycles / cyclesPerMs : -1.0;
 	}
 
-	// ---- Read-ahead for slow disks ----
-	// The package install reads the head of every psarc twice (header and TOC, then the appid entry), a seek each on an HDD:
-	// a tester's 2800 package HDD library spent 12.5 ms per install there against 0.12 ms on an SSD. A background thread reads
-	// the first FastEnumerationPrefetchKB of each queued file, in install order, a bounded distance ahead of the game thread, so
-	// both reads hit the OS cache. Forced on an SSD it cost nothing measurable (2756 vs 2713 ms for 844 packages).
+	// ---- Warm-up (read-ahead) ----
+	// The package install first checks that the psarc exists by opening it (GENERIC_READ) and closing it again, then opens it for
+	// real and reads its head twice (header and TOC, then the appid entry). Background threads open each queued file, read its
+	// first FastEnumerationPrefetchKB and close it, in install order, a bounded distance ahead of the game thread, so the game's
+	// own opens and reads find the file already warm. Forced on an SSD it cost nothing measurable (2756 vs 2713 ms for 844 packages).
 	//
-	// Kept out of the game's way on an HDD in three ways. A 2800 package library on a symlinked HDD went from ~4 ms to 100-200 ms
-	// per install once the files were no longer cached, and back to ~4 ms the moment the read-ahead had nothing left to read: the
-	// game thread was waiting in CreateFile behind the read-ahead's own reads, a seek away.
-	//   - The thread runs in background mode (very low I/O priority), so the game's reads are always served first.
-	//   - Files are read in batches, each batch sorted by where its data sits on the disk, so a batch is one sweep, not a seek per file.
-	//     Files the game has already installed are skipped.
-	//   - If installs stay slow anyway, the read-ahead stops for the rest of the scan (BackOffPrefetchIfSlow).
+	// What "warm" has to cover. A 2840 package library, ~1070 official packages on an NVMe SSD and ~1770 CDLC on a symlinked HDD,
+	// with Defender real-time protection on: ~1.5 ms per install while the scan was on the SSD, then 80-900 ms per install from
+	// the first HDD file on, at the same file in two builds. 87% of the game thread's samples were in the existence check's
+	// CreateFile, not in a read; the reads right after it were cheap, the time didn't follow the file size, and the file attribute
+	// lookup just before it took 0.05 ms. A plain cold HDD install measured 12.5 ms. That's an on-access scanner reading the file
+	// on its first open; the result stays with the file, so later opens are cheap. The cost is per first open, so it can only be
+	// moved off the game thread:
+	//   - Several threads open files at once. A single thread used to open a batch of 64 before reading any of them; at ~75 ms per
+	//     scanned open it fell behind the game within one batch and never got ahead again.
+	//   - The game thread waits for its next file to be warm instead of opening it cold (IsNextWarm): the drain's extra installs
+	//     stop for the tick, and the game's own per-tick install is held (StockInstallThunk). Frames keep coming while files warm,
+	//     instead of one 100-900 ms frame per package.
+	//   - Normal I/O priority. The threads are the scan's critical path now, and the game only opens warm files. At background
+	//     priority they'd also queue behind any other process using the same disk.
+	//   - If warm files still install slowly, warming doesn't help on this machine: it stops for the rest of the scan and the game
+	//     installs at its own pace again (BackOffPrefetchIfSlow).
 
 	unsigned int prefetchKb = 128;
 	bool prefetchForced = true;
-	constexpr unsigned int prefetchLead = 256;	// Files ahead of the game thread, bounds the cache use.
-	constexpr unsigned int prefetchBatch = 64;	// Files per disk-order sweep. At most prefetchLead.
-	// Read-ahead only pays off if installs are fast. An HDD install without it measured 12.5 ms, so this many ms per install for
-	// this many progress windows in a row (~1 s each) means the read-ahead is not helping and may be in the way.
+	constexpr unsigned int prefetchLead = 256;		// Files ahead of the game thread, bounds the cache use.
+	constexpr unsigned int prefetchThreads = 8;		// Files being opened at once.
+	// Warm-up threads only open, read into a heap buffer and close. Small stacks keep them out of the way of the large blocks a
+	// profile save needs in the game's 2 GB of address space.
+	constexpr SIZE_T warmupStackSize = 64 * 1024;
+	// The game thread waits at most this long for one file, in case a warm-up thread is stuck (e.g. a network drive). After that
+	// the game opens the file itself, like it would without the warm-up.
+	constexpr double maxWarmWaitMs = 5000.0;
+	// A warm file installs in ~1-2 ms. Warm files averaging this many ms per install for this many progress windows in a row
+	// (~1 s each) means warming isn't what makes installs slow here.
 	constexpr double prefetchBackoffMsPerInstall = 40.0;
 	constexpr unsigned int prefetchBackoffWindows = 2;
 	constexpr unsigned int maxPrefetchErrorLogs = 20;
+	constexpr double slowWarmOpenMs = 50.0;
+	constexpr unsigned int maxSlowWarmOpenLogs = 20;
 
-	// The job owns the path list. The thread and StopPrefetch each drop a reference, so a thread still stuck in ReadFile after
-	// the stop timeout keeps a valid list, and the next scan starts a fresh job.
+	// The job owns the path list. Each thread and StopPrefetch drop a reference, so a thread still stuck in CreateFile or ReadFile
+	// after the stop timeout keeps a valid list, and the next scan starts a fresh job.
 	struct PrefetchJob {
 		std::vector<std::string> paths;		// Install order.
-		// Per file, in install order: when its head was read (QPC ticks), 0 = not yet, -1 = couldn't open or read it.
+		// Per file, in install order: when it was warmed (QPC ticks), 0 = not yet, -1 = couldn't open or read it.
 		std::unique_ptr<std::atomic<long long>[]> readTicks;
 		std::atomic<bool> stop = false;
 		std::atomic<bool> backedOff = false;
-		std::atomic<bool> background = false;	// Got background (low I/O priority) mode.
 		std::atomic<unsigned int> files = 0;
-		std::atomic<unsigned int> skipped = 0;	// Already installed by the time the read-ahead got to them.
+		std::atomic<unsigned int> skipped = 0;	// Already installed by the time a thread got to them.
 		std::atomic<unsigned int> failures = 0;	// Couldn't open or read.
-		std::atomic<unsigned int> unknownPosition = 0;	// Read without a known disk position (not NTFS, resident, no permission).
-		std::atomic<unsigned int> batches = 0;
-		std::atomic<unsigned int> position = 0;	// Install-order index the read-ahead has reached.
-		std::atomic<bool> busy = false;			// Opening or reading a batch (not waiting on the lead).
-		std::atomic<long long> ioTicks = 0;		// Time spent opening and reading.
-		std::atomic<long long> openTicks = 0;	// Of that, opening (and asking where the data is).
+		std::atomic<unsigned int> slowOpens = 0;	// Opens of slowWarmOpenMs or more.
+		std::atomic<unsigned int> next = 0;		// Install-order index of the next file to claim.
+		std::atomic<unsigned int> inFlight = 0;	// Files being opened or read right now.
+		std::atomic<unsigned int> running = 0;	// Threads still running.
+		std::atomic<long long> ioTicks = 0;		// Time spent opening and reading, summed over the threads.
+		std::atomic<long long> openTicks = 0;	// Of that, opening.
 		std::atomic<unsigned long long> bytes = 0;
-		std::atomic<int> refs = 2;
+		std::atomic<int> refs = 1;
 		long long startTicks = 0;
 		std::atomic<long long> endTicks = 0;
 		void Release() {
@@ -556,25 +618,7 @@ namespace {
 		}
 	};
 	PrefetchJob* prefetchJob = nullptr;
-	HANDLE prefetchThread = nullptr;
-
-	struct PrefetchFile {
-		HANDLE handle;
-		unsigned int index;
-		DWORD volume;
-		unsigned long long cluster;	// First cluster of the file's data on its volume. ~0 when unknown.
-	};
-
-	unsigned long long FirstCluster(HANDLE file) {
-		STARTING_VCN_INPUT_BUFFER input{};
-		RETRIEVAL_POINTERS_BUFFER output{};	// Room for one extent. ERROR_MORE_DATA still fills it.
-		DWORD bytes = 0;
-		if (!DeviceIoControl(file, FSCTL_GET_RETRIEVAL_POINTERS, &input, sizeof(input), &output, sizeof(output), &bytes, nullptr) && GetLastError() != ERROR_MORE_DATA)
-			return ~0ull;
-		if (output.ExtentCount == 0 || output.Extents[0].Lcn.QuadPart < 0)
-			return ~0ull;
-		return static_cast<unsigned long long>(output.Extents[0].Lcn.QuadPart);
-	}
+	std::vector<HANDLE> prefetchHandles;
 
 	unsigned int ConsumedFiles(unsigned int total) {
 		return total - (std::min)(total, progressRemaining.load(std::memory_order_acquire));
@@ -587,115 +631,86 @@ namespace {
 				<< (job->failures == maxPrefetchErrorLogs ? " (further prefetch errors are only counted)" : "") << std::endl);
 	}
 
+	// Claims the next file within the lead, skipping the ones the game has already installed. False once there's nothing left.
+	bool ClaimNextFile(PrefetchJob* job, unsigned int total, unsigned int& index) {
+		while (!job->stop.load(std::memory_order_acquire)) {
+			unsigned int next = job->next.load(std::memory_order_acquire);
+			if (next >= total)
+				return false;
+			const unsigned int consumed = ConsumedFiles(total);
+			if (next < consumed) {
+				if (job->next.compare_exchange_weak(next, consumed, std::memory_order_acq_rel))
+					job->skipped += consumed - next;
+				continue;
+			}
+			if (next >= consumed + prefetchLead) {
+				Sleep(1);
+				continue;
+			}
+			if (job->next.compare_exchange_weak(next, next + 1, std::memory_order_acq_rel)) {
+				index = next;
+				return true;
+			}
+		}
+		return false;
+	}
+
 	DWORD WINAPI PrefetchMain(LPVOID param) {
 		PrefetchJob* job = static_cast<PrefetchJob*>(param);
-		// Background mode lowers I/O and memory priority as well as CPU priority. BELOW_NORMAL alone only lowers CPU priority.
-		if (SetThreadPriority(GetCurrentThread(), THREAD_MODE_BACKGROUND_BEGIN))
-			job->background.store(true, std::memory_order_release);
-		else
-			SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_BELOW_NORMAL);
-		const DWORD priorityError = job->background.load() ? 0 : GetLastError();
+		SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_BELOW_NORMAL);
 
 		const unsigned int total = static_cast<unsigned int>(job->paths.size());
-		LOG_INFO("(ENUMERATION) Prefetch started: " << total << " files, first " << prefetchKb << " KB of each, up to " << prefetchLead << " files ahead of the game, "
-			<< prefetchBatch << " per disk-order batch, background I/O priority " << (job->background.load() ? "on" : "OFF (error " + std::to_string(priorityError) + ")") << std::endl);
-
 		std::vector<char> buffer(static_cast<size_t>(prefetchKb) * 1024);
-		std::vector<PrefetchFile> batch;
-		batch.reserve(prefetchBatch);
-		const auto stopped = [&] { return job->stop.load(std::memory_order_acquire); };
-
-		unsigned int next = 0;
-		while (next < total && !stopped()) {
-			// Wait until the whole batch is within the lead. Files the game has already installed are skipped.
-			unsigned int end = next;
-			long long waitStart = Now();
-			unsigned int skippedHere = 0;
-			while (!stopped()) {
-				const unsigned int consumed = ConsumedFiles(total);
-				if (next < consumed) {
-					skippedHere += consumed - next;
-					job->skipped += consumed - next;
-					next = consumed;
-					job->position.store(next, std::memory_order_release);
-				}
-				end = (std::min)(total, next + prefetchBatch);
-				if (next >= total || end <= consumed + prefetchLead)
-					break;
-				Sleep(1);
+		unsigned int index = 0;
+		while (ClaimNextFile(job, total, index)) {
+			// Already warm: the boot warm-up got to it first (HandOffBootWarmup).
+			if (job->readTicks[index].load(std::memory_order_acquire) != 0) {
+				++job->skipped;
+				continue;
 			}
-			if (stopped() || next >= total)
-				break;
-			const double waitedMs = MsSince(waitStart);
-
-			job->busy.store(true, std::memory_order_release);
-			const long long ioStart = Now();
-			const unsigned int gameAt = ConsumedFiles(total);
-			batch.clear();
-			for (unsigned int i = next; i < end && !stopped(); ++i) {
-				wchar_t wide[MAX_PATH * 2]{};
-				MultiByteToWideChar(CP_UTF8, 0, job->paths[i].c_str(), -1, wide, MAX_PATH * 2);
-				// No read-ahead hint: the cache manager would read past the head, and on an HDD that's more time the game waits.
-				HANDLE file = CreateFileW(wide, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, nullptr, OPEN_EXISTING, FILE_FLAG_RANDOM_ACCESS, nullptr);
-				if (file == INVALID_HANDLE_VALUE) {
-					NotePrefetchFailure(job, i, "open", GetLastError());
-					continue;
-				}
-				BY_HANDLE_FILE_INFORMATION info{};
-				const DWORD volume = GetFileInformationByHandle(file, &info) ? info.dwVolumeSerialNumber : 0;
-				const unsigned long long cluster = FirstCluster(file);
-				if (cluster == ~0ull)
-					++job->unknownPosition;
-				batch.push_back({ file, i, volume, cluster });
-			}
+			++job->inFlight;
+			wchar_t wide[MAX_PATH * 2]{};
+			MultiByteToWideChar(CP_UTF8, 0, job->paths[index].c_str(), -1, wide, MAX_PATH * 2);
+			const long long openStart = Now();
+			// No read-ahead hint: the cache manager would read past the head, and on an HDD that's more time the game waits.
+			HANDLE file = CreateFileW(wide, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, nullptr, OPEN_EXISTING, FILE_FLAG_RANDOM_ACCESS, nullptr);
 			const long long opened = Now();
-			job->openTicks += opened - ioStart;
-			// Stable, so files with no known cluster keep install order at the end of their volume's sweep.
-			std::stable_sort(batch.begin(), batch.end(), [](const PrefetchFile& a, const PrefetchFile& b) {
-				return a.volume != b.volume ? a.volume < b.volume : a.cluster < b.cluster;
-			});
-
-			double slowestMs = 0.0;
-			unsigned int slowestIndex = 0;
-			unsigned long long batchBytes = 0;
-			unsigned int batchFiles = 0;
-			for (const PrefetchFile& file : batch) {
-				DWORD read = 0;
-				const long long readStart = Now();
-				if (!stopped()) {
-					if (ReadFile(file.handle, buffer.data(), static_cast<DWORD>(buffer.size()), &read, nullptr)) {
-						++job->files;
-						++batchFiles;
-						job->bytes += read;
-						batchBytes += read;
-						job->readTicks[file.index].store(Now(), std::memory_order_release);
-					}
-					else {
-						NotePrefetchFailure(job, file.index, "read", GetLastError());
-					}
-				}
-				const double readMs = MsSince(readStart);
-				if (readMs > slowestMs) {
-					slowestMs = readMs;
-					slowestIndex = file.index;
-				}
-				CloseHandle(file.handle);
+			job->openTicks += opened - openStart;
+			if (file == INVALID_HANDLE_VALUE) {
+				NotePrefetchFailure(job, index, "open", GetLastError());
+				job->ioTicks += opened - openStart;
+				--job->inFlight;
+				continue;
 			}
-			const long long ioEnd = Now();
-			job->ioTicks += ioEnd - ioStart;
-			job->busy.store(false, std::memory_order_release);
-			const unsigned int batchNumber = ++job->batches;
-			LOG_INFO("(ENUMERATION) Prefetch batch " << batchNumber << ": files " << next << "-" << end - 1 << " (game at " << gameAt << ", "
-				<< (next >= gameAt ? next - gameAt : 0) << " ahead" << (skippedHere ? ", skipped " + std::to_string(skippedHere) + " the game had already installed" : std::string())
-				<< ", waited " << waitedMs << " ms for the lead), opened " << batch.size() << " in " << (opened - ioStart) / ticksPerMs << " ms, read "
-				<< batchFiles << " (" << (batchBytes >> 10) << " KB) in disk order in " << (ioEnd - opened) / ticksPerMs << " ms, slowest read "
-				<< slowestMs << " ms (#" << slowestIndex << " " << FileName(job->paths[slowestIndex]) << ")" << std::endl);
-			next = end;
-			job->position.store(next, std::memory_order_release);
+			DWORD read = 0;
+			const bool ok = ReadFile(file, buffer.data(), static_cast<DWORD>(buffer.size()), &read, nullptr) != FALSE;
+			const DWORD readError = ok ? 0 : GetLastError();
+			CloseHandle(file);
+			const long long done = Now();
+			job->ioTicks += done - openStart;
+			if (ok) {
+				++job->files;
+				job->bytes += read;
+				job->readTicks[index].store(done, std::memory_order_release);
+			}
+			else {
+				NotePrefetchFailure(job, index, "read", readError);
+			}
+			--job->inFlight;
+
+			const double openMs = (opened - openStart) / ticksPerMs;
+			if (openMs >= slowWarmOpenMs) {
+				const unsigned int slow = ++job->slowOpens;
+				if (slow <= maxSlowWarmOpenLogs)
+					LOG_INFO("(ENUMERATION) Slow warm-up #" << index << " " << job->paths[index] << ": open " << openMs << " ms, read+close "
+						<< (done - opened) / ticksPerMs << " ms, game at " << ConsumedFiles(total)
+						<< (slow == maxSlowWarmOpenLogs ? " (further slow warm-ups are only counted)" : "") << std::endl);
+			}
 		}
-		job->busy.store(false, std::memory_order_release);
-		job->endTicks.store(Now(), std::memory_order_release);
-		LOG_INFO("(ENUMERATION) Prefetch thread finished" << (job->stop.load() ? " (stopped)" : "") << " after " << MsSince(job->startTicks) << " ms" << std::endl);
+		if (job->running.fetch_sub(1, std::memory_order_acq_rel) == 1) {
+			job->endTicks.store(Now(), std::memory_order_release);
+			LOG_INFO("(ENUMERATION) Prefetch threads finished" << (job->stop.load() ? " (stopped)" : "") << " after " << MsSince(job->startTicks) << " ms" << std::endl);
+		}
 		job->Release();
 		return 0;
 	}
@@ -725,7 +740,7 @@ namespace {
 	}
 
 	void StartPrefetch(const unsigned char* service) {
-		if (prefetchThread)
+		if (prefetchJob)
 			return;
 		if (prefetchKb == 0) {
 			LOG_INFO("(ENUMERATION) Prefetch off (FastEnumerationPrefetchKB=0)" << std::endl);
@@ -751,53 +766,68 @@ namespace {
 		for (unsigned int i = 0; i < count; ++i)
 			job->readTicks[i].store(0, std::memory_order_relaxed);
 		job->startTicks = Now();
-		prefetchThread = CreateThread(nullptr, 0, PrefetchMain, job, 0, nullptr);
-		if (!prefetchThread) {
-			LOG_WARNING("(ENUMERATION) Prefetch thread couldn't start (error " << GetLastError() << ")" << std::endl);
-			delete job;
+		// Counted up front, so the first thread to finish can't see itself as the last one.
+		job->running.store(prefetchThreads, std::memory_order_release);
+		for (unsigned int i = 0; i < prefetchThreads; ++i) {
+			job->refs.fetch_add(1, std::memory_order_acq_rel);
+			HANDLE thread = CreateThread(nullptr, warmupStackSize, PrefetchMain, job, STACK_SIZE_PARAM_IS_A_RESERVATION, nullptr);
+			if (!thread) {
+				LOG_WARNING("(ENUMERATION) Prefetch thread couldn't start (error " << GetLastError() << ")" << std::endl);
+				job->refs.fetch_sub(1, std::memory_order_acq_rel);
+				// Threads that already started may all have finished; then this was the last one, and the job has to read as done.
+				if (job->running.fetch_sub(1, std::memory_order_acq_rel) == 1)
+					job->endTicks.store(Now(), std::memory_order_release);
+				continue;
+			}
+			prefetchHandles.push_back(thread);
+		}
+		if (prefetchHandles.empty()) {
+			job->Release();
 			return;
 		}
 		prefetchJob = job;
+		LOG_INFO("(ENUMERATION) Prefetch started: " << count << " files, " << prefetchHandles.size() << " threads, first " << prefetchKb << " KB of each, up to "
+			<< prefetchLead << " files ahead of the game. The game waits for a file that isn't warm yet (up to " << maxWarmWaitMs << " ms) instead of opening it cold" << std::endl);
 	}
 
 	void StopPrefetch() {
-		if (!prefetchThread)
+		if (!prefetchJob)
 			return;
 		PrefetchJob* job = prefetchJob;
 		job->stop.store(true, std::memory_order_release);
-		const DWORD wait = WaitForSingleObject(prefetchThread, 3000);
-		CloseHandle(prefetchThread);
-		prefetchThread = nullptr;
+		const DWORD wait = WaitForMultipleObjects(static_cast<DWORD>(prefetchHandles.size()), prefetchHandles.data(), TRUE, 3000);
+		for (HANDLE thread : prefetchHandles)
+			CloseHandle(thread);
+		prefetchHandles.clear();
 		prefetchJob = nullptr;
 		const long long endTicks = job->endTicks.load(std::memory_order_acquire);
 		const long long end = endTicks ? endTicks : Now();
 		const unsigned int files = job->files.load();
-		LOG_INFO("(ENUMERATION) Prefetch: " << files << " of " << job->paths.size() << " files read, " << job->skipped.load() << " skipped as already installed, "
-			<< job->failures.load() << " failed, " << job->unknownPosition.load() << " without a known disk position, " << job->batches.load() << " batches, "
-			<< (job->bytes.load() >> 20) << " MB, " << (end - job->startTicks) / ticksPerMs << " ms, disk " << job->ioTicks.load() / ticksPerMs << " ms (opening "
+		LOG_INFO("(ENUMERATION) Prefetch: " << files << " of " << job->paths.size() << " files warmed, " << job->skipped.load() << " skipped as already installed, "
+			<< job->failures.load() << " failed, " << job->slowOpens.load() << " opens >= " << slowWarmOpenMs << " ms, " << (job->bytes.load() >> 20) << " MB, "
+			<< (end - job->startTicks) / ticksPerMs << " ms, disk " << job->ioTicks.load() / ticksPerMs << " ms summed over the threads (opening "
 			<< job->openTicks.load() / ticksPerMs << " ms, " << (files ? job->ioTicks.load() / ticksPerMs / files : 0.0) << " ms/file)"
-			<< (job->background.load() ? "" : ", no background I/O priority") << (job->backedOff.load() ? ", backed off" : "")
-			<< (wait == WAIT_OBJECT_0 ? "" : " (thread still in a read, left to finish)") << std::endl);
+			<< (job->backedOff.load() ? ", backed off" : "") << (wait == WAIT_TIMEOUT ? " (a thread was still in an open or read, left to finish)" : "") << std::endl);
 		job->Release();
 	}
 
-	// Called once per progress window on the game thread. Only sets the stop flag: the thread may be in a slow read, and waiting
-	// for it here would stall the frame. StopPrefetch at the end of the scan still joins and logs it.
+	// Called once per progress window on the game thread, with the drained installs of files that were warm. Only sets the stop
+	// flag: a thread may be in a slow open, and waiting for it here would stall the frame. StopPrefetch at the end of the scan
+	// still joins and logs them.
 	unsigned int slowPrefetchWindows = 0;
 
-	void BackOffPrefetchIfSlow(unsigned int installs, double installMs) {
+	void BackOffPrefetchIfSlow(unsigned int warmInstalls, double warmInstallMs) {
 		PrefetchJob* job = prefetchJob;
-		if (!job || job->stop.load(std::memory_order_acquire) || job->endTicks.load(std::memory_order_acquire) || installs == 0)
+		if (!job || job->stop.load(std::memory_order_acquire) || job->endTicks.load(std::memory_order_acquire) || warmInstalls == 0)
 			return;
-		const double msPerInstall = installMs / installs;
+		const double msPerInstall = warmInstallMs / warmInstalls;
 		slowPrefetchWindows = msPerInstall >= prefetchBackoffMsPerInstall ? slowPrefetchWindows + 1 : 0;
 		if (slowPrefetchWindows < prefetchBackoffWindows)
 			return;
 		job->backedOff.store(true, std::memory_order_release);
 		job->stop.store(true, std::memory_order_release);
-		LOG_INFO("(ENUMERATION) Prefetch stopped: " << msPerInstall << " ms/install (limit " << prefetchBackoffMsPerInstall << ") for " << slowPrefetchWindows
-			<< " windows in a row with it running. It isn't making installs fast and may be competing with the game's reads."
-			<< " Compare the ms/install in the next progress lines: if they drop, the prefetch was in the way; if not, the disk or a scanner is slow on its own." << std::endl);
+		LOG_INFO("(ENUMERATION) Prefetch stopped: files it had warmed still took " << msPerInstall << " ms/install (limit " << prefetchBackoffMsPerInstall << ") for "
+			<< slowPrefetchWindows << " windows in a row, so warming isn't what makes installs slow here. The game installs at its own pace for the rest of the scan." << std::endl);
 	}
 
 	// What the read-ahead is doing right now, for charging an install to it.
@@ -808,7 +838,7 @@ namespace {
 		PrefetchJob* job = prefetchJob;
 		if (!job || job->stop.load(std::memory_order_acquire) || job->endTicks.load(std::memory_order_acquire))
 			return PrefetchActivity::NotRunning;
-		return job->busy.load(std::memory_order_acquire) ? PrefetchActivity::Reading : PrefetchActivity::Waiting;
+		return job->inFlight.load(std::memory_order_acquire) ? PrefetchActivity::Reading : PrefetchActivity::Waiting;
 	}
 
 	// Whether the read-ahead had read this file before the game installed it, and how long before (ms), for the slow-install lines.
@@ -846,8 +876,307 @@ namespace {
 			return "prefetch stopped (backed off)";
 		if (job->endTicks.load(std::memory_order_acquire))
 			return "prefetch done";
-		const long long ahead = static_cast<long long>(job->position.load(std::memory_order_acquire)) - consumed;
-		return "prefetch " + std::to_string(ahead) + " ahead" + (job->busy.load(std::memory_order_acquire) ? " (reading)" : " (waiting)");
+		const long long ahead = static_cast<long long>(job->next.load(std::memory_order_acquire)) - consumed;
+		return "prefetch " + std::to_string(ahead) + " ahead, " + std::to_string(job->inFlight.load(std::memory_order_acquire)) + " opening";
+	}
+
+	// ---- Boot warm-up ----
+	// The first scan of a session waits for the profile screens, about a minute after the DLL loads (61.7 and 79.5 s in a
+	// tester's logs), and a scanner's first open of each file on that tester's HDD cost 80-900 ms. At startup, threads walk the
+	// dlc folder and open every psarc the way the warm-up does, so the scanner has been through them by the time the scan asks.
+	// They run at background I/O priority, so the game's own loading comes first. When the scan starts it takes over
+	// (HandOffBootWarmup): the files already warmed are marked warm in the scan's job, and the scan's threads do the rest.
+	// The process has 2 GB of address space and profile saves need large free blocks, so the threads get small stacks and the
+	// path list is freed when they finish. Only a hash and a flag per file stay until the scan starts.
+
+	constexpr unsigned int bootWarmupThreads = 8;
+	constexpr unsigned int maxDlcFolderDepth = 16;
+	bool bootWarmup = true;
+
+	void NormalizePath(std::wstring& path) {
+		for (wchar_t& c : path)
+			if (c == L'/')
+				c = L'\\';
+		if (!path.empty())
+			CharLowerBuffW(path.data(), static_cast<DWORD>(path.size()));
+	}
+
+	// FNV-1a over a normalized path.
+	unsigned long long PathHash(const std::wstring& normalized) {
+		unsigned long long hash = 14695981039346656037ull;
+		for (wchar_t c : normalized) {
+			hash ^= static_cast<unsigned short>(c);
+			hash *= 1099511628211ull;
+		}
+		return hash;
+	}
+
+	unsigned long long QueuedPathHash(std::string_view path) {
+		std::wstring wide(path.size() + 1, L'\0');
+		const int length = MultiByteToWideChar(CP_UTF8, 0, path.data(), static_cast<int>(path.size()), wide.data(), static_cast<int>(wide.size()));
+		wide.resize(length > 0 ? static_cast<size_t>(length) : 0);
+		NormalizePath(wide);
+		return PathHash(wide);
+	}
+
+	struct BootJob {
+		std::vector<std::wstring> paths;	// Install order, freed by the last thread.
+		std::vector<unsigned long long> hashes;
+		std::unique_ptr<std::atomic<bool>[]> warmed;
+		std::atomic<bool> stop = false;
+		std::atomic<bool> listed = false;	// paths, hashes and warmed are filled in.
+		std::atomic<unsigned int> next = 0;
+		std::atomic<unsigned int> files = 0;
+		std::atomic<unsigned int> failures = 0;
+		std::atomic<unsigned int> slowOpens = 0;
+		std::atomic<unsigned int> running = 0;
+		std::atomic<long long> openTicks = 0;	// Summed over the threads.
+		std::atomic<int> refs = 1;
+		long long startTicks = 0;
+		long long listedTicks = 0;
+		std::atomic<long long> endTicks = 0;
+		void Release() {
+			if (refs.fetch_sub(1, std::memory_order_acq_rel) == 1)
+				delete this;
+		}
+	};
+	BootJob* bootJob = nullptr;
+
+	// The order the scan installs in, as the logs show it: a folder's own psarcs from Z to A, then its subfolders, also from Z to A.
+	void ListDlcFolder(const std::wstring& folder, unsigned int depth, std::vector<std::wstring>& out) {
+		if (depth > maxDlcFolderDepth)
+			return;
+		std::vector<std::wstring> files;
+		std::vector<std::wstring> folders;
+		WIN32_FIND_DATAW data{};
+		HANDLE find = FindFirstFileExW((folder + L"\\*").c_str(), FindExInfoBasic, &data, FindExSearchNameMatch, nullptr, FIND_FIRST_EX_LARGE_FETCH);
+		if (find == INVALID_HANDLE_VALUE)
+			return;
+		do {
+			if (data.cFileName[0] == L'.' && (data.cFileName[1] == 0 || (data.cFileName[1] == L'.' && data.cFileName[2] == 0)))
+				continue;
+			if (data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+				folders.emplace_back(folder + L"\\" + data.cFileName);
+			}
+			else {
+				const size_t length = wcslen(data.cFileName);
+				if (length > 6 && _wcsicmp(data.cFileName + length - 6, L".psarc") == 0)
+					files.emplace_back(folder + L"\\" + data.cFileName);
+			}
+		} while (FindNextFileW(find, &data));
+		FindClose(find);
+		const auto byName = [](const std::wstring& a, const std::wstring& b) { return _wcsicmp(a.c_str(), b.c_str()) > 0; };
+		std::sort(files.begin(), files.end(), byName);
+		std::sort(folders.begin(), folders.end(), byName);
+		for (std::wstring& file : files)
+			out.push_back(std::move(file));
+		for (const std::wstring& sub : folders)
+			ListDlcFolder(sub, depth + 1, out);
+	}
+
+	DWORD WINAPI BootWarmupMain(LPVOID param) {
+		BootJob* job = static_cast<BootJob*>(param);
+		if (!SetThreadPriority(GetCurrentThread(), THREAD_MODE_BACKGROUND_BEGIN))
+			SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_LOWEST);
+		const unsigned int total = static_cast<unsigned int>(job->paths.size());
+		std::vector<char> buffer(static_cast<size_t>(prefetchKb) * 1024);
+		while (!job->stop.load(std::memory_order_acquire)) {
+			const unsigned int index = job->next.fetch_add(1, std::memory_order_acq_rel);
+			if (index >= total)
+				break;
+			const long long openStart = Now();
+			HANDLE file = CreateFileW(job->paths[index].c_str(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, nullptr, OPEN_EXISTING, FILE_FLAG_RANDOM_ACCESS, nullptr);
+			const long long opened = Now();
+			job->openTicks += opened - openStart;
+			if (file == INVALID_HANDLE_VALUE) {
+				++job->failures;
+				continue;
+			}
+			DWORD read = 0;
+			const bool ok = buffer.empty() || ReadFile(file, buffer.data(), static_cast<DWORD>(buffer.size()), &read, nullptr) != FALSE;
+			CloseHandle(file);
+			if (!ok) {
+				++job->failures;
+				continue;
+			}
+			job->warmed[index].store(true, std::memory_order_release);
+			++job->files;
+			if ((opened - openStart) / ticksPerMs >= slowWarmOpenMs)
+				++job->slowOpens;
+		}
+		if (job->running.fetch_sub(1, std::memory_order_acq_rel) == 1) {
+			const long long end = Now();
+			job->endTicks.store(end, std::memory_order_release);
+			const unsigned int files = job->files.load();
+			const double ms = (end - job->listedTicks) / ticksPerMs;
+			LOG_INFO("(ENUMERATION) Boot warm-up " << (job->stop.load() ? "stopped" : "done") << ": " << files << " of " << total << " files warmed in " << ms
+				<< " ms (" << (ms > 0.0 ? files * 1000.0 / ms : 0.0) << " files/s), opening " << job->openTicks.load() / ticksPerMs << " ms summed over the threads, "
+				<< job->slowOpens.load() << " opens >= " << slowWarmOpenMs << " ms, " << job->failures.load() << " failed" << std::endl);
+			std::vector<std::wstring>().swap(job->paths);
+		}
+		job->Release();
+		return 0;
+	}
+
+	// Lists the dlc folder, then becomes one of the warm-up threads and starts the others.
+	DWORD WINAPI BootListMain(LPVOID param) {
+		BootJob* job = static_cast<BootJob*>(param);
+		SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_BELOW_NORMAL);
+		wchar_t exe[MAX_PATH]{};
+		GetModuleFileNameW(nullptr, exe, MAX_PATH);
+		std::wstring folder(exe);
+		const size_t slash = folder.find_last_of(L"\\/");
+		folder = (slash == std::wstring::npos ? L"" : folder.substr(0, slash + 1)) + L"dlc";
+		ListDlcFolder(folder, 0, job->paths);
+
+		const size_t count = job->paths.size();
+		job->hashes.reserve(count);
+		for (const std::wstring& path : job->paths) {
+			std::wstring normalized(path);
+			NormalizePath(normalized);
+			job->hashes.push_back(PathHash(normalized));
+		}
+		job->warmed.reset(new std::atomic<bool>[count]);
+		for (size_t i = 0; i < count; ++i)
+			job->warmed[i].store(false, std::memory_order_relaxed);
+		job->listedTicks = Now();
+		job->listed.store(true, std::memory_order_release);
+		LOG_INFO("(ENUMERATION) Boot warm-up: " << count << " psarcs listed in " << (job->listedTicks - job->startTicks) / ticksPerMs << " ms, opening them on "
+			<< bootWarmupThreads << " threads at background I/O priority" << std::endl);
+
+		job->running.store(bootWarmupThreads, std::memory_order_release);
+		for (unsigned int i = 1; i < bootWarmupThreads; ++i) {
+			job->refs.fetch_add(1, std::memory_order_acq_rel);
+			HANDLE thread = CreateThread(nullptr, warmupStackSize, BootWarmupMain, job, STACK_SIZE_PARAM_IS_A_RESERVATION, nullptr);
+			if (thread) {
+				CloseHandle(thread);
+				continue;
+			}
+			job->refs.fetch_sub(1, std::memory_order_acq_rel);
+			job->running.fetch_sub(1, std::memory_order_acq_rel);	// This thread is still running, so it's never the last one here.
+		}
+		return BootWarmupMain(job);
+	}
+
+	void StartBootWarmup() {
+		if (!bootWarmup || bootJob)
+			return;
+		BootJob* job = new BootJob;
+		job->startTicks = Now();
+		job->refs.store(2, std::memory_order_release);	// The list thread and bootJob.
+		HANDLE thread = CreateThread(nullptr, warmupStackSize, BootListMain, job, STACK_SIZE_PARAM_IS_A_RESERVATION, nullptr);
+		if (!thread) {
+			LOG_WARNING("(ENUMERATION) Boot warm-up thread couldn't start (error " << GetLastError() << ")" << std::endl);
+			delete job;
+			return;
+		}
+		CloseHandle(thread);
+		bootJob = job;
+	}
+
+	// At the scan start, on the game thread: marks what the boot warm-up warmed as warm in the scan's job (if there is one) and
+	// stops it. Threads still in an open finish it and exit.
+	void HandOffBootWarmup() {
+		BootJob* job = bootJob;
+		if (!job)
+			return;
+		bootJob = nullptr;
+		job->stop.store(true, std::memory_order_release);
+		if (!job->listed.load(std::memory_order_acquire)) {
+			LOG_INFO("(ENUMERATION) Boot warm-up was still listing the dlc folder when the scan started, the scan's warm-up does it all" << std::endl);
+			job->Release();
+			return;
+		}
+		const size_t count = job->hashes.size();
+		std::vector<unsigned long long> warmedHashes;
+		warmedHashes.reserve(job->files.load(std::memory_order_acquire));
+		for (size_t i = 0; i < count; ++i)
+			if (job->warmed[i].load(std::memory_order_acquire))
+				warmedHashes.push_back(job->hashes[i]);
+		std::sort(warmedHashes.begin(), warmedHashes.end());
+		const long long end = job->endTicks.load(std::memory_order_acquire);
+		const double ranMs = ((end ? end : Now()) - job->listedTicks) / ticksPerMs;
+
+		unsigned int marked = 0;
+		PrefetchJob* prefetch = prefetchJob;
+		if (prefetch) {
+			const long long now = Now();
+			for (size_t i = 0; i < prefetch->paths.size(); ++i) {
+				if (!std::binary_search(warmedHashes.begin(), warmedHashes.end(), QueuedPathHash(prefetch->paths[i])))
+					continue;
+				long long expected = 0;
+				if (prefetch->readTicks[i].compare_exchange_strong(expected, now, std::memory_order_acq_rel))
+					++marked;
+			}
+		}
+		LOG_INFO("(ENUMERATION) Boot warm-up handed over at the scan start: it had warmed " << warmedHashes.size() << " of " << count << " files in " << ranMs
+			<< " ms" << (end ? "" : " and was still running") << "; " << marked << " of the " << (prefetch ? prefetch->paths.size() : 0)
+			<< " queued files matched and are marked warm" << (prefetch ? "" : " (no scan warm-up to mark them in)") << std::endl);
+		job->Release();
+	}
+
+	// ---- Waiting for warm files ----
+	// The game thread installs a file only once the warm-up has been through it (or failed on it), so a scanner's first-open cost
+	// lands on a warm-up thread. Opening it cold here would cost the same scan anyway, just on the game thread.
+
+	unsigned int warmWaitIndex = ~0u;		// The file the game thread is waiting for, ~0 = none.
+	long long warmWaitStart = 0;
+	bool warmWaitTimedOut = false;
+	unsigned int warmWaitFiles = 0;			// Files the game thread had to wait for.
+	unsigned int warmWaitTimeouts = 0;		// Of those, ones it gave up on after maxWarmWaitMs.
+	double warmWaitMs = 0.0;				// Time spent waiting, summed over those files.
+	unsigned int stockHolds = 0;			// Ticks where the game's own install was held (StockInstallThunk).
+	bool warmOrderMismatchLogged = false;
+
+	void EndWarmWait(long long now) {
+		if (warmWaitIndex == ~0u)
+			return;
+		warmWaitMs += (now - warmWaitStart) / ticksPerMs;
+		warmWaitIndex = ~0u;
+	}
+
+	// False while the next file to install hasn't been warmed yet and a warm-up thread is still on its way to it.
+	bool IsNextWarm(const unsigned char* service) {
+		PrefetchJob* job = prefetchJob;
+		const long long now = Now();
+		if (!draining || !job || job->stop.load(std::memory_order_acquire) || job->endTicks.load(std::memory_order_acquire)
+			|| !service[off_installing] || QueueLength(service) == 0) {
+			EndWarmWait(now);
+			return true;
+		}
+		const unsigned int index = NextInstallIndex(service);
+		if (index >= job->paths.size()) {
+			EndWarmWait(now);
+			return true;
+		}
+		if (job->readTicks[index].load(std::memory_order_acquire) != 0) {
+			EndWarmWait(now);
+			return true;
+		}
+		if (warmWaitIndex != index) {
+			EndWarmWait(now);
+			// The queue should be in the order the job was built from. If it isn't, waiting on the job could be waiting on the wrong file.
+			if (NextQueuedPath(service) != job->paths[index]) {
+				if (!warmOrderMismatchLogged) {
+					warmOrderMismatchLogged = true;
+					LOG_WARNING("(ENUMERATION) Scan queue no longer matches the prefetch order at #" << index << ", the game won't wait for warm files" << std::endl);
+				}
+				return true;
+			}
+			warmWaitIndex = index;
+			warmWaitStart = now;
+			warmWaitTimedOut = false;
+			++warmWaitFiles;
+		}
+		if (warmWaitTimedOut)
+			return true;
+		if ((now - warmWaitStart) / ticksPerMs >= maxWarmWaitMs) {
+			warmWaitTimedOut = true;
+			++warmWaitTimeouts;
+			LOG_INFO("(ENUMERATION) Waited " << maxWarmWaitMs << " ms for #" << index << " " << job->paths[index] << " to warm, the game opens it itself" << std::endl);
+			return true;
+		}
+		return false;
 	}
 
 	// ---- Install timing ----
@@ -872,6 +1201,7 @@ namespace {
 		double totalMs = 0.0;
 		double statMs = 0.0;
 		double openReadMs = 0.0;
+		double existsMs = 0.0;		// Of open+read, the existence check (opens and closes the file, reads nothing).
 		double registerMs = 0.0;
 		double afterMs = 0.0;
 		double cpuMs = -1.0;		// -1 = unknown.
@@ -886,6 +1216,7 @@ namespace {
 		double totalMs = 0.0;
 		double statMs = 0.0;
 		double openReadMs = 0.0;
+		double existsMs = 0.0;
 		double registerMs = 0.0;
 		double afterMs = 0.0;
 		double cpuMs = 0.0;
@@ -899,6 +1230,7 @@ namespace {
 			totalMs += t.totalMs;
 			statMs += t.statMs;
 			openReadMs += t.openReadMs;
+			existsMs += t.existsMs;
 			registerMs += t.registerMs;
 			afterMs += t.afterMs;
 			if (t.cpuMs >= 0.0) {
@@ -916,7 +1248,7 @@ namespace {
 		// "avg 4.2 ms (stat 0.1, open+read 3.0, register 1.0, after 0.1; CPU 1.1, blocked 3.1 = 74%), max 12 ms, 0 >= 50 ms"
 		std::string Describe() const {
 			std::ostringstream out;
-			out << "avg " << Avg(totalMs) << " ms (stat " << Avg(statMs) << ", open+read " << Avg(openReadMs) << ", register " << Avg(registerMs)
+			out << "avg " << Avg(totalMs) << " ms (stat " << Avg(statMs) << ", open+read " << Avg(openReadMs) << " (exists check " << Avg(existsMs) << ")" << ", register " << Avg(registerMs)
 				<< ", after " << Avg(afterMs);
 			if (cpuKnown) {
 				const double cpuAvg = cpuMs / cpuKnown;
@@ -949,6 +1281,10 @@ namespace {
 		unsigned int installs = 0;		// Installs done by the drain.
 		unsigned int budgetStops = 0;	// Ticks where the install loop stopped on the time budget.
 		unsigned int ceilingStops = 0;	// Ticks where it stopped on the open file ceiling.
+		unsigned int warmStops = 0;		// Ticks where it stopped to wait for the next file to be warmed.
+		unsigned int stockHolds = 0;	// Ticks where the game's own install was held for the same reason.
+		unsigned int warmInstalls = 0;	// Drained installs of files the warm-up had been through.
+		double warmInstallMs = 0.0;
 		unsigned int loads = 0;			// Extra load-stage steps.
 		double drainMs = 0.0;			// Time spent in the drain.
 		double installMs = 0.0;			// Of that, time spent in installs.
@@ -959,6 +1295,7 @@ namespace {
 		TimingSums timing;
 		unsigned int prefetchFiles = 0;	// Prefetch counters at the window's start, for the per-window deltas.
 		long long prefetchIoTicks = 0;
+		long long prefetchOpenTicks = 0;
 	};
 	ProgressWindow window;
 
@@ -969,6 +1306,7 @@ namespace {
 		if (PrefetchJob* job = prefetchJob) {
 			window.prefetchFiles = job->files.load(std::memory_order_acquire);
 			window.prefetchIoTicks = job->ioTicks.load(std::memory_order_acquire);
+			window.prefetchOpenTicks = job->openTicks.load(std::memory_order_acquire);
 		}
 	}
 
@@ -981,7 +1319,7 @@ namespace {
 
 	std::string DescribeInstall(const InstallTiming& t) {
 		std::ostringstream out;
-		out << "#" << t.index << " " << t.path << ": " << t.totalMs << " ms (stat " << t.statMs << ", open+read " << t.openReadMs << ", register " << t.registerMs
+		out << "#" << t.index << " " << t.path << ": " << t.totalMs << " ms (stat " << t.statMs << ", open+read " << t.openReadMs << " (exists check " << t.existsMs << ")" << ", register " << t.registerMs
 			<< ", after " << t.afterMs << "; CPU ";
 		if (t.cpuMs >= 0.0)
 			out << t.cpuMs << ", blocked " << (std::max)(0.0, t.totalMs - t.cpuMs);
@@ -1002,6 +1340,10 @@ namespace {
 		window.timing.Add(t);
 		timingByActivity[static_cast<int>(t.activity)].Add(t);
 		(t.prefetchedMsBefore >= 0.0 ? timingPrefetched : timingNotPrefetched).Add(t);
+		if (t.prefetchedMsBefore >= 0.0) {
+			++window.warmInstalls;
+			window.warmInstallMs += t.totalMs;
+		}
 		++installHistogram[HistogramBucket(t.totalMs)];
 
 		if (t.totalMs >= slowInstallMs && slowInstallLogs < maxSlowInstallLogs) {
@@ -1035,7 +1377,11 @@ namespace {
 		inInstallRegister = 0;
 		registerEnterTicks = 0;
 		registerLeaveTicks = 0;
+		existsTicks = 0;
+		existsCalls = 0;
+		timingInstall = existsHooked;
 		CallInstallNext(service);
+		timingInstall = false;
 		const long long end = Now();
 		const unsigned long long cycles = ThreadCycles() - cyclesStart;
 
@@ -1059,6 +1405,7 @@ namespace {
 			t.openReadMs = (end - callStart) / ticksPerMs;
 		}
 		t.registered = lastInstallRegistered;
+		t.existsMs = existsTicks / ticksPerMs;
 		const double cpuMs = CyclesToMs(cycles);
 		t.cpuMs = cpuMs < 0.0 ? -1.0 : (std::min)(cpuMs, t.totalMs);
 		if (t.activity == PrefetchActivity::Waiting && CurrentPrefetchActivity() == PrefetchActivity::Reading)
@@ -1085,7 +1432,8 @@ namespace {
 			<< ", shader scan skip " << (skipShaderScan ? "on" : "off") << " (hooked " << (shaderScanHooked ? "yes" : "no") << "), early scan "
 			<< (requestEarly ? "on" : "off") << " (max " << earlyMaxPackages << "), prefetch " << prefetchKb << " KB " << (prefetchForced ? "always" : "HDD only")
 			<< ", CRT stream limit " << crtStreamLimit << ", open file ceiling " << openFileCeiling << ", register hook " << (registerHooked ? "yes" : "no")
-			<< ", banner hook " << (bannerHooked ? "yes" : "no") << std::endl);
+			<< ", banner hook " << (bannerHooked ? "yes" : "no") << ", stock install hold " << (stockInstallHooked ? "yes" : "no") << ", exists check timed " << (existsHooked ? "yes" : "no")
+			<< ", boot warm-up " << (bootWarmup ? "on" : "off") << std::endl);
 	}
 
 	// ---- Progress display for rescans ----
@@ -1135,6 +1483,12 @@ namespace {
 		waitingAtQueueEmpty = 0;
 		unchangedSkipped = 0;
 		slowPrefetchWindows = 0;
+		warmWaitIndex = ~0u;
+		warmWaitFiles = 0;
+		warmWaitTimeouts = 0;
+		warmWaitMs = 0.0;
+		stockHolds = 0;
+		warmOrderMismatchLogged = false;
 		scanTiming = TimingSums{};
 		for (TimingSums& sums : timingByActivity)
 			sums = TimingSums{};
@@ -1150,6 +1504,7 @@ namespace {
 		currentSnapshot.reserve(queueAtStart);
 		CountPackages(packagesAtStart, dlcAtStart);
 		CalibrateCycles();
+		gameThreadId = GetCurrentThreadId();
 
 		// Also read by the prefetch thread, so it's kept current even while the display is deferred.
 		progressRemaining.store(queueAtStart, std::memory_order_release);
@@ -1172,6 +1527,7 @@ namespace {
 			StartPrefetch(service);
 		else
 			LOG_INFO("(ENUMERATION) Prefetch skipped: rescan, unchanged entries are popped without being opened" << std::endl);
+		HandOffBootWarmup();
 		ResetWindow();
 		AssetLoadDrain::SetActive(true);
 
@@ -1194,6 +1550,10 @@ namespace {
 
 		if (avg < 10.0)
 			LOG_INFO("(ENUMERATION) Hint: installs were fast (avg " << avg << " ms). If the scan still felt slow, look at fps, budget stops and the in-menu budget in the progress lines." << std::endl);
+		else if (openShare >= 0.6 && blocked >= 0.6 && scanTiming.openReadMs > 0.0 && scanTiming.existsMs / scanTiming.openReadMs >= 0.6)
+			LOG_INFO("(ENUMERATION) Hint: installs were slow (avg " << avg << " ms) and " << static_cast<int>(scanTiming.existsMs / scanTiming.openReadMs * 100)
+				<< "% of open+read was the existence check, which opens the file and reads nothing: that's a real-time scanner checking the file on its first open,"
+				<< " not the disk reading it. The warm-up and boot warm-up move that open off the game thread; a scanner exclusion for the DLC folder removes it." << std::endl);
 		else if (openShare >= 0.6 && blocked >= 0.6)
 			LOG_INFO("(ENUMERATION) Hint: installs were slow (avg " << avg << " ms) and mostly WAITING in open+read (" << static_cast<int>(openShare * 100) << "% of install time, "
 				<< static_cast<int>(blocked * 100) << "% blocked, not CPU): the disk or a real-time scanner is the bottleneck. See the Environment lines for the drive type and antivirus." << std::endl);
@@ -1260,6 +1620,9 @@ namespace {
 			LOG_INFO("(ENUMERATION) Install pace for files it hadn't: " << timingNotPrefetched.installs << " installs, " << timingNotPrefetched.Describe() << std::endl);
 		LOG_INFO("(ENUMERATION) Game thread during the scan: " << stockTicks << " stock ticks, " << stockTickMs << " ms in them (" << (stockTicks ? stockTickMs / stockTicks : 0.0)
 			<< " ms/tick, each installs one package itself), " << extraLoads << " extra load steps, " << loadStepMs << " ms in them" << std::endl);
+		if (warmWaitFiles)
+			LOG_INFO("(ENUMERATION) Waited for the warm-up on " << warmWaitFiles << " files, " << warmWaitMs << " ms in all (" << warmWaitMs / warmWaitFiles
+				<< " ms/file), " << warmWaitTimeouts << " given up on after " << maxWarmWaitMs << " ms, " << stockHolds << " stock installs held" << std::endl);
 		for (size_t i = 0; i < slowest.size(); ++i)
 			LOG_INFO("(ENUMERATION) Slowest install " << i + 1 << ": " << DescribeInstall(slowest[i]) << std::endl);
 		if (scanTiming.slow > slowInstallLogs)
@@ -1273,6 +1636,7 @@ namespace {
 	void Finish() {
 		draining = false;
 		SamplingProfiler::Stop(samplerLabel.c_str());
+		EndWarmWait(Now());
 		StopPrefetch();
 		AssetLoadDrain::SetActive(false);
 		if (rescanSkip) {
@@ -1340,7 +1704,8 @@ namespace {
 			<< ", " << MsSince(drainStartTicks) / 1000.0 << " s | last " << seconds << " s: " << window.ticks / seconds << " fps (longest frame "
 			<< window.maxFrameMs << " ms), drain " << window.installs / seconds << " installs/s, " << (window.ticks ? window.drainMs / window.ticks : 0.0)
 			<< " ms/tick of " << budget << " ms budget, " << (window.installs ? window.installMs / window.installs : 0.0) << " ms/install, "
-			<< window.budgetStops << " budget stops, " << window.ceilingStops << " ceiling stops, " << PrefetchStatus(consumed)
+			<< window.budgetStops << " budget stops, " << window.ceilingStops << " ceiling stops, " << window.warmStops << " warm-up waits, "
+			<< window.stockHolds << " stock installs held, " << PrefetchStatus(consumed)
 			<< (mainMenuSeen.load(std::memory_order_relaxed) ? ", in menus" : "") << std::endl);
 
 		std::ostringstream detail;
@@ -1352,7 +1717,9 @@ namespace {
 		if (PrefetchJob* job = prefetchJob) {
 			const unsigned int files = job->files.load(std::memory_order_acquire) - window.prefetchFiles;
 			const double ioMs = (job->ioTicks.load(std::memory_order_acquire) - window.prefetchIoTicks) / ticksPerMs;
-			detail << "; prefetch read " << files << " files, " << ioMs << " ms disk" << (files ? " (" + std::to_string(ioMs / files) + " ms/file)" : std::string());
+			const double openMs = (job->openTicks.load(std::memory_order_acquire) - window.prefetchOpenTicks) / ticksPerMs;
+			detail << "; prefetch warmed " << files << " files, " << ioMs << " ms disk summed over the threads, of it " << openMs << " ms opening"
+				<< (files ? " (" + std::to_string(ioMs / files) + " ms/file)" : std::string());
 		}
 		detail << "; " << EnumerationEnvironment::MemoryLine();
 		LOG_INFO("(ENUMERATION) Detail: " << detail.str() << std::endl);
@@ -1406,6 +1773,10 @@ namespace {
 			}
 			if (SkipIfKnown(service))
 				continue;
+			if (!IsNextWarm(service)) {
+				++window.warmStops;
+				break;
+			}
 			EndProgressDeferral();
 			const long long installStart = Now();
 			InstallNext(service, true);
@@ -1436,7 +1807,7 @@ namespace {
 		if (windowMs >= 1000.0) {
 			lastProgressLogTicks = Now();
 			LogProgress(service, remaining, budget, windowMs);
-			BackOffPrefetchIfSlow(window.installs, window.installMs);
+			BackOffPrefetchIfSlow(window.warmInstalls, window.warmInstallMs);
 			ResetWindow();
 		}
 
@@ -1547,6 +1918,38 @@ namespace {
 		service[off_enabled] = 1;
 		if (++signInRequestsDropped <= 3)
 			LOG_INFO("(ENUMERATION) Game's sign-in scan request dropped, the early scan already covered it" << std::endl);
+	}
+
+	// ---- Holding the game's own install ----
+	// The tick calls the install step (service in ESI, no stack args, its result unused) once per frame, outside the drain. While
+	// its next file isn't warm, that call is skipped, so it doesn't open the file cold. The scan state isn't touched: clearing the
+	// installing flag instead would also run the tick's end-of-scan work.
+
+	unsigned char holdStockNow = 0;
+
+	extern "C" void __cdecl EnumDecideStockInstall(unsigned char* service) {
+		holdStockNow = (service && !IsNextWarm(service)) ? 1 : 0;
+		if (holdStockNow) {
+			++stockHolds;
+			++window.stockHolds;
+		}
+	}
+
+	void __declspec(naked) StockInstallThunk() {
+		__asm {
+			pushfd
+			pushad
+			push esi
+			call EnumDecideStockInstall
+			add esp, 4
+			popad
+			popfd
+			cmp byte ptr [holdStockNow], 0
+			jne skip
+			jmp dword ptr [installNextFunc]
+		skip:
+			ret
+		}
 	}
 
 	// ---- The hook ----
@@ -1665,6 +2068,7 @@ namespace {
 		earlyMaxPackages = SettingInRange(Setting::FastEnumerationEarlyScanMax, 0, 1000000);
 		prefetchKb = SettingInRange(Setting::FastEnumerationPrefetchKB, 0, 4096);
 		prefetchForced = !Settings::IsOn(Setting::FastEnumerationPrefetchHddOnly);
+		bootWarmup = Settings::IsOn(Setting::FastEnumerationBootWarmup);
 		crtStreamLimit = static_cast<int>(SettingInRange(Setting::FastEnumerationStreamLimit, 512, crtStreamLimitMax));
 		openFileCeiling = SettingInRange(Setting::FastEnumerationFileCeiling, 64, crtStreamLimit - 64);
 	}
@@ -1720,6 +2124,10 @@ void EnumerationDrain::Install() {
 	if (skipShaderScan)
 		shaderScanHooked = RedirectCall(shaderScanCallSite, shaderScanFunc, &ShaderScanThunk, shaderScanOriginalRel, "Shader cache scan");
 	bannerHooked = RedirectCall(bannerCallSite, bannerFunc, &BannerThunk, bannerOriginalRel, "Enumeration banner");
+	// The install step is the tick's second call: mov esi, ecx; call <load step>; call <install step>.
+	stockInstallHooked = RedirectCall(tickFunc + stockInstallCallOffset, installNextFunc, &StockInstallThunk, stockInstallOriginalRel, "Tick install step");
+	existsHooked = HookExistsCheck();
+	StartBootWarmup();
 
 	LOG_INFO("(ENUMERATION) Fast enumeration installed: extra installs/tick=" << maxPerTick << ", budget=" << budgetMs << " ms (" << menuBudgetMs
 		<< " ms in menus), shader scan skip " << (shaderScanHooked ? "on" : "off") << ", rescan skip " << (rescanSkip ? "on" : "off")

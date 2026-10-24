@@ -269,6 +269,7 @@ namespace Offsets {
 	inline VersioningStruct<uintptr_t> func_dlcServiceLoadTick;
 	inline VersioningStruct<uintptr_t> func_dlcScanInstallNext;
 	inline VersioningStruct<uintptr_t> func_dlcScanQueueRemoveLast;
+	inline VersioningStruct<uintptr_t> func_fileExistsCheck;
 	inline VersioningStruct<uintptr_t> ptr_packageList;
 	inline VersioningStruct<uintptr_t> ptr_packageLoadQueue;
 	inline VersioningStruct<uintptr_t> ptr_dlcInstallRegisterCall;

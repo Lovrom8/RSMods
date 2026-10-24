@@ -158,6 +158,7 @@ void Settings::Initialize()
 		{Setting::FastEnumerationSkipUnchanged, "on"},
 		{Setting::FastEnumerationSkipShaderScan, "on"},
 		{Setting::FastEnumerationPrefetchHddOnly, "off"},
+		{Setting::FastEnumerationBootWarmup, "on"},
 		{Setting::FastEnumerationEarlyScan, "off"},
 	};
 
@@ -408,6 +409,7 @@ void Settings::ReadModSettings() {
 	modSettings[Setting::FastEnumerationSkipUnchanged] = reader.GetValue("Fast Enumeration", "FastEnumerationSkipUnchanged", "on");
 	modSettings[Setting::FastEnumerationSkipShaderScan] = reader.GetValue("Fast Enumeration", "FastEnumerationSkipShaderScan", "on");
 	modSettings[Setting::FastEnumerationPrefetchHddOnly] = reader.GetValue("Fast Enumeration", "FastEnumerationPrefetchHddOnly", "off");
+	modSettings[Setting::FastEnumerationBootWarmup] = reader.GetValue("Fast Enumeration", "FastEnumerationBootWarmup", "on");
 	modSettings[Setting::FastEnumerationEarlyScan] = reader.GetValue("Fast Enumeration", "FastEnumerationEarlyScan", "off");
 }
 
