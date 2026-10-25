@@ -270,6 +270,24 @@ namespace Offsets {
 	inline VersioningStruct<uintptr_t> func_playnextTrim;
 	inline VersioningStruct<uintptr_t> func_profileSongs;
 
+	// Fast DLC enumeration
+	inline VersioningStruct<uintptr_t> ptr_dlcServiceTickSlot;
+	inline VersioningStruct<uintptr_t> func_dlcServiceTick;
+	inline VersioningStruct<uintptr_t> func_dlcServiceLoadTick;
+	inline VersioningStruct<uintptr_t> func_dlcScanInstallNext;
+	inline VersioningStruct<uintptr_t> func_dlcScanQueueRemoveLast;
+	inline VersioningStruct<uintptr_t> func_fileExistsCheck;
+	inline VersioningStruct<uintptr_t> ptr_packageList;
+	inline VersioningStruct<uintptr_t> ptr_packageLoadQueue;
+	inline VersioningStruct<uintptr_t> ptr_dlcInstallRegisterCall;
+	inline VersioningStruct<uintptr_t> func_registerPackage;
+	inline VersioningStruct<uintptr_t> ptr_packageShaderScanCall;
+	inline VersioningStruct<uintptr_t> func_packageShaderScan;
+	inline VersioningStruct<uintptr_t> ptr_dlcBannerCall;
+	inline VersioningStruct<uintptr_t> func_showBanner;
+	inline VersioningStruct<uintptr_t> ptr_assetLoaderStepCall;
+	inline VersioningStruct<uintptr_t> func_assetLoaderStep;
+
 	// Non-Exclusive Fullscreen: the renderer, and its current display flags (0x80 non-exclusive fullscreen, 0x04 exclusive fullscreen)
 	inline VersioningStruct<uintptr_t> ptr_renderer;
 	inline constexpr unsigned int rendererDisplayFlagsOffset = 0x910;
