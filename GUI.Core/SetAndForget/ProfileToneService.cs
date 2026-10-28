@@ -1,6 +1,5 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using RocksmithToolkitLib.DLCPackage.Manifest2014.Tone;
 using RSMods.Data;
 using RSMods.Util;
 using System;
@@ -11,20 +10,23 @@ using System.Linq;
 namespace RSMods.SetAndForget
 {
     /// <summary>
-    /// Owns tones read from Steam profiles: enumerating the profiles, caching the imported
-    /// <see cref="Tone2014"/> objects (the UI shows a name now and applies the matching gear later), and
+    /// Owns tones read from Steam profiles: enumerating the profiles, caching each tone's gear list as the
+    /// profile stores it (the UI shows a name now and applies the matching gear later), and
     /// writing a chosen tone into the cache's tone manager. The tone cache belongs to this instance rather
     /// than a static dictionary, so it lives and dies with the service.
     /// </summary>
     /// <summary>The tones found in the profiles, and the profiles that couldn't be read (their file names).</summary>
     public sealed record ProfileToneScan(List<string> ToneNames, List<string> UnreadableProfiles);
 
+    /// <summary>A profile tone's name and its GearList exactly as the profile saved it (null when absent).</summary>
+    internal sealed record ProfileTone(string Name, JToken GearList);
+
     public sealed class ProfileToneService(CachePsarcService cache)
     {
         private const int GuitarcadeToneOffset = 8;
 
         private readonly CachePsarcService _cache = cache ?? throw new ArgumentNullException(nameof(cache));
-        private readonly Dictionary<string, Tone2014> _tonesByName = [];
+        private readonly Dictionary<string, ProfileTone> _tonesByName = [];
 
         /// <summary>
         /// Rescans the available Steam profiles, refreshing the tone cache. Returns the distinct tone names in the order
@@ -46,7 +48,7 @@ namespace RSMods.SetAndForget
 
             foreach (string profile in Directory.EnumerateFiles(userProfileFolder, "*_PRFLDB", SearchOption.AllDirectories))
             {
-                List<Tone2014> tones;
+                List<ProfileTone> tones;
                 try
                 {
                     tones = ReadCustomTones(profile);
@@ -58,7 +60,7 @@ namespace RSMods.SetAndForget
                     continue;
                 }
 
-                foreach (Tone2014 tone in tones)
+                foreach (ProfileTone tone in tones)
                 {
                     if (_tonesByName.ContainsKey(tone.Name))
                         continue;
@@ -76,7 +78,7 @@ namespace RSMods.SetAndForget
         /// accepts the compression header the game writes, not the one other tools write. Only the tone list is
         /// parsed, so a large profile isn't held as a whole JSON tree.
         /// </summary>
-        private static List<Tone2014> ReadCustomTones(string profile)
+        private static List<ProfileTone> ReadCustomTones(string profile)
         {
             string json = ProfileCodec.Decode(profile).Json;
             using var reader = new JsonTextReader(new StringReader(json));
@@ -90,8 +92,8 @@ namespace RSMods.SetAndForget
 
                 return JArray.Load(reader)
                     .OfType<JObject>()
-                    .Select(tone => tone.ToObject<Tone2014>())
-                    .Where(tone => !string.IsNullOrEmpty(tone?.Name))
+                    .Select(tone => new ProfileTone((string)tone["Name"], tone["GearList"]))
+                    .Where(tone => !string.IsNullOrEmpty(tone.Name))
                     .ToList();
             }
 
@@ -116,21 +118,23 @@ namespace RSMods.SetAndForget
 
         private (bool IsSuccess, string Message) ApplyTone(string selectedToneName, int targetToneIndex, string successMessage)
         {
-            if (!_tonesByName.TryGetValue(selectedToneName, out Tone2014 selectedTone))
+            if (!_tonesByName.TryGetValue(selectedToneName, out ProfileTone selectedTone))
                 return (false, $"The tone '{selectedToneName}' could not be found in the loaded profiles.");
+            if (selectedTone.GearList is not JObject gearList)
+                return (false, $"The tone '{selectedToneName}' has no gear list.");
 
             try
             {
                 _cache.Modify(cache =>
                 {
-                    if (!ZipUtilities.ExtractSingleFile(Constants.CustomModsFolder, Constants.Cache7_7zPath, Constants.ToneManager_InternalPath) ||
+                    if (!cache.ExtractFile(Constants.Cache7_7zPath, Constants.ToneManager_InternalPath, Constants.CustomModsFolder) ||
                         !File.Exists(Constants.ToneManager_CustomPath))
                     {
                         throw new IOException("Could not read the tones from the game's files. Please check your existing settings.");
                     }
 
                     JObject tonesJson = JObject.Parse(File.ReadAllText(Constants.ToneManager_CustomPath));
-                    tonesJson["Static"]["ToneManager"]["Tones"][targetToneIndex]["GearList"] = JObject.FromObject(selectedTone.GearList);
+                    tonesJson["Static"]["ToneManager"]["Tones"][targetToneIndex]["GearList"] = gearList.DeepClone();
                     File.WriteAllText(Constants.ToneManager_CustomPath, tonesJson.ToString());
 
                     cache.Inject(Constants.ToneManager_CustomPath, Constants.Cache7_7zPath, Constants.ToneManager_InternalPath);

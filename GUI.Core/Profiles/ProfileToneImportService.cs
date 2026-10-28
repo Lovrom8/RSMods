@@ -1,8 +1,10 @@
 using Newtonsoft.Json.Linq;
-using RocksmithToolkitLib.DLCPackage.Manifest2014.Tone;
+using Rocksmith2014.Common.Manifest;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace RSMods
 {
@@ -40,9 +42,10 @@ namespace RSMods
             return (importedCount, errors);
         }
 
-        public (int ImportedCount, List<string> ErrorMessages) ImportXmlTones(string[] fileNames, Func<Tone2014, bool> isGuitarPrompt)
+        /// <summary>Imports toolkit XML tones while exposing only their display names to the frontend.</summary>
+        public (int ImportedCount, List<string> ErrorMessages) ImportXmlTonesByName(string[] fileNames, Func<string, bool> isGuitarPromptByName)
         {
-            ArgumentNullException.ThrowIfNull(isGuitarPrompt);
+            ArgumentNullException.ThrowIfNull(isGuitarPromptByName);
 
             var guitarTones = new List<object>();
             var bassTones = new List<object>();
@@ -52,17 +55,12 @@ namespace RSMods
             {
                 try
                 {
-                    Tone2014 tone = Tone2014.LoadFromXmlTemplateFile(fileName);
-                    if (tone == null)
-                    {
-                        errors.Add($"Failed to load tone from {Path.GetFileName(fileName)}");
-                        continue;
-                    }
+                    JObject profileTone = LoadXmlTone(fileName);
 
-                    if (isGuitarPrompt(tone))
-                        guitarTones.Add(tone);
+                    if (isGuitarPromptByName((string)profileTone["Name"]))
+                        guitarTones.Add(profileTone);
                     else
-                        bassTones.Add(tone);
+                        bassTones.Add(profileTone);
                 }
                 catch (Exception exception)
                 {
@@ -79,13 +77,12 @@ namespace RSMods
             return (importedCount, errors);
         }
 
-        /// <summary>Imports toolkit XML tones while exposing only their display names to the frontend.</summary>
-        public (int ImportedCount, List<string> ErrorMessages) ImportXmlTonesByName(string[] fileNames, Func<string, bool> isGuitarPromptByName)
-        {
-            ArgumentNullException.ThrowIfNull(isGuitarPromptByName);
+        // A toolkit XML tone as the game's tone JSON, the way DLC Builder writes it into manifests. Empty pedal slots
+        // are left out rather than written as null.
+        internal static JObject LoadXmlTone(string fileName) =>
+            JObject.Parse(JsonSerializer.Serialize(ToneModule.toDto(ToneModule.fromXmlFile(fileName)), ToneJsonOptions));
 
-            return ImportXmlTones(fileNames, tone => isGuitarPromptByName(tone.Name));
-        }
+        private static readonly JsonSerializerOptions ToneJsonOptions = new() { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull };
 
         private static (List<object> GuitarTones, List<object> BassTones) ParseManifest(string fileName)
         {

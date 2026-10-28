@@ -4,11 +4,11 @@
     UI-agnostic configurator logic consumed by the Avalonia frontend and its tests.
   -->
   <PropertyGroup>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFramework>net10.0-windows</TargetFramework>
     <LangVersion>12.0</LangVersion>
     <!-- No project-wide nullable context: the codebase predates NRT. New boundaries opt in locally. -->
     <ImplicitUsings>disable</ImplicitUsings>
-    <!-- Rocksmith2014PsarcLib is an AMD64 assembly and Rocksmith 2014 itself is 64-bit. -->
+    <!-- Rocksmith 2014 itself is 64-bit. -->
     <PlatformTarget>x64</PlatformTarget>
     <RootNamespace>RSMods.Core</RootNamespace>
     <AssemblyName>GUI.Core</AssemblyName>
@@ -16,51 +16,26 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- GenUtil's Steam/Rocksmith path detection reads the Windows registry. -->
-    <PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
     <!-- Frontend-neutral capture-device enumeration (RSMods.Audio.InputDevices) uses the WASAPI
          core-audio API. Only the WASAPI sub-package is referenced (not the NAudio meta-package, which
          pulls in UI dependencies); this keeps GUI.Core UI-framework-free. Windows-only at runtime. -->
-    <PackageReference Include="NAudio.Wasapi" Version="2.0.0" />
+    <PackageReference Include="NAudio.Wasapi" Version="3.1.0" />
     <!-- SoundPacks MP3 decoding (Soundpacks.ConvertMP3ToWav) uses NAudio's ACM Mp3FileReader, which lives
          in NAudio.WinMM; WaveFileWriter comes from the transitive NAudio.Core. Like NAudio.Wasapi this is
          a sub-package rather than the UI-oriented meta-package. -->
-    <PackageReference Include="NAudio.WinMM" Version="2.0.0" />
+    <PackageReference Include="NAudio.WinMM" Version="3.1.0" />
     <!-- Set-and-Forget drive detection uses WMI. Windows-only at runtime. -->
     <PackageReference Include="System.Management" Version="8.0.0" />
-    <!-- The bundled Newtonsoft.Json 12 assembly targets .NET Framework 4.5. When it runs under .NET 8,
-         its legacy CAS compatibility path loads System.Security.Permissions. A raw assembly reference
-         cannot declare that transitive dependency, so include it explicitly for the Avalonia target. -->
-    <PackageReference Include="System.Security.Permissions" Version="8.0.0" />
+    <!-- Rocksmith2014.Common is built against Newtonsoft.Json 13; the old bundled 12 can't satisfy it. -->
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <!-- Twitch OAuth material is encrypted with Windows DPAPI. -->
-    <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="8.0.0" />
+    <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="10.0.13" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <!-- RocksmithToolkitLib is a .NET Framework library whose psarc unpack (Packer.ExtractPSARC, used by every Set &
-         Forget cache mod) loads System.Windows.Forms. .NET 8 only has it with the Windows Desktop framework, so reference
-         that framework (the app publishes self-contained, so it ships along). A FrameworkReference rather than
-         UseWindowsForms: this adds no WinForms global usings to clash with Avalonia's names in the projects above. -->
-    <FrameworkReference Include="Microsoft.WindowsDesktop.App.WindowsForms" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <!-- Shared song/profile services consume the bundled Rocksmith archive model. -->
-    <Reference Include="Rocksmith2014PsarcLib">
-      <HintPath>..\RuntimeAssets\Rocksmith2014PsarcLib.dll</HintPath>
-      <Private>true</Private>
-    </Reference>
     <Reference Include="MiscUtil">
       <HintPath>..\RuntimeAssets\MiscUtil.dll</HintPath>
-      <Private>true</Private>
-    </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\RuntimeAssets\Newtonsoft.Json.dll</HintPath>
-      <Private>true</Private>
-    </Reference>
-    <Reference Include="RocksmithToolkitLib">
-      <HintPath>..\RuntimeAssets\RocksmithToolkitLib.dll</HintPath>
       <Private>true</Private>
     </Reference>
     <Reference Include="zlib.net">
@@ -73,6 +48,43 @@
       <HintPath>..\RuntimeAssets\SevenZipSharp.dll</HintPath>
       <Private>true</Private>
     </Reference>
+    <!-- SevenZipSharp is a .NET Framework assembly: its library manager reads app settings through ConfigurationManager
+         and loads System.Security.Permissions for its legacy CAS attributes. A raw reference can't declare either. -->
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="10.0.13" />
+    <PackageReference Include="System.Security.Permissions" Version="10.0.13" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- DLC Builder's Rocksmith2014.NET libraries (Deps/, rebuilt by Deps/scripts/build-deps.ps1): psarc reading and
+         packing, tone XML import and Wwise conversion. Raw references don't carry their NuGet dependencies, so those are
+         listed below at the versions upstream builds against. -->
+    <Reference Include="Rocksmith2014.Audio">
+      <HintPath>..\Deps\Rocksmith2014.Audio.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <Reference Include="Rocksmith2014.Common">
+      <HintPath>..\Deps\Rocksmith2014.Common.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <!-- Runtime-only for us. Its global-namespace String/Array/List modules would hide System.String and friends,
+         so the alias keeps them out of the global namespace. -->
+    <Reference Include="Rocksmith2014.FSharpExtensions">
+      <HintPath>..\Deps\Rocksmith2014.FSharpExtensions.dll</HintPath>
+      <Private>true</Private>
+      <Aliases>dlcbFSharpExtensions</Aliases>
+    </Reference>
+    <Reference Include="Rocksmith2014.PSARC">
+      <HintPath>..\Deps\Rocksmith2014.PSARC.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <PackageReference Include="FSharp.Core" Version="10.1.401" />
+    <PackageReference Include="FSharp.SystemTextJson" Version="1.4.36" />
+    <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.1" />
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="10.0.12" />
+    <PackageReference Include="NAudio.Core" Version="3.1.0" />
+    <PackageReference Include="NAudio.Vorbis" Version="3.0.0" />
+    <PackageReference Include="NVorbis" Version="0.10.5" />
+    <PackageReference Include="BunLabs.NAudio.Flac" Version="2.0.1" />
   </ItemGroup>
 
   <ItemGroup>

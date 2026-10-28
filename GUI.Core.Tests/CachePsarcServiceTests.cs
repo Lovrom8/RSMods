@@ -1,11 +1,13 @@
 using RSMods.Data;
 using RSMods.SetAndForget;
+using RSMods.Util;
 
 namespace RSMods.Core.Tests;
 
 /// <summary>
-/// The psarc itself is faked: "cache.psarc" is a text file, unpacking copies its text into the unpacked
-/// folder and packing copies it back, so each test can see which archive state a modification started from.
+/// The psarc is faked unless a test says otherwise: "cache.psarc" is a text file holding its one entry, content.txt.
+/// Extracting copies its text out and replacing copies it back, so each test can see which archive state a
+/// modification started from.
 /// </summary>
 [Collection(ConstantsCollection.Name)]
 public sealed class CachePsarcServiceTests : IDisposable
@@ -28,19 +30,27 @@ public sealed class CachePsarcServiceTests : IDisposable
 
     private static string UnpackedContent => Path.Combine(Constants.CachePcPath, "content.txt");
 
-    private CachePsarcService CreateService() => new(
-        unpack: (archive, destination) =>
-        {
-            Directory.CreateDirectory(Constants.CachePcPath);
-            File.WriteAllText(UnpackedContent, File.ReadAllText(archive));
-        },
-        pack: (source, archive) =>
-        {
-            ++_packs;
-            File.WriteAllText(archive, File.ReadAllText(Path.Combine(source, "content.txt")));
-        });
+    private CachePsarcService CreateService() => new(new TextFileArchive(this));
 
-    private static void Append(string mod) => File.AppendAllText(UnpackedContent, "+" + mod);
+    private static void Append(CacheModification cache, string mod) =>
+        File.AppendAllText(cache.Open(UnpackedContent, forWriting: true), "+" + mod);
+
+    private sealed class TextFileArchive(CachePsarcServiceTests test) : ICacheArchive
+    {
+        public bool Contains(string archivePath, string entryName) => true;
+
+        public void Extract(string archivePath, string entryName, string targetFile)
+        {
+            Assert.Equal("content.txt", entryName);
+            File.WriteAllText(targetFile, File.ReadAllText(archivePath));
+        }
+
+        public void Replace(string archivePath, IReadOnlyDictionary<string, string> filesByEntry)
+        {
+            ++test._packs;
+            File.WriteAllText(archivePath, File.ReadAllText(filesByEntry["content.txt"]));
+        }
+    }
 
     [Fact]
     public void AStaleUnpackFromAnEarlierSessionIsNotReused()
@@ -49,7 +59,7 @@ public sealed class CachePsarcServiceTests : IDisposable
         Directory.CreateDirectory(Constants.CachePcPath);
         File.WriteAllText(UnpackedContent, "stock+fastload");
 
-        CreateService().Modify(_ => Append("directconnect"));
+        CreateService().Modify(cache => Append(cache, "directconnect"));
 
         Assert.Equal("stock+directconnect", File.ReadAllText(Constants.CachePsarcPath));
     }
@@ -59,8 +69,8 @@ public sealed class CachePsarcServiceTests : IDisposable
     {
         var service = CreateService();
 
-        service.Modify(_ => Append("fastload"));
-        service.Modify(_ => Append("directconnect"));
+        service.Modify(cache => Append(cache, "fastload"));
+        service.Modify(cache => Append(cache, "directconnect"));
 
         Assert.Equal("stock+fastload+directconnect", File.ReadAllText(Constants.CachePsarcPath));
     }
@@ -68,7 +78,7 @@ public sealed class CachePsarcServiceTests : IDisposable
     [Fact]
     public void TheUnpackedCopyIsDeletedAfterwards()
     {
-        CreateService().Modify(_ => Append("fastload"));
+        CreateService().Modify(cache => Append(cache, "fastload"));
 
         Assert.False(Directory.Exists(Constants.WorkFolder));
     }
@@ -76,9 +86,9 @@ public sealed class CachePsarcServiceTests : IDisposable
     [Fact]
     public void AFailedModificationIsNotRepackedAndStillCleansUp()
     {
-        Assert.Throws<IOException>(() => CreateService().Modify(_ =>
+        Assert.Throws<IOException>(() => CreateService().Modify(cache =>
         {
-            Append("half-applied");
+            Append(cache, "half-applied");
             throw new IOException("injection failed");
         }));
 
@@ -92,10 +102,39 @@ public sealed class CachePsarcServiceTests : IDisposable
     {
         var service = CreateService();
 
-        service.Modify(_ => Append("fastload"));
-        service.Modify(_ => Append("directconnect"));
+        service.Modify(cache => Append(cache, "fastload"));
+        service.Modify(cache => Append(cache, "directconnect"));
 
         Assert.Equal("stock", File.ReadAllText(Constants.CacheBackupPath));
+    }
+
+    [Fact]
+    public void AModificationThatChangesNothingLeavesTheArchiveAlone()
+    {
+        CreateService().Modify(cache => cache.Open(UnpackedContent, forWriting: false));
+
+        Assert.Equal(0, _packs);
+    }
+
+    [Fact]
+    public void OnlyTheChangedEntryIsRewrittenInTheRealArchive()
+    {
+        string source = _rsFolder.File("source");
+        Directory.CreateDirectory(source);
+        File.WriteAllText(Path.Combine(source, "cache4.7z"), "four");
+        File.WriteAllText(Path.Combine(source, "cache7.7z"), "seven");
+        File.WriteAllText(Path.Combine(source, "sltsv1_aggregategraph.nt"), "graph");
+        PsarcPacker.Pack(source, Constants.CachePsarcPath);
+
+        new CachePsarcService().Modify(cache => File.AppendAllText(cache.Open(Constants.Cache7_7zPath, forWriting: true), "+mod"));
+
+        PsarcPacker.Unpack(Constants.CachePsarcPath, _rsFolder.File("result"));
+        string result = PsarcPacker.UnpackedFolder(Constants.CachePsarcPath, _rsFolder.File("result"));
+        Assert.Equal("seven+mod", File.ReadAllText(Path.Combine(result, "cache7.7z")));
+        Assert.Equal("four", File.ReadAllText(Path.Combine(result, "cache4.7z")));
+        Assert.Equal("graph", File.ReadAllText(Path.Combine(result, "sltsv1_aggregategraph.nt")));
+        Assert.False(File.Exists(Constants.CachePsarcPath + ".tmp"));
+        Assert.False(Directory.Exists(Constants.WorkFolder));
     }
 }
 

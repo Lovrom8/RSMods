@@ -1,13 +1,11 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Rocksmith2014PsarcLib.Psarc.Models.Json;
 using RSMods.Data;
 using RSMods.SetAndForget.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using ArrangementTuning = Rocksmith2014PsarcLib.Psarc.Models.Json.SongArrangement.ArrangementAttributes.ArrangementTuning;
 
 namespace RSMods.SetAndForget
 {
@@ -86,15 +84,8 @@ namespace RSMods.SetAndForget
         public static ArrangementTuning ToArrangementTuning(TuningDefinitionInfo tuning)
         {
             Dictionary<string, int> strings = tuning.Strings;
-            return new ArrangementTuning
-            {
-                String0 = strings["string0"],
-                String1 = strings["string1"],
-                String2 = strings["string2"],
-                String3 = strings["string3"],
-                String4 = strings["string4"],
-                String5 = strings["string5"]
-            };
+            return new ArrangementTuning(
+                strings["string0"], strings["string1"], strings["string2"], strings["string3"], strings["string4"], strings["string5"]);
         }
 
         public static bool IsStandard(ArrangementTuning tuning, bool forceBass = false) =>
@@ -120,7 +111,7 @@ namespace RSMods.SetAndForget
             var result = new List<string>();
             foreach (SongData song in songs)
             {
-                List<SongArrangement> parts = InstrumentArrangements(song).Where(a => a.Attributes.Tuning.Equals(tuning)).ToList();
+                List<SongArrangement> parts = InstrumentArrangements(song).Where(a => a.Tuning.Equals(tuning)).ToList();
                 if (parts.Count > 0)
                     result.Add(FormatSongLabel(song, parts));
             }
@@ -153,14 +144,14 @@ namespace RSMods.SetAndForget
             {
                 var byTuning = new List<(ArrangementTuning Tuning, List<SongArrangement> Parts)>();
                 List<SongArrangement> custom = InstrumentArrangements(song)
-                    .Where(a => !defined.Contains(a.Attributes.Tuning))
+                    .Where(a => !defined.Contains(a.Tuning))
                     .ToList();
 
                 foreach (SongArrangement guitar in custom.Where(a => !IsBass(a)))
                 {
-                    int at = byTuning.FindIndex(entry => entry.Tuning.Equals(guitar.Attributes.Tuning));
+                    int at = byTuning.FindIndex(entry => entry.Tuning.Equals(guitar.Tuning));
                     if (at < 0)
-                        byTuning.Add((guitar.Attributes.Tuning, [guitar]));
+                        byTuning.Add((guitar.Tuning, [guitar]));
                     else
                         byTuning[at].Parts.Add(guitar);
                 }
@@ -168,16 +159,16 @@ namespace RSMods.SetAndForget
                 var basses = new List<(ArrangementTuning Tuning, List<SongArrangement> Parts)>();
                 foreach (SongArrangement bass in custom.Where(IsBass))
                 {
-                    int at = FindBassTuning(byTuning.Select(entry => entry.Tuning).ToList(), bass.Attributes.Tuning);
+                    int at = FindBassTuning(byTuning.Select(entry => entry.Tuning).ToList(), bass.Tuning);
                     if (at >= 0)
                     {
                         byTuning[at].Parts.Add(bass);
                         continue;
                     }
 
-                    int own = basses.FindIndex(entry => SameBassStrings(entry.Tuning, bass.Attributes.Tuning));
+                    int own = basses.FindIndex(entry => SameBassStrings(entry.Tuning, bass.Tuning));
                     if (own < 0)
-                        basses.Add((bass.Attributes.Tuning, [bass]));
+                        basses.Add((bass.Tuning, [bass]));
                     else
                         basses[own].Parts.Add(bass);
                 }
@@ -232,15 +223,15 @@ namespace RSMods.SetAndForget
             a.String0 == b.String0 && a.String1 == b.String1 && a.String2 == b.String2 && a.String3 == b.String3;
 
         private static bool IsBass(SongArrangement arrangement) =>
-            arrangement.Attributes.ArrangementProperties?.PathBass == 1 ||
-            (arrangement.Attributes.ArrangementName ?? string.Empty).IndexOf("bass", StringComparison.OrdinalIgnoreCase) >= 0;
+            arrangement.PathBass ||
+            (arrangement.Name ?? string.Empty).IndexOf("bass", StringComparison.OrdinalIgnoreCase) >= 0;
 
         // Vocals and show lights have no tuning to speak of.
         private static IEnumerable<SongArrangement> InstrumentArrangements(SongData song) =>
             song.Arrangements.Where(a =>
-                a.Attributes.Tuning is not null &&
-                (a.Attributes.ArrangementName ?? string.Empty).IndexOf("vocal", StringComparison.OrdinalIgnoreCase) < 0 &&
-                !string.Equals(a.Attributes.ArrangementName, "ShowLights", StringComparison.OrdinalIgnoreCase));
+                a.Tuning is not null &&
+                (a.Name ?? string.Empty).IndexOf("vocal", StringComparison.OrdinalIgnoreCase) < 0 &&
+                !string.Equals(a.Name, "ShowLights", StringComparison.OrdinalIgnoreCase));
 
         // Standard tuning's open strings as MIDI notes, low E to high E.
         private static readonly int[] StandardMidi = [40, 45, 50, 55, 59, 64];
@@ -280,10 +271,10 @@ namespace RSMods.SetAndForget
             {
                 foreach (SongArrangement arrangement in song.Arrangements)
                 {
-                    if ((arrangement.Attributes.ArrangementName ?? string.Empty).IndexOf("bass", StringComparison.OrdinalIgnoreCase) < 0)
+                    if ((arrangement.Name ?? string.Empty).IndexOf("bass", StringComparison.OrdinalIgnoreCase) < 0)
                         continue;
 
-                    ArrangementTuning tuning = arrangement.Attributes.Tuning;
+                    ArrangementTuning tuning = arrangement.Tuning;
                     if (IsStandard(tuning) || IsDrop(tuning))
                         continue;
 
@@ -341,12 +332,12 @@ namespace RSMods.SetAndForget
         private static string FormatArrangementName(SongArrangement arrangement)
         {
             string prefix = string.Empty;
-            if (arrangement.Attributes.ArrangementProperties.Represent == 0)
+            if (arrangement.IsAlternate)
                 prefix = "Alt ";
-            else if (arrangement.Attributes.ArrangementProperties.BonusArr == 1)
+            else if (arrangement.IsBonus)
                 prefix = "Bonus ";
 
-            return prefix + arrangement.Attributes.ArrangementName;
+            return prefix + arrangement.Name;
         }
 
         /// <summary>
@@ -361,7 +352,7 @@ namespace RSMods.SetAndForget
 
             IEnumerable<string> names = parts
                 .OrderBy(PathOrder)
-                .ThenBy(a => a.Attributes.ArrangementProperties.Represent == 0 ? 1 : a.Attributes.ArrangementProperties.BonusArr == 1 ? 2 : 0)
+                .ThenBy(a => a.IsAlternate ? 1 : a.IsBonus ? 2 : 0)
                 .Select(FormatArrangementName)
                 .Distinct(StringComparer.OrdinalIgnoreCase);
 
@@ -372,7 +363,7 @@ namespace RSMods.SetAndForget
         // before its Lead.
         private static int PathOrder(SongArrangement arrangement)
         {
-            string name = arrangement.Attributes.ArrangementName ?? string.Empty;
+            string name = arrangement.Name ?? string.Empty;
             if (name.IndexOf("lead", StringComparison.OrdinalIgnoreCase) >= 0)
                 return 0;
             if (name.IndexOf("rhythm", StringComparison.OrdinalIgnoreCase) >= 0)
@@ -382,8 +373,7 @@ namespace RSMods.SetAndForget
             if (IsBass(arrangement))
                 return 3;
 
-            var properties = arrangement.Attributes.ArrangementProperties;
-            return properties.PathLead == 1 ? 0 : properties.PathRhythm == 1 ? 1 : 4;
+            return arrangement.PathLead ? 0 : arrangement.PathRhythm ? 1 : 4;
         }
     }
 }

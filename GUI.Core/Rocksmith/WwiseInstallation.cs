@@ -1,6 +1,7 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -21,13 +22,15 @@ namespace RSMods.Core
     }
 
     /// <summary>One Wwise install folder and what it offers.</summary>
-    public sealed record WwiseInstall(string Folder, string Version, int Year, bool HasCli)
+    public sealed record WwiseInstall(string Folder, string Version, int Year, bool HasConsole)
     {
         /// <summary>
-        /// The toolkit converter runs WwiseCLI.exe against the Rocksmith project templates it ships, which cover
-        /// Wwise 2013 through 2017; later releases dropped WwiseCLI.exe.
+        /// DLC Builder's converter runs WwiseConsole.exe against the Rocksmith project templates it ships, which cover
+        /// Wwise 2019, 2021, 2022 and 2023.
         /// </summary>
-        public bool IsCompatible => HasCli && Year is >= WwiseInstallation.MinYear and <= WwiseInstallation.MaxYear;
+        public bool IsCompatible => HasConsole && WwiseInstallation.SupportedYears.Contains(Year);
+
+        public string ConsolePath => WwiseInstallation.ConsolePath(Folder);
     }
 
     public sealed record WwiseCheckResult(WwiseStatus Status, WwiseInstall? Selected, IReadOnlyList<WwiseInstall> Installs);
@@ -41,8 +44,7 @@ namespace RSMods.Core
     public static class WwiseInstallation
     {
         public const string RootVariable = "WWISEROOT";
-        public const int MinYear = 2013;
-        public const int MaxYear = 2017;
+        public static readonly IReadOnlyList<int> SupportedYears = [2019, 2021, 2022, 2023];
 
         // Wwise's default install folders: "Wwise v2013.2.10 build 4884" (older) and "Wwise_2023.1.19.8928" (newer).
         private static readonly Regex VersionPattern = new(@"(20\d{2})\.(\d+)(?:\.(\d+))?", RegexOptions.Compiled);
@@ -89,7 +91,7 @@ namespace RSMods.Core
             if (fromVariable is { IsCompatible: true })
                 return new WwiseCheckResult(WwiseStatus.Ready, fromVariable, installs);
 
-            // Newest compatible first: its template is the closest match to what CustomsForge distributes.
+            // Newest compatible first.
             WwiseInstall? compatible = installs.Where(i => i.IsCompatible).OrderByDescending(i => i.Year).FirstOrDefault();
             if (compatible is not null)
             {
@@ -109,13 +111,17 @@ namespace RSMods.Core
                 return null;
 
             Match version = VersionPattern.Match(Path.GetFileName(folder.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)));
-            int year = version.Success ? int.Parse(version.Groups[1].Value) : 0;
+            string console = ConsolePath(folder);
+            bool hasConsole = File.Exists(console);
 
-            bool hasCli = new[] { "Win32", "x64" }
-                .Any(platform => File.Exists(Path.Combine(authoring, platform, "Release", "bin", "WwiseCLI.exe")));
+            // A renamed folder carries no year; the converter itself goes by the executable's product version.
+            int year = version.Success ? int.Parse(version.Groups[1].Value)
+                : hasConsole ? FileVersionInfo.GetVersionInfo(console).ProductMajorPart : 0;
 
-            return new WwiseInstall(folder, version.Success ? version.Value : "unknown version", year, hasCli);
+            return new WwiseInstall(folder, version.Success ? version.Value : year > 0 ? year.ToString() : "unknown version", year, hasConsole);
         }
+
+        public static string ConsolePath(string folder) => Path.Combine(folder, "Authoring", "x64", "Release", "bin", "WwiseConsole.exe");
 
         private static IEnumerable<string> DefaultSearchFolders()
         {

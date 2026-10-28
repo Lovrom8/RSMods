@@ -1,44 +1,53 @@
-using RocksmithToolkitLib.DLCPackage;
 using RSMods.Data;
 using RSMods.Util;
 using SevenZip;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace RSMods.SetAndForget
 {
+    /// <summary>The cache.psarc operations <see cref="CachePsarcService"/> needs. A seam for tests.</summary>
+    internal interface ICacheArchive
+    {
+        bool Contains(string archivePath, string entryName);
+        void Extract(string archivePath, string entryName, string targetFile);
+        void Replace(string archivePath, IReadOnlyDictionary<string, string> filesByEntry);
+    }
+
     /// <summary>
-    /// Owns the <c>cache.psarc</c> lifecycle (unpack, backup, repack, restore, cleanup) and the
-    /// archive injection/extraction primitives. Every cache mod runs through <see cref="Modify"/>, so the
-    /// "unpack → mutate files → repack → clean up" round-trip, backup creation, and mutation-failure handling
-    /// live in exactly one place instead of being repeated (and quietly ignored) at each mod site.
+    /// Owns the <c>cache.psarc</c> lifecycle (backup, edit, restore, cleanup) and the archive injection/extraction
+    /// primitives. Every cache mod runs through <see cref="Modify"/>, so the "extract → mutate files → write back →
+    /// clean up" round-trip, backup creation, and mutation-failure handling live in exactly one place instead of being
+    /// repeated (and quietly ignored) at each mod site.
     /// </summary>
     public sealed class CachePsarcService
     {
-        private readonly Action<string, string> _unpack;
-        private readonly Action<string, string> _pack;
+        private const string AggregateGraphEntry = "sltsv1_aggregategraph.nt";
+
+        private readonly ICacheArchive _archive;
 
         public CachePsarcService()
-            : this((archive, destination) => Packer.Unpack(archive, destination),
-                   (source, archive) => Packer.Pack(source, archive))
+            : this(new PsarcCacheArchive())
         {
         }
 
-        /// <summary>Test seam: stands in for the toolkit's psarc unpack and pack.</summary>
-        internal CachePsarcService(Action<string, string> unpack, Action<string, string> pack)
+        internal CachePsarcService(ICacheArchive archive)
         {
-            _unpack = unpack ?? throw new ArgumentNullException(nameof(unpack));
-            _pack = pack ?? throw new ArgumentNullException(nameof(pack));
+            _archive = archive ?? throw new ArgumentNullException(nameof(archive));
         }
 
         /// <summary>
-        /// Unpacks the cache, applies the caller's mutations, repacks, and deletes the unpacked copy. Any
-        /// failure inside <paramref name="mutate"/> (including an injection that did not take) aborts before
-        /// the repack and propagates to the caller, so a partially-applied mod can never be reported as success.
+        /// Applies the caller's mutations to the cache, writes back the entries they changed, and deletes the extracted
+        /// copies. Only the entries a mutation touches are extracted (cache7.7z and the like), and only the changed ones
+        /// are replaced; the rest of cache.psarc is carried over as it is. Any failure inside <paramref name="mutate"/>
+        /// (including an injection that did not take) aborts before anything is written and propagates to the caller,
+        /// so a partially-applied mod can never be reported as success.
         /// <para>
-        /// Every call starts from the cache.psarc on disk. Mods still stack, since each one is repacked into
-        /// it, but an old unpack is never reused: it would re-apply mods the user has since removed with
-        /// Restore Defaults or a Steam verify.
+        /// Every call starts from the cache.psarc on disk. Mods still stack, since each one is written into it, but
+        /// old extracted files are never reused: they would re-apply mods the user has since removed with Restore
+        /// Defaults or a Steam verify.
         /// </para>
         /// </summary>
         public void Modify(Action<CacheModification> mutate)
@@ -47,9 +56,9 @@ namespace RSMods.SetAndForget
 
             try
             {
-                Unpack();
-                mutate(new CacheModification());
-                Repack();
+                CacheModification cache = StartEdit();
+                mutate(cache);
+                WriteBack(cache.Changed);
             }
             finally
             {
@@ -111,12 +120,10 @@ namespace RSMods.SetAndForget
         {
             try
             {
-                Unpack();
+                CacheModification cache = StartEdit();
 
-                bool tunings = ZipUtilities.ExtractSingleFile(
-                    Constants.CustomModsFolder, Constants.Cache7_7zPath, Constants.TuningsJSON_InternalPath);
-                bool localization = ZipUtilities.ExtractSingleFile(
-                    Constants.CustomModsFolder, Constants.Cache4_7zPath, Constants.LocalizationCSV_InternalPath);
+                bool tunings = cache.ExtractFile(Constants.Cache7_7zPath, Constants.TuningsJSON_InternalPath, Constants.CustomModsFolder);
+                bool localization = cache.ExtractFile(Constants.Cache4_7zPath, Constants.LocalizationCSV_InternalPath, Constants.CustomModsFolder);
 
                 return tunings && localization;
             }
@@ -149,24 +156,39 @@ namespace RSMods.SetAndForget
                 GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, typeof(CachePsarcService).Assembly, "RSMods.Core.Resources", [resourceName]);
         }
 
-        private void Unpack()
+        private CacheModification StartEdit()
         {
             RemoveTempFolders();
-            Directory.CreateDirectory(Constants.WorkFolder);
+            Directory.CreateDirectory(Constants.CachePcPath);
 
             if (!File.Exists(Constants.CacheBackupPath))
                 File.Copy(Constants.CachePsarcPath, Constants.CacheBackupPath);
 
-            _unpack(Constants.CachePsarcPath, Constants.WorkFolder);
+            return new CacheModification(_archive);
         }
 
-        private void Repack()
+        private void WriteBack(IReadOnlyCollection<string> changedFiles)
         {
-            //NOTE: when adding resources, change Build Action to Embedded Resource
-            if (!File.Exists(Path.Combine(Constants.CachePcPath, "sltsv1_aggregategraph.nt")))
-                GenUtil.ExtractEmbeddedResource(Constants.CachePcPath, typeof(CachePsarcService).Assembly, "RSMods.Core.Resources", ["sltsv1_aggregategraph.nt"]);
+            if (changedFiles.Count == 0)
+                return;
 
-            _pack(Constants.CachePcPath, Constants.CachePsarcPath);
+            Dictionary<string, string> filesByEntry = changedFiles.ToDictionary(CacheModification.EntryName);
+
+            //NOTE: when adding resources, change Build Action to Embedded Resource
+            if (!_archive.Contains(Constants.CachePsarcPath, AggregateGraphEntry))
+            {
+                GenUtil.ExtractEmbeddedResource(Constants.CachePcPath, typeof(CachePsarcService).Assembly, "RSMods.Core.Resources", [AggregateGraphEntry]);
+                filesByEntry[AggregateGraphEntry] = Path.Combine(Constants.CachePcPath, AggregateGraphEntry);
+            }
+
+            _archive.Replace(Constants.CachePsarcPath, filesByEntry);
+        }
+
+        private sealed class PsarcCacheArchive : ICacheArchive
+        {
+            public bool Contains(string archivePath, string entryName) => PsarcPacker.ContainsEntry(archivePath, entryName);
+            public void Extract(string archivePath, string entryName, string targetFile) => PsarcPacker.ExtractEntry(archivePath, entryName, targetFile);
+            public void Replace(string archivePath, IReadOnlyDictionary<string, string> filesByEntry) => PsarcPacker.ReplaceEntries(archivePath, filesByEntry);
         }
     }
 
@@ -177,14 +199,45 @@ namespace RSMods.SetAndForget
     /// </summary>
     public sealed class CacheModification
     {
-        internal CacheModification()
+        private readonly ICacheArchive _archive;
+        private readonly HashSet<string> _extracted = new(StringComparer.OrdinalIgnoreCase);
+        private readonly HashSet<string> _changed = new(StringComparer.OrdinalIgnoreCase);
+
+        internal CacheModification(ICacheArchive archive)
         {
+            _archive = archive;
         }
 
+        /// <summary>The extracted files that were written to, which go back into cache.psarc.</summary>
+        internal IReadOnlyCollection<string> Changed => _changed;
+
+        /// <param name="archivePath">The extracted cache archive, e.g. <see cref="Constants.Cache7_7zPath"/>.</param>
         public void Inject(string sourceFilePath, string archivePath, string internalArchivePath)
         {
+            Open(archivePath, forWriting: true);
             if (!ZipUtilities.InjectFile(sourceFilePath, archivePath, internalArchivePath, OutArchiveFormat.SevenZip, CompressionMode.Append))
                 throw new IOException($"Failed to inject '{internalArchivePath}' into '{Path.GetFileName(archivePath)}'.");
         }
+
+        /// <summary>Copies one file out of a cache archive into <paramref name="targetDirectory"/>. False when it isn't there.</summary>
+        public bool ExtractFile(string archivePath, string internalArchivePath, string targetDirectory)
+        {
+            Open(archivePath, forWriting: false);
+            return ZipUtilities.ExtractSingleFile(targetDirectory, archivePath, internalArchivePath);
+        }
+
+        /// <summary>Extracts a cache.psarc entry under <see cref="Constants.CachePcPath"/> the first time it's used.</summary>
+        internal string Open(string extractedPath, bool forWriting)
+        {
+            if (_extracted.Add(extractedPath))
+                _archive.Extract(Constants.CachePsarcPath, EntryName(extractedPath), extractedPath);
+            if (forWriting)
+                _changed.Add(extractedPath);
+
+            return extractedPath;
+        }
+
+        internal static string EntryName(string extractedPath) =>
+            Path.GetRelativePath(Constants.CachePcPath, extractedPath).Replace('\\', '/');
     }
 }

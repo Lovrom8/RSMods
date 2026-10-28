@@ -1,5 +1,3 @@
-using RocksmithToolkitLib.DLCPackage;
-using RocksmithToolkitLib.Extensions;
 using RSMods.Rocksmith;
 using RSMods.Util;
 using System;
@@ -38,7 +36,7 @@ namespace RSMods.Core
         public string UnpackRoot => Path.Combine(RsModsPath, "audio_psarc");
 
         /// <summary>The platform subfolder inside the unpacked archive that gets repacked.</summary>
-        public string UnpackedPcPath => Path.Combine(UnpackRoot, "audio_psarc_RS2014_Pc");
+        public string UnpackedPcPath => PsarcPacker.UnpackedFolder(AudioPsarcPath, UnpackRoot);
 
         /// <summary>True once <c>audio.psarc</c> has been unpacked (drives the tab's two-state UI).</summary>
         public bool IsUnpacked => Directory.Exists(UnpackRoot);
@@ -54,31 +52,22 @@ namespace RSMods.Core
 
         /// <summary>Unpacks <c>audio.psarc</c> into <see cref="UnpackRoot"/>, reporting progress.</summary>
         public Task UnpackAsync(IProgress<int> value, IProgress<string> operation) =>
-            RunPsarcTaskAsync(() => Packer.Unpack(AudioPsarcPath, UnpackRoot), value, operation);
+            RunPsarcTaskAsync(progress => PsarcPacker.Unpack(AudioPsarcPath, UnpackRoot, progress), "Unpacking audio.psarc", value, operation);
 
         /// <summary>Repacks the unpacked folder back into <c>audio.psarc</c>, reporting progress.</summary>
         public Task RepackAsync(IProgress<int> value, IProgress<string> operation) =>
-            RunPsarcTaskAsync(() => Packer.Pack(UnpackedPcPath, AudioPsarcPath), value, operation);
+            RunPsarcTaskAsync(progress => PsarcPacker.Pack(UnpackedPcPath, AudioPsarcPath, progress), "Packing audio.psarc", value, operation);
 
-        // Bridges the toolkit's static GlobalProgress events to the caller's IProgress for the duration of the
-        // work, always detaching the handlers and forcing an LOH-compacting collection afterwards (packing/
-        // unpacking allocates very large buffers) — mirroring the old WinForms SoundPacks executor.
-        private static async Task RunPsarcTaskAsync(Action work, IProgress<int> value, IProgress<string> operation)
+        // Always forces an LOH-compacting collection afterwards: a 1 GB archive leaves large pack/unpack buffers behind.
+        private static async Task RunPsarcTaskAsync(Action<IProgress<int>> work, string operationName, IProgress<int> value, IProgress<string> operation)
         {
-            void OnValue(int v) => value?.Report(v);
-            void OnOperation(string o) => operation?.Report(o);
-
-            GlobalProgress.ProgressValueChanged += OnValue;
-            GlobalProgress.CurrentOperationChanged += OnOperation;
+            operation?.Report(operationName);
             try
             {
-                await Task.Run(work);
+                await Task.Run(() => work(value));
             }
             finally
             {
-                GlobalProgress.ProgressValueChanged -= OnValue;
-                GlobalProgress.CurrentOperationChanged -= OnOperation;
-
                 GCSettings.LargeObjectHeapCompactionMode = GCLargeObjectHeapCompactionMode.CompactOnce;
                 GC.Collect(2, GCCollectionMode.Forced, blocking: true, compacting: true);
             }

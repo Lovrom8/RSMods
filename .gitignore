@@ -7,6 +7,9 @@ xinput1_3.pdb
 # Claude Code local worktrees / scratch (never commit as gitlinks)
 **/.claude/worktrees/
 
+# DLC Builder source checkout made by Deps/scripts/build-deps.ps1
+Deps/_rocksmith2014-net/
+
 # Framework unit-test build output
 DLL/Framework/Tests/bin/
 

@@ -2,7 +2,7 @@
 
   <!-- Testable, UI-framework-free installer logic shared by the Avalonia installer and its tests. -->
   <PropertyGroup>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFramework>net10.0-windows</TargetFramework>
     <LangVersion>12.0</LangVersion>
     <Nullable>disable</Nullable>
     <ImplicitUsings>disable</ImplicitUsings>
@@ -13,10 +13,6 @@
     <!-- No WinForms/Avalonia: this project must stay UI-framework free. -->
     <UseWindowsForms>false</UseWindowsForms>
   </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
-  </ItemGroup>
 
   <ItemGroup>
     <InternalsVisibleTo Include="Installer.Core.Tests" />

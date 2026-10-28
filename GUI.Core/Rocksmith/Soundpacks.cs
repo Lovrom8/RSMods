@@ -1,11 +1,14 @@
+using Microsoft.FSharp.Control;
+using Microsoft.FSharp.Core;
 using NAudio.Wave;
-using RocksmithToolkitLib.Ogg;
+using Rocksmith2014.Audio;
 using RSMods.Core;
 using RSMods.Util;
 using SevenZip;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 
 namespace RSMods.Rocksmith
 {
@@ -45,11 +48,6 @@ namespace RSMods.Rocksmith
         // current working directory. This matters for Avalonia, whose CWD is not the RSMods folder.
         private static string SevenZipLibraryPath => Path.Combine(AppContext.BaseDirectory, "7z64.dll");
 
-        private static void SafeDelete(string path)
-        {
-            if (File.Exists(path)) File.Delete(path);
-        }
-
         private static string ConvertMP3ToWav(string mp3File)
         {
             string wavFile = Path.Combine(Path.GetDirectoryName(mp3File), Path.GetFileNameWithoutExtension(mp3File) + ".wav");
@@ -62,43 +60,17 @@ namespace RSMods.Rocksmith
             return wavFile;
         }
 
-        private static string ConvertOGGToWem(string oggFile, string appStartupPath)
+        // DLC Builder's converter writes <source>.wem beside the source. It takes WAV, OGG and FLAC.
+        private static string ConvertToWem(string sourceFile)
         {
-            string oggFileName = Path.GetFileNameWithoutExtension(oggFile);
-            string directory = Path.GetDirectoryName(oggFile);
-            string oggFullPath = Path.Combine(directory, oggFileName);
-            string oggPreviewName = oggFullPath + "_preview";
+            WwiseInstall wwise = WwiseInstallation.Check().Selected
+                ?? throw new InvalidOperationException("Converting needs Wwise 2019, 2021, 2022 or 2023. WEM files can be used without it.");
 
-            string wemFile = OggFile.Convert2Wem(oggFile);
+            FSharpAsync.RunSynchronously(
+                Wwise.convertToWem(FSharpOption<string>.Some(wwise.ConsolePath), sourceFile),
+                FSharpOption<int>.None, FSharpOption<CancellationToken>.None);
 
-            SafeDelete(oggFullPath + ".wav");
-            SafeDelete(oggPreviewName + ".ogg");
-            SafeDelete(oggPreviewName + ".wav");
-            SafeDelete(oggPreviewName + ".wem");
-
-            string destWemName = Path.GetFileNameWithoutExtension(wemFile) + ".wem";
-            string finalPath = Path.Combine(appStartupPath, destWemName);
-
-            if (!string.Equals(Path.GetFullPath(wemFile), Path.GetFullPath(finalPath), StringComparison.OrdinalIgnoreCase))
-                File.Move(wemFile, finalPath, true);
-
-            return finalPath;
-        }
-
-        private static string ConvertWAVToWem(string wavFile, string appStartupPath)
-        {
-            string previewWav = Path.Combine(Path.GetDirectoryName(wavFile), Path.GetFileNameWithoutExtension(wavFile) + "_preview.wav");
-
-            SafeDelete(previewWav);
-            File.Copy(wavFile, previewWav);
-
-            string outputWem = Path.Combine(appStartupPath, Path.GetFileNameWithoutExtension(wavFile) + ".wem");
-            Wwise.Wav2Wem(wavFile, outputWem, 4);
-
-            SafeDelete(previewWav);
-            SafeDelete(Path.Combine(appStartupPath, Path.GetFileNameWithoutExtension(wavFile) + "_preview.wem"));
-
-            return outputWem;
+            return Path.ChangeExtension(sourceFile, ".wem");
         }
 
         public static void ConvertSoundAndReplace(string soundToReplace, string sourceFile, string rsModsPath)
@@ -111,11 +83,10 @@ namespace RSMods.Rocksmith
 
                 string convertedFile = Path.GetExtension(workingSource).ToLowerInvariant() switch
                 {
-                    ".mp3" => ConvertWAVToWem(ConvertMP3ToWav(workingSource), temporaryFolder),
-                    ".ogg" => ConvertOGGToWem(workingSource, temporaryFolder),
-                    ".wav" => ConvertWAVToWem(workingSource, temporaryFolder),
+                    ".mp3" => ConvertToWem(ConvertMP3ToWav(workingSource)),
+                    ".ogg" or ".wav" or ".flac" => ConvertToWem(workingSource),
                     ".wem" => workingSource,
-                    _ => throw new NotSupportedException("Sound files must use the MP3, OGG, WAV, or WEM format.")
+                    _ => throw new NotSupportedException("Sound files must use the MP3, OGG, WAV, FLAC or WEM format.")
                 };
 
                 if (!File.Exists(convertedFile))

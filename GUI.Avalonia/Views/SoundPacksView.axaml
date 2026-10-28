@@ -60,7 +60,7 @@
                                 <TextBlock FontWeight="SemiBold" Text="Result voice lines" />
                                 <TextBlock
                                     Classes="hint"
-                                    Text="Replace the line played for a score with your own audio. MP3, OGG and WAV files need Wwise 2013 to 2017 to convert; WEM files don't. Repack when you're done." />
+                                    Text="Replace the line played for a score with your own audio. MP3, OGG, WAV and FLAC files need Wwise 2019, 2021, 2022 or 2023 to convert; WEM files don't. Repack when you're done." />
                             </StackPanel>
 
                             <StackPanel Spacing="2">

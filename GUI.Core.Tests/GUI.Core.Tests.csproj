@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFramework>net10.0-windows</TargetFramework>
     <LangVersion>12.0</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
@@ -21,13 +21,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\GUI.Core\GUI.Core.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <!-- The tuning song-list tests build scanned arrangements from the archive library's manifest model. -->
-    <Reference Include="Rocksmith2014PsarcLib">
-      <HintPath>..\RuntimeAssets\Rocksmith2014PsarcLib.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
   <ItemGroup>

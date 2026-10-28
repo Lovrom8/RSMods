@@ -5,8 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Rocksmith2014PsarcLib.Psarc;
-using Rocksmith2014PsarcLib.Psarc.Models.Json;
+using Rocksmith2014.PSARC;
 using RSMods.Util;
 
 namespace RSMods
@@ -20,8 +19,8 @@ namespace RSMods
     public sealed record SongCatalogWarning(string ArchivePath, string Message);
 
     /// <summary>
-    /// Builds and caches the Rocksmith song catalog. Archive parsing is synchronous in the bundled PSARC
-    /// library, so scans run on a worker thread with bounded archive parallelism.
+    /// Builds and caches the Rocksmith song catalog. Scans run on a worker thread with bounded archive parallelism:
+    /// each archive read holds its manifests in memory, and songs.psarc is large.
     /// </summary>
     public sealed class SongCatalogService
     {
@@ -161,16 +160,48 @@ namespace RSMods
                 .ToArray();
         }
 
-        private static ArchiveContents ReadArchive(string archivePath, CancellationToken cancellationToken)
+        internal static ArchiveContents ReadArchive(string archivePath, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            using var psarc = new PsarcFile(archivePath);
-            bool isOfficialDlc = string.Equals(psarc.ExtractToolkitInfo().PackageAuthor, "Ubisoft", StringComparison.Ordinal);
+            using PSARC psarc = PSARC.OpenFile(archivePath);
+            string toolkitInfo = psarc.Manifest.Contains(ToolkitVersionEntry) ? ReadEntry(psarc, ToolkitVersionEntry) : null;
+            bool isOfficialDlc = string.Equals(PackageAuthor(toolkitInfo), "Ubisoft", StringComparison.Ordinal);
 
-            cancellationToken.ThrowIfCancellationRequested();
-            SongArrangement[] arrangements = psarc.ExtractArrangementManifests().ToArray();
+            var arrangements = new List<ArrangementManifest>();
+            foreach (string entry in psarc.Manifest.Where(name => name.EndsWith(".json", StringComparison.OrdinalIgnoreCase)))
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                if (ArrangementManifest.Parse(ReadEntry(psarc, entry)) is ArrangementManifest manifest)
+                    arrangements.Add(manifest);
+            }
+
             return new ArchiveContents(isOfficialDlc, arrangements);
+        }
+
+        private const string ToolkitVersionEntry = "toolkit.version";
+
+        private static string ReadEntry(PSARC psarc, string name)
+        {
+            using Stream stream = psarc.GetEntryStream(name).GetAwaiter().GetResult();
+            using var reader = new StreamReader(stream);
+            return reader.ReadToEnd();
+        }
+
+        /// <summary>
+        /// The "Package Author" line of a toolkit.version file. Official DLC has no such file, and counts as Ubisoft's, as
+        /// does a file that doesn't name an author.
+        /// </summary>
+        internal static string PackageAuthor(string toolkitInfo)
+        {
+            foreach (string line in (toolkitInfo ?? string.Empty).Split('\n'))
+            {
+                int colon = line.IndexOf(':');
+                if (colon > 0 && string.Equals(line[..colon].Trim(), "Package Author", StringComparison.OrdinalIgnoreCase))
+                    return line[(colon + 1)..].Trim();
+            }
+
+            return "Ubisoft";
         }
 
         private static IReadOnlyList<SongData> BuildSongCatalog(IEnumerable<ArchiveContents> archives)
@@ -178,49 +209,45 @@ namespace RSMods
             var arrangements = new List<ArrangementSource>();
             foreach (ArchiveContents archive in archives)
             {
-                foreach (SongArrangement arrangement in archive.Arrangements)
+                foreach (ArrangementManifest arrangement in archive.Arrangements)
                 {
-                    if (HasSongIdentity(arrangement))
+                    if (!string.IsNullOrEmpty(arrangement.Artist) || !string.IsNullOrEmpty(arrangement.Title))
                         arrangements.Add(new ArrangementSource(arrangement, archive.IsOfficialDlc));
                 }
             }
 
             return arrangements
-                .GroupBy(source => source.Arrangement.Attributes.SongKey)
+                .GroupBy(source => source.Arrangement.SongKey)
                 .Select(BuildSongData)
                 .OrderBy(song => song.Artist, StringComparer.OrdinalIgnoreCase)
                 .ThenBy(song => song.Title, StringComparer.OrdinalIgnoreCase)
                 .ToArray();
         }
 
-        private static bool HasSongIdentity(SongArrangement arrangement) =>
-            !string.IsNullOrEmpty(arrangement?.Attributes?.ArtistName) ||
-            !string.IsNullOrEmpty(arrangement?.Attributes?.SongName);
-
         private static SongData BuildSongData(IGrouping<string, ArrangementSource> group)
         {
             ArrangementSource[] sources = group.ToArray();
             ArrangementSource first = sources[0];
-            SongArrangement.ArrangementAttributes attributes = first.Arrangement.Attributes;
+            ArrangementManifest manifest = first.Arrangement;
 
             var song = new SongData
             {
-                Arrangements = sources.Select(source => source.Arrangement).ToList(),
-                DLCKey = attributes.SongKey,
-                Artist = attributes.ArtistName,
-                Title = attributes.SongName,
-                Shipping = attributes.Shipping,
+                Arrangements = sources.Select(source => source.Arrangement.Arrangement).ToList(),
+                DLCKey = manifest.SongKey,
+                Artist = manifest.Artist,
+                Title = manifest.Title,
+                Shipping = manifest.Shipping,
                 ODLC = first.IsOfficialDlc
             };
 
-            if (song.ODLC && attributes.SKU == "RS1" && attributes.DLCRS1Key?.Count > 0)
-                song.RS1AppID = attributes.DLCRS1Key[0].WIN32;
+            if (song.ODLC && manifest.Sku == "RS1")
+                song.RS1AppID = manifest.Rs1AppId;
 
             return song;
         }
 
-        private sealed record ArchiveContents(bool IsOfficialDlc, IReadOnlyList<SongArrangement> Arrangements);
-        private readonly record struct ArrangementSource(SongArrangement Arrangement, bool IsOfficialDlc);
+        internal sealed record ArchiveContents(bool IsOfficialDlc, IReadOnlyList<ArrangementManifest> Arrangements);
+        private readonly record struct ArrangementSource(ArrangementManifest Arrangement, bool IsOfficialDlc);
     }
 
     public sealed class SongData

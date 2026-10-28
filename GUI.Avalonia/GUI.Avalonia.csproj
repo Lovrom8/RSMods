@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFramework>net10.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <PlatformTarget>x64</PlatformTarget>
@@ -32,21 +32,18 @@
   </ItemGroup>
 
   <!--
-    The shared Core's SoundPack (and later psarc) work calls native tools by path relative to the app base:
-    SevenZipSharp's 7z64.dll and RocksmithToolkitLib's Wwise/ogg toolchain under tools\. Ship the whole
-    RuntimeAssets/ tree beside the executable, preserving its relative layout (ddc\, tools\) via Link, so
-    the app finds the same natives in the same relative locations. Both build output and publish output
-    are covered, which is what the win-x64 publish pipeline relies on.
+    The shared Core's SoundPack work loads SevenZipSharp's 7z64.dll by path relative to the app base. Ship
+    the whole RuntimeAssets/ tree beside the executable, preserving its relative layout via Link. Both build
+    output and publish output are covered, which is what the win-x64 publish pipeline relies on.
   -->
   <!--
-    Managed assemblies that GUI.Core already owns (its RocksmithToolkitLib/SevenZipSharp/etc. references
-    and their resolved dependencies) arrive beside RSMods.exe through the project reference. Excluding
-    them here keeps a single owner per file; otherwise publish rejects the duplicate relative paths
-    (NETSDK1152). Everything else in RuntimeAssets - the 7z natives, the ddc/ and tools/ toolchains, the
-    Wwise archives, and the remaining legacy libs - is owned and shipped from here.
+    Managed assemblies that GUI.Core already owns (its SevenZipSharp/etc. references and their resolved
+    dependencies) arrive beside RSMods.exe through the project reference. Excluding them here keeps a single
+    owner per file; otherwise publish rejects the duplicate relative paths (NETSDK1152). Everything else in
+    RuntimeAssets - the 7z natives and the remaining legacy libs - is owned and shipped from here.
   -->
   <ItemGroup>
-    <Content Include="..\RuntimeAssets\**\*.*" Exclude="..\RuntimeAssets\BouncyCastle.Crypto.dll;&#xD;&#xA;                      ..\RuntimeAssets\ICSharpCode.SharpZipLib.dll;&#xD;&#xA;                      ..\RuntimeAssets\MiscUtil.dll;&#xD;&#xA;                      ..\RuntimeAssets\Newtonsoft.Json.dll;&#xD;&#xA;                      ..\RuntimeAssets\Pfim.dll;&#xD;&#xA;                      ..\RuntimeAssets\Rocksmith2014PsarcLib.dll;&#xD;&#xA;                      ..\RuntimeAssets\RocksmithToolkitLib.dll;&#xD;&#xA;                      ..\RuntimeAssets\SevenZipSharp.dll;&#xD;&#xA;                      ..\RuntimeAssets\X360.dll;&#xD;&#xA;                      ..\RuntimeAssets\zlib.net.dll">
+    <Content Include="..\RuntimeAssets\**\*.*" Exclude="..\RuntimeAssets\MiscUtil.dll;&#xD;&#xA;                      ..\RuntimeAssets\SevenZipSharp.dll;&#xD;&#xA;                      ..\RuntimeAssets\zlib.net.dll">
       <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>

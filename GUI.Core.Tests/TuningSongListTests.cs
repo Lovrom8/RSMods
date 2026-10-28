@@ -1,8 +1,6 @@
-using Rocksmith2014PsarcLib.Psarc.Models.Json;
 using RSMods;
 using RSMods.SetAndForget;
 using RSMods.SetAndForget.Models;
-using ArrangementTuning = Rocksmith2014PsarcLib.Psarc.Models.Json.SongArrangement.ArrangementAttributes.ArrangementTuning;
 
 namespace RSMods.Core.Tests;
 
@@ -102,26 +100,13 @@ public sealed class TuningSongListTests : IDisposable
     private static SongData Song(string artist, string title, params SongArrangement[] parts) =>
         new() { Artist = artist, Title = title, Arrangements = [.. parts] };
 
-    private static SongArrangement Part(string? name, int[]? offsets, bool bass = false, bool alt = false)
+    private static SongArrangement Part(string? name, int[]? offsets, bool bass = false, bool alt = false) => new()
     {
-        // The manifest model only lets its JSON reader set Attributes.
-        var part = new SongArrangement();
-        typeof(SongArrangement).GetProperty(nameof(SongArrangement.Attributes))!.SetValue(part, new SongArrangement.ArrangementAttributes
-        {
-            ArrangementName = name,
-            ArrangementProperties = new SongArrangement.ArrangementAttributes.Properties
-            {
-                Represent = alt ? 0 : 1,
-                PathLead = name == "Lead" ? 1 : 0,
-                PathRhythm = name == "Rhythm" ? 1 : 0,
-                PathBass = bass ? 1 : 0,
-            },
-            Tuning = offsets is null ? null : new ArrangementTuning
-            {
-                String0 = offsets[0], String1 = offsets[1], String2 = offsets[2],
-                String3 = offsets[3], String4 = offsets[4], String5 = offsets[5],
-            },
-        });
-        return part;
-    }
+        Name = name,
+        IsAlternate = alt,
+        PathLead = name == "Lead",
+        PathRhythm = name == "Rhythm",
+        PathBass = bass,
+        Tuning = offsets is null ? null : new ArrangementTuning(offsets[0], offsets[1], offsets[2], offsets[3], offsets[4], offsets[5]),
+    };
 }

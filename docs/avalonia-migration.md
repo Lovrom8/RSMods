@@ -83,12 +83,16 @@ It currently owns:
   result voice-over.
 - Other shared models and helpers such as `Dictionaries`, `GuitarSpeak`, `ColorItem`, and `KeybindItem`.
 
-`GUI.Core` references the prebuilt libraries under `RuntimeAssets/`, including `RocksmithToolkitLib`,
-`Rocksmith2014PsarcLib`, and (for SoundPacks) `SevenZipSharp`. They are an important constraint for future
-portability and maintenance. SoundPack MP3 decoding also pulls in `NAudio.WinMM` (used via
-`Mp3FileReaderBase` + `AcmMp3FrameDecompressor`, not the convenience `Mp3FileReader`, which lives in the
-WinForms-dragging NAudio meta-package). The native `7z64.dll` and the Wwise/ogg toolchain are not managed
-references; `GUI.Avalonia` copies the `RuntimeAssets/` tree next to its executable (see its `.csproj`).
+`GUI.Core` (net10.0-windows) references the prebuilt libraries under `RuntimeAssets/`, including (for SoundPacks)
+`SevenZipSharp`, and DLC Builder's Rocksmith2014.NET libraries under `Deps/` (rebuilt by
+`Deps/scripts/build-deps.ps1`): `Rocksmith2014.PSARC` reads song archives for the song catalog and packs and unpacks
+cache.psarc/audio.psarc (`PsarcPacker`), `Rocksmith2014.Common` reads toolkit XML tones, and `Rocksmith2014.Audio`
+converts SoundPack audio with Wwise 2019/2021/2022/2023. These replaced `RocksmithToolkitLib` (and its `ddc/`,
+`tools/` and Wwise 2013–2017 template payload) and `Rocksmith2014PsarcLib`; arrangement manifests are read into
+RSMods' own `SongArrangement`/`ArrangementTuning`. SoundPack MP3 decoding
+also pulls in `NAudio.WinMM` (used via `Mp3FileReaderBase` + `AcmMp3FrameDecompressor`, not the convenience
+`Mp3FileReader`, which lives in the WinForms-dragging NAudio meta-package). The native `7z64.dll` is not a
+managed reference; `GUI.Avalonia` copies the `RuntimeAssets/` tree next to its executable (see its `.csproj`).
 
 ### `GUI.Avalonia/`
 

@@ -77,16 +77,16 @@ internal sealed partial class SoundPacksViewModel(SoundPackService service, IDia
     private void CheckWwise()
     {
         WwiseCheckResult result = WwiseInstallation.Check();
-        const string supported = "Wwise 2013 to 2017";
+        const string supported = "Wwise 2019, 2021, 2022 or 2023";
 
         WwiseWarning = result.Status switch
         {
             WwiseStatus.NotInstalled =>
-                $"Wwise isn't installed, so only .wem files can replace a voice line: MP3, OGG and WAV files are converted " +
+                $"Wwise isn't installed, so only .wem files can replace a voice line: MP3, OGG, WAV and FLAC files are converted " +
                 $"with {supported}. Use Download under Tools, then open Wwise once to accept its EULA.",
             WwiseStatus.Incompatible =>
                 $"{DescribeInstalled(result.Installs)} installed, but {(result.Installs.Count == 1 ? "it can't" : "none of them can")} " +
-                $"convert MP3, OGG and WAV files: that needs WwiseCLI.exe from {supported} (later versions don't include it), " +
+                $"convert MP3, OGG, WAV and FLAC files: that needs {supported}, " +
                 "so only .wem files can be used. Use Download under Tools to install a compatible version alongside it.",
             _ => string.Empty,
         };
@@ -299,7 +299,7 @@ internal sealed partial class SoundPacksViewModel(SoundPackService service, IDia
             return;
         }
 
-        var files = await dialogs.PickFilesAsync($"Replace “{line.Label}”", "Sound Files", ["*.mp3", "*.ogg", "*.wav", "*.wem"], allowMultiple: false);
+        var files = await dialogs.PickFilesAsync($"Replace “{line.Label}”", "Sound Files", ["*.mp3", "*.ogg", "*.wav", "*.flac", "*.wem"], allowMultiple: false);
         if (files.Count == 0)
             return;
 
@@ -337,6 +337,7 @@ internal sealed partial class SoundPacksViewModel(SoundPackService service, IDia
     {
         OpenUrl("https://ignition4.customsforge.com/cfsm/wwise/");
         await dialogs.ShowInfoAsync(
+            "Pick the DLC Builder bundle (Wwise 2021): the CFSM / Toolkit one is too old for RSMods now.\n\n" +
             "After you download and install Wwise, make sure to open it at least once to ensure the EULA is agreed to!", "Wwise EULA");
     }
 

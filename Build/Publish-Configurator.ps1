@@ -10,7 +10,7 @@
       * it runs `dotnet publish` in Release with the win-x64 self-contained profile;
       * it never copies from a previous bin/ or Installer/Resources directory - the publish is produced
         fresh by the SDK;
-      * it fails if RSMods.exe or any required runtime asset (ddc/, tools/, key natives) is missing.
+      * it fails if RSMods.exe or any required runtime asset (key natives, DLC Builder libraries) is missing.
 
     The result is self-contained: end users do not need a separately installed .NET runtime.
 
@@ -64,14 +64,13 @@ if ($pdbs.Count -gt 0) {
 $requiredFiles = @(
     'RSMods.exe',                    # the configurator executable (installed-path contract)
     '7z64.dll',                      # SevenZipSharp native, loaded by path beside the exe
-    'RocksmithToolkitLib.dll',       # toolkit managed assembly
-    'Rocksmith2014PsarcLib.dll',     # psarc managed assembly
-    'ddc/ddc.exe',                   # DDC tool
-    'tools/ww2ogg.exe',              # Wwise -> ogg toolchain
-    'tools/revorb.exe'
+    'Rocksmith2014.PSARC.dll',       # DLC Builder psarc reading and packing
+    'Rocksmith2014.Common.dll',      # DLC Builder tone model
+    'Rocksmith2014.Audio.dll',       # DLC Builder Wwise conversion
+    'FSharp.Core.dll'
 )
 # Directories that must be present and non-empty (relative layout preserved beside the exe).
-$requiredDirs = @('ddc', 'tools')
+$requiredDirs = @()
 
 $missing = @()
 

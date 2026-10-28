@@ -9,13 +9,13 @@ namespace RSMods.Core.Tests;
 
 public sealed class WwiseInstallationTests
 {
-    private static string MakeInstall(TemporaryDirectory dir, string name, bool withCli)
+    private static string MakeInstall(TemporaryDirectory dir, string name, bool withConsole)
     {
         string folder = dir.File(Path.Combine("Audiokinetic", name));
-        string bin = Path.Combine(folder, "Authoring", "Win32", "Release", "bin");
+        string bin = Path.Combine(folder, "Authoring", "x64", "Release", "bin");
         Directory.CreateDirectory(bin);
-        if (withCli)
-            File.WriteAllText(Path.Combine(bin, "WwiseCLI.exe"), "");
+        if (withConsole)
+            File.WriteAllText(Path.Combine(bin, "WwiseConsole.exe"), "");
         return folder;
     }
 
@@ -31,25 +31,25 @@ public sealed class WwiseInstallationTests
     }
 
     [Fact]
-    public void OnlyVersionsWithoutWwiseCliAreIncompatible()
+    public void OnlyUnsupportedVersionsAreIncompatible()
     {
         using var dir = new TemporaryDirectory();
-        string newer = MakeInstall(dir, "Wwise_2023.1.19.8928", withCli: false);
-        MakeInstall(dir, "Wwise v2013.2.10 build 4884", withCli: false); // leftover folder, no executables
+        string newer = MakeInstall(dir, "Wwise_2024.1.0.8669", withConsole: true);
+        MakeInstall(dir, "Wwise_2023.1.19.8928", withConsole: false); // leftover folder, no executables
 
         WwiseCheckResult result = WwiseInstallation.Check(newer, [dir.File("Audiokinetic")], useCompatible: false);
 
         Assert.Equal(WwiseStatus.Incompatible, result.Status);
         Assert.Equal(2, result.Installs.Count); // the WWISEROOT install isn't listed twice
-        Assert.Contains(result.Installs, i => i.Year == 2023);
+        Assert.Contains(result.Installs, i => i.Year == 2023 && !i.HasConsole);
     }
 
     [Fact]
     public void CompatibleInstallIsUsedWhenWwiseRootPointsElsewhere()
     {
         using var dir = new TemporaryDirectory();
-        string newer = MakeInstall(dir, "Wwise_2023.1.19.8928", withCli: false);
-        string compatible = MakeInstall(dir, "Wwise v2013.2.10 build 4884", withCli: true);
+        string newer = MakeInstall(dir, "Wwise_2024.1.0.8669", withConsole: true);
+        string compatible = MakeInstall(dir, "Wwise_2022.1.18.8567", withConsole: true);
 
         WwiseCheckResult result = WwiseInstallation.Check(newer, [dir.File("Audiokinetic")], useCompatible: false);
 
@@ -58,13 +58,14 @@ public sealed class WwiseInstallationTests
     }
 
     [Theory]
-    [InlineData("Wwise v2013.2.10 build 4884", 2013, true)]
-    [InlineData("Wwise 2017.2.9.6726", 2017, true)]
-    [InlineData("Wwise 2019.1.0.6947", 2019, false)]
+    [InlineData("Wwise v2017.2.9 build 6726", 2017, false)]
+    [InlineData("Wwise 2019.1.0.6947", 2019, true)]
+    [InlineData("Wwise_2023.1.19.8928", 2023, true)]
+    [InlineData("Wwise_2024.1.0.8669", 2024, false)]
     public void VersionYearDecidesCompatibility(string name, int year, bool compatible)
     {
         using var dir = new TemporaryDirectory();
-        string folder = MakeInstall(dir, name, withCli: true);
+        string folder = MakeInstall(dir, name, withConsole: true);
 
         WwiseInstall? install = WwiseInstallation.Inspect(folder);
 
