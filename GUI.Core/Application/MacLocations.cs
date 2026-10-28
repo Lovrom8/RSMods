@@ -26,9 +26,6 @@ namespace RSMods
         /// <summary>The game folder: Rocksmith2014.app, the game's files (linked from the Steam install) and RSMods.ini.</summary>
         public static string GameFolder => Path.Combine(Home, "game");
 
-        /// <summary>The mods folder RS Re-ARMed 1.2.0 and later load libraries from at startup.</summary>
-        public static string ModsFolder => Path.Combine(Home, "mods");
-
         /// <summary>The first save folder (steam/&lt;account&gt;/221680/remote) that has profiles, or an empty string.</summary>
         public static string SaveFolder()
         {

@@ -57,12 +57,12 @@ namespace RSMods.Rocksmith
             {
                 WaveFileWriter.CreateWaveFile(wavFile, mp3FileReader);
             }
+
+            return wavFile;
 #else
             // ACM, NAudio's MP3 decoder, is Windows-only
             throw new PlatformNotSupportedException("MP3 SoundPacks can only be converted on Windows. Use WAV, OGG or FLAC.");
 #endif
-
-            return wavFile;
         }
 
         // DLC Builder's converter writes <source>.wem beside the source. It takes WAV, OGG and FLAC.

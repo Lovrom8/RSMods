@@ -72,32 +72,6 @@ namespace RSMods.Util
             }
         }
 
-        public static string GetDefaultBrowser(string url)
-        {
-            if (!OperatingSystem.IsWindows())
-                return url;
-
-            const string ieFallback = "iexplore.exe";
-            const string subKeyPath = @"Software\Microsoft\Windows\Shell\Associations\UrlAssociations\http\UserChoice";
-
-            using (RegistryKey userChoiceKey = Registry.CurrentUser.OpenSubKey(subKeyPath))
-            {
-                string progId = userChoiceKey?.GetValue("Progid")?.ToString();
-
-                if (string.IsNullOrEmpty(progId))
-                {
-                    return ieFallback;
-                }
-
-                if (progId.Contains("edge", StringComparison.OrdinalIgnoreCase))
-                {
-                    return $"microsoft-edge:{url}";
-                }
-            }
-
-            return url;
-        }
-
         public static T Map<T, TU>(this T target, TU source) // Copy properties of base class to its derived class 
         {
             var tprops = target.GetType().GetProperties();
