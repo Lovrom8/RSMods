@@ -52,10 +52,15 @@ namespace RSMods.Rocksmith
         {
             string wavFile = Path.Combine(Path.GetDirectoryName(mp3File), Path.GetFileNameWithoutExtension(mp3File) + ".wav");
 
+#if WINDOWS
             using (var mp3FileReader = new Mp3FileReaderBase(mp3File, waveFormat => new AcmMp3FrameDecompressor(waveFormat)))
             {
                 WaveFileWriter.CreateWaveFile(wavFile, mp3FileReader);
             }
+#else
+            // ACM, NAudio's MP3 decoder, is Windows-only
+            throw new PlatformNotSupportedException("MP3 SoundPacks can only be converted on Windows. Use WAV, OGG or FLAC.");
+#endif
 
             return wavFile;
         }

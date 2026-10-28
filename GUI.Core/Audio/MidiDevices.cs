@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
@@ -18,6 +19,8 @@ namespace RSMods.Audio
         public static List<string> OutputDeviceNames()
         {
             var names = new List<string>();
+            if (!OperatingSystem.IsWindows())
+                return names; // winmm
 
             try
             {
@@ -41,6 +44,8 @@ namespace RSMods.Audio
         public static List<string> InputDeviceNames()
         {
             var names = new List<string>();
+            if (!OperatingSystem.IsWindows())
+                return names; // winmm
 
             try
             {
