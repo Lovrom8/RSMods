@@ -152,7 +152,7 @@ WINEDLLOVERRIDES="xinput1_3=n,b" %command%
 ```
 
 ### macOS
-On Apple Silicon Macs, RSMods runs in [RS Re-ARMed](https://github.com/bbelgg/rs-rearmed) (1.2.0 or later), a native arm64 port of the game. See [docs/macos.md](docs/macos.md) for what works, how to install it and how it differs from Windows.
+On Apple Silicon Macs, RSMods runs in [RS Re-ARMed](https://github.com/bbelgg/rs-rearmed) (1.2.0 or later), a native arm64 port of the game. See [docs/macos.md](docs/macos.md) for the plan, what works and how it differs from Windows.
 
 ## Requirements:
 * Latest Steam version of Rocksmith 2014 Remastered on Windows, https://store.steampowered.com/app/221680/Rocksmith_2014_Edition__Remastered/
