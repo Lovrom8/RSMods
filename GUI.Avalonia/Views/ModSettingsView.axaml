@@ -70,15 +70,19 @@
                             <!-- The switch is in the mod's pane, beside its description; the list only shows whether it's on. -->
                             <DataTemplate DataType="vm:ModItemViewModel">
                                 <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
-                                    <TextBlock VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Text="{Binding Entry.Title}" />
-                                    <!-- CheckMark from the Windows icon font, in the row's text color. -->
-                                    <TextBlock
+                                    <TextBlock x:Name="Title" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Text="{Binding Entry.Title}" />
+                                    <!-- A check mark in the row's text color, drawn: the Windows icon fonts aren't on macOS. -->
+                                    <Path
                                         Grid.Column="1"
-                                        VerticalAlignment="Center"
+                                        Width="12" Height="12"
                                         Margin="0,0,4,0"
-                                        FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
-                                        FontSize="14"
-                                        Text="&#xE73E;"
+                                        VerticalAlignment="Center"
+                                        Stretch="Uniform"
+                                        Data="M1,7 L5,11 L13,2"
+                                        Stroke="{Binding #Title.Foreground}"
+                                        StrokeThickness="1.75"
+                                        StrokeLineCap="Round"
+                                        StrokeJoin="Round"
                                         IsVisible="{Binding Entry.IsOn}" />
                                 </Grid>
                             </DataTemplate>
