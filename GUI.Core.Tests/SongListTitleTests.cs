@@ -14,7 +14,7 @@ public sealed class SongListTitleTests : IDisposable
     public SongListTitleTests()
     {
         // A folder with the game and its cache.psarc is what GenUtil.GetRSDirectory accepts as a Rocksmith install.
-        File.WriteAllText(_rsFolder.File("Rocksmith2014.exe"), string.Empty);
+        _rsFolder.AddGame();
         File.WriteAllText(_rsFolder.File("cache.psarc"), string.Empty);
         File.WriteAllText(_rsFolder.File("RSMods.ini"), "[SongListTitles]\nSongListTitle_1=Metal\n");
         Constants.RSFolder = _rsFolder.Path;

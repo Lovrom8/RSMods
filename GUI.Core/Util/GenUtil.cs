@@ -74,6 +74,9 @@ namespace RSMods.Util
 
         public static string GetDefaultBrowser(string url)
         {
+            if (!OperatingSystem.IsWindows())
+                return url;
+
             const string ieFallback = "iexplore.exe";
             const string subKeyPath = @"Software\Microsoft\Windows\Shell\Associations\UrlAssociations\http\UserChoice";
 
@@ -121,8 +124,12 @@ namespace RSMods.Util
             if (!Directory.Exists(folderPath))
                 return false;
 
-            return File.Exists(Path.Combine(folderPath, "Rocksmith2014.exe"))
-                && File.Exists(Path.Combine(folderPath, "cache.psarc"));
+            // macOS: RS Re-ARMed's game folder, with the app instead of the .exe
+            string game = OperatingSystem.IsWindows() ? "Rocksmith2014.exe" : "Rocksmith2014.app";
+            bool hasGame = OperatingSystem.IsWindows()
+                ? File.Exists(Path.Combine(folderPath, game))
+                : Directory.Exists(Path.Combine(folderPath, game));
+            return hasGame && File.Exists(Path.Combine(folderPath, "cache.psarc"));
         }
 
         public static bool IsSavePath(this string savePath)
@@ -137,6 +144,9 @@ namespace RSMods.Util
 
         private static string GetStringValueFromRegistry(string keyName, string valueName)
         {
+            if (!OperatingSystem.IsWindows())
+                return string.Empty;
+
             try
             {
                 var retValue = (string)Registry.GetValue(keyName, valueName, "");
@@ -211,6 +221,9 @@ namespace RSMods.Util
 
         public static string GetSteamDirectory()
         {
+            if (!OperatingSystem.IsWindows())
+                return string.Empty;
+
             const string steamRegPath = @"HKEY_CURRENT_USER\SOFTWARE\Valve\Steam"; //IIRC it isn't the same on X86 machines, but do we really need to support those?
 
             return GetStringValueFromRegistry(steamRegPath, "SteamPath").Replace('/', '\\');
@@ -289,6 +302,9 @@ namespace RSMods.Util
             {
                 return Constants.RSFolder;
             }
+
+            if (!OperatingSystem.IsWindows())
+                return MacLocations.GameFolder.IsRSFolder() ? MacLocations.GameFolder : string.Empty;
 
             try
             {
@@ -381,6 +397,9 @@ namespace RSMods.Util
 
                 Constants.SavePath = string.Empty;
             }
+
+            if (!OperatingSystem.IsWindows())
+                return MacLocations.SaveFolder();
 
             try
             {

@@ -28,6 +28,10 @@ internal sealed class GameSettingsReceiver(SettingsCoordinator coordinator)
 
     public void Attach(Window window)
     {
+        // Window messages from the game's in-game settings are Windows-only
+        if (!OperatingSystem.IsWindows())
+            return;
+
         window.Opened += (_, _) =>
         {
             if (window.TryGetPlatformHandle()?.Handle is not { } hwnd)

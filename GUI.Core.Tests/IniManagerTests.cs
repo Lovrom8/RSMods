@@ -40,7 +40,7 @@ public sealed class IniManagerTests
         Assert.Equal("value", reloaded.GetString("[Section0]", "Key0"));
     }
 
-    [Fact]
+    [WindowsFact]
     public void SaveReportsAFileItCannotWrite()
     {
         using var dir = new TemporaryDirectory();
@@ -94,7 +94,7 @@ public sealed class IniManagerTests
         Assert.True(ini.Save());
     }
 
-    [Fact]
+    [WindowsFact]
     public void FailedSaveKeepsTheChangeForTheNextSave()
     {
         using var dir = new TemporaryDirectory();
@@ -141,7 +141,7 @@ public sealed class IniManagerTests
         Assert.Contains("Key=new", File.ReadAllLines(path));
     }
 
-    [Fact]
+    [WindowsFact]
     public void FailedSaveLeavesTheOldFileWhole()
     {
         using var dir = new TemporaryDirectory();
