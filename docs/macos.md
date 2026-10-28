@@ -149,6 +149,15 @@ dotnet run --project GUI.Avalonia -c Release
 It edits the real `RSMods.ini` of RS Re-ARMed; to try it on a copy, set `RS_NATIVE_HOME` to a folder laid out like
 RS Re-ARMed's.
 
+The `GUI.Core` tests run on macOS too:
+
+```bash
+dotnet test GUI.Core.Tests -c Release
+```
+
+Tests of Windows behaviour (file locks that block replacing a file, Windows paths, the 7-Zip library) are marked
+`[WindowsFact]` or `[WindowsTheory]` and skipped on macOS. The installer and its tests stay Windows only.
+
 For now the configurator shows every mod, including the ones the Mac doesn't have yet; marking them is the next
 step.
 

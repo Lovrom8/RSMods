@@ -46,7 +46,9 @@ namespace RSMods.SetAndForget
             if (!Directory.Exists(userProfileFolder))
                 return new ProfileToneScan(toneNames, unreadable);
 
-            foreach (string profile in Directory.EnumerateFiles(userProfileFolder, "*_PRFLDB", SearchOption.AllDirectories))
+            // In name order: the file system's order differs (NTFS sorts by name, APFS doesn't)
+            foreach (string profile in Directory.EnumerateFiles(userProfileFolder, "*_PRFLDB", SearchOption.AllDirectories)
+                         .Order(StringComparer.OrdinalIgnoreCase))
             {
                 List<ProfileTone> tones;
                 try

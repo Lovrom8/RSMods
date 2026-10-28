@@ -22,7 +22,7 @@ public sealed class SoundpacksTests
     }
 
     // A .rs_soundpack is a zip anyone can share; an entry named "..\x" mustn't land outside the audio folder.
-    [Theory]
+    [WindowsTheory]
     [InlineData("../escaped.wem")]
     [InlineData("english(us)/../../escaped.wem")]
     public void ImportSoundFile_RefusesEntriesOutsideTheAudioFolder(string entryName)
@@ -46,7 +46,7 @@ public sealed class SoundpacksTests
         Assert.Empty(Directory.GetFileSystemEntries(audio));
     }
 
-    [Fact]
+    [WindowsFact]
     public void ImportSoundFile_ExtractsThePacksVoiceLines()
     {
         using var temporary = new TemporaryDirectory();
