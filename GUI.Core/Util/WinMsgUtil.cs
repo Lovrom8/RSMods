@@ -78,6 +78,9 @@ namespace RSMods.Util
 
             public static UIntPtr Send(IntPtr targetHandle, int dwData, string value, uint timeoutMs = 1000, bool Unicode = false)
             {
+                if (!OperatingSystem.IsWindows())
+                    return UIntPtr.Zero;
+
                 var cds = CopyData.CreateForString(dwData, value, Unicode);
                 SendMessageTimeout(targetHandle, WM_COPYDATA, IntPtr.Zero, ref cds, SendMessageTimeoutFlags.SMTO_NORMAL, timeoutMs, out UIntPtr result);
                 cds.Dispose();
@@ -87,6 +90,10 @@ namespace RSMods.Util
 
         public static void SendMsgToRS(string msg)
         {
+            // macOS: no window messages; the Mac mods re-read RSMods.ini while the game runs
+            if (!OperatingSystem.IsWindows())
+                return;
+
             IntPtr rsHandle = FindWindow("Rocksmith 2014", null);
             if (rsHandle == IntPtr.Zero)
                 return; // The game isn't running

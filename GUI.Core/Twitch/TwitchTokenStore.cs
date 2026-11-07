@@ -31,7 +31,9 @@ namespace RSMods.Twitch
 
         public TwitchTokenSet Load()
         {
-            if (!File.Exists(_filePath))
+            // The tokens are encrypted with DPAPI, which is Windows-only; nothing is stored elsewhere (Twitch effects
+            // need the Windows DLL anyway)
+            if (!OperatingSystem.IsWindows() || !File.Exists(_filePath))
                 return null;
 
             try
@@ -55,6 +57,8 @@ namespace RSMods.Twitch
         {
             if (tokens == null)
                 throw new ArgumentNullException(nameof(tokens));
+            if (!OperatingSystem.IsWindows())
+                return; // never stored unencrypted
 
             string directory = Path.GetDirectoryName(_filePath);
             if (!string.IsNullOrEmpty(directory))

@@ -2,12 +2,13 @@
 
   <PropertyGroup>
     <TargetFramework>net10.0-windows</TargetFramework>
+    <TargetFramework Condition="'$(RsModsMac)' == 'true'">net10.0</TargetFramework>
     <LangVersion>12.0</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
-    <PlatformTarget>x64</PlatformTarget>
+    <PlatformTarget Condition="'$(RsModsMac)' != 'true'">x64</PlatformTarget>
   </PropertyGroup>
 
   <ItemGroup>
@@ -27,7 +28,7 @@
     <!-- The soundpack import tests extract real archives through SevenZipSharp's native library. -->
     <None Include="..\RuntimeAssets\7z64.dll" Link="7z64.dll" CopyToOutputDirectory="PreserveNewest" />
     <!-- Off Windows the GUI only reads the manifest next to it. -->
-    <None Include="..\mods.manifest.json" Link="mods.manifest.json" CopyToOutputDirectory="PreserveNewest" Condition="!$([MSBuild]::IsOSPlatform('Windows'))" />
+    <None Include="..\mods.manifest.json" Link="mods.manifest.json" CopyToOutputDirectory="PreserveNewest" Condition="'$(RsModsMac)' == 'true'" />
   </ItemGroup>
 
 </Project>

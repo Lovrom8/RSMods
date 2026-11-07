@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Management;
+using System.Runtime.Versioning;
 
 namespace RSMods.SetAndForget
 {
@@ -34,11 +35,14 @@ namespace RSMods.SetAndForget
             }
         }
 
+        [SupportedOSPlatformGuard("windows")]
         private static bool DoesOSSupportReadingDriveTypes()
         {
-            return Environment.OSVersion.Version >= new Version(6, 2); // OS Chart here: https://stackoverflow.com/a/2819962
+            // WMI is Windows-only; Windows 8 and later. OS Chart here: https://stackoverflow.com/a/2819962
+            return OperatingSystem.IsWindowsVersionAtLeast(6, 2);
         }
 
+        [SupportedOSPlatform("windows")]
         private static uint? GetDiskNumber(ManagementScope scope, char driveLetter)
         {
             string query = $"SELECT DiskNumber FROM MSFT_Partition WHERE DriveLetter = '{driveLetter}'";
@@ -54,6 +58,7 @@ namespace RSMods.SetAndForget
             return Convert.ToUInt32(partition["DiskNumber"]);
         }
 
+        [SupportedOSPlatform("windows")]
         private static (DriveMediaType Type, bool IsNVMe) GetDriveSpecifications(ManagementScope scope, uint diskNumber)
         {
             string query = $"SELECT MediaType, BusType FROM MSFT_PhysicalDisk WHERE DeviceId = '{diskNumber}'";

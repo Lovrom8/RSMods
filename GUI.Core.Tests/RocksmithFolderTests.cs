@@ -12,7 +12,7 @@ public sealed class RocksmithFolderTests : IDisposable
     [Fact]
     public void GameAndCachePsarcIsAnInstall()
     {
-        File.WriteAllText(_folder.File("Rocksmith2014.exe"), string.Empty);
+        _folder.AddGame();
         File.WriteAllText(_folder.File("cache.psarc"), string.Empty);
 
         Assert.True(_folder.Path.IsRSFolder());
@@ -29,7 +29,7 @@ public sealed class RocksmithFolderTests : IDisposable
     [Fact]
     public void GameWithoutCachePsarcIsNot()
     {
-        File.WriteAllText(_folder.File("Rocksmith2014.exe"), string.Empty);
+        _folder.AddGame();
 
         Assert.False(_folder.Path.IsRSFolder());
     }

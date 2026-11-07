@@ -44,7 +44,7 @@ public sealed class ProfileCodecTests
     }
 
     // The game holds its profile open while it runs; a save that can't replace it mustn't have truncated it first.
-    [Fact]
+    [WindowsFact]
     public void Encode_ThatCantReplaceTheProfileLeavesItWhole()
     {
         using var temporary = new TemporaryDirectory();

@@ -70,16 +70,27 @@
                             <!-- The switch is in the mod's pane, beside its description; the list only shows whether it's on. -->
                             <DataTemplate DataType="vm:ModItemViewModel">
                                 <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
-                                    <TextBlock VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Text="{Binding Entry.Title}" />
-                                    <!-- CheckMark from the Windows icon font, in the row's text color. -->
-                                    <TextBlock
-                                        Grid.Column="1"
-                                        VerticalAlignment="Center"
-                                        Margin="0,0,4,0"
-                                        FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
-                                        FontSize="14"
-                                        Text="&#xE73E;"
-                                        IsVisible="{Binding Entry.IsOn}" />
+                                    <TextBlock x:Name="Title" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Text="{Binding Entry.Title}" />
+                                    <Panel Grid.Column="1" Margin="0,0,4,0" VerticalAlignment="Center" IsVisible="{Binding Entry.IsOn}">
+                                        <!-- CheckMark from the Windows icon font, in the row's text color. -->
+                                        <TextBlock
+                                            VerticalAlignment="Center"
+                                            FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                            FontSize="14"
+                                            Text="&#xE73E;"
+                                            IsVisible="{OnPlatform False, Windows=True}" />
+                                        <!-- Elsewhere the font isn't there: the same mark, drawn. -->
+                                        <Path
+                                            Width="12" Height="12"
+                                            VerticalAlignment="Center"
+                                            Stretch="Uniform"
+                                            Data="M1,7 L5,11 L13,2"
+                                            Stroke="{Binding #Title.Foreground}"
+                                            StrokeThickness="1.75"
+                                            StrokeLineCap="Round"
+                                            StrokeJoin="Round"
+                                            IsVisible="{OnPlatform True, Windows=False}" />
+                                    </Panel>
                                 </Grid>
                             </DataTemplate>
                         </ListBox.DataTemplates>

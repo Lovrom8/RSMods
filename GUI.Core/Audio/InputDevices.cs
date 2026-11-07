@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using NAudio.CoreAudioApi;
 
@@ -13,6 +14,8 @@ namespace RSMods.Audio
         public static List<string> FriendlyNames()
         {
             var names = new List<string>();
+            if (!OperatingSystem.IsWindows())
+                return names; // WASAPI
 
             try
             {

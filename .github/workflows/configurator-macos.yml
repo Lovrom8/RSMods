@@ -1,0 +1,38 @@
+# The configurator has to keep building and passing its tests on macOS (RsModsMac in Directory.Build.props).
+# Nothing on Windows notices when a change breaks that.
+name: Configurator (macOS)
+
+on:
+  push:
+    branches: [develop, avalonia-consolidated]
+    paths:
+      - GUI.Core/**
+      - GUI.Avalonia/**
+      - GUI.Core.Tests/**
+      - Directory.Build.props
+      - mods.manifest.json
+      - .github/workflows/configurator-macos.yml
+  pull_request:
+    paths:
+      - GUI.Core/**
+      - GUI.Avalonia/**
+      - GUI.Core.Tests/**
+      - Directory.Build.props
+      - mods.manifest.json
+      - .github/workflows/configurator-macos.yml
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - name: Test GUI.Core
+        run: dotnet test GUI.Core.Tests -c Release
+      - name: Build the configurator
+        run: dotnet build GUI.Avalonia -c Release

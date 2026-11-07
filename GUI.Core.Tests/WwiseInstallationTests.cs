@@ -74,7 +74,7 @@ public sealed class WwiseInstallationTests
         Assert.Equal(compatible, install.IsCompatible);
     }
 
-    [Fact]
+    [WindowsFact]
     public void NormalizedPathsUseBackslashesAndOnDiskCasing()
     {
         using var dir = new TemporaryDirectory();

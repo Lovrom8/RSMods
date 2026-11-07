@@ -54,7 +54,13 @@ internal static class CrashReporter
             + $"\n\n{exception.Message}"
             + (log is null ? string.Empty : $"\n\nThe details were saved to:\n{log}");
 
-        // A native box needs no running Avalonia, so it also works when startup itself failed.
+        // A native box needs no running Avalonia, so it also works when startup itself failed. Off Windows there is
+        // none: the message goes to the console, the details to the log.
+        if (!OperatingSystem.IsWindows())
+        {
+            Console.Error.WriteLine(text);
+            return;
+        }
         MessageBoxW(IntPtr.Zero, text, "RSMods error", MB_ICONERROR);
     }
 

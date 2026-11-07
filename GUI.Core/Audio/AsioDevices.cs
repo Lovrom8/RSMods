@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Versioning;
 using Microsoft.Win32;
 
 namespace RSMods.ASIO
@@ -17,6 +18,8 @@ namespace RSMods.ASIO
         public static List<DriverInfo> FindDevices()
         {
             var availableDevices = new List<DriverInfo>();
+            if (!OperatingSystem.IsWindows())
+                return availableDevices; // ASIO drivers are in the Windows registry
             var registryPaths = new[] { AsioX86RegistryPath, AsioX64RegistryPath };
 
             try
@@ -43,6 +46,7 @@ namespace RSMods.ASIO
             return availableDevices.Distinct().ToList();
         }
 
+        [SupportedOSPlatform("windows")]
         private static List<DriverInfo> ScanDevices(string rootRegistryDir, List<string> subKeys)
         {
             List<DriverInfo> availableDevices = [];

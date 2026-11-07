@@ -5,11 +5,12 @@
   -->
   <PropertyGroup>
     <TargetFramework>net10.0-windows</TargetFramework>
+    <TargetFramework Condition="'$(RsModsMac)' == 'true'">net10.0</TargetFramework>
     <LangVersion>12.0</LangVersion>
     <!-- No project-wide nullable context: the codebase predates NRT. New boundaries opt in locally. -->
     <ImplicitUsings>disable</ImplicitUsings>
     <!-- Rocksmith 2014 itself is 64-bit. -->
-    <PlatformTarget>x64</PlatformTarget>
+    <PlatformTarget Condition="'$(RsModsMac)' != 'true'">x64</PlatformTarget>
     <RootNamespace>RSMods.Core</RootNamespace>
     <AssemblyName>GUI.Core</AssemblyName>
     <ProjectGuid>{D8F21F24-9C2B-42E1-925A-76B844950137}</ProjectGuid>
@@ -23,7 +24,7 @@
     <!-- SoundPacks MP3 decoding (Soundpacks.ConvertMP3ToWav) uses NAudio's ACM Mp3FileReader, which lives
          in NAudio.WinMM; WaveFileWriter comes from the transitive NAudio.Core. Like NAudio.Wasapi this is
          a sub-package rather than the UI-oriented meta-package. -->
-    <PackageReference Include="NAudio.WinMM" Version="3.1.0" />
+    <PackageReference Include="NAudio.WinMM" Version="3.1.0" Condition="'$(RsModsMac)' != 'true'" />
     <!-- Set-and-Forget drive detection uses WMI. Windows-only at runtime. -->
     <PackageReference Include="System.Management" Version="8.0.0" />
     <!-- Rocksmith2014.Common is built against Newtonsoft.Json 13; the old bundled 12 can't satisfy it. -->

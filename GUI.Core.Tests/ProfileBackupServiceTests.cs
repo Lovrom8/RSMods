@@ -156,7 +156,7 @@ public sealed class ProfileBackupServiceTests
     }
 
     // The game holding one profile open mustn't leave the save half old, half restored.
-    [Fact]
+    [WindowsFact]
     public void RestoreBackup_ThatFailsPartWayLeavesTheSaveAsItWas()
     {
         using var temporary = new TemporaryDirectory();

@@ -7,4 +7,10 @@
     <Version>1.2.8.4</Version>
   </PropertyGroup>
 
+  <!-- macOS (RS Re-ARMed, the native Apple Silicon port of the game): the configurator builds for plain net10.0
+       there, without the Windows-only parts. On Windows nothing changes. -->
+  <PropertyGroup>
+    <RsModsMac Condition="'$(RsModsMac)' == '' and $([MSBuild]::IsOSPlatform('OSX'))">true</RsModsMac>
+  </PropertyGroup>
+
 </Project>
