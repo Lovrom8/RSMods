@@ -61,7 +61,8 @@ int main() {
 	{
 		HudRegistry hud;
 		hud.Set(Owner(1), "a", { HudAnchor::TopRight, 7 }, Text(true, "x"));
-		const HudElement* e = Find(hud.SnapshotVisible(), Owner(1), "a");
+		const auto snap = hud.SnapshotVisible();
+		const HudElement* e = Find(snap, Owner(1), "a");
 		Check("anchor + order round-trip", e && e->anchor == HudAnchor::TopRight && e->order == 7);
 	}
 

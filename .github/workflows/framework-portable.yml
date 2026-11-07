@@ -32,6 +32,10 @@ jobs:
         include:
           - os: ubuntu-24.04
             cxx: g++
+          # Memory bugs can pass by luck on one platform and fail on another
+          - os: ubuntu-24.04
+            cxx: g++
+            cxxflags: -g -fsanitize=address,undefined -fno-sanitize-recover=undefined
           - os: macos-15
             cxx: clang++
     runs-on: ${{ matrix.os }}
@@ -43,4 +47,5 @@ jobs:
       - name: Build and run the framework tests
         env:
           CXX: ${{ matrix.cxx }}
+          CXXFLAGS: ${{ matrix.cxxflags }}
         run: sh DLL/Framework/Tests/BuildAndRun.sh
