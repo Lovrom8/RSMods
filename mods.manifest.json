@@ -1,5 +1,188 @@
 [
   {
+    "key": "MetronomeEnabled",
+    "ini": {
+      "section": "Toggle Switches",
+      "name": "MetronomeEnabled"
+    },
+    "type": "Bool",
+    "default": "off",
+    "label": "Metronome",
+    "hint": "Plays a click on every beat of the song, with a different sound on the first beat of each measure.\nToggle the clicks in game with the Metronome key; the top left corner shows whether they're on.\nTurning this on takes effect after restarting the game.\nUntested on the Learn & Play edition.",
+    "category": "Toggle Switches",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null,
+    "editedBy": null,
+    "mod": "MetronomeMod",
+    "entry": "MetronomeEnabled",
+    "heading": "Practice",
+    "entryTitle": "Metronome"
+  },
+  {
+    "key": "MetronomeAccentVolume",
+    "ini": {
+      "section": "Mod Settings",
+      "name": "MetronomeAccentVolume"
+    },
+    "type": "Int",
+    "default": "100",
+    "label": "Metronome Accent Volume",
+    "hint": "Volume of the click on the first beat of each measure. 100 is the normal level; up to 300 for loud songs.",
+    "category": "Mod Settings",
+    "min": 0,
+    "max": 300,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": {
+      "key": "MetronomeEnabled",
+      "equals": "on"
+    },
+    "editor": null,
+    "editedBy": null,
+    "mod": "MetronomeMod",
+    "entry": "MetronomeEnabled",
+    "heading": null,
+    "entryTitle": null
+  },
+  {
+    "key": "MetronomeBeatVolume",
+    "ini": {
+      "section": "Mod Settings",
+      "name": "MetronomeBeatVolume"
+    },
+    "type": "Int",
+    "default": "100",
+    "label": "Metronome Beat Volume",
+    "hint": "Volume of the click on every other beat. 100 is the normal level; up to 300 for loud songs.",
+    "category": "Mod Settings",
+    "min": 0,
+    "max": 300,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": {
+      "key": "MetronomeEnabled",
+      "equals": "on"
+    },
+    "editor": null,
+    "editedBy": null,
+    "mod": "MetronomeMod",
+    "entry": "MetronomeEnabled",
+    "heading": null,
+    "entryTitle": null
+  },
+  {
+    "key": "MetronomeAccentSound",
+    "ini": {
+      "section": "Mod Settings",
+      "name": "MetronomeAccentSound"
+    },
+    "type": "String",
+    "default": "",
+    "label": "Metronome Accent Sound",
+    "hint": "Path to a WAV file. Leave empty for the built-in click.",
+    "category": "Mod Settings",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": {
+      "key": "MetronomeEnabled",
+      "equals": "on"
+    },
+    "editor": null,
+    "editedBy": null,
+    "mod": "MetronomeMod",
+    "entry": "MetronomeEnabled",
+    "heading": null,
+    "entryTitle": null
+  },
+  {
+    "key": "MetronomeBeatSound",
+    "ini": {
+      "section": "Mod Settings",
+      "name": "MetronomeBeatSound"
+    },
+    "type": "String",
+    "default": "",
+    "label": "Metronome Beat Sound",
+    "hint": "Path to a WAV file. Leave empty for the built-in click.",
+    "category": "Mod Settings",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": {
+      "key": "MetronomeEnabled",
+      "equals": "on"
+    },
+    "editor": null,
+    "editedBy": null,
+    "mod": "MetronomeMod",
+    "entry": "MetronomeEnabled",
+    "heading": null,
+    "entryTitle": null
+  },
+  {
+    "key": "MetronomeOffsetMs",
+    "ini": {
+      "section": "Mod Settings",
+      "name": "MetronomeOffsetMs"
+    },
+    "type": "Int",
+    "default": "0",
+    "label": "Metronome Offset (ms)",
+    "hint": "Moves every click later (positive) or earlier (negative) if they don't line up with the song.",
+    "category": "Mod Settings",
+    "min": -500,
+    "max": 500,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": {
+      "key": "MetronomeEnabled",
+      "equals": "on"
+    },
+    "editor": null,
+    "editedBy": null,
+    "mod": "MetronomeMod",
+    "entry": "MetronomeEnabled",
+    "heading": null,
+    "entryTitle": null
+  },
+  {
+    "key": "MetronomeToggleKey",
+    "ini": {
+      "section": "Keybinds",
+      "name": "MetronomeToggleKey"
+    },
+    "type": "Key",
+    "default": "M",
+    "label": "Toggle Metronome",
+    "hint": "",
+    "category": "Keybinds",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null,
+    "editedBy": null,
+    "mod": "MetronomeMod",
+    "entry": "MetronomeEnabled",
+    "heading": null,
+    "entryTitle": null
+  },
+  {
     "key": "VolumeControlEnabled",
     "ini": {
       "section": "Toggle Switches",
