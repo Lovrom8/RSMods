@@ -107,6 +107,7 @@ $Tests = @(
     @{ Name = 'AudioInputTests';        Sources = @('AudioInput.cpp') },
     @{ Name = 'SettingsSchemaTests';    Sources = @('SettingsSchema.cpp') },
     @{ Name = 'SettingsStoreTests';     Sources = @('SettingsStore.cpp', 'SettingsSchema.cpp', 'KeyNames.cpp', 'ModContext.cpp') },
+    @{ Name = 'HeadlessHostTests';      Sources = @('ModRegistry.cpp', 'ModContext.cpp', 'SettingsStore.cpp', 'KeyNames.cpp', 'ResourceLedger.cpp', 'HookWatchdog.cpp', 'StallMonitor.cpp', 'CommandRouter.cpp', 'MainThreadInbox.cpp', 'CommandCollisionDiagnostics.cpp', 'HudRegistry.cpp', 'MenuRegistry.cpp', 'DrawRegistry.cpp', 'AudioInput.cpp', 'SettingsSchema.cpp') },
     @{ Name = 'MetronomeTests';         Sources = @('..\Mods\MetronomeSongClock.cpp', '..\Mods\MetronomeClickMixer.cpp', '..\Mods\MetronomeCountIn.cpp', '..\Mods\MetronomeWav.cpp') },  # host-agnostic metronome logic
     @{ Name = 'IniPatchTests';          Sources = @() },  # header-only DLL/IniPatch.hpp
     @{ Name = 'StateMachineTests';      Sources = @('ModRegistry.cpp', 'ResourceLedger.cpp', 'HookWatchdog.cpp', 'StallMonitor.cpp', 'CommandRouter.cpp', 'MainThreadInbox.cpp', 'CommandCollisionDiagnostics.cpp', 'HudRegistry.cpp', 'MenuRegistry.cpp', 'DrawRegistry.cpp', 'AudioInput.cpp', 'SettingsSchema.cpp') }

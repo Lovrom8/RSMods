@@ -566,7 +566,15 @@ namespace Framework {
 			return;
 		}
 
-		const auto settings = mod->Settings();
+		SettingDefs settings;
+		try {
+			settings = mod->Settings();
+		}
+		catch (const std::exception& e) {
+			LOG_ERROR("[Framework] " << id << "::Settings threw: " << e.what() << " - registration rejected" << std::endl);
+			return;
+		}
+
 		std::string duplicateKey;
 		if (!settings.empty() && !SettingsSchema().Register(mod.get(), settings, &duplicateKey)) {
 			LOG_ERROR("[Framework] Duplicate setting key '" << duplicateKey << "' in mod '" << id << "' - registration rejected" << std::endl);

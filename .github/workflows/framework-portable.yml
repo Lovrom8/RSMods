@@ -1,0 +1,41 @@
+# The mod framework has to keep building without MSVC or Windows, for hosts other than the DLL.
+# AppVeyor covers MSVC; this covers the rest.
+name: Framework (portable)
+
+on:
+  push:
+    branches: [develop, avalonia-consolidated]
+    paths:
+      - DLL/Framework/**
+      - DLL/Log.hpp
+      - DLL/Lib/Json/**
+      - DLL/Mods/Metronome*
+      - .github/workflows/framework-portable.yml
+  pull_request:
+    paths:
+      - DLL/Framework/**
+      - DLL/Log.hpp
+      - DLL/Lib/Json/**
+      - DLL/Mods/Metronome*
+      - .github/workflows/framework-portable.yml
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            cxx: g++
+          - os: macos-15
+            cxx: clang++
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build and run the framework tests
+        env:
+          CXX: ${{ matrix.cxx }}
+        run: sh DLL/Framework/Tests/BuildAndRun.sh

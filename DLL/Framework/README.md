@@ -318,3 +318,22 @@ DLL/Framework/Tests/BuildAndRun.ps1
 The script locates MSVC via `vswhere`, compiles each test against only the framework translation
 units it needs, and runs it. AppVeyor runs the same script as a `test_script` step (`appveyor.yml`),
 so a failing test fails the build (and skips deploy) and the tests can't rot out of compilation.
+
+`Tests/BuildAndRun.sh` does the same with g++ or clang++, on Linux, WSL or macOS. GitHub Actions runs it on
+Ubuntu and macOS (`.github/workflows/framework-portable.yml`) when the framework changes.
+
+## Other hosts
+
+The framework can be used by a host other than the Windows DLL. Everything here builds with g++ as well as MSVC,
+without `windows.h` or `stdafx.h`; `DrawRegistry` and `DeviceEvents` only name Direct3D types, but they serve only
+the D3D9 hooks. A host provides what `dllmain.cpp` and `ModManager` do on Windows:
+
+- **Loop:** `InstantiatePending()`, load the settings, `DispatchInitialize()`, then `DispatchCommands` and `Tick`
+  from one thread, and `Shutdown()`.
+- **Keys:** post `KeyEvent`s to `Inbox()`, and give `Commands().SetKeyResolver` a function from a key setting to its
+  code. `virtualKey` is a Windows virtual-key code on every platform, because `RSMods.ini` stores key binds by those
+  names (`VirtualKeyFromName`), so a host maps its own key codes to them.
+- **Settings:** `SettingValues().Load(reader, ...)` with any reader that has `CSimpleIniA`'s `GetValue` and
+  `GetLongValue`. Off Windows, SimpleIni needs `ConvertUTF.c` or ICU, or `SI_NO_CONVERSION` for the narrow API alone.
+
+`Tests/HeadlessHostTests.cpp` is the smallest host there is, with no game or window.
