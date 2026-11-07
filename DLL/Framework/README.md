@@ -324,7 +324,7 @@ Ubuntu and macOS (`.github/workflows/framework-portable.yml`) when the framework
 
 ## Other hosts
 
-The framework can be used by a host other than the Windows DLL. Everything here builds with g++ as well as MSVC,
+The framework can be used by a host other than the Windows DLL ([the plan](docs/other-hosts.md)). Everything here builds with g++ as well as MSVC,
 without `windows.h` or `stdafx.h`; `DrawRegistry` and `DeviceEvents` only name Direct3D types, but they serve only
 the D3D9 hooks. A host provides what `dllmain.cpp` and `ModManager` do on Windows:
 
