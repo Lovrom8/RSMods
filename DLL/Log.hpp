@@ -6,7 +6,10 @@
 #include <sstream>
 #include <format>
 #include <mutex>
+#include <cstdio>
+#ifdef _WIN32
 #include <share.h>
+#endif
 
 /// <summary>
 /// Classification of the logs level.
@@ -69,7 +72,11 @@ public:
             fclose(fileHandle);
             fileHandle = nullptr;
         }
+#ifdef _WIN32
         fileHandle = _fsopen(path.c_str(), "w", _SH_DENYNO);
+#else
+        fileHandle = fopen(path.c_str(), "w"); // Nothing locks a file here, so it's shared already
+#endif
     }
 
     /// <summary>

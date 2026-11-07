@@ -134,9 +134,9 @@ public sealed class SettingsKeyParityTests
     }
 
     /// <summary>
-    /// Every <c>(section, key)</c> the DLL reads, scraped from its settings sources. Two forms appear
-    /// there: a literal INI name, and a <c>Setting::Key::Name</c> constant that has to be resolved
-    /// through the <c>Key</c> namespace in the header.
+    /// Every <c>(section, key)</c> the DLL reads, scraped from its settings sources. Three forms appear
+    /// there: a literal INI name, a <c>Setting::Key::Name</c> constant that has to be resolved through
+    /// the <c>Key</c> namespace in the header, and a row of <c>undeclaredSettings</c>.
     /// </summary>
     private static HashSet<(string Section, string Key)> ReadDllKeys()
     {
@@ -160,6 +160,13 @@ public sealed class SettingsKeyParityTests
         {
             if (keyConstants.TryGetValue(match.Groups["constant"].Value, out string? key))
                 keys.Add((match.Groups["section"].Value, key));
+        }
+
+        // { Settings::Setting::Name, "Section", "Key", "default" }
+        foreach (Match match in Regex.Matches(source,
+            """\{\s*Settings::Setting::\w+\s*,\s*"(?<section>[^"]+)"\s*,\s*"(?<key>[^"]+)"\s*,"""))
+        {
+            keys.Add((match.Groups["section"].Value, match.Groups["key"].Value));
         }
 
         keys.UnionWith(ReadManifestKeys(repositoryRoot));

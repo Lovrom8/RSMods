@@ -1,19 +1,16 @@
 #include "stdafx.h"
 #include "Settings.hpp"
-#include "Framework/SettingsSchema.hpp"
+#include "Framework/KeyNames.hpp"
 #include "SettingEdits.hpp"
 
 #include <mutex>
 #include <shared_mutex>
 #include <string>
 
-// The Settings maps/vectors are read from the D3D render thread and the Twitch/CrowdControl
-// threads while writes are drained on the main thread. std::map is not safe for concurrent
-// read/write, and the getters used to read via operator[] (which inserts on a miss), so even
-// two concurrent "reads" mutated the map and raced. Every accessor now takes a shared lock and
-// every mutator a unique lock on this one mutex, and reads use non-mutating lookups. Composite
-// getters call the *Unlocked helpers (never another public accessor) so they never re-lock. The
-// Read* reload functions take the lock only after LoadFile, so disk IO stays outside it.
+// Colors and the Twitch and noteway maps are read from the D3D render thread and the Twitch/CrowdControl
+// threads while writes are drained on the main thread, so every accessor below takes a shared lock and
+// every mutator a unique lock on this one mutex. The Read* reload functions take it only after LoadFile,
+// so disk IO stays outside it. Mod settings live in Framework::SettingValues, which has its own lock.
 //
 // TODO(C++20): writes are rare and already serialized on the main thread, so this is a
 // single-writer/many-reader case. Publishing the state as an immutable snapshot behind a
@@ -21,29 +18,12 @@
 namespace {
 	std::shared_mutex g_settingsMutex;
 
-	std::string ModSettingUnlocked(const std::string& name) {
-		auto it = Settings::modSettings.find(name);
-		return it != Settings::modSettings.end() ? it->second : std::string();
-	}
-
-	int CustomSettingUnlocked(const std::string& name) {
-		auto it = Settings::customSettings.find(name);
-		if (it != Settings::customSettings.end()) {
-			return it->second;
-		}
-		auto itMod = Settings::modSettings.find(name);
-		if (itMod != Settings::modSettings.end() && !itMod->second.empty()) {
-			try {
-				return std::stoi(itMod->second);
-			} catch (...) {}
-		}
-		return 0;
-	}
-
-	unsigned int VKCodeUnlocked(const std::string& vkString) {
-		auto it = Settings::keyMap.find(vkString);
-		return it != Settings::keyMap.end() ? it->second : 0u;
-	}
+	// Host fixes rather than mods, so the schema doesn't know them.
+	constexpr Framework::UndeclaredSetting undeclaredSettings[] = {
+		{ Settings::Setting::FixOculusCrash, "Toggle Switches", "FixOculusCrash", "off" },
+		{ Settings::Setting::FixBrokenTones, "Toggle Switches", "FixBrokenTones", "off" },
+		{ Settings::Setting::PreventMidSongPause, "Toggle Switches", "PreventMidSongPause", "off" },
+	};
 }
 
 /// <summary>
@@ -52,15 +32,10 @@ namespace {
 /// </summary>
 void Settings::Initialize()
 {
-	std::unique_lock lock(g_settingsMutex);
+	// Without an INI the readers below keep this, so schema settings (key binds included) need their defaults here too.
+	Framework::SettingValues().LoadDefaults(undeclaredSettings);
 
-	// Only the keys no mod declares; every schema setting gets its default from the loop below.
-	modSettings = {
-		{Setting::FixOculusCrash, "off"},
-		{Setting::FixBrokenTones, "off"},
-		{Setting::PreventMidSongPause, "off"},
-	};
-	customSettings.clear();
+	std::unique_lock lock(g_settingsMutex);
 
 	twitchSettings = {
 		{Setting::Twitch::RainbowStrings, "off"},
@@ -70,14 +45,6 @@ void Settings::Initialize()
 		{Setting::Twitch::DrunkMode, "off"},
 		{Setting::Twitch::FYourFC, "off"},
 	};
-
-	// Without an INI the readers below keep this, so schema settings (key binds included) need their defaults here too.
-	for (const auto& decl : Framework::SettingsSchema().GetAll()) {
-		if (decl.type == Framework::SettingType::Int)
-			customSettings.try_emplace(decl.key, decl.GetIntDefault());
-		else
-			modSettings.try_emplace(decl.key, decl.def);
-	}
 }
 
 
@@ -111,24 +78,7 @@ void Settings::ReadModSettings() {
 		return;
 	}
 
-	std::unique_lock lock(g_settingsMutex);
-
-	modSettings.clear();
-	customSettings.clear();
-
-	modSettings[Setting::FixOculusCrash] = reader.GetValue("Toggle Switches", "FixOculusCrash", "off");
-	modSettings[Setting::FixBrokenTones] = reader.GetValue("Toggle Switches", "FixBrokenTones", "off");
-	modSettings[Setting::PreventMidSongPause] = reader.GetValue("Toggle Switches", "PreventMidSongPause", "off");
-
-	// Schema-driven mod settings: populate declared INI location with declared fallback defaults
-	for (const auto& decl : Framework::SettingsSchema().GetAll()) {
-		if (decl.type == Framework::SettingType::Int) {
-			customSettings[decl.key] = reader.GetLongValue(decl.ini.section.c_str(), decl.ini.name.c_str(), decl.GetIntDefault());
-		}
-		else {
-			modSettings[decl.key] = reader.GetValue(decl.ini.section.c_str(), decl.ini.name.c_str(), decl.def.c_str());
-		}
-	}
+	Framework::SettingValues().Load(reader, undeclaredSettings);
 }
 
 /// <summary>
@@ -205,8 +155,7 @@ void Settings::ReadNotewayColors() {
 /// </summary>
 void Settings::ToggleExtendedRangeMode()
 {
-	std::unique_lock lock(g_settingsMutex);
-	modSettings[Setting::ExtendedRangeEnabled] = (ModSettingUnlocked(Setting::ExtendedRangeEnabled) == "on") ? "off" : "on";
+	Framework::SettingValues().FlipToggle(Setting::ExtendedRangeEnabled);
 }
 
 
@@ -216,36 +165,32 @@ void Settings::ToggleExtendedRangeMode()
 /// <param name="name"> - std::map[key]</param>
 /// <returns>Virtual Key | uint</returns>
 unsigned int Settings::GetKeyBind(const std::string& name) {
-	std::shared_lock lock(g_settingsMutex);
-	return VKCodeUnlocked(ModSettingUnlocked(name));
+	return Framework::VirtualKeyFromName(Framework::SettingValues().Value(name));
 }
 
 /// <summary>
-/// Read Mod Setting (internally called customSettings)
+/// Read Mod Setting
 /// </summary>
 /// <param name="name"> - std::map[key]</param>
 /// <returns>Int for mod setting</returns>
 int Settings::GetModSetting(const std::string& name) {
-	std::shared_lock lock(g_settingsMutex);
-	return CustomSettingUnlocked(name);
+	return Framework::SettingValues().Int(name);
 }
 
 /// <summary>
-/// Read Mod Toggle On / Off (internally modSettings)
+/// Read Mod Toggle On / Off
 /// </summary>
 /// <param name="name"> - std::map[key]</param>
 /// <returns>Value of mod toggle</returns>
 std::string Settings::ReturnSettingValue(const std::string& name) {
-	std::shared_lock lock(g_settingsMutex);
-	return ModSettingUnlocked(name);
+	return Framework::SettingValues().Value(name);
 }
 
 /// <summary>
 /// True when a mod toggle is set to "on". The single home for the on/off convention.
 /// </summary>
 bool Settings::IsOn(const std::string& name) {
-	std::shared_lock lock(g_settingsMutex);
-	return ModSettingUnlocked(name) == "on";
+	return Framework::SettingValues().IsOn(name);
 }
 
 /// <summary>
@@ -253,36 +198,14 @@ bool Settings::IsOn(const std::string& name) {
 /// unrecognized value is neither on nor off, so this stays a faithful swap for == "off".
 /// </summary>
 bool Settings::IsOff(const std::string& name) {
-	std::shared_lock lock(g_settingsMutex);
-	return ModSettingUnlocked(name) == "off";
-}
-
-/// <summary>
-/// Parse a raw "...When" INI value into its enum. Unrecognized / empty -> When::Unknown.
-/// </summary>
-Settings::When Settings::ParseWhen(std::string_view value) {
-	if (value == "manual")    return When::Manual;
-	if (value == "startup")   return When::Startup;
-	if (value == "song")      return When::Song;
-	if (value == "tuner")     return When::Tuner;
-	if (value == "automatic") return When::Automatic;
-	return When::Unknown;
+	return Framework::SettingValues().IsOff(name);
 }
 
 /// <summary>
 /// Read a "...When" setting by name and return it parsed. See Settings::When.
 /// </summary>
 Settings::When Settings::GetWhen(const std::string& name) {
-	std::shared_lock lock(g_settingsMutex);
-	return ParseWhen(ModSettingUnlocked(name));
-}
-
-template <typename T>
-T GetEnumSetting(const std::string& name) {
-	static_assert(std::is_enum_v<T>);
-
-	std::shared_lock lock(g_settingsMutex);
-	return static_cast<T>(CustomSettingUnlocked(name));
+	return Framework::SettingValues().WhenOf(name);
 }
 
 /// <summary>
@@ -290,7 +213,7 @@ T GetEnumSetting(const std::string& name) {
 /// out-of-range value stays out-of-range and falls through consumers' default cases.
 /// </summary>
 Settings::StringColorMode Settings::GetStringColorMode() {
-	return GetEnumSetting<StringColorMode>(Setting::CustomStringColors);
+	return Framework::SettingValues().ColorMode();
 }
 	
 /// <summary>
@@ -298,7 +221,7 @@ Settings::StringColorMode Settings::GetStringColorMode() {
 /// the enum, so out-of-range values are preserved for consumers' default handling.
 /// </summary>
 Settings::NoteColorMode Settings::GetNoteColorMode() {
-	return GetEnumSetting<NoteColorMode>(Setting::SeparateNoteColorsMode);
+	return Framework::SettingValues().NoteColorMode();
 }
 
 /// <summary>
@@ -307,8 +230,7 @@ Settings::NoteColorMode Settings::GetNoteColorMode() {
 /// <param name="vkString"> - std::map[key]</param>
 /// <returns></returns>
 int Settings::GetVKCodeForString(const std::string& vkString) {
-	std::shared_lock lock(g_settingsMutex);
-	return VKCodeUnlocked(vkString);
+	return static_cast<int>(Framework::VirtualKeyFromName(vkString));
 }
 
 /// <summary>
@@ -361,8 +283,7 @@ std::vector<std::string> Settings::SplitByWhitespace(const std::string& input) {
 /// <param name="name"> - std::map[key]</param>
 /// <param name="newValue"> - new setting value</param>
 void Settings::UpdateModSetting(const std::string& name, const std::string_view& newValue) {
-	std::unique_lock lock(g_settingsMutex);
-	modSettings[name] = newValue;
+	Framework::SettingValues().SetValue(name, newValue);
 }
 
 /// <summary>
@@ -371,8 +292,7 @@ void Settings::UpdateModSetting(const std::string& name, const std::string_view&
 /// <param name="name"> - std::map[key]</param>
 /// <param name="newValue"> - new setting value</param>
 void Settings::UpdateCustomSetting(const std::string& name, int newValue) {
-	std::unique_lock lock(g_settingsMutex);
-	customSettings[name] = newValue;
+	Framework::SettingValues().SetInt(name, newValue);
 }
 
 /// <summary>

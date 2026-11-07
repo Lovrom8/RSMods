@@ -12,8 +12,8 @@
 #include "AudioInput.hpp"
 
 namespace Settings {
-	// Opaque declarations keep the framework core free of the whole of Settings.hpp; only ModContext.cpp pulls it in. 
-	// Scoped enums default to an int underlying type, so these stay ABI-compatible with the definitions in Settings.hpp.
+	// Opaque declarations keep this header free of the settings store; only ModContext.cpp pulls it in. 
+	// Scoped enums default to an int underlying type, so these stay ABI-compatible with the definitions in SettingsStore.hpp.
 	enum class When;
 	enum class StringColorMode;
 	enum class NoteColorMode;
@@ -172,7 +172,7 @@ namespace Framework {
 		DrawBinder Draw() const { return { Framework::Draw(), currentMod }; }
 		AudioBinder Audio() const { return { Framework::AudioInput(), currentMod }; }
 
-		// Defined in ModContext.cpp so this header stays free of Settings.hpp.
+		// Defined in ModContext.cpp so this header stays free of the settings store.
 		bool IsOn(std::string_view key) const;
 		bool IsOff(std::string_view key) const;
 		std::string Value(std::string_view key) const;
