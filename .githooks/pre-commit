@@ -11,9 +11,11 @@
 #
 # This is a fast, best-effort local guard: it checks against whatever
 # xinput1_3.dll was last built, so it catches the common "rebuilt the DLL but
-# forgot to re-dump the manifest" mistake. If no DLL is built it warns and lets
-# the commit through -- appveyor's "Verify manifest currency" step is the
-# authoritative gate.
+# forgot to re-dump the manifest" mistake. If it can't run (no PowerShell or no
+# built DLL, as on a Mac) it warns and lets the commit through, because
+# appveyor's "Verify manifest currency" step is the authoritative gate. The
+# exception is a commit that changes the manifest itself: only the DLL writes
+# that file, so one nothing here can check is blocked.
 #
 # Bypass once with:   SKIP_MANIFEST_CHECK=1 git commit ...
 # or entirely with:   git commit --no-verify
@@ -22,11 +24,24 @@
 
 # Manifest-affecting staged files (added / copied / modified / renamed).
 changed=$(git diff --cached --name-only --diff-filter=ACMR \
-    -- 'DLL/Mods/*.cpp' 'DLL/Mods/*.hpp' \
+    -- 'mods.manifest.json' 'DLL/Mods/*.cpp' 'DLL/Mods/*.hpp' \
        'DLL/Framework/SettingsSchema.cpp' 'DLL/Framework/SettingsSchema.hpp' \
        'DLL/Settings.cpp' 'DLL/Settings.hpp')
 
 [ -z "$changed" ] && exit 0
+
+cant_verify() {
+    if git diff --cached --quiet -- mods.manifest.json; then
+        echo "  ! $1; skipping manifest check (CI will still verify)." >&2
+        exit 0
+    fi
+
+    echo "  x mods.manifest.json is staged, but $1, so nothing can check it." >&2
+    echo "    It's generated from the Windows DLL. Unstage it, or regenerate it on Windows:" >&2
+    echo "      powershell DLL/Framework/Tests/BuildAndRun.ps1 -DumpManifest" >&2
+    echo "    (bypass once with: SKIP_MANIFEST_CHECK=1 git commit ...)" >&2
+    exit 1
+}
 
 echo "pre-commit: settings schema changed; verifying mods.manifest.json currency..."
 
@@ -38,17 +53,11 @@ if ! git diff --quiet -- mods.manifest.json; then
 fi
 
 ps=$(command -v pwsh 2>/dev/null || command -v powershell.exe 2>/dev/null)
-if [ -z "$ps" ]; then
-    echo "  ! No PowerShell found; skipping manifest check (CI will still verify)." >&2
-    exit 0
-fi
+[ -n "$ps" ] || cant_verify "no PowerShell was found"
 
 root=$(git rev-parse --show-toplevel)
 script="$root/DLL/Framework/Tests/BuildAndRun.ps1"
-if [ ! -f "$script" ]; then
-    echo "  ! $script not found; skipping manifest check." >&2
-    exit 0
-fi
+[ -f "$script" ] || cant_verify "$script is missing"
 
 out=$("$ps" -NoProfile -ExecutionPolicy Bypass -File "$script" -VerifyManifest 2>&1)
 status=$?
@@ -58,11 +67,8 @@ if [ "$status" -eq 0 ]; then
     exit 0
 fi
 
-# Non-zero: distinguish "no built DLL" (warn, allow) from "stale manifest" (block).
-if printf '%s' "$out" | grep -qi "not found"; then
-    echo "  ! DLL not built yet; skipping manifest check (CI will still verify)." >&2
-    exit 0
-fi
+# Non-zero: distinguish "no built DLL" from "stale manifest" (block).
+printf '%s' "$out" | grep -qi "not found" && cant_verify "the DLL isn't built"
 
 echo "$out" >&2
 echo "" >&2

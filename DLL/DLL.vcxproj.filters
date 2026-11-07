@@ -486,6 +486,9 @@
     <ClCompile Include="Framework\KeyNames.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Framework\SettingsManifest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EngineString.hpp">
@@ -1011,6 +1014,9 @@
       <Filter>Main Headers</Filter>
     </ClInclude>
     <ClInclude Include="Framework\KeyNames.hpp">
+      <Filter>Main Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\SettingsManifest.hpp">
       <Filter>Main Headers</Filter>
     </ClInclude>
     <ClInclude Include="Framework\CommandCollisionDiagnostics.hpp">

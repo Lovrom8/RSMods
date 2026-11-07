@@ -10,13 +10,17 @@ git config core.hooksPath .githooks
 
 Verifies that `mods.manifest.json` is still in sync with the DLL settings schema
 whenever a commit touches a mod's setting declarations or the schema core
-(`DLL/Mods/*.cpp|*.hpp`, `DLL/Framework/SettingsSchema.*`, `DLL/Settings.*`).
+(`DLL/Mods/*.cpp|*.hpp`, `DLL/Framework/SettingsSchema.*`, `DLL/Settings.*`) or
+the manifest itself.
 
 It reuses the CI verifier `DLL/Framework/Tests/BuildAndRun.ps1 -VerifyManifest`,
 which dumps the schema from the last-built DLL and compares it to the committed
 manifest. It is a fast local guard against "rebuilt the DLL but forgot to
-re-dump the manifest"; if no DLL is built it warns and lets the commit through.
-Appveyor's "Verify manifest currency" step remains the authoritative gate.
+re-dump the manifest". If it can't run (no PowerShell or no built DLL, as on a
+Mac) it warns and lets the commit through, unless the commit changes
+`mods.manifest.json` itself: only the DLL writes that file, so a change nothing
+can check is blocked. Appveyor's "Verify manifest currency" step remains the
+authoritative gate.
 
 If it blocks a commit, rebuild the DLL and regenerate the manifest:
 

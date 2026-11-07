@@ -26,6 +26,8 @@
   <ItemGroup>
     <!-- The soundpack import tests extract real archives through SevenZipSharp's native library. -->
     <None Include="..\RuntimeAssets\7z64.dll" Link="7z64.dll" CopyToOutputDirectory="PreserveNewest" />
+    <!-- Off Windows the GUI only reads the manifest next to it. -->
+    <None Include="..\mods.manifest.json" Link="mods.manifest.json" CopyToOutputDirectory="PreserveNewest" Condition="!$([MSBuild]::IsOSPlatform('Windows'))" />
   </ItemGroup>
 
 </Project>

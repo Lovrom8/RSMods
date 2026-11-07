@@ -302,3 +302,7 @@ __pycache__/
 
 Installer/Resources/
 *.user
+
+# The manifest at the root is the source; a host's is build output (DLL/Framework/README.md, "Other hosts")
+**/mods.manifest.json
+!/mods.manifest.json

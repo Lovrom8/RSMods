@@ -9,6 +9,7 @@ on:
       - DLL/Framework/**
       - DLL/Log.hpp
       - DLL/Lib/Json/**
+      - '**/mods.manifest.json'
       - DLL/Mods/Metronome*
       - .github/workflows/framework-portable.yml
   pull_request:
@@ -16,6 +17,7 @@ on:
       - DLL/Framework/**
       - DLL/Log.hpp
       - DLL/Lib/Json/**
+      - '**/mods.manifest.json'
       - DLL/Mods/Metronome*
       - .github/workflows/framework-portable.yml
 
@@ -35,6 +37,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
+      # .gitignore keeps a host's manifest out, unless it's force-added. A second copy would drift from the Windows one.
+      - name: Only the root manifest is tracked
+        run: test "$(git ls-files -- ':(glob)**/mods.manifest.json')" = mods.manifest.json
       - name: Build and run the framework tests
         env:
           CXX: ${{ matrix.cxx }}

@@ -335,5 +335,19 @@ the D3D9 hooks. A host provides what `dllmain.cpp` and `ModManager` do on Window
   names (`VirtualKeyFromName`), so a host maps its own key codes to them.
 - **Settings:** `SettingValues().Load(reader, ...)` with any reader that has `CSimpleIniA`'s `GetValue` and
   `GetLongValue`. Off Windows, SimpleIni needs `ConvertUTF.c` or ICU, or `SI_NO_CONVERSION` for the narrow API alone.
+- **Declarations:** a mod that exists on Windows too doesn't declare its settings again. It keeps the Windows mod's
+  `Id()` and returns `manifest.ForMod(Id())` from `Settings()`, with `manifest` a `SettingsManifest` of
+  `mods.manifest.json`, which the host embeds or ships. The DLL stays that file's only writer. A mod adds its own
+  settings to that list, and uses `manifest.Setting(key)` to take only some, or to reword one with `.Hint()` where it
+  behaves differently. A mod only this host has declares `Settings()` as usual.
+- **Its own manifest:** dump `SettingsSchema().DumpManifestJson()` from the host's build and ship it as
+  `mods.manifest.json` next to the GUI, the same way a build with external mods does. It lists exactly what that build
+  has, so the GUI shows the host's own mods and none of the Windows-only ones, with no platform list to keep in step.
+  The file is build output: generate it on every build, outside the repo root. `.gitignore` covers
+  `mods.manifest.json` everywhere but the root, and CI fails if one is force-added, since a second copy would drift
+  from the Windows declarations. The one at the root belongs to the DLL. Off Windows the GUI won't start without its
+  own, because its built-in list is the Windows one.
+- **Keeping one source:** the same build step fails on anything in `manifest.Conflicts(SettingsSchema().GetAll())`, so a
+  shared key can't drift from Windows in its INI location, type, default or choices. Labels and hints may differ.
 
 `Tests/HeadlessHostTests.cpp` is the smallest host there is, with no game or window.

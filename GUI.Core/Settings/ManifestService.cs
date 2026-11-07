@@ -36,7 +36,7 @@ public sealed class ManifestService : IManifestService
         }
         else
         {
-            _descriptors = LoadDescriptors();
+            _descriptors = LoadDescriptors(AppDomain.CurrentDomain.BaseDirectory, embeddedFitsThisBuild: OperatingSystem.IsWindows());
         }
 
         _byKey = _descriptors
@@ -48,10 +48,11 @@ public sealed class ManifestService : IManifestService
 
     public IEnumerable<IGrouping<string, SettingDescriptor>> GetCategories() => _descriptors.GroupBy(d => string.IsNullOrWhiteSpace(d.Category) ? "General" : d.Category);
 
-    private static List<SettingDescriptor> LoadDescriptors()
+    // The embedded manifest is the Windows DLL's. Off Windows it would show another platform's mods without saying so, so
+    // a build has to ship its own, and one that's missing or unreadable stops the app rather than falling back.
+    internal static List<SettingDescriptor> LoadDescriptors(string appDir, bool embeddedFitsThisBuild)
     {
         // 1. Try loose file next to application
-        string appDir = AppDomain.CurrentDomain.BaseDirectory;
         string loosePath = Path.Combine(appDir, "mods.manifest.json");
         if (File.Exists(loosePath))
         {
@@ -62,11 +63,17 @@ public sealed class ManifestService : IManifestService
                 if (list != null && list.Count > 0)
                     return list;
             }
-            catch
+            catch (Exception ex)
             {
+                if (!embeddedFitsThisBuild)
+                    throw new InvalidOperationException($"Can't read {loosePath}: {ex.Message}", ex);
+
                 // Fall through to embedded resource
             }
         }
+
+        if (!embeddedFitsThisBuild)
+            throw new InvalidOperationException($"This build's mod list is missing or empty: {loosePath}");
 
         // 2. Try embedded resource
         var assembly = typeof(ManifestService).Assembly;
