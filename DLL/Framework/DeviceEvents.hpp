@@ -10,6 +10,7 @@
 #include <string_view>
 #include <vector>
 
+#include "AtomicSharedPtr.hpp"
 #include "IMod.hpp"
 
 #if !defined(_WINDEF_) && !defined(_WINDOWS_)
@@ -195,7 +196,7 @@ namespace Framework {
 		std::mutex mutex;
 		std::vector<Registered> registered;
 		std::vector<const IMod*> suspended; // Faulted on the render thread, until RemoveMod.
-		std::atomic<std::shared_ptr<const std::vector<Entry>>> active;
+		AtomicSharedPtr<const std::vector<Entry>> active;
 		std::atomic<size_t> count = 0;
 	};
 

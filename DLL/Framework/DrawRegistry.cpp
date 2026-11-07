@@ -107,8 +107,8 @@ namespace Framework {
 		std::vector<const IMod*> faultedOwners; // threw on the render thread; kept out of the snapshots until RemoveMod
 		std::vector<RenderFault> pendingFaults; // drained by TakeFaults
 
-		std::atomic<std::shared_ptr<const std::vector<ActiveEntry>>> active[pathCount];
-		std::atomic<std::shared_ptr<const std::vector<OwnedCallback<FrameCallback>>>> activeFrame;
+		AtomicSharedPtr<const std::vector<ActiveEntry>> active[pathCount];
+		AtomicSharedPtr<const std::vector<OwnedCallback<FrameCallback>>> activeFrame;
 
 		DeviceChannels device; // Locks on its own; never touched under `mutex`.
 

@@ -13,7 +13,7 @@ mods="$(dirname "$framework")/Mods"
 out="$tests/bin/portable"
 mkdir -p "$out/obj"
 
-flags="-std=c++20 -pthread"
+flags="-std=c++20 -pthread ${CXXFLAGS:-}"
 
 echo "=== Building the framework with $cxx ==="
 status=0

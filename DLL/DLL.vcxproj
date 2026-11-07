@@ -535,6 +535,7 @@
     <ClInclude Include="Framework\SettingsSchema.hpp" />
     <ClInclude Include="Framework\SettingsStore.hpp" />
     <ClInclude Include="Framework\KeyNames.hpp" />
+    <ClInclude Include="Framework\AtomicSharedPtr.hpp" />
     <ClInclude Include="Framework\SettingsManifest.hpp" />
     <ClInclude Include="NoteData.h" />
     <ClInclude Include="ObjectUtil.hpp" />

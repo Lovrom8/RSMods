@@ -1016,6 +1016,9 @@
     <ClInclude Include="Framework\KeyNames.hpp">
       <Filter>Main Headers</Filter>
     </ClInclude>
+    <ClInclude Include="Framework\AtomicSharedPtr.hpp">
+      <Filter>Main Headers</Filter>
+    </ClInclude>
     <ClInclude Include="Framework\SettingsManifest.hpp">
       <Filter>Main Headers</Filter>
     </ClInclude>
