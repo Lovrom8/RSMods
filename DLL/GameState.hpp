@@ -35,7 +35,12 @@ namespace GameState {
 	void ToggleCB(bool enabled);
 
 	inline static std::string lastMenu = "";
-	inline static bool canGetRealMenu = false;
+	inline std::atomic_bool canGetRealMenu = false;
+
+	// Seam for a main-menu-ready signal. Menu detection normally unlocks the real menu pointer by seeing the title
+	// screen give way to something else between two polls; code that knows the main menu is up by other means (a hook
+	// on its construction, say) calls this so a title screen passed between polls cannot leave detection locked.
+	inline void UnlockRealMenu() { canGetRealMenu = true; }
 
 	inline std::string previousMenu, currentMenu; // What is the last menu, and the current menu?
 	inline std::atomic_bool GameLoaded = false; // Has the game gotten to the main menu where you can pick the gamemodes?
