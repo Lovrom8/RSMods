@@ -303,8 +303,10 @@ void UltrawideMod::EnsurePatched() {
 		return;
 
 	const uint32_t operand = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(&displayAspectBits));
-	if (MemUtil::PatchAdr(reinterpret_cast<LPVOID>(operandAddress), &operand, sizeof(operand)))
+	if (MemUtil::PatchAdr(reinterpret_cast<LPVOID>(operandAddress), &operand, sizeof(operand))) {
 		patched = true;
+		LOG_INFO("(ULTRAWIDE) Aspect load patched once at 0x" << std::hex << operandAddress << std::dec << std::endl);
+	}
 }
 
 static Framework::ModRegistrar<UltrawideMod> _ultrawideReg;
