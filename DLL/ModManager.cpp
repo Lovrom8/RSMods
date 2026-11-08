@@ -225,6 +225,7 @@ namespace ModManager {
 			GameState::currentMenu == "PlayedRS1Select" ||
 			GameState::currentMenu == "SimpleDialog")) {
 			GameState::GameLoaded = true;
+			LOG_INFO("Game loaded: menu detected as '" << GameState::currentMenu << "'" << std::endl);
 		}
 	}
 }
