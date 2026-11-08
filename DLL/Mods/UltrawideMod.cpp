@@ -5,6 +5,9 @@
 #include "UltrawideFullStage.hpp"
 #include "UltrawideState.hpp"
 
+#include <atomic>
+#include <bit>
+
 using Framework::ModContext;
 using Framework::Observe;
 namespace DeviceEvent = Framework::DeviceEvent;
@@ -22,12 +25,23 @@ namespace {
 	constexpr size_t aspectLoadOperandOffset = 6;
 	constexpr double sixteenByNine = 16.0 / 9.0;
 
-	double displayAspect = sixteenByNine;
+	// The aspect the game's load instruction reads: the patched operand points straight at this
+	// 8-byte slot (fld qword ptr), so it is an aligned atomic integer holding the double's bits.
+	// The render thread writes it and the game thread reads it, and an aligned 8-byte access
+	// cannot tear. Starts as the stock constant and is only ever pointed at once it has a value.
+	alignas(8) std::atomic<uint64_t> displayAspectBits{ std::bit_cast<uint64_t>(sixteenByNine) };
 
-	// Back to stock 16:9: no draw confinement, stock camera, HUD over the whole display.
+	// The game's own constant, read when the site is located; what "off" publishes.
+	std::atomic<double> stockAspectValue{ sixteenByNine };
+
+	void PublishAspect(double aspect) {
+		displayAspectBits.store(std::bit_cast<uint64_t>(aspect), std::memory_order_relaxed);
+	}
+
+	// Back to stock: no draw confinement, stock camera, HUD over the whole display.
 	void PublishInactive() {
 		UltrawideState::active.store(false);
-		displayAspect = sixteenByNine;
+		PublishAspect(stockAspectValue.load(std::memory_order_relaxed));
 		Framework::Hud().SetLayoutAspect(0.0f);
 	}
 
@@ -54,9 +68,9 @@ namespace {
 		// Publish the backbuffer aspect only while the correction applies. Otherwise the game must
 		// keep building its stock 16:9 frustum: the viewport and HUD paths are inert on a display
 		// the gate rejected, and a camera that follows the display alone would drift from them.
-		displayAspect = isActive && backBufferHeight
+		PublishAspect(isActive && backBufferHeight
 			? static_cast<double>(backBufferWidth) / backBufferHeight
-			: AspectRatio::referenceAspect;
+			: stockAspectValue.load(std::memory_order_relaxed));
 
 		if (backBufferValid || !device)
 			return;
@@ -238,16 +252,16 @@ void UltrawideMod::OnInitialize(ModContext& c) {
 }
 
 void UltrawideMod::OnEnabled(ModContext&) {
-	// Installed once and left in place. Both are inert at 16:9 and narrower: the frustum
-	// constant stays 16:9 and the RR dim gate follows UltrawideState::active.
-	SetPatched(true);
+	// Installed once and left in place, never rewritten from a toggle: the game runs this code
+	// on its own thread and a patch cannot be quiesced. Disabled, at 16:9 and narrower the
+	// published aspect is the game's own constant and the RR dim gate follows UltrawideState::active.
+	EnsurePatched();
 	UltrawideRRDim::Install();
 }
 
 void UltrawideMod::OnDisabled(ModContext&) {
 	// The frame callback stops once disabled, so undo what it published here.
 	PublishInactive();
-	SetPatched(false);
 	UltrawideRRDim::SetActive(false);
 }
 
@@ -261,11 +275,11 @@ void UltrawideMod::OnShutdown(ModContext&) {
 	UltrawideRRDim::Uninstall();
 }
 
-void UltrawideMod::SetPatched(bool enable) {
-	if (enable == patched)
+void UltrawideMod::EnsurePatched() {
+	if (patched)
 		return;
 
-	if (!located) {
+	if (!operandAddress) {
 		const uintptr_t match = MemUtil::FindPattern<uintptr_t>(MemUtil::GetTextSectionAddress(), MemUtil::GetTextSectionLength(),
 			const_cast<PBYTE>(aspectLoadSignature), aspectLoadMask);
 
@@ -276,9 +290,10 @@ void UltrawideMod::SetPatched(bool enable) {
 			if (!MemUtil::IsBadReadPtr(reinterpret_cast<void*>(constantAddress))) {
 				const double constant = *reinterpret_cast<const double*>(constantAddress);
 				if (constant >= sixteenByNine - 0.01 && constant <= sixteenByNine + 0.01) {
+					// Only latch on success, so a scan run before the text section is ready can retry.
 					operandAddress = candidate;
-					originalOperand = constantAddress;
-					located = true; // Only latch on success, so a scan run before the text section is ready can retry.
+					stockAspectValue.store(constant, std::memory_order_relaxed);
+					PublishAspect(constant);
 				}
 			}
 		}
@@ -287,12 +302,9 @@ void UltrawideMod::SetPatched(bool enable) {
 	if (!operandAddress)
 		return;
 
-	const uint32_t operand = enable
-		? static_cast<uint32_t>(reinterpret_cast<uintptr_t>(&displayAspect))
-		: originalOperand;
-
+	const uint32_t operand = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(&displayAspectBits));
 	if (MemUtil::PatchAdr(reinterpret_cast<LPVOID>(operandAddress), &operand, sizeof(operand)))
-		patched = enable;
+		patched = true;
 }
 
 static Framework::ModRegistrar<UltrawideMod> _ultrawideReg;

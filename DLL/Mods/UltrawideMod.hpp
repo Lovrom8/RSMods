@@ -16,10 +16,9 @@ public:
 	void OnShutdown(Framework::ModContext& c) override;
 
 private:
-	void SetPatched(bool enable);
+	// Patches the game's aspect load once; never undone, so no toggle rewrites live code.
+	void EnsurePatched();
 
 	uintptr_t operandAddress = 0;
-	uint32_t originalOperand = 0;
-	bool located = false;
 	bool patched = false;
 };
