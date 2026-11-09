@@ -10,6 +10,8 @@
 #include "Mods/UltrafastLoadMod.hpp"
 #include "Mods/UplayLoginMod.hpp"
 #include "Mods/ProfileAutoLoadMod.hpp"
+#include "Mods/BootIntro.hpp"
+#include "Mods/NativeBegin.hpp"
 #include "Version.h"
 #include "GitVersion.h"
 
@@ -202,6 +204,7 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 
 	// Dispatch profile selection on the game thread.
 	ProfileAutoLoadMod::OnFrame();
+	BootIntro::OnFrame();
 
 	// Don't draw our overlay onto a lost / not-yet-reset device (e.g. mid Alt+Tab out of exclusive fullscreen).
 	if (FAILED(pDevice->TestCooperativeLevel())) {
@@ -305,8 +308,12 @@ void Initialize() {
 	LogSettings::startupTime = clock();
 	GameVersion::LogIdentity();
 	// Install before the first game file open.
-	if (UltrafastLoad::Enabled())
+	if (UltrafastLoad::Enabled()) {
 		LazyVfs::Install();
+		// Install before the boot service begins the intro.
+		BootIntro::Remove();
+		NativeBegin::Install();
+	}
 	// Install before profile-service sign-in begins.
 	UplayLoginMod::Install();
 	ProfileAutoLoadMod::Install();

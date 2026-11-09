@@ -20,6 +20,22 @@ namespace Offsets {
 	extern VersioningStruct<uintptr_t> startupConnectSelect;
 	extern VersioningStruct<uintptr_t> startupSelectorCall;
 	extern VersioningStruct<uintptr_t> startupStartSelector;
+	extern VersioningStruct<uintptr_t> startupConnectBegin;
+	extern VersioningStruct<uintptr_t> startupTitleVtable;
+	extern VersioningStruct<uintptr_t> startupTitleTick;
+	extern VersioningStruct<uintptr_t> startupArmWarning;
+	extern VersioningStruct<uintptr_t> startupSaveProfile;
+	extern VersioningStruct<uintptr_t> startupSignInFlowComplete;
+	extern VersioningStruct<uintptr_t> startupHandlerTail;
+	extern VersioningStruct<uintptr_t> startupIntroTableEntry;
+	extern VersioningStruct<uintptr_t> startupIntroStateZero;
+	extern VersioningStruct<uintptr_t> startupIntroCleanup;
+	extern VersioningStruct<uintptr_t> startupUnspawnEntity;
+	extern VersioningStruct<uintptr_t> startupIntegrateRootStage;
+	extern VersioningStruct<uintptr_t> startupSplashCheck;
+	extern VersioningStruct<uintptr_t> startupSplashSite;
+	extern VersioningStruct<uintptr_t> startupSplashResume;
+	extern VersioningStruct<uintptr_t> startupPreLoadClickVtable;
 	extern uintptr_t baseHandle; // Beginning of Rocksmith
 	inline VersioningStruct<uintptr_t> baseEnd; // End of Rocksmith
 

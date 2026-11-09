@@ -22,6 +22,23 @@ VersioningStruct<uintptr_t> Offsets::startupConnectVtable = { {0x011DBB0C, start
 VersioningStruct<uintptr_t> Offsets::startupConnectSelect = { {0x008BB830, startupBase + 0x004BAE20} };
 VersioningStruct<uintptr_t> Offsets::startupSelectorCall = { {0x008C7CAA, startupBase + 0x004C725A} };
 VersioningStruct<uintptr_t> Offsets::startupStartSelector = { {0x008C1FA0, startupBase + 0x004C1550} };
+// Begin is connect slot +0x7C.
+VersioningStruct<uintptr_t> Offsets::startupConnectBegin = { {0x00C7D5B0, startupBase + 0x0087C6B0} };
+VersioningStruct<uintptr_t> Offsets::startupTitleVtable = { {0x011C1648, startupBase + 0x00DC2EC8} };
+VersioningStruct<uintptr_t> Offsets::startupTitleTick = { {0x0073C580, startupBase + 0x0033CFD0} };
+VersioningStruct<uintptr_t> Offsets::startupArmWarning = { {0x0073D303, startupBase + 0x0033DD53} };
+VersioningStruct<uintptr_t> Offsets::startupSaveProfile = { {0x007CDB50, startupBase + 0x003CE750} };
+VersioningStruct<uintptr_t> Offsets::startupSignInFlowComplete = { {0x0073D060, startupBase + 0x0033DAB0} };
+VersioningStruct<uintptr_t> Offsets::startupHandlerTail = { {0x0073D360, startupBase + 0x0033DDB0} };
+VersioningStruct<uintptr_t> Offsets::startupIntroTableEntry = { {0x005A5768, startupBase + 0x001A6D28} };
+VersioningStruct<uintptr_t> Offsets::startupIntroStateZero = { {0x005A53C8, startupBase + 0x001A6988} };
+VersioningStruct<uintptr_t> Offsets::startupIntroCleanup = { {0x005A5728, startupBase + 0x001A6CE8} };
+VersioningStruct<uintptr_t> Offsets::startupUnspawnEntity = { {0x00498EF0, startupBase + 0x00099750} };
+VersioningStruct<uintptr_t> Offsets::startupIntegrateRootStage = { {0x0076C950, startupBase + 0x0036CF60} };
+VersioningStruct<uintptr_t> Offsets::startupSplashCheck = { {0x005A5362, startupBase + 0x001A6922} };
+VersioningStruct<uintptr_t> Offsets::startupSplashSite = { {0x005A536C, startupBase + 0x001A692C} };
+VersioningStruct<uintptr_t> Offsets::startupSplashResume = { {0x005A5375, startupBase + 0x001A6935} };
+VersioningStruct<uintptr_t> Offsets::startupPreLoadClickVtable = { {0x011D069C, startupBase + 0x00DD1EC4} };
 
 void Offsets::Initialize() {
 	baseHandle = (uintptr_t)GetModuleHandle(NULL);

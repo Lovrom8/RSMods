@@ -198,6 +198,12 @@
     <ClCompile Include="Mods\EnumerationMod.cpp">
       <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="Mods\NativeBegin.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\BootIntro.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
     <ClCompile Include="Mods\ProfileAutoLoadMod.cpp">
       <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
@@ -498,6 +504,8 @@
     <ClInclude Include="Mods\DrawMeshTags.hpp" />
     <ClInclude Include="Mods\Enumeration.hpp" />
     <ClInclude Include="Mods\EnumerationMod.hpp" />
+    <ClInclude Include="Mods\NativeBegin.hpp" />
+    <ClInclude Include="Mods\BootIntro.hpp" />
     <ClInclude Include="Mods\ProfileAutoLoadMod.hpp" />
     <ClInclude Include="Mods\UplayLoginMod.hpp" />
     <ClInclude Include="Mods\AssetLoadDrain.hpp" />

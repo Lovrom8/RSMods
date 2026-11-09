@@ -81,6 +81,7 @@ Build/Artifacts/
 *.pch
 *.pdb
 !RSMods/detours.pdb
+!DLL/Lib/Detours/detours.pdb
 *.pgc
 *.pgd
 *.rsp

@@ -14,6 +14,7 @@
 #include "Mods/AssetLoadDrain.hpp"
 #include "Mods/JsonNumberHash.hpp"
 #include "Mods/UltrafastLoadMod.hpp"
+#include "Mods/BootIntro.hpp"
 #include "CC/ControlServer.hpp"
 #include "D3DInfo.h"
 #include <string>

@@ -221,6 +221,7 @@ namespace ModManager {
 	/// </summary>
 	void UpdateGameLoadingState() {
 		GameState::currentMenu = GameState::GetCurrentMenu(true); 	// This is the safe version of checking the current menu. It is only used while the game boots, else the game may crash.
+		BootIntro::NoteMenu(GameState::currentMenu);
 
 		CheckIfGameHasLoaded();
 	}
