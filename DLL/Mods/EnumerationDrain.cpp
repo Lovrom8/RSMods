@@ -3,6 +3,7 @@
 #include "UltrafastLoadMod.hpp"
 #include "EnumerationFrameBudget.hpp"
 #include "LazyVfs.hpp"
+#include "AssetLoadDrain.hpp"
 #include "EnumerationEnvironment.hpp"
 #include "EnumerationPreparation.hpp"
 #include "EnumerationCache.hpp"
@@ -1639,6 +1640,7 @@ namespace {
 			LOG_INFO("(ENUMERATION) Prefetch skipped: rescan, unchanged entries are popped without being opened" << std::endl);
 		HandOffBootWarmup();
 		ResetWindow();
+		AssetLoadDrain::SetActive(true);
 
 		++scanCount;
 	}
@@ -1752,6 +1754,7 @@ namespace {
 		EndWarmWait(Now());
 		StopPrefetch();
 		EnumerationCache::MapperRefsScanEnded(scanCacheGeneration);
+		AssetLoadDrain::SetActive(false);
 		if (rescanSkip) {
 			std::sort(currentSnapshot.begin(), currentSnapshot.end());
 			knownEntries = std::move(currentSnapshot);
@@ -1951,11 +1954,13 @@ namespace {
 	}
 
 	void DrainFailed() {
+		AssetLoadDrain::SetBootActive(false);
 		maxPerTick = 0;
 		maxLoadsPerTick = 0;
 		EnumerationPreparation::End();
 		timingInstall = false;
 		StopPrefetch();
+		AssetLoadDrain::SetActive(false);
 		progressActive.store(false, std::memory_order_release);
 		LOG_ERROR("(ENUMERATION) Exception while draining, the drain is off for this session" << std::endl);
 	}
@@ -2141,6 +2146,7 @@ namespace {
 			// Stop cached folder answers here so later DLC additions are visible.
 			LazyVfs::Report("main menu ready");
 		}
+		AssetLoadDrain::SetBootActive(maxPerTick != 0 && scanCount != 0 && !mainMenuReady.load(std::memory_order_relaxed));
 		auto* service = static_cast<unsigned char*>(self);
 		if (!service) {
 			originalTick(self, edx);

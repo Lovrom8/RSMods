@@ -263,6 +263,10 @@ void Offsets::Initialize() {
 	// DLC notification-banner call site.
 	ptr_dlcBannerCall = { {0x007BDFAB, baseHandle + 0x003BECCA} };
 	func_showBanner = { {0x007524A0, baseHandle + 0x00352F80} };
+	// Loader-thread call to the asset step.
+	ptr_assetLoaderStepCall = { {0x0090ADF2, baseHandle + 0x00509A02} };
+	// Asset step ABI: stdcall(this), AL indicates progress.
+	func_assetLoaderStep = { {0x0090B570, baseHandle + 0x0050A180} };
 }
 
 namespace Offsets { // Addresses for pre-2021 patch are in the comments

@@ -315,6 +315,8 @@ namespace Offsets {
 	inline VersioningStruct<uintptr_t> func_registerPackage;
 	inline VersioningStruct<uintptr_t> func_securityCheckCookie;
 	inline VersioningStruct<uintptr_t> func_showBanner;
+	inline VersioningStruct<uintptr_t> ptr_assetLoaderStepCall;
+	inline VersioningStruct<uintptr_t> func_assetLoaderStep;
 	inline VersioningStruct<uintptr_t> func_vfsBackendOpen;
 	inline VersioningStruct<uintptr_t> func_vfsCopyContainer;
 	inline VersioningStruct<uintptr_t> func_vfsSort;

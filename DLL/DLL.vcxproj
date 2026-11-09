@@ -201,6 +201,9 @@
     <ClCompile Include="Mods\EnumerationMod.cpp">
       <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="Mods\AssetLoadDrain.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
     <ClCompile Include="Mods\UltrafastLoadMod.cpp">
       <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
@@ -493,6 +496,7 @@
     <ClInclude Include="Mods\DrawMeshTags.hpp" />
     <ClInclude Include="Mods\Enumeration.hpp" />
     <ClInclude Include="Mods\EnumerationMod.hpp" />
+    <ClInclude Include="Mods\AssetLoadDrain.hpp" />
     <ClInclude Include="Mods\UltrafastLoadMod.hpp" />
     <ClInclude Include="Mods\LazyVfs.hpp" />
     <ClInclude Include="Mods\JsonNumberHash.hpp" />

@@ -11,6 +11,7 @@
 #include "Mods/CustomSongTitles.hpp"
 #include "Mods/Enumeration.hpp"
 #include "Mods/EnumerationDrain.hpp"
+#include "Mods/AssetLoadDrain.hpp"
 #include "Mods/JsonNumberHash.hpp"
 #include "Mods/UltrafastLoadMod.hpp"
 #include "CC/ControlServer.hpp"
