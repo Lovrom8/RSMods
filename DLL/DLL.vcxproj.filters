@@ -135,6 +135,9 @@
     <ClCompile Include="Mods\EnumerationMod.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
+    <ClCompile Include="Mods\UplayLoginMod.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
     <ClCompile Include="Mods\AssetLoadDrain.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
@@ -699,6 +702,9 @@
       <Filter>Mods\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Mods\EnumerationMod.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\UplayLoginMod.hpp">
       <Filter>Mods\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Mods\AssetLoadDrain.hpp">

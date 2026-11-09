@@ -191,6 +191,9 @@ std::string GameState::GetCurrentMenu(bool GameNotLoaded) {
 		return "where are we actually";
 	}
 
+	if (menuName == "MainMenu")
+		BootComplete = true;
+
 	return menuName;
 }
 

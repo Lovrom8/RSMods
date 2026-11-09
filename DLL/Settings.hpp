@@ -139,6 +139,7 @@ namespace Settings {
 		inline constexpr char BackupProfile[]           = "BackupProfile"; // Shared with the GUI, which also backs up when it opens.
 		inline constexpr char FastProfileLoadAndSave[]  = "FastProfileLoadAndSave";
 		inline constexpr char UltrafastLoad[]           = "UltrafastLoad";
+		inline constexpr char UplayLogin[]              = "UplayLogin";
 
 		// Standalone toggles
 		inline constexpr char AllowAudioInBackground[]  = "AllowAudioInBackground";

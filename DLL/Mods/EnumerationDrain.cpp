@@ -4,6 +4,7 @@
 #include "EnumerationFrameBudget.hpp"
 #include "LazyVfs.hpp"
 #include "AssetLoadDrain.hpp"
+#include "UplayLoginMod.hpp"
 #include "EnumerationEnvironment.hpp"
 #include "EnumerationPreparation.hpp"
 #include "EnumerationCache.hpp"
@@ -1884,7 +1885,9 @@ namespace {
 
 		unsigned int done = 0;
 		// Before menu readiness, drain before preloader commands are dispatched between frames.
-		const bool passAll = !mainMenuSeen.load(std::memory_order_relaxed);
+		// Profile loading shares the frame and must retain its budget.
+		const bool passAll = !mainMenuSeen.load(std::memory_order_relaxed)
+			&& !UplayLoginMod::IsSourceProfileLoading();
 		const unsigned int perTick = passAll ? 0xFFFFFFFFu : EffectiveMaxPerTick();
 		while (done < perTick && service[off_installing] && QueueLength(service) > 0) {
 			if (!passAll && (MsSince(start) >= budget

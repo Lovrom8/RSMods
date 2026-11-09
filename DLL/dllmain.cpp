@@ -8,6 +8,7 @@
 #include "Mods/TwitchMod.hpp"
 #include "Mods/LazyVfs.hpp"
 #include "Mods/UltrafastLoadMod.hpp"
+#include "Mods/UplayLoginMod.hpp"
 #include "Version.h"
 #include "GitVersion.h"
 
@@ -302,6 +303,8 @@ void Initialize() {
 	// Install before the first game file open.
 	if (UltrafastLoad::Enabled())
 		LazyVfs::Install();
+	// Install before profile-service sign-in begins.
+	UplayLoginMod::Install();
 
 	Wwise::Exports::Initialize();
 

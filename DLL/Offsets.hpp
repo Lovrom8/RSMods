@@ -5,6 +5,18 @@
 #include <cstddef>
 
 namespace Offsets {
+	// Initialize startup targets at module load, before Initialize runs.
+	extern VersioningStruct<uintptr_t> startupProfileTickSlot;
+	extern VersioningStruct<uintptr_t> startupProfileTick;
+	extern VersioningStruct<uintptr_t> startupProfileFlowSlot;
+	extern VersioningStruct<uintptr_t> startupProfileFlow;
+	extern VersioningStruct<uintptr_t> startupProfileLoadedSlot;
+	extern VersioningStruct<uintptr_t> startupProfileLoaded;
+	extern VersioningStruct<uintptr_t> startupConfigBoolSlot;
+	extern VersioningStruct<uintptr_t> startupConfigBool;
+	extern VersioningStruct<uintptr_t> startupGameService;
+	extern VersioningStruct<uintptr_t> startupConnectSingleton;
+	extern VersioningStruct<uintptr_t> startupConnectVtable;
 	extern uintptr_t baseHandle; // Beginning of Rocksmith
 	inline VersioningStruct<uintptr_t> baseEnd; // End of Rocksmith
 

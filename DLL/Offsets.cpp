@@ -1,6 +1,25 @@
 #include "stdafx.h"
 #include "Offsets.hpp"
 
+namespace {
+	// Initialize startup targets at module load, before DLL-attach hooks run.
+	// Learn & Play uses module-relative RVAs; callers byte-check each patch site.
+	const uintptr_t startupBase = reinterpret_cast<uintptr_t>(GetModuleHandle(nullptr));
+}
+
+VersioningStruct<uintptr_t> Offsets::startupProfileTickSlot = { {0x011DBFEC, startupBase + 0x00DDD8BC} };
+VersioningStruct<uintptr_t> Offsets::startupProfileTick = { {0x008CAD00, startupBase + 0x004CA360} };
+VersioningStruct<uintptr_t> Offsets::startupProfileFlowSlot = { {0x011DC040, startupBase + 0x00DDD910} };
+VersioningStruct<uintptr_t> Offsets::startupProfileFlow = { {0x008BFA70, startupBase + 0x004BF020} };
+VersioningStruct<uintptr_t> Offsets::startupProfileLoadedSlot = { {0x011ABE78, startupBase + 0x00DAD6E8} };
+VersioningStruct<uintptr_t> Offsets::startupProfileLoaded = { {0x005A37B0, startupBase + 0x001A4DE0} };
+VersioningStruct<uintptr_t> Offsets::startupConfigBoolSlot = { {0x011ABE2C, startupBase + 0x00DAD69C} };
+VersioningStruct<uintptr_t> Offsets::startupConfigBool = { {0x005A2AF0, startupBase + 0x001A4120} };
+VersioningStruct<uintptr_t> Offsets::startupGameService = { {0x0135FBFC, startupBase + 0x00F60BFC} };
+// The connect service singleton and vtable.
+VersioningStruct<uintptr_t> Offsets::startupConnectSingleton = { {0x01374E90, startupBase + 0x00F75E90} };
+VersioningStruct<uintptr_t> Offsets::startupConnectVtable = { {0x011DBB0C, startupBase + 0x00DDD3DC} };
+
 void Offsets::Initialize() {
 	baseHandle = (uintptr_t)GetModuleHandle(NULL);
 

@@ -2878,6 +2878,33 @@
     "entryTitle": "Ultrafast Load"
   },
   {
+    "key": "UplayLogin",
+    "ini": {
+      "section": "Mod Settings",
+      "name": "UplayLogin"
+    },
+    "type": "Enum",
+    "default": "skip",
+    "label": "Uplay Login",
+    "hint": "Skip goes straight to your profile at startup, without the Uplay sign-in, which no longer works.\nSet it to Ask if you see problems signing in; Ask shows Rocksmith's own login.",
+    "category": "Toggle Switches",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [
+      "ask",
+      "skip"
+    ],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null,
+    "editedBy": null,
+    "mod": "UplayLoginMod",
+    "entry": "UplayLogin",
+    "heading": "Songs & Profiles",
+    "entryTitle": "Uplay Login"
+  },
+  {
     "key": "ForceReEnumerationEnabled",
     "ini": {
       "section": "Toggle Switches",
