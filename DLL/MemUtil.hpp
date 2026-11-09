@@ -54,7 +54,7 @@ namespace MemUtil {
 		std::atomic<size_t> count{ 0 };
 	};
 	PBYTE TrampHook(PBYTE src, PBYTE dst, unsigned int len);
-	bool IsBadReadPtr(void* pointer);
+	bool IsBadReadPtr(const void* pointer);
 	template <typename T>
 		requires std::is_trivially_copyable_v<T>
 	bool TryRead(uintptr_t address, T& value);

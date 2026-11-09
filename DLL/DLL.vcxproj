@@ -201,6 +201,27 @@
     <ClCompile Include="Mods\EnumerationMod.cpp">
       <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="Mods\UltrafastLoadMod.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\LazyVfs.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\JsonNumberHash.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\EnumerationPreparation.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Mods\EnumerationEnvironment.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\EnumerationDrain.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\EnumerationCache.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
     <ClCompile Include="Mods\ExtendedRangeMod.cpp">
       <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
@@ -472,6 +493,29 @@
     <ClInclude Include="Mods\DrawMeshTags.hpp" />
     <ClInclude Include="Mods\Enumeration.hpp" />
     <ClInclude Include="Mods\EnumerationMod.hpp" />
+    <ClInclude Include="Mods\UltrafastLoadMod.hpp" />
+    <ClInclude Include="Mods\LazyVfs.hpp" />
+    <ClInclude Include="Mods\JsonNumberHash.hpp" />
+    <ClInclude Include="Mods\EnumerationZeroCopyWalk.inc" />
+    <ClInclude Include="Mods\EnumerationStagePatches.inc" />
+    <ClInclude Include="Mods\EnumerationPreparation.hpp" />
+    <ClInclude Include="Mods\EnumerationPackage.hpp" />
+    <ClInclude Include="Mods\EnumerationOwnership.inc" />
+    <ClInclude Include="Mods\EnumerationOwnership.hpp" />
+    <ClInclude Include="Mods\EnumerationMapperRestore.inc" />
+    <ClInclude Include="Mods\EnumerationMapperHashChecks.inc" />
+    <ClInclude Include="Mods\EnumerationMapperHash.inc" />
+    <ClInclude Include="Mods\EnumerationMapperHash.hpp" />
+    <ClInclude Include="Mods\EnumerationLocateMemo.inc" />
+    <ClInclude Include="Mods\EnumerationLlid.inc" />
+    <ClInclude Include="Mods\EnumerationIndex.inc" />
+    <ClInclude Include="Mods\EnumerationFrameBudget.hpp" />
+    <ClInclude Include="Mods\EnumerationEnvironment.hpp" />
+    <ClInclude Include="Mods\EnumerationDrain.hpp" />
+    <ClInclude Include="Mods\EnumerationCandidateIndex.inc" />
+    <ClInclude Include="Mods\EnumerationCache.hpp" />
+    <ClInclude Include="Mods\EnumerationBorrowedName.inc" />
+    <ClInclude Include="Mods\EnumerationBorrowedHooks.inc" />
     <ClInclude Include="Mods\ExtendedRangeMod.hpp" />
     <ClInclude Include="Mods\ExtendedRangeMode.hpp" />
     <ClInclude Include="Mods\FretlessMod.hpp" />

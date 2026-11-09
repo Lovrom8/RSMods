@@ -1,11 +1,12 @@
 #include "../stdafx.h"
 #include "Enumeration.hpp"
 #include <climits>
+#include "EnumerationDrain.hpp"
 
 void SaveSteamServicePointer(uint32_t eax) {
 	if (Enumeration::rsSteamServiceFlagsPtr == nullptr) {
 		printf("Found DLC service pointer at: %X\n", eax + 4);
-		Enumeration::rsSteamServiceFlagsPtr = (uint32_t*)(eax + 4);
+		Enumeration::rsSteamServiceFlagsPtr = reinterpret_cast<std::uint8_t*>(eax + 4);
 	}
 }
 
@@ -68,8 +69,10 @@ void Enumeration::ForceEnumeration() {
 	if (rsSteamServiceFlagsPtr)
 	{
 		// Set Enumeration flags to 1.
-		*(BYTE*)rsSteamServiceFlagsPtr = 1;
-		*(BYTE*)(rsSteamServiceFlagsPtr + 1) = 1;
+		rsSteamServiceFlagsPtr[0] = 1;
+		// +0x05 enabled byte.
+		rsSteamServiceFlagsPtr[1] = 1;
+		EnumerationDrain::NoteManualRequest();
 	}
 }
 

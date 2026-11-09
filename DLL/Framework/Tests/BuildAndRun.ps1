@@ -148,6 +148,11 @@ foreach ($t in $Tests) {
     if ($LASTEXITCODE -ne 0) { Write-Host "TESTS FAILED: $name" -ForegroundColor Red; $failed += "$name (run)" }
 }
 
+# Inline assembly tests require a separate Win32 build.
+Write-Host "=== Building and running EnumerationPackageTests (Win32) ===" -ForegroundColor Cyan
+& { $ErrorActionPreference = 'Continue'; & powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $TestsDir 'Win32\BuildEnumerationTests.ps1') }
+if ($LASTEXITCODE -ne 0) { Write-Host "TESTS FAILED: EnumerationPackageTests" -ForegroundColor Red; $failed += "EnumerationPackageTests" }
+
 Write-Host ""
 if ($failed.Count -gt 0) {
     Write-Host "FRAMEWORK TESTS FAILED: $($failed -join ', ')" -ForegroundColor Red

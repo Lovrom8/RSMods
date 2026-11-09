@@ -6,6 +6,8 @@
 #include "Framework/Framework.hpp"
 #include "Mods/Midi.hpp"
 #include "Mods/TwitchMod.hpp"
+#include "Mods/LazyVfs.hpp"
+#include "Mods/UltrafastLoadMod.hpp"
 #include "Version.h"
 #include "GitVersion.h"
 
@@ -297,6 +299,9 @@ unsigned WINAPI MainThread() {
 void Initialize() {
 	LogSettings::startupTime = clock();
 	GameVersion::LogIdentity();
+	// Install before the first game file open.
+	if (UltrafastLoad::Enabled())
+		LazyVfs::Install();
 
 	Wwise::Exports::Initialize();
 

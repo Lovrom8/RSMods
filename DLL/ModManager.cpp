@@ -175,6 +175,13 @@ namespace ModManager {
 		SongTuning::InstallTunerHook();
 		Enumeration::HookEnumerationService();
 
+		if (UltrafastLoad::Enabled()) {
+			JsonNumberHash::Install();
+			EnumerationDrain::Install();
+		}
+		else if (GameVersion::Current() != Framework::GameVersion::Build::Unknown)
+			LOG_INFO("(STARTUP) Ultrafast Load is off in RSMods.ini; the game scans its songs its own way" << std::endl);
+
 		CrowdControl::StartServer();
 	}
 

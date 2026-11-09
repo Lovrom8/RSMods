@@ -164,6 +164,105 @@ void Offsets::Initialize() {
 	func_getAllocatorOwner = { {0x0091FFA0, baseHandle + 0x0051E770} };				// Code | 80 3d ? ? ? ? 00 74 06 a1 ? ? ? ? c3 f6 05 (start of function - returns the allocator owner in EAX)
 	func_playnextTrim = { {0x0056DF00, baseHandle + 0x0016F690} };	// Code | 55 8b ec 83 ec 18 53 56 8d 45 f8 57 50 8b 45 08 e8 (start of function - the PlaynextStats trim)
 	func_profileSongs = { {0x0056D9D0, baseHandle + 0x0016F170} };			// Code | The e8 at the end of the pattern above (finds the profile's songs - profile id in EAX, out pointer on the stack)
+
+	// Zero RVAs disable unmapped DLC scan sites; byte-check mapped sites before patching.
+	enumDeep49E105 = { {0x0049E105, 0} };
+	enumDeep8DC12D = { {0x008DC12D, baseHandle + 0x004DB57D} };
+	enumMapperHash = { {0x0049BFD0, baseHandle + 0x0009C7C0} };
+	enumMapperHashCall0 = { {0x0049DC08, baseHandle + 0x0009E3F8} };
+	enumMapperHashCall1 = { {0x0049DC94, baseHandle + 0x0009E484} };
+	enumInner49DAB2 = { {0x0049DAB2, baseHandle + 0x0009E2A2} };
+	enumMenuReady = { {0x0065F1D0, baseHandle + 0x002600A0} };
+	enumStageInsert = { {0x00414724, baseHandle + 0x000148B4} };
+	enumStageInsertNonDlc = { {0x0041483B, baseHandle + 0x000149CB} };
+	enumStageRemove = { {0x00414DFE, baseHandle + 0x00014F8E} };
+	enumStageTeardown = { {0x004141BE, baseHandle + 0x0001434E} };
+	enumStageInternCall = { {0x008A38E4, baseHandle + 0x004A31B4} };
+	enumStageIntern = { {0x0089C550, baseHandle + 0x0049C130} };
+	enumStageReleaseStart = { {0x008A3AE5, baseHandle + 0x004A33B5} };
+	enumStageReleaseEnd = { {0x008A3B60, baseHandle + 0x004A3430} };
+	enumStageDuplicateStart = { {0x004144E8, baseHandle + 0x00014678} };
+	enumStageDuplicateCreate = { {0x00414502, baseHandle + 0x00014692} };
+	enumStageDuplicateHit = { {0x00414642, baseHandle + 0x000147D2} };
+	enumStageInternLock = { {0x0135815C, baseHandle + 0x00F5915C} };
+	enumStagePackages = { {0x0135F51C, baseHandle + 0x00F6051C} };
+	ptr_enumReadIndexCall = { {0x008A33B7, baseHandle + 0x004A2C87} };
+	func_enumReadIndex = { {0x008A3440, baseHandle + 0x004A2D10} };
+	ptr_enumNameHashCall = { {0x0089C588, baseHandle + 0x0049C168} };
+	func_enumNameHash = { {0x0089C2A0, baseHandle + 0x0049BE80} };
+	ptr_enumOpenCall = { {0x008CA407, baseHandle + 0x004C9A67} };
+	func_enumOpen = { {0x0049B360, baseHandle + 0x0009BBB0} };
+	func_enumReadEntry = { {0x008A4060, baseHandle + 0x004A3930} };
+	func_enumInflate = { {0x00E316E0, baseHandle + 0x00A30790} };
+	func_dlcInstallContentPackage = { {0x008CA3B0, baseHandle + 0x004C9A10} };
+	// InstallContentPackage +0x339: absolute load operand.
+	ptr_dlcOwnershipService = { {0x013581E8, baseHandle + 0x00F591E8} };
+	// Content object getter: +0xA4.
+	enumAnchorContentRead = { {0x008C9563, baseHandle + 0x004C8B13} };
+	// Apps interface query in InstallContentPackage.
+	enumAnchorAppsRead = { {0x008DC122, baseHandle + 0x004DB572} };
+	// Shutdown jumps to this empty diagnostic stub.
+	func_enumDiagStub = { {0x00D141F0, baseHandle + 0x0034E550} };
+	enumNameSplitPush = { {0x008CA791, 0} };
+	func_enumNameSplitShim = { {0x01467F96, 0} };
+	// Mapper hash character-count helper.
+	func_mapperHashLength = { {0x008FDF80, baseHandle + 0x004FD050} };
+	// Mapper hash character-at-index helper.
+	func_mapperHashChar = { {0x008FD2E0, baseHandle + 0x004FC3B0} };
+	// Character helpers read this table of 128 ones.
+	ptr_mapperHashStrides = { {0x01190FA0, baseHandle + 0x00D90F50} };
+	// Mapper hash prologue security-cookie operand.
+	ptr_securityCookie = { {0x0125B240, baseHandle + 0x00E5C240} };
+	// Mapper hash epilogue cookie check.
+	func_securityCheckCookie = { {0x00F5AB08, baseHandle + 0x00B5B478} };
+	// Character helper memset target.
+	func_mapperHashMemset = { {0x00F5B0C0, baseHandle + 0x00B5BA30} };
+	func_enumLlid = { {0x0049C030, baseHandle + 0x0009C820} };
+	// SearchFileByLLID call to the LLID hash.
+	enumLlidSearchCall = { {0x004A5314, baseHandle + 0x000A5954} };
+	func_psarcLocate = { {0x008A4440, baseHandle + 0x004A3D10} };
+	// LocateTOCEntry intern-node release.
+	func_enumInternRelease = { {0x0089C7E0, baseHandle + 0x0049C3C0} };
+	// LocateTOCEntry +0x93: TOC hash-map find.
+	func_psarcTocFind = { {0x008A4AC0, baseHandle + 0x0049C5F0} };
+	func_vfsBackendOpen = { {0x0089DA50, baseHandle + 0x0049D060} };
+	// Backend Open sort predicate.
+	func_vfsSortPredicate = { {0x0089D340, baseHandle + 0x0049C950} };
+	// Backend Open candidate sort.
+	func_vfsSort = { {0x008A02B0, baseHandle + 0x0049FB30} };
+	func_vfsCopyContainer = { {0x0089F4B0, baseHandle + 0x0049EBE0} };
+	// PSARC Exists is vtable slot +0x18.
+	func_psarcExists = { {0x008A4030, baseHandle + 0x004A3900} };
+	func_psarcNormalise = { {0x008A4820, baseHandle + 0x004A4100} };
+	ptr_psarcVtable = { {0x011D995C, baseHandle + 0x00DDB22C} };
+	// Scalar deleting destructor, vtable slot 0.
+	func_psarcDestructor = { {0x008A3780, baseHandle + 0x004A3050} };
+	enumBannerStringDestroy = { {0x0085C810, 0} };
+	// DLC service Tick is vtable slot 10.
+	ptr_dlcServiceTickSlot = { {0x011DBF6C, baseHandle + 0x00DDD83C} };
+	func_dlcServiceTick = { {0x008C9CB0, baseHandle + 0x004C9310} };
+	// Tick first call: thiscall, service in ECX.
+	func_dlcServiceLoadTick = { {0x008C6FD0, baseHandle + 0x004C6570} };
+	// Tick second call: service in ESI, no stack arguments.
+	func_dlcScanInstallNext = { {0x008C9F20, baseHandle + 0x004C9580} };
+	// Scan queue pop_back: vector in EAX.
+	func_dlcScanQueueRemoveLast = { {0x008CA8B0, baseHandle + 0x004C9F10} };
+	// VFS existence probe calls the native access pointer at +0x13.
+	func_fileExistsCheck = { {0x00499C30, baseHandle + 0x0009A470} };
+	// Package-list absolute operand in InstallContentPackage.
+	ptr_packageList = { {0x0135F51C, baseHandle + 0x00F6051C} };
+	// Load-step absolute operand for the package-load list.
+	ptr_packageLoadQueue = { {0x0135F520, baseHandle + 0x00F60520} };
+	// Package-install call to registration.
+	ptr_dlcInstallRegisterCall = { {0x008CA7EA, baseHandle + 0x004C9E4A} };
+	func_registerPackage = { {0x00414300, baseHandle + 0x00014490} };
+	// Registration call to the package shader scan.
+	ptr_packageShaderScanCall = { {0x0041472D, baseHandle + 0x000148BD} };
+	// Shader scan ABI: cdecl, one stack argument.
+	func_packageShaderScan = { {0x00414860, baseHandle + 0x000149F0} };
+	// DLC notification-banner call site.
+	ptr_dlcBannerCall = { {0x007BDFAB, baseHandle + 0x003BECCA} };
+	func_showBanner = { {0x007524A0, baseHandle + 0x00352F80} };
 }
 
 namespace Offsets { // Addresses for pre-2021 patch are in the comments

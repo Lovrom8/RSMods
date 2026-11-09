@@ -2854,6 +2854,30 @@
     "entryTitle": null
   },
   {
+    "key": "UltrafastLoad",
+    "ini": {
+      "section": "Mod Settings",
+      "name": "UltrafastLoad"
+    },
+    "type": "Bool",
+    "default": "on",
+    "label": "Ultrafast Load",
+    "hint": "Starts the game and adds your songs much faster, most of all with a big song library.\nTurn it off if you see problems at startup or with your song list.\nTakes effect the next time you start the game.",
+    "category": "Mod Settings",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null,
+    "editedBy": null,
+    "mod": "UltrafastLoadMod",
+    "entry": "UltrafastLoad",
+    "heading": "Game & Window",
+    "entryTitle": "Ultrafast Load"
+  },
+  {
     "key": "ForceReEnumerationEnabled",
     "ini": {
       "section": "Toggle Switches",

@@ -292,13 +292,13 @@ PBYTE MemUtil::TrampHook(PBYTE src, PBYTE dst, unsigned int len)
 /// </summary>
 /// <param name="p"> - Pointer</param>
 /// <returns>True - Bad Pointer, do not read. False - Safe to read.</returns>
-bool MemUtil::IsBadReadPtr(void* pointer)
+bool MemUtil::IsBadReadPtr(const void* pointer)
 {
 	//NOTE: We are very aware this is not exactly the optimal (neither completely thread safe nor very fast) way to handle pointers to a non-initialized variable.
 	//      but for now it will have to do the job until we figure out a better current menu check.
 
 	MEMORY_BASIC_INFORMATION mbi = { 0 };
-	if (NT_SUCCESS(HookedQueryVirtualMemory(pointer, &mbi, sizeof(mbi))))
+	if (NT_SUCCESS(HookedQueryVirtualMemory(const_cast<LPVOID>(pointer), &mbi, sizeof(mbi))))
 	{
 		uint32_t mask = (PAGE_READONLY | PAGE_READWRITE | PAGE_WRITECOPY | PAGE_EXECUTE_READ | PAGE_EXECUTE_READWRITE | PAGE_EXECUTE_WRITECOPY);
 		bool badPtr = !(mbi.Protect & mask);
