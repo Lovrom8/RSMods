@@ -76,9 +76,9 @@ namespace Settings {
 		inline constexpr char AltOutputSampleRate[]         = "AltOutputSampleRate";
 		inline constexpr char AlternativeOutputSampleRate[] = "AlternativeOutputSampleRate";
 
-		// Auto Load Profile
-		inline constexpr char ForceProfileEnabled[]    = "ForceProfileEnabled";
+		inline constexpr char ProfileAutoLoad[]        = "ProfileAutoLoad";
 		inline constexpr char ProfileToLoad[]          = "ProfileToLoad";
+		inline constexpr char AutoProfile[]            = "AutoProfile";
 
 		// Extended Range
 		inline constexpr char RainbowStringsEnabled[]  = "RainbowStringsEnabled";

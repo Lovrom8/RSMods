@@ -92,6 +92,13 @@ namespace Framework {
 		std::string entryTitle = {};                                     // That entry's title, when it isn't this setting's label
 		std::string listedUnder = {};                                    // Listed in this setting's entry without being gated on it
 
+		// Read the legacy INI location only when the current location is absent; DLL-only metadata.
+		struct IniLocation {
+			std::string section;
+			std::string name;
+		};
+		std::optional<IniLocation> migratesFrom = std::nullopt;
+
 		// --- Fluent Builders (paired && and const & overloads for temporary safety) ---
 
 		SettingDef Ini(std::string_view section, std::string_view name) && {
@@ -262,6 +269,16 @@ namespace Framework {
 		SettingDef ListedUnder(std::string_view parentKey) const & {
 			SettingDef copy = *this;
 			copy.listedUnder = parentKey;
+			return copy;
+		}
+
+		SettingDef MigratesFrom(std::string_view section, std::string_view name) && {
+			migratesFrom = IniLocation{ std::string(section), std::string(name) };
+			return std::move(*this);
+		}
+		SettingDef MigratesFrom(std::string_view section, std::string_view name) const & {
+			SettingDef copy = *this;
+			copy.migratesFrom = IniLocation{ std::string(section), std::string(name) };
 			return copy;
 		}
 

@@ -177,9 +177,6 @@
     <ClCompile Include="Mods\AudioDevices.cpp">
       <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
-    <ClCompile Include="Mods\AutoLoadProfileMod.cpp">
-      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
-    </ClCompile>
     <ClCompile Include="Mods\BugPrevention.cpp">
       <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
@@ -199,6 +196,9 @@
       <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="Mods\EnumerationMod.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\ProfileAutoLoadMod.cpp">
       <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="Mods\UplayLoginMod.cpp">
@@ -490,7 +490,6 @@
     <ClInclude Include="Mods\AllowAudioInBackgroundMod.hpp" />
     <ClInclude Include="Mods\AlternativeSampleRateMod.hpp" />
     <ClInclude Include="Mods\AudioDevices.hpp" />
-    <ClInclude Include="Mods\AutoLoadProfileMod.hpp" />
     <ClInclude Include="Mods\BugPrevention.hpp" />
     <ClInclude Include="Mods\CalibrationMod.hpp" />
     <ClInclude Include="Mods\CollectColors.hpp" />
@@ -499,6 +498,7 @@
     <ClInclude Include="Mods\DrawMeshTags.hpp" />
     <ClInclude Include="Mods\Enumeration.hpp" />
     <ClInclude Include="Mods\EnumerationMod.hpp" />
+    <ClInclude Include="Mods\ProfileAutoLoadMod.hpp" />
     <ClInclude Include="Mods\UplayLoginMod.hpp" />
     <ClInclude Include="Mods\AssetLoadDrain.hpp" />
     <ClInclude Include="Mods\UltrafastLoadMod.hpp" />

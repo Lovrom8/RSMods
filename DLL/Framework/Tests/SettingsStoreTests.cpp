@@ -1,10 +1,15 @@
 #include "../SettingsStore.hpp"
 #include "../KeyNames.hpp"
 #include "../ModContext.hpp"
+#include "../SettingsManifest.hpp"
+#include "../../Lib/Ini/SimpleIni.h"
 
 #include <cstdint>
 #include <cstdlib>
 #include <iostream>
+#include <filesystem>
+#include <fstream>
+#include <iterator>
 #include <map>
 #include <string>
 #include <vector>
@@ -52,7 +57,19 @@ namespace {
 	};
 }
 
-int main() {
+int main(int argc, char** argv) {
+	if (argc == 3) {
+		std::ifstream file(std::filesystem::path(__FILE__).parent_path() / "../../../mods.manifest.json");
+		const std::string text{ std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>() };
+		const Framework::SettingsManifest manifest(text);
+		const auto& profile = manifest.Setting("ProfileAutoLoad");
+		Framework::SettingsSchema().Register(Owner(1), { profile });
+		CSimpleIniA ini;
+		if (ini.LoadFile(argv[1]) < 0)
+			return 1;
+		SettingValues().Load(ini, undeclared);
+		return SettingValues().IsOn("ProfileAutoLoad") == (std::string(argv[2]) == "on") ? 0 : 1;
+	}
 	std::cout << "SettingsStore tests\n";
 
 	std::vector<SettingDef> decls = {
@@ -147,6 +164,35 @@ int main() {
 	Check("Key: VK name", VirtualKeyFromName("VK_F9") == 0x78);
 	Check("Key: unknown is 0", VirtualKeyFromName("VK_NOPE") == 0);
 	Check("Key: empty is 0", VirtualKeyFromName("") == 0);
+
+	// A current INI value takes precedence over the legacy location.
+	{
+		std::vector<SettingDef> migrating = {
+			SettingDef{ .key = "NewToggle", .ini = { "Mod Settings", "NewToggle" }, .type = SettingType::Bool, .def = "on" }
+				.MigratesFrom("Toggle Switches", "OldToggle"),
+		};
+		Check("Migration: schema registers", Framework::SettingsSchema().Register(Owner(9), migrating));
+
+		FakeIni oldOn;
+		oldOn.entries["Toggle Switches|OldToggle"] = "on";
+		store.Load(oldOn, undeclared);
+		Check("Migration: old on -> new on", store.IsOn("NewToggle"));
+
+		FakeIni oldOff;
+		oldOff.entries["Toggle Switches|OldToggle"] = "off";
+		store.Load(oldOff, undeclared);
+		Check("Migration: old off -> new off", store.IsOff("NewToggle"));
+
+		FakeIni neither;
+		store.Load(neither, undeclared);
+		Check("Migration: neither -> default on", store.IsOn("NewToggle"));
+
+		FakeIni both;
+		both.entries["Toggle Switches|OldToggle"] = "off";
+		both.entries["Mod Settings|NewToggle"] = "on";
+		store.Load(both, undeclared);
+		Check("Migration: the new location wins once it is set", store.IsOn("NewToggle"));
+	}
 
 	if (g_failures > 0) {
 		std::cout << g_failures << " failure(s)\n";

@@ -9,6 +9,7 @@
 #include "Mods/LazyVfs.hpp"
 #include "Mods/UltrafastLoadMod.hpp"
 #include "Mods/UplayLoginMod.hpp"
+#include "Mods/ProfileAutoLoadMod.hpp"
 #include "Version.h"
 #include "GitVersion.h"
 
@@ -199,6 +200,9 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 		return originalReturn;
 	}
 
+	// Dispatch profile selection on the game thread.
+	ProfileAutoLoadMod::OnFrame();
+
 	// Don't draw our overlay onto a lost / not-yet-reset device (e.g. mid Alt+Tab out of exclusive fullscreen).
 	if (FAILED(pDevice->TestCooperativeLevel())) {
 		return originalReturn;
@@ -305,6 +309,7 @@ void Initialize() {
 		LazyVfs::Install();
 	// Install before profile-service sign-in begins.
 	UplayLoginMod::Install();
+	ProfileAutoLoadMod::Install();
 
 	Wwise::Exports::Initialize();
 

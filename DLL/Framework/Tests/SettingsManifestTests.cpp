@@ -89,7 +89,7 @@ int main() {
 	// 1. Every field a declaration can have survives a round trip
 	{
 		SettingDefs declared = {
-			Framework::Toggle("Parent", "Parent setting").Heading(SettingHeading::Audio).EntryTitle("The Entry").Hint("A hint"),
+			Framework::Toggle("Parent", "Parent setting").Heading(SettingHeading::Audio).EntryTitle("The Entry").Hint("A hint").MigratesFrom("Old", "Parent"),
 			SettingDef::Numeric("Speed", "Mod Settings", "SpeedOnDisk", "Speed", "5").Range(0, 10).Scale(0.5).WithVisibleWhen("Parent"),
 			SettingDef::Enum("Choice", "Choice").Choices({ "one", "two" }, "two").ListedUnder("Parent"),
 			Framework::String("Font", "Font").ChoicesSource("SystemFonts").WithEditor("FontEditor"),
@@ -114,6 +114,7 @@ int main() {
 		Check("Choices and default", find("Choice")->choices.size() == 2 && find("Choice")->def == "two");
 		Check("listedUnder comes back", find("Choice")->listedUnder == "Parent");
 		Check("Heading", find("Parent")->heading == SettingHeading::Audio);
+		Check("Migration location", find("Parent")->migratesFrom && find("Parent")->migratesFrom->section == "Old" && find("Parent")->migratesFrom->name == "Parent");
 		Check("Entry title", find("Parent")->entryTitle == "The Entry");
 		Check("A title that's the label stays implicit", find("Font")->entryTitle.empty());
 		Check("A key bind stays a key bind", find("Bind")->type == SettingType::Key);

@@ -111,9 +111,6 @@
     <ClCompile Include="Mods\AudioDevices.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
-    <ClCompile Include="Mods\AutoLoadProfileMod.cpp">
-      <Filter>Mods</Filter>
-    </ClCompile>
     <ClCompile Include="Mods\BugPrevention.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
@@ -133,6 +130,9 @@
       <Filter>Mods</Filter>
     </ClCompile>
     <ClCompile Include="Mods\EnumerationMod.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mods\ProfileAutoLoadMod.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
     <ClCompile Include="Mods\UplayLoginMod.cpp">
@@ -677,9 +677,6 @@
     <ClInclude Include="Mods\AudioDevices.hpp">
       <Filter>Mods\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="Mods\AutoLoadProfileMod.hpp">
-      <Filter>Mods\Headers</Filter>
-    </ClInclude>
     <ClInclude Include="Mods\BugPrevention.hpp">
       <Filter>Mods\Headers</Filter>
     </ClInclude>
@@ -702,6 +699,9 @@
       <Filter>Mods\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Mods\EnumerationMod.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\ProfileAutoLoadMod.hpp">
       <Filter>Mods\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Mods\UplayLoginMod.hpp">

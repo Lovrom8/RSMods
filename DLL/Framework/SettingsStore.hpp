@@ -48,8 +48,12 @@ namespace Framework {
 			for (const auto& decl : SettingsSchema().GetAll()) {
 				if (decl.type == SettingType::Int)
 					next.ints[decl.key] = static_cast<int>(reader.GetLongValue(decl.ini.section.c_str(), decl.ini.name.c_str(), decl.GetIntDefault()));
-				else
-					next.strings[decl.key] = reader.GetValue(decl.ini.section.c_str(), decl.ini.name.c_str(), decl.def.c_str());
+				else {
+					const char* value = reader.GetValue(decl.ini.section.c_str(), decl.ini.name.c_str(), nullptr);
+					if (!value && decl.migratesFrom)
+						value = reader.GetValue(decl.migratesFrom->section.c_str(), decl.migratesFrom->name.c_str(), nullptr);
+					next.strings[decl.key] = value ? value : decl.def;
+				}
 			}
 			Publish(std::move(next));
 		}

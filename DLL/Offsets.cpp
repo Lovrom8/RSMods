@@ -16,9 +16,12 @@ VersioningStruct<uintptr_t> Offsets::startupProfileLoaded = { {0x005A37B0, start
 VersioningStruct<uintptr_t> Offsets::startupConfigBoolSlot = { {0x011ABE2C, startupBase + 0x00DAD69C} };
 VersioningStruct<uintptr_t> Offsets::startupConfigBool = { {0x005A2AF0, startupBase + 0x001A4120} };
 VersioningStruct<uintptr_t> Offsets::startupGameService = { {0x0135FBFC, startupBase + 0x00F60BFC} };
-// The connect service singleton and vtable.
+// SelectLocalProfile is connect slot +0x5C.
 VersioningStruct<uintptr_t> Offsets::startupConnectSingleton = { {0x01374E90, startupBase + 0x00F75E90} };
 VersioningStruct<uintptr_t> Offsets::startupConnectVtable = { {0x011DBB0C, startupBase + 0x00DDD3DC} };
+VersioningStruct<uintptr_t> Offsets::startupConnectSelect = { {0x008BB830, startupBase + 0x004BAE20} };
+VersioningStruct<uintptr_t> Offsets::startupSelectorCall = { {0x008C7CAA, startupBase + 0x004C725A} };
+VersioningStruct<uintptr_t> Offsets::startupStartSelector = { {0x008C1FA0, startupBase + 0x004C1550} };
 
 void Offsets::Initialize() {
 	baseHandle = (uintptr_t)GetModuleHandle(NULL);

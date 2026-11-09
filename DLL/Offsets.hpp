@@ -17,6 +17,9 @@ namespace Offsets {
 	extern VersioningStruct<uintptr_t> startupGameService;
 	extern VersioningStruct<uintptr_t> startupConnectSingleton;
 	extern VersioningStruct<uintptr_t> startupConnectVtable;
+	extern VersioningStruct<uintptr_t> startupConnectSelect;
+	extern VersioningStruct<uintptr_t> startupSelectorCall;
+	extern VersioningStruct<uintptr_t> startupStartSelector;
 	extern uintptr_t baseHandle; // Beginning of Rocksmith
 	inline VersioningStruct<uintptr_t> baseEnd; // End of Rocksmith
 

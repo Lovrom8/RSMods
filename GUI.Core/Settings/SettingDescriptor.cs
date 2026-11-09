@@ -47,5 +47,6 @@ public sealed record SettingDescriptor(
     [property: JsonPropertyName("entry")] string? Entry = null,
     // Only on the setting that starts an entry.
     [property: JsonPropertyName("heading")] string? Heading = null,
-    [property: JsonPropertyName("entryTitle")] string? EntryTitle = null
+    [property: JsonPropertyName("entryTitle")] string? EntryTitle = null,
+    [property: JsonPropertyName("migratesFrom")] IniLocation? MigratesFrom = null
 );

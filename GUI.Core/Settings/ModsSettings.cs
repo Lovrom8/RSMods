@@ -113,7 +113,13 @@ namespace RSMods
                 if (setting.Type == SettingType.Key || !string.IsNullOrEmpty(setting.Editor))
                     continue;
 
-                ini.GetString(SettingFieldViewModel.NormalizeSection(setting.Ini.Section), setting.Ini.Name, setting.Default);
+                string section = SettingFieldViewModel.NormalizeSection(setting.Ini.Section);
+                if (setting.MigratesFrom is IniLocation legacy &&
+                    !ini.TryGetString(section, setting.Ini.Name, out _) &&
+                    ini.TryGetString(SettingFieldViewModel.NormalizeSection(legacy.Section), legacy.Name, out string value))
+                    ini.SetString(section, setting.Ini.Name, value);
+
+                ini.GetString(section, setting.Ini.Name, setting.Default);
             }
         }
 

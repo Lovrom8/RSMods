@@ -58,6 +58,8 @@ namespace Framework {
 
 			def.ini.section = item.at("ini").at("section").get<std::string>();
 			def.ini.name = item.at("ini").at("name").get<std::string>();
+			if (auto migration = item.find("migratesFrom"); migration != item.end() && !migration->is_null())
+				def.migratesFrom = SettingDef::IniLocation{ migration->at("section").get<std::string>(), migration->at("name").get<std::string>() };
 
 			if (auto choices = item.find("choices"); choices != item.end())
 				def.choices = choices->get<std::vector<std::string>>();

@@ -143,6 +143,8 @@ namespace Framework {
 			{ "editor", StringOrNull(d.editor) },
 			{ "editedBy", StringOrNull(d.editedBy) }
 		};
+		if (d.migratesFrom)
+			j["migratesFrom"] = { { "section", d.migratesFrom->section }, { "name", d.migratesFrom->name } };
 	}
 
 	std::string SettingsSchemaRegistry::DumpManifestJson() const {

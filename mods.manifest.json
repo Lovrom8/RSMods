@@ -2905,6 +2905,88 @@
     "entryTitle": "Uplay Login"
   },
   {
+    "key": "ProfileAutoLoad",
+    "ini": {
+      "section": "Mod Settings",
+      "name": "ProfileAutoLoad"
+    },
+    "type": "Bool",
+    "default": "on",
+    "label": "Load Profile Automatically",
+    "hint": "Loads your profile at startup without the profile screen.\nTurn it off if you see problems with your profile at startup.",
+    "category": "Mod Settings",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null,
+    "editedBy": null,
+    "migratesFrom": {
+      "section": "Toggle Switches",
+      "name": "ForceProfileLoad"
+    },
+    "mod": "ProfileAutoLoadMod",
+    "entry": "ProfileAutoLoad",
+    "heading": "Songs & Profiles",
+    "entryTitle": "Load Profile Automatically"
+  },
+  {
+    "key": "ProfileToLoad",
+    "ini": {
+      "section": "Toggle Switches",
+      "name": "ProfileToLoad"
+    },
+    "type": "String",
+    "default": "",
+    "label": "Profile to Load",
+    "hint": "The name of the profile to load. Leave it empty to load the profile you picked last.",
+    "category": "Toggle Switches",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": {
+      "key": "ProfileAutoLoad",
+      "equals": "on"
+    },
+    "editor": null,
+    "editedBy": null,
+    "mod": "ProfileAutoLoadMod",
+    "entry": "ProfileAutoLoad",
+    "heading": null,
+    "entryTitle": null
+  },
+  {
+    "key": "AutoProfile",
+    "ini": {
+      "section": "Mod Settings",
+      "name": "AutoProfile"
+    },
+    "type": "String",
+    "default": "",
+    "label": "Profile Picked Last",
+    "hint": "Remembered for you when you pick a profile. Clear it and the most recently used profile loads instead.",
+    "category": "Toggle Switches",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": {
+      "key": "ProfileAutoLoad",
+      "equals": "on"
+    },
+    "editor": null,
+    "editedBy": null,
+    "mod": "ProfileAutoLoadMod",
+    "entry": "ProfileAutoLoad",
+    "heading": null,
+    "entryTitle": null
+  },
+  {
     "key": "ForceReEnumerationEnabled",
     "ini": {
       "section": "Toggle Switches",
@@ -3004,57 +3086,6 @@
     "editedBy": "Colors",
     "mod": "CustomHighwayColorsMod",
     "entry": null,
-    "heading": null,
-    "entryTitle": null
-  },
-  {
-    "key": "ForceProfileEnabled",
-    "ini": {
-      "section": "Toggle Switches",
-      "name": "ForceProfileLoad"
-    },
-    "type": "Bool",
-    "default": "off",
-    "label": "Auto Load Profile",
-    "hint": "Essentially holds down the ENTER key until the game reaches the main menu.\nLets you auto-load the last used profile without needing to interact with the game at all.\nAlso allows you to specify which profile you want to always load.",
-    "category": "Toggle Switches",
-    "min": null,
-    "max": null,
-    "scale": null,
-    "choices": [],
-    "choicesSource": null,
-    "visibleWhen": null,
-    "editor": null,
-    "editedBy": null,
-    "mod": "AutoLoadProfileMod",
-    "entry": "ForceProfileEnabled",
-    "heading": "Songs & Profiles",
-    "entryTitle": "Auto Load Profile"
-  },
-  {
-    "key": "ProfileToLoad",
-    "ini": {
-      "section": "Toggle Switches",
-      "name": "ProfileToLoad"
-    },
-    "type": "String",
-    "default": "",
-    "label": "Profile to Load",
-    "hint": "If you play with another person but want to always load into your account, this is for you.\nGets the same benefits as auto-loading the last used profile, but lets you pick which profile always loads first.",
-    "category": "Toggle Switches",
-    "min": null,
-    "max": null,
-    "scale": null,
-    "choices": [],
-    "choicesSource": null,
-    "visibleWhen": {
-      "key": "ForceProfileEnabled",
-      "equals": "on"
-    },
-    "editor": null,
-    "editedBy": null,
-    "mod": "AutoLoadProfileMod",
-    "entry": "ForceProfileEnabled",
     "heading": null,
     "entryTitle": null
   },
