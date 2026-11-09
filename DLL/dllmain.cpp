@@ -296,6 +296,7 @@ unsigned WINAPI MainThread() {
 /// </summary>
 void Initialize() {
 	LogSettings::startupTime = clock();
+	GameVersion::LogIdentity();
 
 	Wwise::Exports::Initialize();
 

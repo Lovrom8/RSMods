@@ -165,6 +165,9 @@
     <ClCompile Include="Framework\SettingsManifest.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Framework\GameVersion.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="Mods\AllowAudioInBackgroundMod.cpp">
       <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
@@ -537,6 +540,7 @@
     <ClInclude Include="Framework\KeyNames.hpp" />
     <ClInclude Include="Framework\AtomicSharedPtr.hpp" />
     <ClInclude Include="Framework\SettingsManifest.hpp" />
+    <ClInclude Include="Framework\GameVersion.hpp" />
     <ClInclude Include="NoteData.h" />
     <ClInclude Include="ObjectUtil.hpp" />
     <ClInclude Include="CC\Effects\ShuffleTonesEffect.hpp" />
