@@ -20,6 +20,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SamplingProfiler.cpp" />
+    <ClCompile Include="Mods\DxvkFrameBudget.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
     <ClCompile Include="Mods\UltrawideRRDim.cpp">
       <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
@@ -515,6 +518,7 @@
     <ClInclude Include="Mods\UplayLoginMod.hpp" />
     <ClInclude Include="Mods\AssetLoadDrain.hpp" />
     <ClInclude Include="Mods\UltrafastLoadMod.hpp" />
+    <ClInclude Include="Mods\DxvkFrameBudget.hpp" />
     <ClInclude Include="Mods\LazyVfs.hpp" />
     <ClInclude Include="Mods\JsonNumberHash.hpp" />
     <ClInclude Include="Mods\EnumerationZeroCopyWalk.inc" />

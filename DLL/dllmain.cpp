@@ -8,6 +8,7 @@
 #include "Mods/TwitchMod.hpp"
 #include "Mods/LazyVfs.hpp"
 #include "Mods/UltrafastLoadMod.hpp"
+#include "Mods/DxvkFrameBudget.hpp"
 #include "Mods/BootLoft.hpp"
 #include "Mods/TitleFade.hpp"
 #include "Mods/UplayLoginMod.hpp"
@@ -280,6 +281,7 @@ unsigned WINAPI MainThread() {
 		const auto now = std::chrono::steady_clock::now();
 		if (now < nextModTick) continue;
 
+		DxvkFrameBudget::Enforce();
 		bool wantsFastTick = false;
 		if (GameState::GameLoaded) {
 			ModManager::HandlePostGameLoadedMods();
@@ -311,6 +313,7 @@ void Initialize() {
 	GameVersion::LogIdentity();
 	// Install before the first game file open.
 	if (UltrafastLoad::Enabled()) {
+		DxvkFrameBudget::Install();
 		BootLoft::Install();
 		TitleFade::Install();
 		LazyVfs::Install();
