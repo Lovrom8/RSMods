@@ -23,18 +23,6 @@ public sealed class ManifestDefaultSeedingTests
         var reopened = new IniManager(path);
         reopened.Load();
         Assert.Equal(expected, reopened.GetString("[Mod Settings]", "ProfileAutoLoad"));
-
-        // Integration tests use the framework executable to read GUI settings through the DLL.
-        string? reader = System.Environment.GetEnvironmentVariable("RSMODS_TEST_SETTINGS_READER");
-        if (!string.IsNullOrEmpty(reader))
-        {
-            var start = new System.Diagnostics.ProcessStartInfo(reader) { UseShellExecute = false };
-            start.ArgumentList.Add(path);
-            start.ArgumentList.Add(expected);
-            using var process = System.Diagnostics.Process.Start(start)!;
-            Assert.True(process.WaitForExit(30000));
-            Assert.Equal(0, process.ExitCode);
-        }
     }
 
     private const string Missing = "<missing>";

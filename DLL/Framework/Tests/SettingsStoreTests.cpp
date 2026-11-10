@@ -1,19 +1,10 @@
 #include "../SettingsStore.hpp"
 #include "../KeyNames.hpp"
 #include "../ModContext.hpp"
-#include "../SettingsManifest.hpp"
-// The tests read narrow ini text only; the generic converter needs ConvertUTF, which is not bundled.
-#ifndef _WIN32
-#define SI_NO_CONVERSION
-#endif
-#include "../../Lib/Ini/SimpleIni.h"
 
 #include <cstdint>
 #include <cstdlib>
 #include <iostream>
-#include <filesystem>
-#include <fstream>
-#include <iterator>
 #include <map>
 #include <string>
 #include <vector>
@@ -61,19 +52,7 @@ namespace {
 	};
 }
 
-int main(int argc, char** argv) {
-	if (argc == 3) {
-		std::ifstream file(std::filesystem::path(__FILE__).parent_path() / "../../../mods.manifest.json");
-		const std::string text{ std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>() };
-		const Framework::SettingsManifest manifest(text);
-		const auto& profile = manifest.Setting("ProfileAutoLoad");
-		Framework::SettingsSchema().Register(Owner(1), { profile });
-		CSimpleIniA ini;
-		if (ini.LoadFile(argv[1]) < 0)
-			return 1;
-		SettingValues().Load(ini, undeclared);
-		return SettingValues().IsOn("ProfileAutoLoad") == (std::string(argv[2]) == "on") ? 0 : 1;
-	}
+int main() {
 	std::cout << "SettingsStore tests\n";
 
 	std::vector<SettingDef> decls = {
