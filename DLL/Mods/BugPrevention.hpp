@@ -2,6 +2,7 @@
 
 namespace BugPrevention {
 	void SkipDlcStorePrefetch();
+	void DeferDlcOwnershipQueries();
 	void PreventOculusCrash();
 	void PreventStuckTone();
 	void PreventPnPCrash();

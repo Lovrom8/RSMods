@@ -3,6 +3,31 @@
 #include "../MemUtil.hpp"
 
 namespace BugPrevention {
+	void DeferDlcOwnershipQueries() {
+		// Leave each LocalDLC entry unqueried so IsOwned checks it on demand.
+		constexpr Framework::GameVersion::Site site{ "Init installed query", 0x008DBB74, 0 };
+		constexpr unsigned char expected[] = {
+			0x50, 0x8B, 0x42, 0x1C, 0xFF, 0xD0, 0x88, 0x44, 0x24,
+			0x5D, 0x8B, 0x46, 0x1C, 0xC6, 0x44, 0x24, 0x5F, 0x01
+		};
+		constexpr unsigned char deferred[] = {
+			0x90, 0x31, 0xC0, 0x90, 0x90, 0x90, 0x88, 0x44, 0x24,
+			0x5D, 0x8B, 0x46, 0x1C, 0xC6, 0x44, 0x24, 0x5F, 0x00
+		};
+		const uintptr_t address = GameVersion::CheckedSite("DLC OWNERSHIP", site, expected, nullptr, sizeof(expected));
+		if (!address)
+			return;
+		LOG_INFO("(DLC OWNERSHIP) Init original bytes: 50 8B 42 1C FF D0 88 44 24 5D 8B 46 1C C6 44 24 5F 01" << std::endl);
+		if (!MemUtil::PatchAdr(reinterpret_cast<LPVOID>(address), deferred, sizeof(deferred)) ||
+			!MemUtil::MatchesBytes(address, deferred)) {
+			MemUtil::PatchAdr(reinterpret_cast<LPVOID>(address), expected, sizeof(expected));
+			LOG_ERROR("(DLC OWNERSHIP) Init patch failed; original bytes "
+				<< (MemUtil::MatchesBytes(address, expected) ? "restored" : "NOT restored") << std::endl);
+			return;
+		}
+		LOG_INFO("(DLC OWNERSHIP) Init defers installed checks to IsOwned" << std::endl);
+	}
+
 	void SkipDlcStorePrefetch() {
 		// The store requests its DLC information again when it opens.
 		constexpr Framework::GameVersion::Site site{ "Init store prefetch", 0x008DBBEA, 0 };

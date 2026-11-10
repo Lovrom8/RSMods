@@ -313,7 +313,13 @@ void Initialize() {
 	GameVersion::LogIdentity();
 	// Install before the first game file open.
 	if (UltrafastLoad::Enabled()) {
-		BugPrevention::SkipDlcStorePrefetch();
+		if (GameVersion::IsSeptember2022()) {
+			BugPrevention::SkipDlcStorePrefetch();
+			BugPrevention::DeferDlcOwnershipQueries();
+		}
+		else {
+			LOG_INFO("(DLC INIT) Startup deferrals disabled on this build" << std::endl);
+		}
 		DxvkFrameBudget::Install();
 		BootLoft::Install();
 		TitleFade::Install();
