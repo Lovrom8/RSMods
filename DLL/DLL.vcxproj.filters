@@ -135,6 +135,7 @@
     <ClCompile Include="Mods\NativeBegin.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
+    <ClCompile Include="Mods\BootLoft.cpp" />
     <ClCompile Include="Mods\BootIntro.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
@@ -710,6 +711,7 @@
     <ClInclude Include="Mods\NativeBegin.hpp">
       <Filter>Mods\Headers</Filter>
     </ClInclude>
+    <ClInclude Include="Mods\BootLoft.hpp" />
     <ClInclude Include="Mods\BootIntro.hpp">
       <Filter>Mods\Headers</Filter>
     </ClInclude>

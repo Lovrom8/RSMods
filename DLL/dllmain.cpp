@@ -8,6 +8,7 @@
 #include "Mods/TwitchMod.hpp"
 #include "Mods/LazyVfs.hpp"
 #include "Mods/UltrafastLoadMod.hpp"
+#include "Mods/BootLoft.hpp"
 #include "Mods/UplayLoginMod.hpp"
 #include "Mods/ProfileAutoLoadMod.hpp"
 #include "Mods/BootIntro.hpp"
@@ -309,6 +310,7 @@ void Initialize() {
 	GameVersion::LogIdentity();
 	// Install before the first game file open.
 	if (UltrafastLoad::Enabled()) {
+		BootLoft::Install();
 		LazyVfs::Install();
 		// Install before the boot service begins the intro.
 		BootIntro::Remove();

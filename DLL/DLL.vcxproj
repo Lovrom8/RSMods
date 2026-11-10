@@ -201,6 +201,7 @@
     <ClCompile Include="Mods\NativeBegin.cpp">
       <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="Mods\BootLoft.cpp"><PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile></ClCompile>
     <ClCompile Include="Mods\BootIntro.cpp">
       <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
@@ -505,6 +506,7 @@
     <ClInclude Include="Mods\Enumeration.hpp" />
     <ClInclude Include="Mods\EnumerationMod.hpp" />
     <ClInclude Include="Mods\NativeBegin.hpp" />
+    <ClInclude Include="Mods\BootLoft.hpp" />
     <ClInclude Include="Mods\BootIntro.hpp" />
     <ClInclude Include="Mods\ProfileAutoLoadMod.hpp" />
     <ClInclude Include="Mods\UplayLoginMod.hpp" />
