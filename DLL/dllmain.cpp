@@ -313,6 +313,7 @@ void Initialize() {
 	GameVersion::LogIdentity();
 	// Install before the first game file open.
 	if (UltrafastLoad::Enabled()) {
+		BugPrevention::SkipDlcStorePrefetch();
 		DxvkFrameBudget::Install();
 		BootLoft::Install();
 		TitleFade::Install();

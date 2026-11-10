@@ -3,6 +3,24 @@
 #include "../MemUtil.hpp"
 
 namespace BugPrevention {
+	void SkipDlcStorePrefetch() {
+		// The store requests its DLC information again when it opens.
+		constexpr Framework::GameVersion::Site site{ "Init store prefetch", 0x008DBBEA, 0 };
+		constexpr unsigned char expected[] = { 0x50, 0x56, 0xE8, 0x1F, 0x07, 0x00, 0x00 };
+		constexpr unsigned char skipped[] = { 0x50, 0x56, 0x83, 0xC4, 0x08, 0x90, 0x90 };
+		const uintptr_t address = GameVersion::CheckedSite("DLC STORE", site, expected, nullptr, sizeof(expected));
+		if (!address)
+			return;
+		LOG_INFO("(DLC STORE) Init original bytes: 50 56 E8 1F 07 00 00" << std::endl);
+		if (!MemUtil::PatchAdr(reinterpret_cast<LPVOID>(address), skipped, sizeof(skipped)) ||
+			!MemUtil::MatchesBytes(address, skipped)) {
+			MemUtil::PatchAdr(reinterpret_cast<LPVOID>(address), expected, sizeof(expected));
+			LOG_ERROR("(DLC STORE) Init patch failed; original bytes "
+				<< (MemUtil::MatchesBytes(address, expected) ? "restored" : "NOT restored") << std::endl);
+			return;
+		}
+		LOG_INFO("(DLC STORE) Init skips the store prefetch; the store asks when it opens" << std::endl);
+	}
 
 	/// <summary>
 	/// When Rocksmith opens with a Oculus / Meta headset connected to the user computer, it can cause a crash.

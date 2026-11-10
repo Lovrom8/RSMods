@@ -1,6 +1,7 @@
 #pragma once
 
 namespace BugPrevention {
+	void SkipDlcStorePrefetch();
 	void PreventOculusCrash();
 	void PreventStuckTone();
 	void PreventPnPCrash();
