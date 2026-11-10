@@ -136,6 +136,7 @@
       <Filter>Mods</Filter>
     </ClCompile>
     <ClCompile Include="Mods\BootLoft.cpp" />
+    <ClCompile Include="Mods\TitleFade.cpp" />
     <ClCompile Include="Mods\BootIntro.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
@@ -712,6 +713,8 @@
       <Filter>Mods\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Mods\BootLoft.hpp" />
+    <ClInclude Include="Mods\TitleFade.hpp" />
+    <ClInclude Include="Mods\TitleFadeBytes.hpp" />
     <ClInclude Include="Mods\BootIntro.hpp">
       <Filter>Mods\Headers</Filter>
     </ClInclude>

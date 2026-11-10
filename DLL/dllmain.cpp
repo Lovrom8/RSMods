@@ -9,6 +9,7 @@
 #include "Mods/LazyVfs.hpp"
 #include "Mods/UltrafastLoadMod.hpp"
 #include "Mods/BootLoft.hpp"
+#include "Mods/TitleFade.hpp"
 #include "Mods/UplayLoginMod.hpp"
 #include "Mods/ProfileAutoLoadMod.hpp"
 #include "Mods/BootIntro.hpp"
@@ -311,6 +312,7 @@ void Initialize() {
 	// Install before the first game file open.
 	if (UltrafastLoad::Enabled()) {
 		BootLoft::Install();
+		TitleFade::Install();
 		LazyVfs::Install();
 		// Install before the boot service begins the intro.
 		BootIntro::Remove();
