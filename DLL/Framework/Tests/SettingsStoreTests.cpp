@@ -2,6 +2,10 @@
 #include "../KeyNames.hpp"
 #include "../ModContext.hpp"
 #include "../SettingsManifest.hpp"
+// The tests read narrow ini text only; the generic converter needs ConvertUTF, which is not bundled.
+#ifndef _WIN32
+#define SI_NO_CONVERSION
+#endif
 #include "../../Lib/Ini/SimpleIni.h"
 
 #include <cstdint>
