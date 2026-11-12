@@ -12,6 +12,7 @@ namespace VolumeControl {
 	void DisableAltTabbingWithAudio();
 	inline bool disabledSongPreviewAudio = false;
 	inline bool allowedAltTabbingWithAudio = false;
+	inline bool focusSetterPatched = false;
 
 	inline bool player1Muted = false;
 	inline bool player2Muted = false;

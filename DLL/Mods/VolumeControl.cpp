@@ -141,7 +141,18 @@ void VolumeControl::EnableSongPreviewAudio() {
 void VolumeControl::AllowAltTabbingWithAudio() {
 	char patch[] = { 0x1 };
 
-	MemUtil::PatchAdr(Offsets::ptr_WindowNotInFocusValue, patch, 1); // Return with the value of 1, "window in focus", every time you alt+tab.
+	// The setter is "mov byte ptr [IsWindowInFocus], 0 ; ret"; check it against the variable's resolved address.
+	const uintptr_t immediate = Offsets::ptr_WindowNotInFocusValue.Get();
+	const uint32_t focusVariable = static_cast<uint32_t>(Offsets::ptr_IsWindowInFocus.Get());
+	unsigned char setter[] = { 0xC6, 0x05, 0, 0, 0, 0, 0x00, 0xC3 };
+	memcpy(setter + 2, &focusVariable, sizeof(focusVariable));
+	if (MemUtil::MatchesBytes(immediate - 6, setter)) {
+		MemUtil::PatchAdr(Offsets::ptr_WindowNotInFocusValue, patch, 1); // Return with the value of 1, "window in focus", every time you alt+tab.
+		focusSetterPatched = true;
+	}
+	else {
+		LOG_WARNING("AllowAudioInBackground: focus setter bytes do not match, skipping that patch" << std::endl);
+	}
 	MemUtil::PatchAdr(Offsets::ptr_IsWindowInFocus, "\x01", 1);
 
 	LOG_INFO("Allowed audio to be played in the background!" << std::endl);
@@ -155,7 +166,10 @@ void VolumeControl::AllowAltTabbingWithAudio() {
 void VolumeControl::DisableAltTabbingWithAudio() {
 	char patch[] = { 0x0 };
 
-	MemUtil::PatchAdr(Offsets::ptr_WindowNotInFocusValue, patch, 1);  // Return with the value of 0, "window out of focus", every time you alt+tab.
+	if (focusSetterPatched) {
+		MemUtil::PatchAdr(Offsets::ptr_WindowNotInFocusValue, patch, 1);  // Return with the value of 0, "window out of focus", every time you alt+tab.
+		focusSetterPatched = false;
+	}
 	MemUtil::PatchAdr(Offsets::ptr_IsWindowInFocus, "\x00", 1);
 
 	LOG_INFO("Stopped audio from being played in the background!" << std::endl);
