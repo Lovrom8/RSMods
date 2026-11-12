@@ -1,0 +1,17 @@
+#!/usr/bin/env pwsh
+# Builds and runs the Win32 MSVC tests for the combined cache file store.
+param([string]$OutputDirectory = (Join-Path $PSScriptRoot 'bin'))
+$ErrorActionPreference = 'Stop'
+$outputPath = [IO.Path]::GetFullPath($OutputDirectory)
+New-Item -ItemType Directory -Force -Path $outputPath | Out-Null
+$vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\Installer\vswhere.exe'
+$vsPath = & $vswhere -latest -prerelease -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+if (-not $vsPath) { throw "No Visual Studio install with the C++ toolset found." }
+$vcvars = Join-Path $vsPath 'VC\Auxiliary\Build\vcvars32.bat'
+$source = Join-Path $PSScriptRoot 'CacheStoreTests.cpp'
+$exe = Join-Path $outputPath 'CacheStoreTests.exe'
+$build = "call `"$vcvars`" >nul 2>nul && cl /Fo:`"$outputPath/`" /nologo /std:c++latest /EHsc /W4 /WX /MDd /D_DEBUG `"$source`" /Fe:`"$exe`""
+& { $ErrorActionPreference = 'Continue'; & cmd /c $build }
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+& { $ErrorActionPreference = 'Continue'; & $exe }
+exit $LASTEXITCODE

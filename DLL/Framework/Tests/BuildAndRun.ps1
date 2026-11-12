@@ -151,6 +151,10 @@ foreach ($t in $Tests) {
     if ($LASTEXITCODE -ne 0) { Write-Host "TESTS FAILED: $name" -ForegroundColor Red; $failed += "$name (run)" }
 }
 
+Write-Host "=== Building and running CacheStoreTests (Win32) ===" -ForegroundColor Cyan
+& { $ErrorActionPreference = 'Continue'; & powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $TestsDir 'Win32\BuildCacheStoreTests.ps1') }
+if ($LASTEXITCODE -ne 0) { Write-Host "TESTS FAILED: CacheStoreTests" -ForegroundColor Red; $failed += "CacheStoreTests" }
+
 # Inline assembly tests require a separate Win32 build.
 Write-Host "=== Building and running EnumerationPackageTests (Win32) ===" -ForegroundColor Cyan
 & { $ErrorActionPreference = 'Continue'; & powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $TestsDir 'Win32\BuildEnumerationTests.ps1') }

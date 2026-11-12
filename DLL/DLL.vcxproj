@@ -236,6 +236,9 @@
     <ClCompile Include="Mods\EnumerationDrain.cpp">
       <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="Mods\CacheStore.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
     <ClCompile Include="Mods\EnumerationCache.cpp">
       <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
@@ -538,6 +541,7 @@
     <ClInclude Include="Mods\EnumerationEnvironment.hpp" />
     <ClInclude Include="Mods\EnumerationDrain.hpp" />
     <ClInclude Include="Mods\EnumerationCandidateIndex.inc" />
+    <ClInclude Include="Mods\CacheStore.hpp" />
     <ClInclude Include="Mods\EnumerationCache.hpp" />
     <ClInclude Include="Mods\EnumerationBorrowedName.inc" />
     <ClInclude Include="Mods\EnumerationBorrowedHooks.inc" />
@@ -604,6 +608,7 @@
     <ClInclude Include="Framework\DrawRegistry.hpp" />
     <ClInclude Include="Framework\AudioInput.hpp" />
     <ClInclude Include="Framework\DeviceEvents.hpp" />
+    <ClInclude Include="Framework\CacheFile.hpp" />
     <ClInclude Include="Framework\ShaderScan.hpp" />
     <ClInclude Include="Framework\SettingsSchema.hpp" />
     <ClInclude Include="Framework\SettingsStore.hpp" />

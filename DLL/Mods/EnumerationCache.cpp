@@ -1,5 +1,6 @@
 #include "../stdafx.h"
 #include "EnumerationCache.hpp"
+#include "CacheStore.hpp"
 
 #include <atomic>
 #include <mutex>
@@ -78,71 +79,22 @@ namespace {
 		return out.str();
 	}
 
-	bool ReadAll(const std::wstring& path, std::vector<unsigned char>& bytes, DWORD& error) {
-		const HANDLE file = CreateFileW(path.c_str(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_FLAG_SEQUENTIAL_SCAN, nullptr);
-		if (file == INVALID_HANDLE_VALUE) {
-			error = GetLastError();
-			return false;
-		}
-		LARGE_INTEGER size{};
-		bool ok = GetFileSizeEx(file, &size) && size.QuadPart > 0 && size.QuadPart <= static_cast<LONGLONG>(EnumerationCache::kMaxFile);
-		if (ok) {
-			bytes.resize(static_cast<size_t>(size.QuadPart));
-			DWORD read = 0;
-			ok = ReadFile(file, bytes.data(), static_cast<DWORD>(bytes.size()), &read, nullptr) && read == bytes.size();
-		}
-		error = ok ? 0 : GetLastError();
-		CloseHandle(file);
-		return ok;
-	}
-
-	bool WriteAll(const std::wstring& path, const std::vector<unsigned char>& bytes, DWORD& error, uint64_t generation) {
-		const std::wstring temp = path + L".tmp";
-		const HANDLE file = CreateFileW(temp.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
-		if (file == INVALID_HANDLE_VALUE) {
-			error = GetLastError();
-			return false;
-		}
-		DWORD written = 0;
-		bool ok = WriteFile(file, bytes.data(), static_cast<DWORD>(bytes.size()), &written, nullptr) && written == bytes.size();
-		error = ok ? 0 : GetLastError();
-		CloseHandle(file);
-		if (ok) {
-			std::lock_guard<std::mutex> lock(freshMutex);
-			if (generation != mapperRefsGeneration) {
-				error = ERROR_CANCELLED;
-				ok = false;
-			}
-			else {
-				ok = MoveFileExW(temp.c_str(), path.c_str(), MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH) != FALSE;
-				if (!ok) error = GetLastError();
-			}
-		}
-		if (!ok) DeleteFileW(temp.c_str());
-		return ok;
-	}
-
 	void LoadOnce() {
 		const long long start = EnumerationPackage::Clock();
+		CacheStore& store = RSModsCache::Shared();
 		wchar_t exe[MAX_PATH * 2]{};
 		const DWORD length = GetModuleFileNameW(nullptr, exe, MAX_PATH * 2);
-		if (length == 0 || length >= MAX_PATH * 2) {
+		if (!store.Ready() || length == 0 || length >= MAX_PATH * 2) {
 			LOG_WARNING("(ENUMERATION) Cache off: could not find the game folder" << std::endl);
 			return;
 		}
-		std::wstring folder(exe, length);
-		folder.erase(folder.find_last_of(L"\\/") + 1);
-		cacheFile = folder + L"RSMods_enumeration.cache";
+		cacheFile = store.Path();
 		identity = Identity(std::wstring(exe, length));
 
 		std::vector<unsigned char> bytes;
-		DWORD error = 0;
-		if (!ReadAll(cacheFile, bytes, error)) {
+		if (!store.Take(Framework::CacheFile::kEnumeration, bytes)) {
 			rewrite = true;
-			if (error == ERROR_FILE_NOT_FOUND)
-				LOG_INFO("(ENUMERATION) Cache miss: no " << Utf8(cacheFile) << " yet, every package takes the full preparation" << std::endl);
-			else
-				LOG_WARNING("(ENUMERATION) Cache invalidated: could not read " << Utf8(cacheFile) << " (error " << error << ")" << std::endl);
+			LOG_INFO("(ENUMERATION) Cache miss: no enumeration records in " << Utf8(cacheFile) << " yet, every package takes the full preparation" << std::endl);
 			return;
 		}
 		std::vector<EnumerationPackage::Record> records;
@@ -211,7 +163,12 @@ namespace {
 			for (const auto& record : records) keep.push_back(&record);
 			const auto bytes = EnumerationCache::Serialize(cacheIdentity, keep);
 			DWORD error = 0;
-			const bool saved = WriteAll(target, bytes, error, request->generation);
+			const uint64_t generation = request->generation;
+			// Refuse the rename once a newer preparation generation has started.
+			const bool saved = RSModsCache::Shared().Save(Framework::CacheFile::kEnumeration, bytes, [generation](auto&& replace) {
+				std::lock_guard<std::mutex> lock(freshMutex);
+				return generation == mapperRefsGeneration && replace();
+			}, error);
 			bool retry = false;
 			bool currentGeneration = false;
 			{

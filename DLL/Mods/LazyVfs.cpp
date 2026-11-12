@@ -1,11 +1,11 @@
 #include "../stdafx.h"
 #include "LazyVfs.hpp"
+#include "CacheStore.hpp"
 
 #include <mutex>
 #include <unordered_map>
 #include <unordered_set>
 #include <sys/stat.h>
-#include <fstream>
 
 namespace {
 	constexpr uintptr_t table = 0x012EE6BC;
@@ -77,7 +77,6 @@ namespace {
 	// Drop cached files not used by this session when saving.
 	std::unordered_set<std::string> seen;
 	std::atomic<unsigned int> servedReads{ 0 }, servedBytes{ 0 };
-	std::string cachePath;
 	std::atomic<bool> cacheLoaded{ false };
 
 	std::string Key(const std::string& path) {
@@ -87,41 +86,34 @@ namespace {
 		return key;
 	}
 
-	bool Get32(std::ifstream& in, uint32_t& value) {
-		return static_cast<bool>(in.read(reinterpret_cast<char*>(&value), 4));
-	}
-
 	void LoadCache() {
-		std::ifstream in(cachePath, std::ios::binary);
+		std::vector<unsigned char> bytes;
+		if (!RSModsCache::Shared().Take(Framework::CacheFile::kVfs, bytes))
+			return;
+		Framework::CacheFile::Reader in{ bytes.data(), bytes.size() };
 		uint32_t magic = 0, format = 0, count = 0;
-		if (!Get32(in, magic) || !Get32(in, format) || !Get32(in, count) || magic != cacheMagic || format != cacheFormat
+		if (!in.Get32(magic) || !in.Get32(format) || !in.Get32(count) || magic != cacheMagic || format != cacheFormat
 			|| count > 1000000)
 			return;
+		std::unordered_map<std::string, CachedFile> parsed;
 		for (uint32_t i = 0; i < count; ++i) {
-			uint32_t pathSize = 0, fileSize = 0, fileTime = 0, reads = 0;
-			if (!Get32(in, pathSize) || pathSize > 4096)
-				return;
-			std::string path(pathSize, ' ');
-			if (!in.read(path.data(), pathSize) || !Get32(in, fileSize) || !Get32(in, fileTime) || !Get32(in, reads) || reads > 64)
+			std::string path;
+			uint32_t fileSize = 0, fileTime = 0, reads = 0;
+			if (!in.GetBytes(path, 4096) || !in.Get32(fileSize) || !in.Get32(fileTime) || !in.Get32(reads) || reads > 64)
 				return;
 			CachedFile file;
 			file.fileSize = fileSize;
 			file.fileTime = static_cast<int32_t>(fileTime);
 			for (uint32_t r = 0; r < reads; ++r) {
-				uint32_t offset = 0, size = 0;
-				if (!Get32(in, offset) || !Get32(in, size) || size > maxRecordedPerFile)
+				uint32_t offset = 0;
+				std::string read;
+				if (!in.Get32(offset) || !in.GetBytes(read, maxRecordedPerFile))
 					return;
-				std::string bytes(size, ' ');
-				if (!in.read(bytes.data(), size))
-					return;
-				file.reads.emplace_back(offset, std::move(bytes));
+				file.reads.emplace_back(offset, std::move(read));
 			}
-			cache[path] = std::move(file);
+			parsed[path] = std::move(file);
 		}
-	}
-
-	void Put32(std::ofstream& out, uint32_t value) {
-		out.write(reinterpret_cast<const char*>(&value), 4);
+		cache = std::move(parsed);
 	}
 
 	void SaveCache() {
@@ -137,28 +129,25 @@ namespace {
 				merged[path] = file;
 			fresh.clear();
 		}
-		const std::string temp = cachePath + ".tmp";
-		{
-			std::ofstream out(temp, std::ios::binary | std::ios::trunc);
-			Put32(out, cacheMagic);
-			Put32(out, cacheFormat);
-			Put32(out, static_cast<uint32_t>(merged.size()));
-			for (const auto& [path, file] : merged) {
-				Put32(out, static_cast<uint32_t>(path.size()));
-				out.write(path.data(), static_cast<std::streamsize>(path.size()));
-				Put32(out, file.fileSize);
-				Put32(out, static_cast<uint32_t>(file.fileTime));
-				Put32(out, static_cast<uint32_t>(file.reads.size()));
-				for (const auto& [offset, bytes] : file.reads) {
-					Put32(out, offset);
-					Put32(out, static_cast<uint32_t>(bytes.size()));
-					out.write(bytes.data(), static_cast<std::streamsize>(bytes.size()));
-				}
+		std::vector<unsigned char> out;
+		Framework::CacheFile::Put32(out, cacheMagic);
+		Framework::CacheFile::Put32(out, cacheFormat);
+		Framework::CacheFile::Put32(out, static_cast<uint32_t>(merged.size()));
+		for (const auto& [path, file] : merged) {
+			Framework::CacheFile::PutBytes(out, path.data(), path.size());
+			Framework::CacheFile::Put32(out, file.fileSize);
+			Framework::CacheFile::Put32(out, static_cast<uint32_t>(file.fileTime));
+			Framework::CacheFile::Put32(out, static_cast<uint32_t>(file.reads.size()));
+			for (const auto& [offset, bytes] : file.reads) {
+				Framework::CacheFile::Put32(out, offset);
+				Framework::CacheFile::PutBytes(out, bytes.data(), bytes.size());
 			}
-			if (!out)
-				return;
 		}
-		MoveFileExA(temp.c_str(), cachePath.c_str(), MOVEFILE_REPLACE_EXISTING);
+		DWORD error = 0;
+		if (!RSModsCache::Shared().Save(Framework::CacheFile::kVfs, std::move(out), error)) {
+			LOG_WARNING("(VFS) Boot read cache save failed (error " << error << ")" << std::endl);
+			return;
+		}
 		LOG_INFO("(VFS) Boot read cache saved: " << merged.size() << " files" << std::endl);
 	}
 
@@ -455,10 +444,6 @@ void LazyVfs::Install() {
 		LOG_WARNING("(VFS) msvcr100 _stat32 not found; lazy psarc opens not installed" << std::endl);
 		return;
 	}
-	char exe[MAX_PATH]{};
-	GetModuleFileNameA(nullptr, exe, MAX_PATH);
-	cachePath = exe;
-	cachePath = cachePath.substr(0, cachePath.find_last_of(R"(\)") + 1) + "RSMods_vfs.cache";
 	LoadCache();
 	cacheLoaded.store(true, std::memory_order_release);
 	LOG_INFO("(VFS) Boot read cache loaded: " << cache.size() << " files" << std::endl);

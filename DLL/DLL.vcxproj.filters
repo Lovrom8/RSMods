@@ -170,6 +170,9 @@
     <ClCompile Include="Mods\EnumerationDrain.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
+    <ClCompile Include="Mods\CacheStore.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
     <ClCompile Include="Mods\EnumerationCache.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
@@ -791,6 +794,9 @@
       <Filter>Mods\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Mods\EnumerationCandidateIndex.inc">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\CacheStore.hpp">
       <Filter>Mods\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Mods\EnumerationCache.hpp">
