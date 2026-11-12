@@ -72,6 +72,7 @@ namespace MemUtil {
 		requires std::is_trivially_copyable_v<T>
 	T ReadValue(uintptr_t adr, bool addBaseHandle);
 
+	const char* DetectedHost();
 	bool IsRunningOnWine();
 	void LogMemoryProtectionPolicy();
 	NTSTATUS HookedVirtualProtect(LPVOID address, SIZE_T len, ULONG newProtection, ULONG& oldProtection);

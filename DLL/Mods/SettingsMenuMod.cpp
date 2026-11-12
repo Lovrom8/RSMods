@@ -17,6 +17,14 @@ SettingDefs SettingsMenuMod::Settings() const {
 			"Press the key below in game to change mod settings without leaving Rocksmith.\n"
 			"Changes made there apply right away and are saved like changes made here.")
 			.Heading(Framework::SettingHeading::GameAndWindow),
+		Framework::String(Setting::DetectedHost, "Detected Host")
+			.Ini("Platform", "DetectedHost")
+			.Hint("Detected by RSMods at startup; for support only.")
+			.Heading(Framework::SettingHeading::GameAndWindow),
+		Framework::Enum(Setting::HostOverride, "Host Override")
+			.Ini("Platform", "HostOverride").Choices({ "auto", "windows", "wine" }, "auto")
+			.Hint("Leave on auto. Set to wine if RSMods misdetects Wine, Proton or CrossOver.")
+			.Heading(Framework::SettingHeading::GameAndWindow),
 		// F7/F8 are debug mesh-logging keys and F10 is the Windows menu key.
 		Framework::KeyBind(Setting::Key::ToggleSettingsMenu, "Show In-Game Settings", "VK_F9"),
 	};

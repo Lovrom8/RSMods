@@ -1,5 +1,12 @@
 #include "../../../stdafx.h"
 #include <cassert>
+#include "../../../SettingEdits.hpp"
+
+namespace SettingEdits {
+	unsigned int writes = 0;
+	std::string saved;
+	void Apply(Edit edit) { ++writes; saved = edit.value; }
+}
 
 // Versioned overloads are linked but unused by this memory-only fixture.
 namespace Offsets { uintptr_t baseHandle = 0; }
@@ -11,6 +18,20 @@ template <> uintptr_t VersioningStruct<uintptr_t>::GetValue() { return Get(); }
 
 namespace {
 	const char* g_wineExport = "wine_get_build_id";
+	const char* g_hostName = nullptr;
+	const char* g_override = "auto";
+	const char* g_savedHost = "";
+	void __cdecl TestHostVersion(const char** name, const char** release) {
+		*name = g_hostName;
+		*release = "test";
+	}
+	struct TestIni {
+		void LoadFile(const char*) {}
+		const char* GetValue(const char*, const char* key, const char* fallback) {
+			(void)fallback;
+			return strcmp(key, "HostOverride") == 0 ? g_override : g_savedHost;
+		}
+	};
 	HKEY g_wineRoot = nullptr;
 	unsigned int g_protectCalls = 0;
 	unsigned int g_failCall = 0;
@@ -18,6 +39,8 @@ namespace {
 	bool g_failQuery = false;
 
 	FARPROC WINAPI TestGetProcAddress(HMODULE module, LPCSTR name) {
+		if (strcmp(name, "wine_get_host_version") == 0 && strcmp(name, g_wineExport) == 0)
+			return reinterpret_cast<FARPROC>(&TestHostVersion);
 		if (strncmp(name, "wine_", 5) == 0)
 			return strcmp(name, g_wineExport) == 0 ? reinterpret_cast<FARPROC>(1) : nullptr;
 		return GetProcAddress(module, name);
@@ -55,7 +78,9 @@ namespace {
 #define RegCloseKey TestRegCloseKey
 #define VirtualProtect TestVirtualProtect
 #define VirtualQuery TestVirtualQuery
+#define CSimpleIniA TestIni
 #include "../../../MemUtil.cpp"
+#undef CSimpleIniA
 #undef VirtualQuery
 #undef VirtualProtect
 #undef RegCloseKey
@@ -65,10 +90,29 @@ namespace {
 int main(int argc, char** argv) {
 	if (argc > 1) {
 		g_wineExport = argv[1];
+		if (argc > 2) g_override = argv[2];
+		if (argc > 3) g_hostName = argv[3];
 		if (strcmp(argv[1], "HKCU") == 0) g_wineRoot = HKEY_CURRENT_USER;
 		if (strcmp(argv[1], "HKLM") == 0) g_wineRoot = HKEY_LOCAL_MACHINE;
+		const char* expectedHost = strcmp(argv[1], "native") == 0 ? "Windows" : "Wine";
+		if (g_hostName && strcmp(g_hostName, "Linux") == 0) expectedHost = "Wine-Linux";
+		if (g_hostName && strcmp(g_hostName, "Darwin") == 0) expectedHost = "Wine-macOS";
+		if (argc > 4) g_savedHost = expectedHost;
 		assert(MemUtil::IsRunningOnWine() == (strcmp(argv[1], "native") != 0));
-		if (strcmp(argv[1], "native") == 0) {
+		assert(strcmp(MemUtil::DetectedHost(), expectedHost) == 0);
+		const bool expectedWineApis = strcmp(g_override, "wine") == 0
+			|| strcmp(expectedHost, "Windows") != 0;
+		assert(MemoryHostPolicy().useWineApis == expectedWineApis);
+		g_override = "changed";
+		g_hostName = "changed";
+		assert(MemoryHostPolicy().useWineApis == expectedWineApis);
+		assert(strcmp(MemUtil::DetectedHost(), expectedHost) == 0);
+		MemUtil::LogMemoryProtectionPolicy();
+		assert(SettingEdits::writes == (argc > 4 ? 0u : 1u));
+		if (argc <= 4) assert(SettingEdits::saved == expectedHost);
+		MemUtil::LogMemoryProtectionPolicy();
+		assert(SettingEdits::writes == (argc > 4 ? 0u : 1u));
+		if (!expectedWineApis) {
 			void* memory = VirtualAlloc(nullptr, 4096, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
 			assert(memory);
 			DWORD old = 0;
@@ -83,6 +127,22 @@ int main(int argc, char** argv) {
 			assert(info.Protect == PAGE_READWRITE);
 			assert(VirtualFree(memory, 0, MEM_RELEASE));
 			puts("Windows syscall fallback PASS");
+		}
+		if (expectedWineApis) {
+			void* memory = VirtualAlloc(nullptr, 4096, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+			assert(memory);
+			DWORD old = 0;
+			g_failCall = g_protectCalls + 1;
+			assert(!NT_SUCCESS(MemUtil::HookedVirtualProtect(memory, 1, PAGE_READONLY, old)));
+			g_failQuery = true;
+			MEMORY_BASIC_INFORMATION info{};
+			assert(!NT_SUCCESS(MemUtil::HookedQueryVirtualMemory(memory, &info, sizeof(info))));
+			assert(VirtualFree(memory, 0, MEM_RELEASE));
+		}
+		if (expectedWineApis) {
+			g_failQuery = true;
+			MEMORY_BASIC_INFORMATION info{};
+			assert(!NT_SUCCESS(MemUtil::HookedQueryVirtualMemory(nullptr, &info, sizeof(info))));
 		}
 		puts("Detection PASS");
 		return 0;

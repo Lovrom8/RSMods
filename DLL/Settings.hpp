@@ -17,6 +17,8 @@ namespace Settings {
 	// on disk vs "ToggleLoftEnabled" in code), so the reader's INI-name argument stays
 	// its own literal and is not one of these constants.
 	namespace Setting {
+		inline constexpr char DetectedHost[] = "DetectedHost";
+		inline constexpr char HostOverride[] = "HostOverride";
 		// Riff Repeater
 		inline constexpr char AllowRewind[]             = "AllowRewind";
 		inline constexpr char AllowLooping[]            = "AllowLooping";

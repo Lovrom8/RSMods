@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "MemUtil.hpp"
+#include "SettingEdits.hpp"
 #include "Lib/Detours/detours.h"
 
 /// <summary>
@@ -340,31 +341,76 @@ uintptr_t MemUtil::ReadPtr(uintptr_t adr) {
 /// Are we running under Wine / Proton rather than on Windows?
 /// </summary>
 /// <returns>True if the host is Wine.</returns>
-bool MemUtil::IsRunningOnWine() {
-	static const bool isWine = [] {
+namespace {
+	const char* DetectHost() {
 		const HMODULE ntdll = GetModuleHandleW(L"ntdll.dll");
-		const char* const exports[] = {
-			"wine_get_version", "wine_get_build_id", "wine_get_host_version"
-		};
-		for (const char* name : exports)
-			if (ntdll && GetProcAddress(ntdll, name))
-				return true;
+		if (ntdll) {
+			using GetHostVersion = void (__cdecl*)(const char**, const char**);
+			const auto getHostVersion = reinterpret_cast<GetHostVersion>(
+				GetProcAddress(ntdll, "wine_get_host_version"));
+			if (getHostVersion) {
+				const char* sysname = nullptr;
+				const char* release = nullptr;
+				getHostVersion(&sysname, &release);
+				if (sysname && strcmp(sysname, "Linux") == 0) return "Wine-Linux";
+				if (sysname && strcmp(sysname, "Darwin") == 0) return "Wine-macOS";
+				return "Wine";
+			}
+			for (const char* name : { "wine_get_version", "wine_get_build_id" })
+				if (GetProcAddress(ntdll, name)) return "Wine";
+		}
 		for (HKEY root : { HKEY_LOCAL_MACHINE, HKEY_CURRENT_USER }) {
 			HKEY key = nullptr;
 			if (RegOpenKeyExW(root, L"Software\\Wine", 0, KEY_READ, &key) == ERROR_SUCCESS) {
 				RegCloseKey(key);
-				return true;
+				return "Wine";
 			}
 		}
-		return false;
-	}();
-	return isWine;
+		return "Windows";
+	}
+
+	struct HostPolicy {
+		const char* detected = DetectHost();
+		std::string overrideValue;
+		std::string savedHost;
+		bool useWineApis = false;
+
+		HostPolicy() {
+			// Memory patches start before the main settings load.
+			CSimpleIniA reader;
+			reader.LoadFile("RSMods.ini");
+			overrideValue = reader.GetValue("Platform", "HostOverride", "auto");
+			if (overrideValue != "windows" && overrideValue != "wine") overrideValue = "auto";
+			savedHost = reader.GetValue("Platform", "DetectedHost", "");
+			useWineApis = overrideValue == "wine"
+				|| strcmp(detected, "Windows") != 0;
+		}
+	};
+
+	HostPolicy& MemoryHostPolicy() {
+		static HostPolicy policy;
+		return policy;
+	}
+}
+
+const char* MemUtil::DetectedHost() {
+	return MemoryHostPolicy().detected;
+}
+
+bool MemUtil::IsRunningOnWine() {
+	return strcmp(DetectedHost(), "Windows") != 0;
 }
 
 void MemUtil::LogMemoryProtectionPolicy() {
-	LOG_INFO("(MEMORY) Wine/Proton detected=" << (IsRunningOnWine() ? "yes" : "no")
-		<< "; path=documented first; syscall fallback="
-		<< (IsRunningOnWine() ? "disabled" : "enabled on documented failure") << std::endl);
+	auto& policy = MemoryHostPolicy();
+	if (policy.savedHost != policy.detected) {
+		SettingEdits::Apply({ Settings::Setting::DetectedHost, "Platform", "DetectedHost",
+			policy.detected, "Detected host", false });
+		policy.savedHost = policy.detected;
+	}
+	LOG_INFO("(MEMORY) Detected host=" << policy.detected << "; HostOverride="
+		<< policy.overrideValue << "; path=documented first; syscall fallback="
+		<< (policy.useWineApis ? "disabled" : "enabled on documented failure") << std::endl);
 }
 
 namespace {
@@ -514,7 +560,7 @@ namespace MemUtil {
 			ok ? STATUS_SUCCESS : STATUS_UNSUCCESSFUL, error, start);
 		if (ok)
 			return STATUS_SUCCESS;
-		if (IsRunningOnWine())
+		if (MemoryHostPolicy().useWineApis)
 			return STATUS_UNSUCCESSFUL;
 
 		start = GetTickCount64();
@@ -540,7 +586,7 @@ namespace MemUtil {
 			result ? STATUS_SUCCESS : STATUS_UNSUCCESSFUL, error, start);
 		if (result)
 			return STATUS_SUCCESS;
-		if (IsRunningOnWine())
+		if (MemoryHostPolicy().useWineApis)
 			return STATUS_UNSUCCESSFUL;
 
 		start = GetTickCount64();

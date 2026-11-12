@@ -1092,6 +1092,58 @@
     "entryTitle": "In-Game Settings Window"
   },
   {
+    "key": "DetectedHost",
+    "ini": {
+      "section": "Platform",
+      "name": "DetectedHost"
+    },
+    "type": "String",
+    "default": "",
+    "label": "Detected Host",
+    "hint": "Detected by RSMods at startup; for support only.",
+    "category": "Toggle Switches",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null,
+    "editedBy": null,
+    "mod": "SettingsMenuMod",
+    "entry": "DetectedHost",
+    "heading": "Game & Window",
+    "entryTitle": "Detected Host"
+  },
+  {
+    "key": "HostOverride",
+    "ini": {
+      "section": "Platform",
+      "name": "HostOverride"
+    },
+    "type": "Enum",
+    "default": "auto",
+    "label": "Host Override",
+    "hint": "Leave on auto. Set to wine if RSMods misdetects Wine, Proton or CrossOver.",
+    "category": "Toggle Switches",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [
+      "auto",
+      "windows",
+      "wine"
+    ],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null,
+    "editedBy": null,
+    "mod": "SettingsMenuMod",
+    "entry": "HostOverride",
+    "heading": "Game & Window",
+    "entryTitle": "Host Override"
+  },
+  {
     "key": "ToggleSettingsMenuKey",
     "ini": {
       "section": "Keybinds",

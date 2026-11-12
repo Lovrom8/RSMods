@@ -14,6 +14,18 @@ foreach ($mode in @('wine_get_version', 'wine_get_build_id', 'wine_get_host_vers
     & $exe $mode
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 }
+foreach ($case in @(
+    @('wine_get_host_version', 'auto', 'Linux'),
+    @('wine_get_host_version', 'auto', 'Darwin'),
+    @('wine_get_host_version', 'auto', 'unknown'),
+    @('wine_get_host_version', 'auto', 'Linux', 'same'),
+    @('wine_get_version', 'windows'),
+    @('native', 'wine'),
+    @('native', 'invalid')
+)) {
+    & $exe @case
+    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+}
 & $exe
 exit $LASTEXITCODE
 
