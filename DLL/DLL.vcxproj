@@ -604,6 +604,7 @@
     <ClInclude Include="Framework\DrawRegistry.hpp" />
     <ClInclude Include="Framework\AudioInput.hpp" />
     <ClInclude Include="Framework\DeviceEvents.hpp" />
+    <ClInclude Include="Framework\ShaderScan.hpp" />
     <ClInclude Include="Framework\SettingsSchema.hpp" />
     <ClInclude Include="Framework\SettingsStore.hpp" />
     <ClInclude Include="Framework\KeyNames.hpp" />

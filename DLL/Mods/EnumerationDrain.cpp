@@ -7,6 +7,7 @@
 #include "UplayLoginMod.hpp"
 #include "EnumerationEnvironment.hpp"
 #include "EnumerationPreparation.hpp"
+#include "../Framework/ShaderScan.hpp"
 #include "EnumerationCache.hpp"
 #include "EnumerationOwnership.hpp"
 #include <algorithm>
@@ -269,7 +270,7 @@ namespace {
 		}
 	}
 
-	// Skip generated-shader probing for DLC installs; the caller ignores its return value.
+	// Keep the native scan unless the active package proves shader absence.
 
 	bool shaderScanHooked = false;
 	int32_t shaderScanOriginalRel = 0;
@@ -277,7 +278,8 @@ namespace {
 	unsigned int shaderScansSkipped = 0;
 
 	extern "C" void __cdecl EnumDecideShaderScan() {
-		skipShaderScanNow = (skipShaderScan && inInstallRegister) ? 1 : 0;
+		skipShaderScanNow = Framework::ShaderScan::ShouldSkip(skipShaderScan, inInstallRegister != 0,
+			EnumerationPreparation::ActivePackageIsShaderFree()) ? 1 : 0;
 		if (skipShaderScanNow)
 			++shaderScansSkipped;
 	}

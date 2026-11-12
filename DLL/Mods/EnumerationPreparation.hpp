@@ -17,6 +17,7 @@ namespace EnumerationPreparation {
 		std::string snapshot;
 		bool valid = false;
 		bool fromCache = false;
+		bool shaderFree = false;
 	};
 
 	void NoteInstallFault();
@@ -26,6 +27,7 @@ namespace EnumerationPreparation {
 	void LogIndexStats();
 	bool Install();
 	bool IsInstalled();
+	bool ActivePackageIsShaderFree();
 	unsigned int CacheOnlyHits();
 	std::unique_ptr<Prepared> Prepare(const std::wstring& path, std::string snapshot);
 	void Begin(Prepared* prepared);

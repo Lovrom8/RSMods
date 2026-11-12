@@ -2,6 +2,7 @@
 #include "../stdafx.h"
 #endif
 #include "EnumerationPreparation.hpp"
+#include "../Framework/ShaderScan.hpp"
 #include <atomic>
 #include <unordered_set>
 #include <unordered_map>
@@ -294,6 +295,9 @@ std::unique_ptr<EnumerationPreparation::Prepared> EnumerationPreparation::Prepar
 			result->toc = copy(package.toc);
 			result->names = copy(package.names);
 			result->valid = result->toc && result->names;
+			result->shaderFree = result->valid && Framework::ShaderScan::ProvesNoShaders(
+				std::string_view(reinterpret_cast<const char*>(package.names.data()), package.names.size() - 1),
+				package.hashes.size());
 			std::vector<unsigned char>().swap(package.toc);
 			std::vector<unsigned char>().swap(package.names);
 			return result;
@@ -348,6 +352,9 @@ std::unique_ptr<EnumerationPreparation::Prepared> EnumerationPreparation::Prepar
 	result->toc = copy(result->package.toc);
 	result->names = copy(result->package.names);
 	result->valid = result->toc && result->names;
+	result->shaderFree = result->valid && Framework::ShaderScan::ProvesNoShaders(
+		std::string_view(reinterpret_cast<const char*>(package.names.data()), package.names.size() - 1),
+		package.hashes.size());
 	std::vector<unsigned char>().swap(result->package.toc);
 	std::vector<unsigned char>().swap(result->package.names);
 	result->package.parseTicks += EnumerationPackage::Clock() - copyStart;
@@ -372,6 +379,9 @@ long long EnumerationPreparation::End() {
 }
 
 bool EnumerationPreparation::IsInstalled() { return installed; }
+bool EnumerationPreparation::ActivePackageIsShaderFree() {
+	return active && active->valid && active->shaderFree;
+}
 unsigned int EnumerationPreparation::CacheOnlyHits() { return g_cacheOnlyHits.load(); }
 
 #ifndef ENUMERATION_PREPARATION_TEST
