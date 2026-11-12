@@ -557,8 +557,8 @@ void MemUtil::LogMemoryProtectionPolicy() {
 		policy.savedHost = policy.detected;
 	}
 	LOG_INFO("(MEMORY) Detected host=" << policy.detected << "; HostOverride="
-		<< policy.overrideValue << "; path=documented first; syscall fallback="
-		<< (policy.useWineApis ? "disabled" : "enabled on documented failure") << std::endl);
+		<< policy.overrideValue << "; path="
+		<< (policy.useWineApis ? "documented only" : "syscall first, documented on failure") << std::endl);
 }
 
 namespace {
@@ -702,52 +702,51 @@ namespace MemUtil {
 	NTSTATUS HookedVirtualProtect(LPVOID address, SIZE_T len, ULONG newProtection,
 		ULONG& oldProtection) {
 		ULONGLONG start = GetTickCount64();
+		// On Windows the game's own guard slows or refuses the documented call, so go to the kernel first.
+		if (!MemoryHostPolicy().useWineApis) {
+			static const bool initialized = [] {
+				Detail::ssnProtect = Detail::GetSyscallNumber("NtProtectVirtualMemory", 0x50);
+				return true;
+			}();
+			(void)initialized;
+			PVOID baseAddress = address;
+			SIZE_T regionSize = len;
+			const NTSTATUS status = Detail::Syscall_NtProtectVirtualMemory(GetCurrentProcess(),
+				&baseAddress, &regionSize, newProtection, &oldProtection);
+			LogMemoryCall("VirtualProtect", address, "syscall", status, 0, start);
+			if (NT_SUCCESS(status))
+				return status;
+			start = GetTickCount64();
+		}
 		const BOOL ok = VirtualProtect(address, len, newProtection, &oldProtection);
 		const DWORD error = ok ? ERROR_SUCCESS : GetLastError();
 		LogMemoryCall("VirtualProtect", address, "documented",
 			ok ? STATUS_SUCCESS : STATUS_UNSUCCESSFUL, error, start);
-		if (ok)
-			return STATUS_SUCCESS;
-		if (MemoryHostPolicy().useWineApis)
-			return STATUS_UNSUCCESSFUL;
-
-		start = GetTickCount64();
-		static const bool initialized = [] {
-			Detail::ssnProtect = Detail::GetSyscallNumber("NtProtectVirtualMemory", 0x50);
-			return true;
-		}();
-		(void)initialized;
-		PVOID baseAddress = address;
-		SIZE_T regionSize = len;
-		const NTSTATUS status = Detail::Syscall_NtProtectVirtualMemory(GetCurrentProcess(),
-			&baseAddress, &regionSize, newProtection, &oldProtection);
-		LogMemoryCall("VirtualProtect", address, "syscall", status, 0, start);
-		return status;
+		return ok ? STATUS_SUCCESS : STATUS_UNSUCCESSFUL;
 	}
 
 	NTSTATUS HookedQueryVirtualMemory(LPVOID address,
 		PMEMORY_BASIC_INFORMATION memoryBuffer, SIZE_T dwLength) {
 		ULONGLONG start = GetTickCount64();
+		if (!MemoryHostPolicy().useWineApis) {
+			static const bool initialized = [] {
+				Detail::ssnQuery = Detail::GetSyscallNumber("NtQueryVirtualMemory", 0x23);
+				return true;
+			}();
+			(void)initialized;
+			SIZE_T returnLength = 0;
+			const NTSTATUS status = Detail::Syscall_NtQueryVirtualMemory(GetCurrentProcess(),
+				address, 0, memoryBuffer, dwLength, &returnLength);
+			LogMemoryCall("VirtualQuery", address, "syscall", status, 0, start);
+			if (NT_SUCCESS(status))
+				return status;
+			start = GetTickCount64();
+		}
 		const SIZE_T result = VirtualQuery(address, memoryBuffer, dwLength);
 		const DWORD error = result ? ERROR_SUCCESS : GetLastError();
 		LogMemoryCall("VirtualQuery", address, "documented",
 			result ? STATUS_SUCCESS : STATUS_UNSUCCESSFUL, error, start);
-		if (result)
-			return STATUS_SUCCESS;
-		if (MemoryHostPolicy().useWineApis)
-			return STATUS_UNSUCCESSFUL;
-
-		start = GetTickCount64();
-		static const bool initialized = [] {
-			Detail::ssnQuery = Detail::GetSyscallNumber("NtQueryVirtualMemory", 0x23);
-			return true;
-		}();
-		(void)initialized;
-		SIZE_T returnLength = 0;
-		const NTSTATUS status = Detail::Syscall_NtQueryVirtualMemory(GetCurrentProcess(),
-			address, 0, memoryBuffer, dwLength, &returnLength);
-		LogMemoryCall("VirtualQuery", address, "syscall", status, 0, start);
-		return status;
+		return result ? STATUS_SUCCESS : STATUS_UNSUCCESSFUL;
 	}
 }
 

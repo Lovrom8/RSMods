@@ -119,16 +119,16 @@ int main(int argc, char** argv) {
 			assert(memory);
 			DWORD old = 0;
 			assert(NT_SUCCESS(MemUtil::HookedVirtualProtect(memory, 4096, PAGE_READONLY, old)));
-			assert(old == PAGE_READWRITE && g_protectCalls == 1);
-			g_failCall = 2;
+			// Windows goes to the kernel first; the documented call is only the fallback.
+			assert(old == PAGE_READWRITE && g_protectCalls == 0);
 			assert(NT_SUCCESS(MemUtil::HookedVirtualProtect(memory, 4096, PAGE_READWRITE, old)));
-			assert(old == PAGE_READONLY);
+			assert(old == PAGE_READONLY && g_protectCalls == 0);
 			g_failQuery = true;
 			MEMORY_BASIC_INFORMATION info{};
 			assert(NT_SUCCESS(MemUtil::HookedQueryVirtualMemory(memory, &info, sizeof(info))));
 			assert(info.Protect == PAGE_READWRITE);
 			assert(VirtualFree(memory, 0, MEM_RELEASE));
-			puts("Windows syscall fallback PASS");
+			puts("Windows syscall first PASS");
 		}
 		if (expectedWineApis) {
 			void* memory = VirtualAlloc(nullptr, 4096, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
