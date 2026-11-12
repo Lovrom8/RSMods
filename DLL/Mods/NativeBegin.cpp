@@ -83,6 +83,48 @@ namespace {
 
 	uintptr_t signInFlowCompleteCall = 0;
 	uintptr_t handlerTailJump = 0;
+	uintptr_t getInputMode = 0;
+	uintptr_t setInputMode = 0;
+	uintptr_t defaultInputMode = 0;
+	uintptr_t profileContinuation = 0;
+	bool inputModeOnStack = false;
+
+	unsigned char PrimaryInputMode() {
+		unsigned char mode = 4;
+		if (inputModeOnStack)
+			mode = reinterpret_cast<unsigned char(__cdecl*)(unsigned int)>(getInputMode)(0);
+		else {
+			__asm {
+				xor eax, eax
+				call dword ptr [getInputMode]
+				mov mode, al
+			}
+		}
+		return mode;
+	}
+
+	void __cdecl CompleteProfileSignIn() {
+		const unsigned char mode = PrimaryInputMode();
+		// Sign-in is complete here. Use this profile, never a transient cached mode.
+		if (mode < 4) {
+			__asm {
+				xor eax, eax
+				mov cl, mode
+				call dword ptr [setInputMode]
+			}
+		}
+		else {
+			reinterpret_cast<bool(__cdecl*)()>(defaultInputMode)();
+			// Mode 4 is never a valid input; only an unfinished profile may keep it until setup picks one.
+			if (PrimaryInputMode() >= 4)
+				LOG_ERROR("(NATIVE BEGIN) Input mode still unknown after the stock default; first-run input selection has to set it" << std::endl);
+		}
+		LOG_INFO("(NATIVE BEGIN) Loaded profile input mode=" << static_cast<unsigned int>(mode)
+			<< "; continuing through stock first-run/menu selection" << std::endl);
+		// The title always requests MainMenu. The picker checks FinishedFE and opens setup.
+		reinterpret_cast<void(__cdecl*)()>(profileContinuation)();
+	}
+
 
 	void SaveBeforeMenu() {
 		uintptr_t service = 0, manager = 0;
@@ -90,7 +132,7 @@ namespace {
 			*reinterpret_cast<unsigned char*>(manager + off_flushGate) = 1;
 			reinterpret_cast<SaveProfileFn>(saveProfile)(reinterpret_cast<void*>(manager));
 		}
-		LOG_INFO("(NATIVE BEGIN) Autosave warning skipped, main menu requested" << std::endl);
+		LOG_INFO("(NATIVE BEGIN) Autosave warning skipped, profile continuation requested" << std::endl);
 	}
 
 	__declspec(naked) void SignInCompleteThunk() {
@@ -139,6 +181,26 @@ void NativeBegin::Install() {
 	saveProfile = Offsets::startupSaveProfile;
 	signInFlowCompleteCall = Offsets::startupSignInFlowComplete;
 	handlerTailJump = Offsets::startupHandlerTail;
+	getInputMode = Offsets::startupGetInputMode;
+	setInputMode = Offsets::startupSetInputMode;
+	defaultInputMode = Offsets::startupDefaultInputMode;
+	profileContinuation = Offsets::startupProfileContinuation;
+	inputModeOnStack = GameVersion::IsLearnAndPlay();
+	constexpr unsigned char completeBytes[] = { 0x55, 0x8B, 0xEC, 0x83, 0xEC, 0x20 };
+	const unsigned char getBytes[] = { 0x55, 0x8B, 0xEC, 0x83, 0xEC,
+		static_cast<unsigned char>(inputModeOnStack ? 0x08 : 0x0C) };
+	constexpr unsigned char setBytes[] = { 0x51, 0x56, 0x8B, 0xF0, 0x32, 0xC0, 0x57, 0x80, 0xF9, 0x04 };
+	constexpr unsigned char defaultBytes[] = { 0x55, 0x8B, 0xEC, 0x83, 0xEC, 0x08, 0x53, 0x57 };
+	constexpr unsigned char continuationBytes[] = { 0x55, 0x8B, 0xEC, 0x83, 0xEC, 0x74 };
+	if (!getInputMode || !setInputMode || !defaultInputMode || !profileContinuation
+		|| !MemUtil::MatchesBytes(signInFlowCompleteCall, completeBytes)
+		|| !MemUtil::MatchesBytes(getInputMode, getBytes)
+		|| !MemUtil::MatchesBytes(setInputMode, setBytes)
+		|| !MemUtil::MatchesBytes(defaultInputMode, defaultBytes)
+		|| !MemUtil::MatchesBytes(profileContinuation, continuationBytes)) {
+		LOG_WARNING("(NATIVE BEGIN) Boot bypass off: profile input completion sites unavailable or mismatched" << std::endl);
+		return;
+	}
 	uintptr_t tick = 0;
 	if (!Read(titleTickSlot, tick) || tick != titleTick || !MemUtil::MatchesBytes(connectBeginSlot, std::span<const unsigned char>(
 		reinterpret_cast<const unsigned char*>(&connectBegin), sizeof(connectBegin)))) {
@@ -146,6 +208,10 @@ void NativeBegin::Install() {
 		return;
 	}
 	const uintptr_t hook = reinterpret_cast<uintptr_t>(&TitleTick);
+	LOG_INFO("(NATIVE BEGIN) Input completion original at 0x" << std::hex << signInFlowCompleteCall
+		<< std::dec << ": 55 8B EC 83 EC 20" << std::endl);
+	MemUtil::PlaceHook(reinterpret_cast<void*>(signInFlowCompleteCall),
+		reinterpret_cast<void*>(&CompleteProfileSignIn), sizeof(completeBytes));
 	MemUtil::PatchAdr(reinterpret_cast<LPVOID>(titleTickSlot), &hook, sizeof(hook));
 	// Resolve the short jump relative to the end of the six patched bytes.
 	armWarningJumpTarget = armWarning + sizeof(armWarningBytes) + armWarningBytes[5];

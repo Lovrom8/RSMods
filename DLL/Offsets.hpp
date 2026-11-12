@@ -26,6 +26,10 @@ namespace Offsets {
 	extern VersioningStruct<uintptr_t> startupArmWarning;
 	extern VersioningStruct<uintptr_t> startupSaveProfile;
 	extern VersioningStruct<uintptr_t> startupSignInFlowComplete;
+	extern VersioningStruct<uintptr_t> startupGetInputMode;
+	extern VersioningStruct<uintptr_t> startupSetInputMode;
+	extern VersioningStruct<uintptr_t> startupDefaultInputMode;
+	extern VersioningStruct<uintptr_t> startupProfileContinuation;
 	extern VersioningStruct<uintptr_t> startupHandlerTail;
 	extern VersioningStruct<uintptr_t> startupIntroTableEntry;
 	extern VersioningStruct<uintptr_t> startupIntroStateZero;
