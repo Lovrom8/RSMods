@@ -43,13 +43,11 @@ bool MemUtil::PatchAdr(uintptr_t address, std::string_view data, bool addBaseHan
 bool MemUtil::PatchAdr(LPVOID address, LPCVOID changeToMake, size_t len) {
 	DWORD dwOldProt, dwDummy, ret;
 
-	clock_t before = clock();
 
 	// Save old Virtual Protect status, but allow us to Execute, Read, and Write to the executable's memory so we can place our hook.
 	ret = HookedVirtualProtect(address, len, PAGE_EXECUTE_READWRITE, dwOldProt);
 	if (!NT_SUCCESS(ret))
 	{
-		printf_s("MemUtil::PatchAdr Failed 1: Addr: 0x%X | Status: 0x%08X | Time to run in sec: %f\n", (uintptr_t)address, ret, (float)(clock() - before) / CLOCKS_PER_SEC); // Can't use log here, need to use printf.
 		return false;
 	}
 
@@ -62,7 +60,6 @@ bool MemUtil::PatchAdr(LPVOID address, LPCVOID changeToMake, size_t len) {
 	ret = HookedVirtualProtect(address, len, dwOldProt, dwDummy);
 	if (!NT_SUCCESS(ret))
 	{
-		printf_s("MemUtil::PatchAdr Failed 2: Addr: 0x%X | Status: 0x%08X\n", (uintptr_t)address, ret); // Can't use log here, need to use printf.
 		return false;
 	}
 
@@ -101,45 +98,15 @@ void __declspec(naked) MemUtil::JumpToVersioned() {
 /// <param name="ourFunct"> - What should we run (x86 ASM)</param>
 /// <param name="len"> - How long is the first command (x86 ASM length)</param>
 /// <returns>Can we place the hook?</returns>
-bool MemUtil::PlaceHook(void* hookSpot, void* ourFunct, int len)
-{
-	// Verify that len is at least 5. A relative jump instruction is 5 bytes, so we cannot work with any value less than that.
+bool MemUtil::PlaceHook(void* hookSpot, void* ourFunct, int len) {
 	if (len < 5)
 		return false;
-
-	// Save old Virtual Protect status, but allow us to Execute, Read, and Write to the executable's memory so we can place our hook.
-	DWORD oldProtect;
-	DWORD ret;
-	clock_t before = clock();
-
-	ret = HookedVirtualProtect(hookSpot, len, PAGE_EXECUTE_READWRITE, oldProtect);
-	if (!NT_SUCCESS(ret))
-	{
-		printf_s("MemUtil::PlaceHook Failed 1: Addr: 0x%X | Status: 0x%08X | Time to run in sec: %f\n", (uintptr_t)hookSpot, ret, (float)(clock() - before) / CLOCKS_PER_SEC); // Can't use log here, need to use printf.
-		return false;
-	}
-
-	// Place x86 assembly NOP characters where we want our hook to be placed.
-	memset(hookSpot, 0x90, len);
-
-	// Get the relative address from our hook to where our function is actually stored, minus the length of the jump instruction (5).
-	uint32_t relativeAddr = ((uint32_t)ourFunct - (uint32_t)hookSpot) - 5;
-
-	// Place relative jump at hookSpot.
-	*(BYTE*)hookSpot = 0xE9;
-	*(uint32_t*)((uint32_t)hookSpot + 1) = relativeAddr;
-
-	// Reset the virtual protect to the status we saved earlier in this function. 
-	DWORD backup;
-
-	ret = HookedVirtualProtect(hookSpot, len, oldProtect, backup);
-	if (!NT_SUCCESS(ret))
-	{
-		printf_s("MemUtil::PlaceHook Failed 2: Addr: 0x%X | Status: 0x%08X\n", (uintptr_t)hookSpot, ret); // Can't use log here, need to use printf.
-		return false;
-	}
-
-	return true;
+	std::vector<unsigned char> patch(static_cast<size_t>(len), 0x90);
+	patch[0] = 0xE9;
+	const uint32_t relative = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(ourFunct)
+		- reinterpret_cast<uintptr_t>(hookSpot) - 5);
+	memcpy(patch.data() + 1, &relative, sizeof(relative));
+	return PatchAdr(hookSpot, patch.data(), patch.size());
 }
 
 /// <summary>
@@ -373,20 +340,43 @@ uintptr_t MemUtil::ReadPtr(uintptr_t adr) {
 /// Are we running under Wine / Proton rather than on Windows?
 /// </summary>
 /// <returns>True if the host is Wine.</returns>
-bool MemUtil::IsRunningOnWine()
-{
-	static bool checked = false;
-	static bool isWine = false;
-
-	if (!checked) {
-		HMODULE hNtdll = GetModuleHandleA("ntdll.dll");
-		if (hNtdll && GetProcAddress(hNtdll, "wine_get_version") != nullptr) {
-			isWine = true;
+bool MemUtil::IsRunningOnWine() {
+	static const bool isWine = [] {
+		const HMODULE ntdll = GetModuleHandleW(L"ntdll.dll");
+		const char* const exports[] = {
+			"wine_get_version", "wine_get_build_id", "wine_get_host_version"
+		};
+		for (const char* name : exports)
+			if (ntdll && GetProcAddress(ntdll, name))
+				return true;
+		for (HKEY root : { HKEY_LOCAL_MACHINE, HKEY_CURRENT_USER }) {
+			HKEY key = nullptr;
+			if (RegOpenKeyExW(root, L"Software\\Wine", 0, KEY_READ, &key) == ERROR_SUCCESS) {
+				RegCloseKey(key);
+				return true;
+			}
 		}
-		checked = true;
-	}
-
+		return false;
+	}();
 	return isWine;
+}
+
+void MemUtil::LogMemoryProtectionPolicy() {
+	LOG_INFO("(MEMORY) Wine/Proton detected=" << (IsRunningOnWine() ? "yes" : "no")
+		<< "; path=documented first; syscall fallback="
+		<< (IsRunningOnWine() ? "disabled" : "enabled on documented failure") << std::endl);
+}
+
+namespace {
+	void LogMemoryCall(const char* operation, void* address, const char* path,
+		NTSTATUS status, DWORD error, ULONGLONG start) {
+		const ULONGLONG ms = GetTickCount64() - start;
+		if (ms >= 50 || !NT_SUCCESS(status))
+			LOG_WARNING("(MEMORY) " << operation << " address=0x" << std::hex
+				<< reinterpret_cast<uintptr_t>(address) << " path=" << path
+				<< " status=0x" << status << " win32=" << error << std::dec
+				<< " ms=" << ms << std::endl);
+	}
 }
 
 namespace MemUtil {
@@ -515,53 +505,55 @@ namespace MemUtil {
 		}
 	}
 
-	NTSTATUS HookedVirtualProtect(LPVOID address, SIZE_T len, ULONG newProtection, ULONG& oldProtection)
-	{
-		if (IsRunningOnWine()) {
-			DWORD oldProt = 0;
-			if (VirtualProtect(address, len, newProtection, &oldProt)) {
-				oldProtection = oldProt;
-				return STATUS_SUCCESS;
-			}
+	NTSTATUS HookedVirtualProtect(LPVOID address, SIZE_T len, ULONG newProtection,
+		ULONG& oldProtection) {
+		ULONGLONG start = GetTickCount64();
+		const BOOL ok = VirtualProtect(address, len, newProtection, &oldProtection);
+		const DWORD error = ok ? ERROR_SUCCESS : GetLastError();
+		LogMemoryCall("VirtualProtect", address, "documented",
+			ok ? STATUS_SUCCESS : STATUS_UNSUCCESSFUL, error, start);
+		if (ok)
+			return STATUS_SUCCESS;
+		if (IsRunningOnWine())
 			return STATUS_UNSUCCESSFUL;
-		}
 
-		static bool initialized = false;
-		if (!initialized) {
+		start = GetTickCount64();
+		static const bool initialized = [] {
 			Detail::ssnProtect = Detail::GetSyscallNumber("NtProtectVirtualMemory", 0x50);
-			initialized = true;
-		}
-
+			return true;
+		}();
+		(void)initialized;
 		PVOID baseAddress = address;
 		SIZE_T regionSize = len;
-		ULONG oldProt = 0;
-		NTSTATUS status = Detail::Syscall_NtProtectVirtualMemory(GetCurrentProcess(), &baseAddress, &regionSize, newProtection, &oldProt);
-
-		if (NT_SUCCESS(status)) {
-			oldProtection = oldProt;
-			return status;
-		}
-
+		const NTSTATUS status = Detail::Syscall_NtProtectVirtualMemory(GetCurrentProcess(),
+			&baseAddress, &regionSize, newProtection, &oldProtection);
+		LogMemoryCall("VirtualProtect", address, "syscall", status, 0, start);
 		return status;
 	}
 
-	NTSTATUS HookedQueryVirtualMemory(LPVOID address, PMEMORY_BASIC_INFORMATION memoryBuffer, SIZE_T dwLength)
-	{
-		if (IsRunningOnWine()) {
-			if (VirtualQuery(address, memoryBuffer, dwLength) != 0) {
-				return STATUS_SUCCESS;
-			}
+	NTSTATUS HookedQueryVirtualMemory(LPVOID address,
+		PMEMORY_BASIC_INFORMATION memoryBuffer, SIZE_T dwLength) {
+		ULONGLONG start = GetTickCount64();
+		const SIZE_T result = VirtualQuery(address, memoryBuffer, dwLength);
+		const DWORD error = result ? ERROR_SUCCESS : GetLastError();
+		LogMemoryCall("VirtualQuery", address, "documented",
+			result ? STATUS_SUCCESS : STATUS_UNSUCCESSFUL, error, start);
+		if (result)
+			return STATUS_SUCCESS;
+		if (IsRunningOnWine())
 			return STATUS_UNSUCCESSFUL;
-		}
 
-		static bool initialized = false;
-		if (!initialized) {
+		start = GetTickCount64();
+		static const bool initialized = [] {
 			Detail::ssnQuery = Detail::GetSyscallNumber("NtQueryVirtualMemory", 0x23);
-			initialized = true;
-		}
-
+			return true;
+		}();
+		(void)initialized;
 		SIZE_T returnLength = 0;
-		return Detail::Syscall_NtQueryVirtualMemory(GetCurrentProcess(), address, 0 /* MemoryBasicInformation */, memoryBuffer, dwLength, &returnLength);
+		const NTSTATUS status = Detail::Syscall_NtQueryVirtualMemory(GetCurrentProcess(),
+			address, 0, memoryBuffer, dwLength, &returnLength);
+		LogMemoryCall("VirtualQuery", address, "syscall", status, 0, start);
+		return status;
 	}
 }
 

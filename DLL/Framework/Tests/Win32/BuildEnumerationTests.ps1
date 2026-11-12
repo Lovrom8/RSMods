@@ -10,7 +10,7 @@ if (-not $vsPath) { throw "No Visual Studio install with the C++ toolset found."
 $vcvars = Join-Path $vsPath 'VC\Auxiliary\Build\vcvars32.bat'
 $source = Join-Path $PSScriptRoot 'EnumerationPackageTests.cpp'
 $exe = Join-Path $outputPath 'EnumerationPackageTests.exe'
-$build = "call `"$vcvars`" >nul 2>nul && cd /d `"$outputPath`" && cl /nologo /std:c++latest /EHsc /W4 /WX /MDd /D_DEBUG `"$source`" /Fe:`"$exe`""
+$build = "call `"$vcvars`" >nul 2>nul && cl /Fo:`"$outputPath/`" /nologo /std:c++latest /EHsc /W4 /WX /MDd /D_DEBUG `"$source`" /Fe:`"$exe`""
 & { $ErrorActionPreference = 'Continue'; & cmd /c $build }
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 & { $ErrorActionPreference = 'Continue'; & $exe }

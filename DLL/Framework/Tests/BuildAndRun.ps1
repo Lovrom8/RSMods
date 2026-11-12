@@ -132,7 +132,7 @@ foreach ($t in $Tests) {
     $srcArgs = ($srcs | ForEach-Object { "`"$_`"" }) -join ' '
 
     Write-Host "=== Building $name ===" -ForegroundColor Cyan
-    # cd into the output dir so intermediate .obj files land there instead of the source tree.
+    # Keep intermediate objects in the output directory.
     # Under Windows PowerShell 5.1 with ErrorActionPreference=Stop, any line a native exe
     # writes to stderr is turned into a terminating error, but the tests deliberately log to
     # stderr (LOG_ERROR) when exercising fault paths, so keep Stop scoped to cmdlets only.
@@ -140,7 +140,7 @@ foreach ($t in $Tests) {
     # "vswhere.exe is not recognized" to stderr while still setting up the toolset correctly.
     # cl runs as a separate `&&` command, so its diagnostics are unaffected; a genuine vcvars
     # failure still surfaces as a missing `cl` and a non-zero exit below.
-    $build = "call `"$vcvars`" >nul 2>nul && cd /d `"$OutDir`" && cl /nologo /std:c++20 /EHsc /W3 $srcArgs /Fe:`"$exe`""
+    $build = "call `"$vcvars`" >nul 2>nul && cl /Fo:`"$OutDir/`" /nologo /std:c++20 /EHsc /W3 $srcArgs /Fe:`"$exe`""
     & { $ErrorActionPreference = 'Continue'; & cmd /c $build }
     if ($LASTEXITCODE -ne 0) { Write-Host "BUILD FAILED: $name" -ForegroundColor Red; $failed += "$name (build)"; continue }
 
@@ -159,5 +159,7 @@ if ($failed.Count -gt 0) {
     Write-Host "FRAMEWORK TESTS FAILED: $($failed -join ', ')" -ForegroundColor Red
     exit 1
 }
+& { $ErrorActionPreference = 'Continue'; & powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $TestsDir 'Win32\BuildMemoryProtectionTests.ps1') }
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 Write-Host "ALL FRAMEWORK TESTS PASSED" -ForegroundColor Green
 exit 0

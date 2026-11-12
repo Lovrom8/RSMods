@@ -311,6 +311,7 @@ unsigned WINAPI MainThread() {
 void Initialize() {
 	LogSettings::startupTime = clock();
 	GameVersion::LogIdentity();
+	MemUtil::LogMemoryProtectionPolicy();
 	// Install before the first game file open.
 	if (UltrafastLoad::Enabled()) {
 		if (GameVersion::IsSeptember2022()) {

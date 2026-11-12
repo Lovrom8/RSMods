@@ -73,6 +73,7 @@ namespace MemUtil {
 	T ReadValue(uintptr_t adr, bool addBaseHandle);
 
 	bool IsRunningOnWine();
+	void LogMemoryProtectionPolicy();
 	NTSTATUS HookedVirtualProtect(LPVOID address, SIZE_T len, ULONG newProtection, ULONG& oldProtection);
 	NTSTATUS HookedQueryVirtualMemory(LPVOID address, PMEMORY_BASIC_INFORMATION memoryBuffer, SIZE_T dwLength);
 
