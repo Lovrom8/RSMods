@@ -17,6 +17,14 @@
 #endif
 
 namespace MemUtil {
+	// Initialization-thread writes remain staged until every member validates.
+	void BeginBootPatchBundle();
+	bool BootPatchMember(const char* name);
+	void FailBootPatchBundle();
+	bool CommitBootPatchBundle();
+	bool BootPatchBundleEnabled();
+	bool BootPatchBundleStaging();
+	bool BootPatchStaged(uintptr_t address);
 	bool bCompare(const BYTE* pData, const byte* bMask, const char* szMask);
 	bool PatchAdr(VersioningStruct<uintptr_t>& address, LPCVOID changeToMake, size_t len, bool addBaseHandle = false);
 	bool PatchAdr(LPVOID address, LPCVOID changeToMake, size_t len);

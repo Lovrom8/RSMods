@@ -1,3 +1,4 @@
+#ifdef _WIN32
 #include "../../../stdafx.h"
 #include <cassert>
 #include "../../../SettingEdits.hpp"
@@ -37,6 +38,7 @@ namespace {
 	unsigned int g_failCall = 0;
 	bool g_slowCall = false;
 	bool g_failQuery = false;
+	int __cdecl Replacement() { return 7; }
 
 	FARPROC WINAPI TestGetProcAddress(HMODULE module, LPCSTR name) {
 		if (strcmp(name, "wine_get_host_version") == 0 && strcmp(name, g_wineExport) == 0)
@@ -148,17 +150,89 @@ int main(int argc, char** argv) {
 		return 0;
 	}
 	assert(MemUtil::IsRunningOnWine());
-	auto* page = VirtualAlloc(nullptr, 4096, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+	MemUtil::LogMemoryProtectionPolicy();
+	auto* page = static_cast<unsigned char*>(VirtualAlloc(nullptr, 4096,
+		MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE));
 	assert(page);
-	DWORD old = 0;
+	page[0] = 1;
+	page[1] = 2;
+	const unsigned char first = 3, second = 4;
+
+	MemUtil::BeginBootPatchBundle();
+	assert(MemUtil::BootPatchMember("first"));
+	assert(MemUtil::PatchAdr(page, &first, 1));
+	assert(page[0] == 1);
+	MemUtil::FailBootPatchBundle();
+	assert(!MemUtil::BootPatchMember("must not run"));
+	assert(!MemUtil::CommitBootPatchBundle());
+	assert(page[0] == 1 && g_protectCalls == 0);
+
+	MemUtil::BeginBootPatchBundle();
+	assert(MemUtil::BootPatchMember("overlap"));
+	assert(MemUtil::PatchAdr(page, &first, 1));
+	assert(!MemUtil::PatchAdr(page, &second, 1));
+	assert(!MemUtil::CommitBootPatchBundle());
+	assert(page[0] == 1 && g_protectCalls == 0);
+
+	// Fail each acquire/restore in preflight and commit, including a post-write failure.
+	for (unsigned int failure = 1; failure <= 8; ++failure) {
+		g_protectCalls = 0;
+		g_failCall = failure;
+		MemUtil::BeginBootPatchBundle();
+		assert(MemUtil::BootPatchMember("first"));
+		assert(MemUtil::PatchAdr(page, &first, 1));
+		assert(MemUtil::BootPatchMember("second"));
+		assert(MemUtil::PatchAdr(page + 1, &second, 1));
+		assert(!MemUtil::CommitBootPatchBundle());
+		assert(page[0] == 1 && page[1] == 2);
+		assert(!MemUtil::BootPatchBundleEnabled());
+		MEMORY_BASIC_INFORMATION protection{};
+		assert(VirtualQuery(page, &protection, sizeof(protection)));
+		assert(protection.Protect == PAGE_READWRITE);
+	}
+
+	g_protectCalls = 0;
+	g_failCall = 0;
+	MemUtil::BeginBootPatchBundle();
+	assert(MemUtil::BootPatchMember("success"));
+	assert(MemUtil::PatchAdr(page, &first, 1));
 	g_slowCall = true;
-	assert(NT_SUCCESS(MemUtil::HookedVirtualProtect(page, 1, PAGE_READONLY, old)));
-	assert(old == PAGE_READWRITE && g_protectCalls == 1);
-	g_failCall = 2;
-	assert(!NT_SUCCESS(MemUtil::HookedVirtualProtect(page, 1, PAGE_READWRITE, old)));
-	g_failQuery = true;
+	assert(MemUtil::CommitBootPatchBundle());
+	assert(page[0] == first && MemUtil::BootPatchBundleEnabled());
+
+	MemUtil::BeginBootPatchBundle();
+	assert(MemUtil::BootPatchMember("changed site"));
+	assert(MemUtil::PatchAdr(page, &second, 1));
+	page[0] = 9;
+	assert(!MemUtil::CommitBootPatchBundle());
+	assert(page[0] == 9);
+
+	// Trampolines are executable before publication, while the source stays untouched.
+	g_failCall = 0;
+	const unsigned char code[] = { 0xB8, 42, 0, 0, 0, 0xC3 };
+	memcpy(page + 64, code, sizeof(code));
+	DWORD previous = 0;
+	assert(VirtualProtect(page, 4096, PAGE_EXECUTE_READWRITE, &previous));
+	using Function = int(__cdecl*)();
+	const auto original = reinterpret_cast<Function>(page + 64);
+	MemUtil::BeginBootPatchBundle();
+	assert(MemUtil::BootPatchMember("trampoline"));
+	PBYTE gateway = MemUtil::TrampHook(page + 64, reinterpret_cast<PBYTE>(&Replacement), 5);
+	assert(gateway && original() == 42);
+	assert(reinterpret_cast<Function>(gateway)() == 42);
+	assert(MemUtil::CommitBootPatchBundle());
+	assert(original() == 7 && reinterpret_cast<Function>(gateway)() == 42);
+	assert(MemUtil::PatchAdr(page + 64, code, sizeof(code)));
+	assert(VirtualFree(gateway, 0, MEM_RELEASE));
+
+	DWORD old = 0;
+	g_failCall = g_protectCalls + 1;
+	assert(!NT_SUCCESS(MemUtil::HookedVirtualProtect(page, 1, PAGE_READONLY, old)));
 	MEMORY_BASIC_INFORMATION info{};
-	assert(!NT_SUCCESS(MemUtil::HookedQueryVirtualMemory(page, &info, sizeof(info))));
+	assert(NT_SUCCESS(MemUtil::HookedQueryVirtualMemory(page, &info, sizeof(info))));
+	assert(!NT_SUCCESS(MemUtil::HookedQueryVirtualMemory(page, nullptr, 0)));
 	assert(VirtualFree(page, 0, MEM_RELEASE));
-	puts("Documented memory paths ALL PASS");
+	puts("Boot bundle and documented memory paths ALL PASS");
 }
+
+#endif

@@ -198,12 +198,14 @@ void NativeBegin::Install() {
 		|| !MemUtil::MatchesBytes(setInputMode, setBytes)
 		|| !MemUtil::MatchesBytes(defaultInputMode, defaultBytes)
 		|| !MemUtil::MatchesBytes(profileContinuation, continuationBytes)) {
+		MemUtil::FailBootPatchBundle();
 		LOG_WARNING("(NATIVE BEGIN) Boot bypass off: profile input completion sites unavailable or mismatched" << std::endl);
 		return;
 	}
 	uintptr_t tick = 0;
 	if (!Read(titleTickSlot, tick) || tick != titleTick || !MemUtil::MatchesBytes(connectBeginSlot, std::span<const unsigned char>(
 		reinterpret_cast<const unsigned char*>(&connectBegin), sizeof(connectBegin)))) {
+		MemUtil::FailBootPatchBundle();
 		LOG_WARNING("(NATIVE BEGIN) Not installed: the title's Tick or the connect service did not match" << std::endl);
 		return;
 	}
@@ -217,7 +219,9 @@ void NativeBegin::Install() {
 	armWarningJumpTarget = armWarning + sizeof(armWarningBytes) + armWarningBytes[5];
 	if (MemUtil::MatchesBytes(armWarning, armWarningBytes) && MemUtil::MatchesBytes(saveProfile, saveProfileBytes))
 		MemUtil::PlaceHook(reinterpret_cast<void*>(armWarning), reinterpret_cast<void*>(&SignInCompleteThunk), sizeof(armWarningBytes));
-	else
+	else {
+		MemUtil::FailBootPatchBundle();
 		LOG_WARNING("(NATIVE BEGIN) Autosave warning left as is: its site doesn't match" << std::endl);
+	}
 	LOG_INFO("(NATIVE BEGIN) Installed" << std::endl);
 }

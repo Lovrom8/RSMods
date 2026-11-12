@@ -442,11 +442,16 @@ namespace {
 void LazyVfs::Install() {
 	// Install only when callback and native targets are mapped for this build.
 	const Framework::GameVersion::Site tableSite{ "GRVFS callback table", table, 0 };
-	if (!GameVersion::CheckedSite("VFS", tableSite, reinterpret_cast<const std::uint8_t*>(natives), nullptr, sizeof(natives)))
+	if (!GameVersion::IsSeptember2022())
 		return;
+	if (!GameVersion::CheckedSite("VFS", tableSite, reinterpret_cast<const std::uint8_t*>(natives), nullptr, sizeof(natives))) {
+		MemUtil::FailBootPatchBundle();
+		return;
+	}
 	if (HMODULE crt = GetModuleHandleA("msvcr100.dll"))
 		crtStat32 = reinterpret_cast<Stat32Fn>(GetProcAddress(crt, "_stat32"));
 	if (!crtStat32) {
+		MemUtil::FailBootPatchBundle();
 		LOG_WARNING("(VFS) msvcr100 _stat32 not found; lazy psarc opens not installed" << std::endl);
 		return;
 	}
@@ -479,7 +484,7 @@ void LazyVfs::Install() {
 }
 
 bool LazyVfs::Covers(const wchar_t* path) {
-	if (!lazyOn || !path || !cacheLoaded.load(std::memory_order_acquire))
+	if (!MemUtil::BootPatchBundleEnabled() || !lazyOn || !path || !cacheLoaded.load(std::memory_order_acquire))
 		return false;
 	char narrow[MAX_PATH * 2]{};
 	if (!WideCharToMultiByte(CP_ACP, 0, path, -1, narrow, sizeof(narrow), nullptr, nullptr))

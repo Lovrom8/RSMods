@@ -301,11 +301,15 @@ void DxvkFrameBudget::Install() {
 		return;
 	const uintptr_t budgetLoad = GameVersion::CheckedSite("DXVK", kBudgetLoadSite,
 		kBudgetLoadBytes, nullptr, sizeof(kBudgetLoadBytes));
-	if (!budgetLoad)
+	if (!budgetLoad) {
+		MemUtil::FailBootPatchBundle();
 		return;
+	}
 	kServiceGlobal = GameVersion::Resolve(kServiceGlobalSite);
-	if (!kServiceGlobal)
+	if (!kServiceGlobal) {
+		MemUtil::FailBootPatchBundle();
 		return;
+	}
 	const uintptr_t address = reinterpret_cast<uintptr_t>(&kDxvkBudgetMs);
 	if (!MemUtil::PatchAdr(reinterpret_cast<LPVOID>(budgetLoad + 2), &address, sizeof(address))) {
 		LOG_ERROR("(DXVK) Frame budget patch failed; budget left at 30 ms" << std::endl);
@@ -316,7 +320,7 @@ void DxvkFrameBudget::Install() {
 }
 
 void DxvkFrameBudget::Enforce() {
-	if (!g_enforce)
+	if (!MemUtil::BootPatchBundleEnabled() || !g_enforce)
 		return;
 	double value = 0.0;
 	if (!ClearBudget(value) || !(value > 0.0))

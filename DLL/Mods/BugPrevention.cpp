@@ -15,11 +15,13 @@ namespace BugPrevention {
 			0x5D, 0x8B, 0x46, 0x1C, 0xC6, 0x44, 0x24, 0x5F, 0x00
 		};
 		const uintptr_t address = GameVersion::CheckedSite("DLC OWNERSHIP", site, expected, nullptr, sizeof(expected));
-		if (!address)
+		if (!address) {
+			MemUtil::FailBootPatchBundle();
 			return;
+		}
 		LOG_INFO("(DLC OWNERSHIP) Init original bytes: 50 8B 42 1C FF D0 88 44 24 5D 8B 46 1C C6 44 24 5F 01" << std::endl);
 		if (!MemUtil::PatchAdr(reinterpret_cast<LPVOID>(address), deferred, sizeof(deferred)) ||
-			!MemUtil::MatchesBytes(address, deferred)) {
+			(!MemUtil::BootPatchStaged(address) && !MemUtil::MatchesBytes(address, deferred))) {
 			MemUtil::PatchAdr(reinterpret_cast<LPVOID>(address), expected, sizeof(expected));
 			LOG_ERROR("(DLC OWNERSHIP) Init patch failed; original bytes "
 				<< (MemUtil::MatchesBytes(address, expected) ? "restored" : "NOT restored") << std::endl);
@@ -34,11 +36,13 @@ namespace BugPrevention {
 		constexpr unsigned char expected[] = { 0x50, 0x56, 0xE8, 0x1F, 0x07, 0x00, 0x00 };
 		constexpr unsigned char skipped[] = { 0x50, 0x56, 0x83, 0xC4, 0x08, 0x90, 0x90 };
 		const uintptr_t address = GameVersion::CheckedSite("DLC STORE", site, expected, nullptr, sizeof(expected));
-		if (!address)
+		if (!address) {
+			MemUtil::FailBootPatchBundle();
 			return;
+		}
 		LOG_INFO("(DLC STORE) Init original bytes: 50 56 E8 1F 07 00 00" << std::endl);
 		if (!MemUtil::PatchAdr(reinterpret_cast<LPVOID>(address), skipped, sizeof(skipped)) ||
-			!MemUtil::MatchesBytes(address, skipped)) {
+			(!MemUtil::BootPatchStaged(address) && !MemUtil::MatchesBytes(address, skipped))) {
 			MemUtil::PatchAdr(reinterpret_cast<LPVOID>(address), expected, sizeof(expected));
 			LOG_ERROR("(DLC STORE) Init patch failed; original bytes "
 				<< (MemUtil::MatchesBytes(address, expected) ? "restored" : "NOT restored") << std::endl);

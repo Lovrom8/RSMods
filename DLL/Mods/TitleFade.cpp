@@ -200,8 +200,10 @@ void TitleFade::Install() {
         lengthBytes, nullptr, sizeof(lengthBytes));
     g_fileSeek = GameVersion::CheckedSite("TITLE FADE", { "GFX Seek", 0x00C305E0, 0 },
         seekBytes, nullptr, sizeof(seekBytes));
-    if (!kFileOpenEx || !kFileRead || !g_fileTell || !g_fileLength || !g_fileSeek)
+    if (!kFileOpenEx || !kFileRead || !g_fileTell || !g_fileLength || !g_fileSeek) {
+        MemUtil::FailBootPatchBundle();
         return;
+    }
 
 	g_fileReadTrampoline = reinterpret_cast<uintptr_t>(MemUtil::TrampHook(
 		reinterpret_cast<PBYTE>(kFileRead), reinterpret_cast<PBYTE>(&FileRead), sizeof(kFileReadBytes)));

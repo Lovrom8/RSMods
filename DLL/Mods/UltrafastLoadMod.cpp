@@ -21,6 +21,8 @@ SettingDefs UltrafastLoadMod::Settings() const {
 }
 
 bool UltrafastLoad::Enabled() {
+	if (!MemUtil::BootPatchBundleEnabled() && !MemUtil::BootPatchBundleStaging())
+		return false;
 	if (GameVersion::Current() == Framework::GameVersion::Build::Unknown) {
 		static const bool logged = [] {
 			LOG_WARNING("(STARTUP) Ultrafast Load disabled: unknown executable" << std::endl);

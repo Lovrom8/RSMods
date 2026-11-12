@@ -267,6 +267,7 @@ void ProfileAutoLoadMod::Install() {
 	uintptr_t select = 0;
 	if (!Read(selectorCall, opcode) || opcode != 0xE8 || !Read(selectorCall + 1, rel) || selectorCall + 5 + rel != startSelector
 		|| !Read(connectSelectSlot, select) || select != connectSelect) {
+		MemUtil::FailBootPatchBundle();
 		LOG_WARNING("(PROFILE) Automatic profile load not installed: the selector call or the connect service did not match" << std::endl);
 		return;
 	}
@@ -279,7 +280,7 @@ void ProfileAutoLoadMod::Install() {
 }
 
 void ProfileAutoLoadMod::OnFrame() {
-	if (!installed || !pending)
+	if (!MemUtil::BootPatchBundleEnabled() || !installed || !pending)
 		return;
 	pending = false;
 

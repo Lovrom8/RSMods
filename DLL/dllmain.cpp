@@ -312,26 +312,35 @@ void Initialize() {
 	LogSettings::startupTime = clock();
 	GameVersion::LogIdentity();
 	MemUtil::LogMemoryProtectionPolicy();
-	// Install before the first game file open.
+	UplayLoginMod::InstallMetadataGuard();
+	MemUtil::BeginBootPatchBundle();
 	if (UltrafastLoad::Enabled()) {
 		if (GameVersion::IsSeptember2022()) {
-			BugPrevention::SkipDlcStorePrefetch();
-			BugPrevention::DeferDlcOwnershipQueries();
+			if (MemUtil::BootPatchMember("DLC store prefetch"))
+				BugPrevention::SkipDlcStorePrefetch();
+			if (MemUtil::BootPatchMember("DLC ownership"))
+				BugPrevention::DeferDlcOwnershipQueries();
 		}
-		else {
-			LOG_INFO("(DLC INIT) Startup deferrals disabled on this build" << std::endl);
-		}
-		DxvkFrameBudget::Install();
-		BootLoft::Install();
-		TitleFade::Install();
-		LazyVfs::Install();
-		// Install before the boot service begins the intro.
-		BootIntro::Remove();
-		NativeBegin::Install();
+		if (MemUtil::BootPatchMember("DxvkFrameBudget"))
+			DxvkFrameBudget::Install();
+		if (MemUtil::BootPatchMember("BootLoft"))
+			BootLoft::Install();
+		if (MemUtil::BootPatchMember("TitleFade"))
+			TitleFade::Install();
+		if (MemUtil::BootPatchMember("LazyVfs"))
+			LazyVfs::Install();
+		if (MemUtil::BootPatchMember("BootIntro"))
+			BootIntro::Remove();
+		if (MemUtil::BootPatchMember("NativeBegin"))
+			NativeBegin::Install();
 	}
-	// Install before profile-service sign-in begins.
-	UplayLoginMod::Install();
-	ProfileAutoLoadMod::Install();
+	if (MemUtil::BootPatchMember("UplayLogin source sign-in"))
+		UplayLoginMod::Install();
+	if (MemUtil::BootPatchMember("ProfileAutoLoad"))
+		ProfileAutoLoadMod::Install();
+	if (GameVersion::Current() == Framework::GameVersion::Build::Unknown)
+		MemUtil::FailBootPatchBundle();
+	MemUtil::CommitBootPatchBundle();
 
 	Wwise::Exports::Initialize();
 

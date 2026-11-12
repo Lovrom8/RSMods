@@ -146,12 +146,14 @@ void BootIntro::Remove() {
 		|| !MemUtil::MatchesBytes(introStateFourCleanup, introStateFourCleanupExpected)
 		|| !MemUtil::MatchesBytes(integrateRootStage, integrateRootStageExpected)
 		|| !MemUtil::MatchesBytes(splashExpectedStart, std::span<const unsigned char>(splashExpected))) {
+		MemUtil::FailBootPatchBundle();
 		LOG_WARNING("(INTRO) Intro state table or root stage bytes mismatch; no changes made" << std::endl);
 		return;
 	}
 	integrateRootStageOriginal = reinterpret_cast<uintptr_t>(MemUtil::TrampHook(reinterpret_cast<PBYTE>(integrateRootStage),
 		reinterpret_cast<PBYTE>(&IntegrateRootStageHook), sizeof(integrateRootStageExpected)));
 	if (!integrateRootStageOriginal) {
+		MemUtil::FailBootPatchBundle();
 		LOG_ERROR("(INTRO) Root stage hook failed; intro left in" << std::endl);
 		return;
 	}

@@ -233,12 +233,14 @@ namespace {
 		for (size_t i = 0; i < std::size(slots); ++i) {
 			uintptr_t value = 0;
 			if (!slots[i] || !originals[i] || !Read(slots[i], value) || value != originals[i]) {
+				MemUtil::FailBootPatchBundle();
 				LOG_WARNING("(UPLAY) Source sign-in hooks not installed: vtable mismatch" << std::endl);
 				return;
 			}
 		}
 		if (!MemUtil::MatchesBytes(originals[0], tickBytes) || !MemUtil::MatchesBytes(originals[1], flowBytes)
 			|| !MemUtil::MatchesBytes(originals[2] + 0x10, loadedBody)) {
+			MemUtil::FailBootPatchBundle();
 			LOG_WARNING("(UPLAY) Source sign-in hooks not installed: native byte mismatch" << std::endl);
 			return;
 		}
@@ -408,16 +410,35 @@ namespace {
 		unsigned char configBytes[] = { 0x55, 0x8B, 0xEC, 0x51, 0xA1, 0, 0, 0, 0 };
 		memcpy(configBytes + 5, &gameService, sizeof(gameService));
 		if (!Read(configBoolSlot, config) || config != configBool || !MemUtil::MatchesBytes(configBool, configBytes)) {
+			MemUtil::FailBootPatchBundle();
 			LOG_WARNING("(UPLAY) Learn & Play: config bool slot or bytes did not match; source sign-in not installed" << std::endl);
 			return;
 		}
 		const uintptr_t configHook = reinterpret_cast<uintptr_t>(&ConfigBoolHook);
 		if (!MemUtil::PatchAdr(reinterpret_cast<LPVOID>(configBoolSlot), &configHook, sizeof(configHook))) {
+			MemUtil::FailBootPatchBundle();
 			LOG_WARNING("(UPLAY) Learn & Play: config bool slot write failed; source sign-in not installed" << std::endl);
 			return;
 		}
 		LOG_INFO("(UPLAY) Learn & Play: RendezVous.SkipLogin answer installed" << std::endl);
 		InstallSourceFlow();
+	}
+}
+
+void UplayLoginMod::InstallMetadataGuard() {
+	if (!GameVersion::IsSeptember2022())
+		return;
+	if (MemUtil::MatchesBytes(downloadLatestMetadata, downloadEntryBytes)
+		&& MemUtil::MatchesBytes(downloadNoop, downloadNoopBytes)) {
+		downloadTrampoline = reinterpret_cast<uintptr_t>(MemUtil::TrampHook(
+			reinterpret_cast<PBYTE>(downloadLatestMetadata),
+			reinterpret_cast<PBYTE>(&DownloadLatestMetadataHook), sizeof(downloadEntryBytes)));
+		if (downloadTrampoline)
+			LOG_INFO("(UPLAY) RDV metadata guard installed" << std::endl);
+		else
+			LOG_WARNING("(UPLAY) RDV metadata guard hook failed; native metadata path retained" << std::endl);
+	} else {
+		LOG_WARNING("(UPLAY) RDV metadata guard bytes did not match; native metadata path retained" << std::endl);
 	}
 }
 
@@ -439,35 +460,28 @@ void UplayLoginMod::Install() {
 	if (!Read(dialogTickSlot, tick) || tick != dialogTick || !Read(dialogCancelSlot, cancel) || cancel != dialogCancel
 		|| !MemUtil::MatchesBytes(connectSkip, connectSkipBytes) || !Read(configBoolSlot, config) || config != configBool
 		|| !Read(listTickSlot, listTickNow) || listTickNow != listTick || !Read(listCancelSlot, listCancel) || listCancel != dialogCancel) {
+		MemUtil::FailBootPatchBundle();
 		LOG_WARNING("(UPLAY) Not installed: this isn't the Sept 2022 build" << std::endl);
 		return;
 	}
 	if (!Read(transitionBeginSlot, dialogTransition) || dialogTransition != transitionBegin
 		|| !Read(listTransitionBeginSlot, listTransition) || listTransition != transitionBegin
 		|| !MemUtil::MatchesBytes(transitionBegin, transitionBeginBytes)) {
+		MemUtil::FailBootPatchBundle();
 		LOG_WARNING("(UPLAY) Early dialog skip not installed: transition callback did not match" << std::endl);
 		return;
 	}
-	if (MemUtil::MatchesBytes(downloadLatestMetadata, downloadEntryBytes)
-		&& MemUtil::MatchesBytes(downloadNoop, downloadNoopBytes)) {
-		downloadTrampoline = reinterpret_cast<uintptr_t>(MemUtil::TrampHook(
-			reinterpret_cast<PBYTE>(downloadLatestMetadata),
-			reinterpret_cast<PBYTE>(&DownloadLatestMetadataHook), sizeof(downloadEntryBytes)));
-		if (downloadTrampoline)
-			LOG_INFO("(UPLAY) RDV metadata guard installed" << std::endl);
-		else
-			LOG_WARNING("(UPLAY) RDV metadata guard hook failed; Uplay dialog hooks still install" << std::endl);
-	} else {
-		LOG_WARNING("(UPLAY) RDV metadata guard bytes did not match; Uplay dialog hooks still install" << std::endl);
-	}
 	hideLoadingDialogReady = MemUtil::MatchesBytes(hideDialog, hideDialogBytes)
 		&& MemUtil::MatchesBytes(uiDialogManagerHide, uiDialogManagerHideBytes);
-	if (!hideLoadingDialogReady)
+	if (!hideLoadingDialogReady) {
+		MemUtil::FailBootPatchBundle();
 		LOG_WARNING("(UPLAY) Profile-loading dialog left visible: native hide bytes did not match" << std::endl);
+	}
 	transitionBeginTrampoline = reinterpret_cast<uintptr_t>(MemUtil::TrampHook(
 		reinterpret_cast<PBYTE>(transitionBegin), reinterpret_cast<PBYTE>(&TransitionInBegin),
 		sizeof(transitionBeginBytes)));
 	if (!transitionBeginTrampoline) {
+		MemUtil::FailBootPatchBundle();
 		LOG_WARNING("(UPLAY) Early dialog skip not installed: transition hook failed" << std::endl);
 		return;
 	}

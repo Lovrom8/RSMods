@@ -13,6 +13,7 @@ public:
 
 	// Install sign-in hooks at DLL attach; unsupported builds remain unchanged.
 	static void Install();
+	static void InstallMetadataGuard();
 	// Active until the boot profile finishes loading.
 	static bool IsSourceProfileLoading();
 };

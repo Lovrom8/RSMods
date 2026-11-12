@@ -3,6 +3,143 @@
 #include "SettingEdits.hpp"
 #include "Lib/Detours/detours.h"
 
+namespace {
+	struct BootPatch {
+		void* address;
+		std::vector<unsigned char> original;
+		std::vector<unsigned char> replacement;
+		const char* member;
+		DWORD protection = 0;
+	};
+	struct BootBundle {
+		bool staging = false;
+		const char* member = "startup";
+		const char* failed = nullptr;
+		std::vector<BootPatch> patches;
+		std::vector<void*> gateways;
+	};
+	thread_local BootBundle g_bootBundle;
+	std::atomic<bool> g_bootBundleEnabled{ true };
+
+	bool StageBootPatch(void* address, const void* replacement, size_t length) {
+		if (g_bootBundle.failed)
+			return false;
+		const uintptr_t start = reinterpret_cast<uintptr_t>(address);
+		for (const BootPatch& previous : g_bootBundle.patches) {
+			const uintptr_t other = reinterpret_cast<uintptr_t>(previous.address);
+			if (start < other + previous.original.size() && other < start + length) {
+				MemUtil::FailBootPatchBundle();
+				return false;
+			}
+		}
+		BootPatch patch{ address, std::vector<unsigned char>(length),
+			std::vector<unsigned char>(length), g_bootBundle.member };
+		for (size_t i = 0; i < length; ++i) {
+			if (!MemUtil::TryRead(reinterpret_cast<uintptr_t>(address) + i, patch.original[i])) {
+				MemUtil::FailBootPatchBundle();
+				return false;
+			}
+		}
+		memcpy(patch.replacement.data(), replacement, length);
+		g_bootBundle.patches.push_back(std::move(patch));
+		return true;
+	}
+}
+
+void MemUtil::BeginBootPatchBundle() {
+	g_bootBundle = {};
+	g_bootBundle.staging = true;
+	g_bootBundleEnabled.store(false);
+	LOG_INFO("(BOOT BUNDLE) Staging startup members; install messages are provisional until commit" << std::endl);
+}
+
+bool MemUtil::BootPatchMember(const char* name) {
+	g_bootBundle.member = name;
+	return !g_bootBundle.failed;
+}
+
+void MemUtil::FailBootPatchBundle() {
+	if (g_bootBundle.staging && !g_bootBundle.failed)
+		g_bootBundle.failed = g_bootBundle.member;
+}
+
+bool MemUtil::BootPatchBundleEnabled() {
+	return g_bootBundleEnabled.load();
+}
+
+bool MemUtil::BootPatchStaged(uintptr_t address) {
+	for (const BootPatch& patch : g_bootBundle.patches) {
+		const uintptr_t start = reinterpret_cast<uintptr_t>(patch.address);
+		if (address >= start && address - start < patch.original.size())
+			return true;
+	}
+	return false;
+}
+
+bool MemUtil::CommitBootPatchBundle() {
+	bool protectionRestored = true;
+	// Preflight protection and unchanged originals before the first game write.
+	for (BootPatch& patch : g_bootBundle.patches) {
+		if (g_bootBundle.failed)
+			break;
+		g_bootBundle.member = patch.member;
+		DWORD oldProtection = 0, ignored = 0;
+		if (!MatchesBytes(reinterpret_cast<uintptr_t>(patch.address), patch.original)
+			|| !NT_SUCCESS(HookedVirtualProtect(patch.address, patch.original.size(),
+				PAGE_EXECUTE_READWRITE, oldProtection))) {
+			FailBootPatchBundle();
+			break;
+		}
+		patch.protection = oldProtection;
+		if (!NT_SUCCESS(HookedVirtualProtect(patch.address, patch.original.size(),
+			oldProtection, ignored))) {
+			FailBootPatchBundle();
+			protectionRestored = NT_SUCCESS(HookedVirtualProtect(patch.address,
+				patch.original.size(), oldProtection, ignored));
+		}
+	}
+	g_bootBundle.staging = false;
+	size_t attempted = 0;
+	if (!g_bootBundle.failed) {
+		for (const BootPatch& patch : g_bootBundle.patches) {
+			++attempted;
+			if (!PatchAdr(patch.address, patch.replacement.data(), patch.replacement.size())) {
+				g_bootBundle.failed = patch.member;
+				break;
+			}
+		}
+	}
+	bool restored = protectionRestored;
+	if (g_bootBundle.failed) {
+		while (attempted > 0) {
+			const BootPatch& patch = g_bootBundle.patches[--attempted];
+			const bool bytesRestored = PatchAdr(patch.address, patch.original.data(), patch.original.size());
+			DWORD ignored = 0;
+			const bool pageRestored = NT_SUCCESS(HookedVirtualProtect(patch.address,
+				patch.original.size(), patch.protection, ignored));
+			if (!bytesRestored || !pageRestored) {
+				restored = false;
+				LOG_ERROR("(BOOT BUNDLE) Rollback failed: " << patch.member << " at 0x"
+					<< std::hex << reinterpret_cast<uintptr_t>(patch.address) << std::dec << std::endl);
+			}
+		}
+		LOG_WARNING("(BOOT BUNDLE) Failed member: " << g_bootBundle.failed
+			<< "; bundle stayed off; rollback=" << (restored ? "complete" : "incomplete") << std::endl);
+		// Keep gateways alive if a hook could still reference one after failed rollback.
+		if (restored)
+			for (void* gateway : g_bootBundle.gateways)
+				VirtualFree(gateway, 0, MEM_RELEASE);
+	} else {
+		g_bootBundleEnabled.store(true);
+		LOG_INFO("(BOOT BUNDLE) Installed all startup members" << std::endl);
+	}
+	g_bootBundle.patches.clear();
+	g_bootBundle.gateways.clear();
+	return g_bootBundleEnabled.load();
+}
+
+bool MemUtil::BootPatchBundleStaging() { return g_bootBundle.staging; }
+
 /// <summary>
 /// Compares memory chunk to pattern. 
 /// </summary>
@@ -42,6 +179,8 @@ bool MemUtil::PatchAdr(uintptr_t address, std::string_view data, bool addBaseHan
 /// <param name="len"> - How long is the edit</param>
 /// <returns></returns>
 bool MemUtil::PatchAdr(LPVOID address, LPCVOID changeToMake, size_t len) {
+	if (g_bootBundle.staging)
+		return StageBootPatch(address, changeToMake, len);
 	DWORD dwOldProt, dwDummy, ret;
 
 
@@ -100,8 +239,10 @@ void __declspec(naked) MemUtil::JumpToVersioned() {
 /// <param name="len"> - How long is the first command (x86 ASM length)</param>
 /// <returns>Can we place the hook?</returns>
 bool MemUtil::PlaceHook(void* hookSpot, void* ourFunct, int len) {
-	if (len < 5)
+	if (len < 5) {
+		FailBootPatchBundle();
 		return false;
+	}
 	std::vector<unsigned char> patch(static_cast<size_t>(len), 0x90);
 	patch[0] = 0xE9;
 	const uint32_t relative = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(ourFunct)
@@ -190,6 +331,7 @@ PBYTE MemUtil::TrampHook(PBYTE src, PBYTE dst, unsigned int len)
 {
 	if (!src || !dst)
 	{
+		FailBootPatchBundle();
 		return nullptr;
 	}
 
@@ -218,6 +360,7 @@ PBYTE MemUtil::TrampHook(PBYTE src, PBYTE dst, unsigned int len)
 	// Makes sure gateway doesn't equal null
 	if (!gateway)
 	{
+		FailBootPatchBundle();
 		return nullptr;
 	}
 
@@ -233,6 +376,7 @@ PBYTE MemUtil::TrampHook(PBYTE src, PBYTE dst, unsigned int len)
 		PBYTE srcNext = DetourCopyInstructionEx(dstPos, srcPos, &target, &extra);
 		if (!srcNext || srcNext <= srcPos) {
 			VirtualFree(gateway, 0, MEM_RELEASE);
+			FailBootPatchBundle();
 			return nullptr;
 		}
 		dstPos += (srcNext - srcPos) + extra;
@@ -248,10 +392,14 @@ PBYTE MemUtil::TrampHook(PBYTE src, PBYTE dst, unsigned int len)
 	FlushInstructionCache(GetCurrentProcess(), gateway, gatewaySize);
 
 	// Place the hook at the destination
-	if (PlaceHook(src, dst, hookLen))
+	if (PlaceHook(src, dst, hookLen)) {
+		if (g_bootBundle.staging)
+			g_bootBundle.gateways.push_back(gateway);
 		return gateway;
+	}
 
 	VirtualFree(gateway, 0, MEM_RELEASE);
+	FailBootPatchBundle();
 	return nullptr;
 }
 

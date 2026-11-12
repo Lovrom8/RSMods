@@ -32,6 +32,7 @@ namespace {
 		kBootLoftLightSite = GameVersion::CheckedSite("LOFT LIGHT", { "first light set", 0x00775304, 0 },
             kBootLoftLightExpected, nullptr, sizeof(kBootLoftLightExpected));
         if (!kBootLoftLightSite) {
+			MemUtil::FailBootPatchBundle();
 			LOG_WARNING("(LOFT LIGHT) Boot light byte span mismatch at 0x00775304; no changes made" << std::endl);
 			return;
 		}
@@ -74,7 +75,7 @@ namespace {
     class BootLoftMod : public Framework::IMod {
     public:
         MOD_ID(BootLoftMod)
-        bool IsEnabled(const Framework::ModContext&) const override { return installed; }
+        bool IsEnabled(const Framework::ModContext&) const override { return installed && MemUtil::BootPatchBundleEnabled(); }
         void OnTick(Framework::ModContext& c) override {
             const auto& menu = GameState::currentMenu;
             if (menu == "pre_enter_prompt" || menu == "TitleScreen")
@@ -114,8 +115,10 @@ void BootLoft::Install() {
     constexpr unsigned char expected[] = { 0x55, 0x8B, 0xEC, 0x51, 0xD9, 0x42, 0x10 };
     const auto site = GameVersion::CheckedSite("LOFT", { "SetViewFrustum", 0x009D90C0, 0 },
         expected, nullptr, sizeof(expected));
-    if (!site)
+    if (!site) {
+        MemUtil::FailBootPatchBundle();
         return;
+    }
     frustumTrampoline = MemUtil::TrampHook(reinterpret_cast<PBYTE>(site),
         reinterpret_cast<PBYTE>(&FrustumHook), sizeof(expected));
     installed = frustumTrampoline != nullptr;
