@@ -280,7 +280,7 @@ void ProfileAutoLoadMod::Install() {
 }
 
 void ProfileAutoLoadMod::OnFrame() {
-	if (!MemUtil::BootPatchBundleEnabled() || !installed || !pending)
+	if (!MemUtil::BootPatchBundleEnabled(Framework::BootPatch::Bundle::ProfileAutoLoad) || !installed || !pending)
 		return;
 	pending = false;
 

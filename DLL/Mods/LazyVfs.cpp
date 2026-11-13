@@ -480,7 +480,8 @@ void LazyVfs::Install() {
 }
 
 bool LazyVfs::Covers(const wchar_t* path) {
-	if (!MemUtil::BootPatchBundleEnabled() || !lazyOn || !path || !cacheLoaded.load(std::memory_order_acquire))
+	if (!MemUtil::BootPatchBundleEnabled(Framework::BootPatch::Bundle::UltrafastCore)
+		|| !lazyOn || !path || !cacheLoaded.load(std::memory_order_acquire))
 		return false;
 	char narrow[MAX_PATH * 2]{};
 	if (!WideCharToMultiByte(CP_ACP, 0, path, -1, narrow, sizeof(narrow), nullptr, nullptr))

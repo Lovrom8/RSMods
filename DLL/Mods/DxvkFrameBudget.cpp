@@ -326,7 +326,7 @@ void DxvkFrameBudget::Install() {
 }
 
 void DxvkFrameBudget::Enforce() {
-	if (!MemUtil::BootPatchBundleEnabled() || !g_enforce)
+	if (!MemUtil::BootPatchBundleEnabled(Framework::BootPatch::Bundle::DxvkFrameBudget) || !g_enforce)
 		return;
 	double value = 0.0;
 	if (!ClearBudget(value) || !(value > 0.0))

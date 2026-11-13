@@ -327,31 +327,40 @@ void Initialize() {
 
 	MemUtil::LogMemoryProtectionPolicy();
 	UplayLoginMod::InstallMetadataGuard();
-	MemUtil::BeginBootPatchBundle();
+	MemUtil::BeginBootPatchBundle(Framework::BootPatch::Bundle::SignIn);
+	if (MemUtil::BootPatchMember(Framework::BootPatch::Member::SourceSignIn))
+		UplayLoginMod::Install();
+	MemUtil::CommitBootPatchBundle();
+
+	MemUtil::BeginBootPatchBundle(Framework::BootPatch::Bundle::ProfileAutoLoad);
+	if (MemUtil::BootPatchMember(Framework::BootPatch::Member::ProfileAutoLoad))
+		ProfileAutoLoadMod::Install();
+	MemUtil::CommitBootPatchBundle();
+
+	MemUtil::BeginBootPatchBundle(Framework::BootPatch::Bundle::UltrafastCore);
 	if (UltrafastLoad::Enabled()) {
 		if (GameVersion::IsSeptember2022() || GameVersion::IsLearnAndPlay()) {
-			if (MemUtil::BootPatchMember("DLC store prefetch"))
+			if (MemUtil::BootPatchMember(Framework::BootPatch::Member::DlcStorePrefetch))
 				BugPrevention::SkipDlcStorePrefetch();
-			if (MemUtil::BootPatchMember("DLC ownership"))
+			if (MemUtil::BootPatchMember(Framework::BootPatch::Member::DlcOwnership))
 				BugPrevention::DeferDlcOwnershipQueries();
 		}
-		if (MemUtil::BootPatchMember("DxvkFrameBudget"))
-			DxvkFrameBudget::Install();
-		if (MemUtil::BootPatchMember("BootLoft"))
+		if (MemUtil::BootPatchMember(Framework::BootPatch::Member::BootLoft))
 			BootLoft::Install();
-		if (MemUtil::BootPatchMember("TitleFade"))
+		if (MemUtil::BootPatchMember(Framework::BootPatch::Member::TitleFade))
 			TitleFade::Install();
-		if (MemUtil::BootPatchMember("LazyVfs"))
+		if (MemUtil::BootPatchMember(Framework::BootPatch::Member::LazyVfs))
 			LazyVfs::Install();
-		if (MemUtil::BootPatchMember("BootIntro"))
+		if (MemUtil::BootPatchMember(Framework::BootPatch::Member::BootIntro))
 			BootIntro::Remove();
-		if (MemUtil::BootPatchMember("NativeBegin"))
+		if (MemUtil::BootPatchMember(Framework::BootPatch::Member::NativeBegin))
 			NativeBegin::Install();
 	}
-	if (MemUtil::BootPatchMember("UplayLogin source sign-in"))
-		UplayLoginMod::Install();
-	if (MemUtil::BootPatchMember("ProfileAutoLoad"))
-		ProfileAutoLoadMod::Install();
+	MemUtil::CommitBootPatchBundle();
+
+	MemUtil::BeginBootPatchBundle(Framework::BootPatch::Bundle::DxvkFrameBudget);
+	if (MemUtil::BootPatchMember(Framework::BootPatch::Member::DxvkFrameBudget))
+		DxvkFrameBudget::Install();
 	MemUtil::CommitBootPatchBundle();
 
 	Wwise::Exports::Initialize();

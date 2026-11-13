@@ -14,13 +14,21 @@ namespace {
 	};
 	struct BootBundle {
 		bool staging = false;
+		Framework::BootPatch::Bundle bundle = Framework::BootPatch::Bundle::UltrafastCore;
 		const char* member = "startup";
 		const char* failed = nullptr;
 		std::vector<BootPatch> patches;
 		std::vector<void*> gateways;
 	};
+	struct BootBundleGate {
+		std::atomic<bool> enabled{ true };
+	};
 	thread_local BootBundle g_bootBundle;
-	std::atomic<bool> g_bootBundleEnabled{ true };
+	std::array<BootBundleGate, Framework::BootPatch::BundleCount> g_bootBundleGates;
+
+	size_t BootBundleIndex(Framework::BootPatch::Bundle bundle) {
+		return static_cast<size_t>(bundle);
+	}
 
 	bool StageBootPatch(void* address, const void* replacement, size_t length, bool pointerStore = false) {
 		if (g_bootBundle.failed)
@@ -175,15 +183,19 @@ namespace {
 	}
 }
 
-void MemUtil::BeginBootPatchBundle() {
+void MemUtil::BeginBootPatchBundle(Framework::BootPatch::Bundle bundle) {
 	g_bootBundle = {};
+	g_bootBundle.bundle = bundle;
 	g_bootBundle.staging = true;
-	g_bootBundleEnabled.store(false);
-	LOG_INFO("(BOOT BUNDLE) Staging startup members; install messages are provisional until commit" << std::endl);
+	g_bootBundleGates[BootBundleIndex(bundle)].enabled.store(false);
 }
 
-bool MemUtil::BootPatchMember(const char* name) {
-	g_bootBundle.member = name;
+bool MemUtil::BootPatchMember(Framework::BootPatch::Member member) {
+	g_bootBundle.member = Framework::BootPatch::MemberName(member);
+	if (Framework::BootPatch::BundleFor(member) != g_bootBundle.bundle) {
+		FailBootPatchBundle();
+		return false;
+	}
 	return !g_bootBundle.failed;
 }
 
@@ -192,8 +204,12 @@ void MemUtil::FailBootPatchBundle() {
 		g_bootBundle.failed = g_bootBundle.member;
 }
 
-bool MemUtil::BootPatchBundleEnabled() {
-	return g_bootBundleEnabled.load();
+bool MemUtil::BootPatchBundleEnabled(Framework::BootPatch::Bundle bundle) {
+	return g_bootBundleGates[BootBundleIndex(bundle)].enabled.load();
+}
+
+bool MemUtil::BootPatchBundleStaging(Framework::BootPatch::Bundle bundle) {
+	return g_bootBundle.staging && g_bootBundle.bundle == bundle;
 }
 
 bool MemUtil::BootPatchStaged(uintptr_t address) {
@@ -206,6 +222,7 @@ bool MemUtil::BootPatchStaged(uintptr_t address) {
 }
 
 bool MemUtil::CommitBootPatchBundle() {
+	const Framework::BootPatch::Bundle bundle = g_bootBundle.bundle;
 	bool restored = true;
 	std::vector<ProtectedRegion> regions;
 	// Query every member once and retain each unique region's pre-install protection.
@@ -272,22 +289,21 @@ bool MemUtil::CommitBootPatchBundle() {
 		}
 	}
 	if (g_bootBundle.failed) {
-		LOG_WARNING("(BOOT BUNDLE) Failed member: " << g_bootBundle.failed
-			<< "; bundle stayed off; rollback=" << (restored ? "complete" : "incomplete") << std::endl);
+		LOG_WARNING("(BOOT BUNDLE) " << Framework::BootPatch::BundleName(bundle) << " failed member: "
+			<< g_bootBundle.failed << "; features off: " << Framework::BootPatch::DisabledFeatures(bundle)
+			<< "; rollback=" << (restored ? "complete" : "incomplete") << std::endl);
 		// A gateway stays alive once a source write could have published it.
 		if (!sourceWriteAttempted)
 			for (void* gateway : g_bootBundle.gateways)
 				VirtualFree(gateway, 0, MEM_RELEASE);
 	} else {
-		g_bootBundleEnabled.store(true);
-		LOG_INFO("(BOOT BUNDLE) Installed all startup members" << std::endl);
+		g_bootBundleGates[BootBundleIndex(bundle)].enabled.store(true);
+		LOG_INFO("(BOOT BUNDLE) " << Framework::BootPatch::BundleName(bundle) << " committed" << std::endl);
 	}
 	g_bootBundle.patches.clear();
 	g_bootBundle.gateways.clear();
-	return g_bootBundleEnabled.load();
+	return g_bootBundleGates[BootBundleIndex(bundle)].enabled.load();
 }
-
-bool MemUtil::BootPatchBundleStaging() { return g_bootBundle.staging; }
 
 /// <summary>
 /// Compares memory chunk to pattern. 

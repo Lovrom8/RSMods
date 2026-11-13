@@ -80,7 +80,9 @@ namespace {
     class BootLoftMod : public Framework::IMod {
     public:
         MOD_ID(BootLoftMod)
-        bool IsEnabled(const Framework::ModContext&) const override { return installed && MemUtil::BootPatchBundleEnabled(); }
+        bool IsEnabled(const Framework::ModContext&) const override {
+            return installed && MemUtil::BootPatchBundleEnabled(Framework::BootPatch::Bundle::UltrafastCore);
+        }
         void OnTick(Framework::ModContext& c) override {
             const auto& menu = GameState::currentMenu;
             if (menu == "pre_enter_prompt" || menu == "TitleScreen")

@@ -115,6 +115,7 @@ $Tests = @(
     @{ Name = 'TitleFadeBytesTests'; Sources = @() },
     @{ Name = 'GameVersionTests';       Sources = @('GameVersion.cpp') },
     @{ Name = 'InstructionPatchTests'; Sources = @() },
+    @{ Name = 'BootPatchBundlePolicyTests'; Sources = @() },
     @{ Name = 'LnpSitesTests';          Sources = @() },
     @{ Name = 'IniPatchTests';          Sources = @() },  # header-only DLL/IniPatch.hpp
     @{ Name = 'StateMachineTests';      Sources = @('ModRegistry.cpp', 'ResourceLedger.cpp', 'HookWatchdog.cpp', 'StallMonitor.cpp', 'CommandRouter.cpp', 'MainThreadInbox.cpp', 'CommandCollisionDiagnostics.cpp', 'HudRegistry.cpp', 'MenuRegistry.cpp', 'DrawRegistry.cpp', 'AudioInput.cpp', 'SettingsSchema.cpp') }

@@ -436,17 +436,17 @@ int main(int argc, char** argv) {
 	assert(g_protectCalls == protectionsBeforeAllocationFailure);
 	assert(ProtectionAt(page) == PAGE_READWRITE && page[0] == 1);
 
-	MemUtil::BeginBootPatchBundle();
-	assert(MemUtil::BootPatchMember("first"));
+	MemUtil::BeginBootPatchBundle(Framework::BootPatch::Bundle::UltrafastCore);
+	assert(MemUtil::BootPatchMember(Framework::BootPatch::Member::DlcStorePrefetch));
 	assert(MemUtil::PatchAdr(page, &first, 1));
 	assert(page[0] == 1);
 	MemUtil::FailBootPatchBundle();
-	assert(!MemUtil::BootPatchMember("must not run"));
+	assert(!MemUtil::BootPatchMember(Framework::BootPatch::Member::DlcOwnership));
 	assert(!MemUtil::CommitBootPatchBundle());
 	assert(page[0] == 1 && g_protectCalls == 0);
 
-	MemUtil::BeginBootPatchBundle();
-	assert(MemUtil::BootPatchMember("overlap"));
+	MemUtil::BeginBootPatchBundle(Framework::BootPatch::Bundle::UltrafastCore);
+	assert(MemUtil::BootPatchMember(Framework::BootPatch::Member::DlcStorePrefetch));
 	assert(MemUtil::PatchAdr(page, &first, 1));
 	assert(!MemUtil::PatchAdr(page, &second, 1));
 	assert(!MemUtil::CommitBootPatchBundle());
@@ -456,10 +456,10 @@ int main(int argc, char** argv) {
 	const unsigned int queriesBeforeBundle = g_queryCalls;
 	const unsigned int opensBeforeBundle = g_openCalls;
 	const unsigned int restoresBeforeBundle = g_restoreCalls;
-	MemUtil::BeginBootPatchBundle();
-	assert(MemUtil::BootPatchMember("shared first"));
+	MemUtil::BeginBootPatchBundle(Framework::BootPatch::Bundle::UltrafastCore);
+	assert(MemUtil::BootPatchMember(Framework::BootPatch::Member::DlcStorePrefetch));
 	assert(MemUtil::PatchAdr(page, &first, 1));
-	assert(MemUtil::BootPatchMember("shared second"));
+	assert(MemUtil::BootPatchMember(Framework::BootPatch::Member::DlcOwnership));
 	assert(MemUtil::PatchAdr(page + 1, &second, 1));
 	assert(MemUtil::CommitBootPatchBundle());
 	assert(g_queryCalls - queriesBeforeBundle == 2);
@@ -476,13 +476,13 @@ int main(int argc, char** argv) {
 	for (unsigned int failure = 1; failure <= 2; ++failure) {
 		g_protectCalls = 0;
 		g_failCall = failure;
-		MemUtil::BeginBootPatchBundle();
-		assert(MemUtil::BootPatchMember("first"));
+		MemUtil::BeginBootPatchBundle(Framework::BootPatch::Bundle::UltrafastCore);
+		assert(MemUtil::BootPatchMember(Framework::BootPatch::Member::DlcStorePrefetch));
 		assert(MemUtil::PatchAdr(page, &first, 1));
-		assert(MemUtil::BootPatchMember("second"));
+		assert(MemUtil::BootPatchMember(Framework::BootPatch::Member::DlcOwnership));
 		assert(MemUtil::PatchAdr(page + 1, &second, 1));
 		const bool enabled = MemUtil::CommitBootPatchBundle();
-		assert(enabled == MemUtil::BootPatchBundleEnabled());
+		assert(enabled == MemUtil::BootPatchBundleEnabled(Framework::BootPatch::Bundle::UltrafastCore));
 		assert(enabled == (failure == 2));
 		if (enabled) {
 			assert(page[0] == first && page[1] == second);
@@ -498,15 +498,29 @@ int main(int argc, char** argv) {
 
 	g_protectCalls = 0;
 	g_failCall = 0;
-	MemUtil::BeginBootPatchBundle();
-	assert(MemUtil::BootPatchMember("success"));
+	MemUtil::BeginBootPatchBundle(Framework::BootPatch::Bundle::UltrafastCore);
+	assert(MemUtil::BootPatchMember(Framework::BootPatch::Member::DlcStorePrefetch));
 	assert(MemUtil::PatchAdr(page, &first, 1));
 	g_slowCall = true;
 	assert(MemUtil::CommitBootPatchBundle());
-	assert(page[0] == first && MemUtil::BootPatchBundleEnabled());
+	assert(page[0] == first && MemUtil::BootPatchBundleEnabled(Framework::BootPatch::Bundle::UltrafastCore));
 
-	MemUtil::BeginBootPatchBundle();
-	assert(MemUtil::BootPatchMember("changed site"));
+	MemUtil::BeginBootPatchBundle(Framework::BootPatch::Bundle::SignIn);
+	assert(MemUtil::BootPatchBundleStaging(Framework::BootPatch::Bundle::SignIn));
+	assert(!MemUtil::BootPatchBundleStaging(Framework::BootPatch::Bundle::ProfileAutoLoad));
+	assert(!MemUtil::BootPatchBundleEnabled(Framework::BootPatch::Bundle::SignIn));
+	assert(MemUtil::BootPatchMember(Framework::BootPatch::Member::SourceSignIn));
+	assert(MemUtil::CommitBootPatchBundle());
+	assert(!MemUtil::BootPatchBundleStaging(Framework::BootPatch::Bundle::SignIn));
+	MemUtil::BeginBootPatchBundle(Framework::BootPatch::Bundle::ProfileAutoLoad);
+	assert(MemUtil::BootPatchMember(Framework::BootPatch::Member::ProfileAutoLoad));
+	MemUtil::FailBootPatchBundle();
+	assert(!MemUtil::CommitBootPatchBundle());
+	assert(MemUtil::BootPatchBundleEnabled(Framework::BootPatch::Bundle::SignIn));
+	assert(!MemUtil::BootPatchBundleEnabled(Framework::BootPatch::Bundle::ProfileAutoLoad));
+
+	MemUtil::BeginBootPatchBundle(Framework::BootPatch::Bundle::UltrafastCore);
+	assert(MemUtil::BootPatchMember(Framework::BootPatch::Member::DlcStorePrefetch));
 	assert(MemUtil::PatchAdr(page, &second, 1));
 	page[0] = 9;
 	assert(!MemUtil::CommitBootPatchBundle());
@@ -520,8 +534,8 @@ int main(int argc, char** argv) {
 	assert(VirtualProtect(page, 4096, PAGE_EXECUTE_READWRITE, &previous));
 	using Function = int(__cdecl*)();
 	const auto original = reinterpret_cast<Function>(page + 64);
-	MemUtil::BeginBootPatchBundle();
-	assert(MemUtil::BootPatchMember("trampoline"));
+	MemUtil::BeginBootPatchBundle(Framework::BootPatch::Bundle::UltrafastCore);
+	assert(MemUtil::BootPatchMember(Framework::BootPatch::Member::DlcStorePrefetch));
 	PBYTE gateway = MemUtil::TrampHook(page + 64, reinterpret_cast<PBYTE>(&Replacement), 5);
 	assert(gateway && original() == 42);
 	assert(reinterpret_cast<Function>(gateway)() == 42);
@@ -532,8 +546,8 @@ int main(int argc, char** argv) {
 
 	// A failed bundle keeps a staged gateway when its source write was attempted.
 	memcpy(page + 96, code, sizeof(code));
-	MemUtil::BeginBootPatchBundle();
-	assert(MemUtil::BootPatchMember("retained trampoline"));
+	MemUtil::BeginBootPatchBundle(Framework::BootPatch::Bundle::UltrafastCore);
+	assert(MemUtil::BootPatchMember(Framework::BootPatch::Member::DlcStorePrefetch));
 	PBYTE retainedGateway = MemUtil::TrampHook(page + 96,
 		reinterpret_cast<PBYTE>(&Replacement), 5);
 	assert(retainedGateway);
@@ -549,8 +563,8 @@ int main(int argc, char** argv) {
 
 	// A bundle rejected before its first source write frees its staged gateway.
 	memcpy(page + 112, code, sizeof(code));
-	MemUtil::BeginBootPatchBundle();
-	assert(MemUtil::BootPatchMember("unpublished trampoline"));
+	MemUtil::BeginBootPatchBundle(Framework::BootPatch::Bundle::UltrafastCore);
+	assert(MemUtil::BootPatchMember(Framework::BootPatch::Member::DlcStorePrefetch));
 	PBYTE unpublishedGateway = MemUtil::TrampHook(page + 112,
 		reinterpret_cast<PBYTE>(&Replacement), 5);
 	assert(unpublishedGateway);
@@ -611,10 +625,10 @@ int main(int argc, char** argv) {
 	secondPage[0] = 12;
 	assert(VirtualProtect(secondPage, 4096, PAGE_EXECUTE_READ, &previous));
 	const unsigned char firstReplacement = 21, secondReplacement = 22;
-	MemUtil::BeginBootPatchBundle();
-	assert(MemUtil::BootPatchMember("persistent restore"));
+	MemUtil::BeginBootPatchBundle(Framework::BootPatch::Bundle::UltrafastCore);
+	assert(MemUtil::BootPatchMember(Framework::BootPatch::Member::DlcStorePrefetch));
 	assert(MemUtil::PatchAdr(firstPage, &firstReplacement, 1));
-	assert(MemUtil::BootPatchMember("later flush failure"));
+	assert(MemUtil::BootPatchMember(Framework::BootPatch::Member::DlcOwnership));
 	assert(MemUtil::PatchAdr(secondPage, &secondReplacement, 1));
 	g_armRestoreFailureAddress = firstPage;
 	g_failFlush = true;

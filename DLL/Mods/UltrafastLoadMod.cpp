@@ -21,7 +21,8 @@ SettingDefs UltrafastLoadMod::Settings() const {
 }
 
 bool UltrafastLoad::Enabled() {
-	if (!MemUtil::BootPatchBundleEnabled() && !MemUtil::BootPatchBundleStaging())
+	if (!MemUtil::BootPatchBundleEnabled(Framework::BootPatch::Bundle::UltrafastCore)
+		&& !MemUtil::BootPatchBundleStaging(Framework::BootPatch::Bundle::UltrafastCore))
 		return false;
 	if (GameVersion::Current() == Framework::GameVersion::Build::Unknown) {
 		static const bool logged = [] {

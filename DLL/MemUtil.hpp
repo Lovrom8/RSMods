@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Offsets.hpp"
+#include "Framework/BootPatchBundlePolicy.hpp"
 #include "winternl.h"
 #include <array>
 #include <atomic>
@@ -19,12 +20,12 @@
 
 namespace MemUtil {
 	// Initialization-thread writes remain staged until every member validates.
-	void BeginBootPatchBundle();
-	bool BootPatchMember(const char* name);
+	void BeginBootPatchBundle(Framework::BootPatch::Bundle bundle);
+	bool BootPatchMember(Framework::BootPatch::Member member);
 	void FailBootPatchBundle();
 	bool CommitBootPatchBundle();
-	bool BootPatchBundleEnabled();
-	bool BootPatchBundleStaging();
+	bool BootPatchBundleEnabled(Framework::BootPatch::Bundle bundle);
+	bool BootPatchBundleStaging(Framework::BootPatch::Bundle bundle);
 	bool BootPatchStaged(uintptr_t address);
 	bool bCompare(const BYTE* pData, const byte* bMask, const char* szMask);
 

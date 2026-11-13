@@ -1102,6 +1102,9 @@
     <ClInclude Include="Framework\InstructionPatch.hpp">
       <Filter>Framework</Filter>
     </ClInclude>
+    <ClInclude Include="Framework\BootPatchBundlePolicy.hpp">
+      <Filter>Framework</Filter>
+    </ClInclude>
     <ClInclude Include="Framework\Framework.hpp">
       <Filter>Framework</Filter>
     </ClInclude>
