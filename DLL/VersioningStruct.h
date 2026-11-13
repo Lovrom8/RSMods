@@ -4,6 +4,7 @@
 
 enum class VersionType : int
 {
+	Unknown = -1,
 	Start,
 	RemasteredSeptember2022 = Start,
 	LPDecember2024,
@@ -49,6 +50,7 @@ private:
 
 private:
 	std::vector<T> myVersions;
+	T unsupportedValue{};
 };
 
 template <typename T> VersioningStruct<T>::VersioningStruct()

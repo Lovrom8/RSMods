@@ -15,11 +15,6 @@ namespace {
 		return checksum;
 	}
 
-	static const std::map<DWORD, VersionType> ourVersionChecksums
-	{
-		{0x00B13D7C, VersionType::RemasteredSeptember2022},
-		{0x0176EC34, VersionType::LPDecember2024}
-	};
 }
 
 namespace {
@@ -88,20 +83,25 @@ template class VersioningStruct<unsigned int>;
 
 template <typename T> T& VersioningStruct<T>::Get()
 {
-	return myVersions.at(static_cast<int>(GetVersion()));
+	const auto version = GetVersion();
+	if (version == VersionType::Unknown)
+	{
+		unsupportedValue = T{};
+		return unsupportedValue;
+	}
+	return myVersions.at(static_cast<int>(version));
 }
 
 template <typename T> T VersioningStruct<T>::GetValue()
 {
-	return myVersions.at(static_cast<int>(GetVersion()));
+	const auto version = GetVersion();
+	return version == VersionType::Unknown ? T{} : myVersions.at(static_cast<int>(version));
 }
 
 template <typename T> VersionType VersioningStruct<T>::GetVersion()
 {
-	static DWORD checksum = GetChecksum();
-
 	static bool cachedVersion = false;
-	static VersionType version;
+	static VersionType version = VersionType::Unknown;
 
 	if (cachedVersion)
 	{
@@ -117,14 +117,9 @@ template <typename T> VersionType VersioningStruct<T>::GetVersion()
 	{
 		version = VersionType::LPDecember2024;
 	}
-	else if (const auto it = ourVersionChecksums.find(checksum); it != ourVersionChecksums.cend())
-	{
-		version = (*it).second;
-	}
 	else
 	{
-		MessageBoxA(NULL, std::to_string(checksum).c_str(), "Unsupported Checksum!", NULL);
-		version = VersionType::RemasteredSeptember2022;
+		version = VersionType::Unknown;
 	}
 
 	cachedVersion = true;

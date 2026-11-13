@@ -305,12 +305,26 @@ unsigned WINAPI MainThread() {
 	return 0;
 }
 
+static DWORD WINAPI ShowUnsupportedVersionNotice(LPVOID) {
+	MessageBoxA(nullptr, "RSMods: this Rocksmith version is not supported. Mods are off.", "RSMods", MB_OK | MB_ICONWARNING);
+	return 0;
+}
+
 /// <summary>
 /// Unhook all threads to take advantage of multi-threading.
 /// </summary>
 void Initialize() {
 	LogSettings::startupTime = clock();
 	GameVersion::LogIdentity();
+	if (GameVersion::Current() == Framework::GameVersion::Build::Unknown) {
+		HANDLE notice = CreateThread(nullptr, 0, ShowUnsupportedVersionNotice, nullptr, 0, nullptr);
+		if (notice)
+			CloseHandle(notice);
+		else
+			LOG_ERROR("(STARTUP) Could not start the unsupported-version notice" << std::endl);
+		return;
+	}
+
 	MemUtil::LogMemoryProtectionPolicy();
 	UplayLoginMod::InstallMetadataGuard();
 	MemUtil::BeginBootPatchBundle();
@@ -338,8 +352,6 @@ void Initialize() {
 		UplayLoginMod::Install();
 	if (MemUtil::BootPatchMember("ProfileAutoLoad"))
 		ProfileAutoLoadMod::Install();
-	if (GameVersion::Current() == Framework::GameVersion::Build::Unknown)
-		MemUtil::FailBootPatchBundle();
 	MemUtil::CommitBootPatchBundle();
 
 	Wwise::Exports::Initialize();
