@@ -237,6 +237,12 @@ void Offsets::Initialize() {
 	func_enumOpen = { {0x0049B360, baseHandle + 0x0009BBB0} };
 	func_enumReadEntry = { {0x008A4060, baseHandle + 0x004A3930} };
 	func_enumInflate = { {0x00E316E0, baseHandle + 0x00A30790} };
+
+	// Song release dates
+	hookAddr_SongDatesMount = { {0x008CA4A1, baseHandle + 0x004C9B01} };			// Code | 8b d8 83 c4 18 (right after the DLC package installer's mount call)
+	hookAddr_SongDatesBuilder = { {0x00575040, baseHandle + 0x001766D1} };			// Code | Sept: 57 ff 94 24 80 00 00 00, Learn & Play: 8b 74 24 44 56 (song entry handed to the list)
+	hookAddr_SongDatesScoreAttack = { {0x0069F5BF, baseHandle + 0x002A0125} };		// Code | 8b 74 24 24 8d 84 24 bc 01 00 00 (Score Attack song entry done)
+	func_SongDatesFormat = { {0x008FE040, baseHandle + 0x004FD110} };				// Code | 55 8b ec 8d 45 0c 50 51 8b 4d 08 e8 30 00 00 00 5d c3 (game string sprintf)
 	func_dlcInstallContentPackage = { {0x008CA3B0, baseHandle + 0x004C9A10} };
 	// InstallContentPackage +0x339: absolute load operand.
 	ptr_dlcOwnershipService = { {0x013581E8, baseHandle + 0x00F591E8} };

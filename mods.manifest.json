@@ -1,5 +1,56 @@
 [
   {
+    "key": "SongDatesEnabled",
+    "ini": {
+      "section": "Toggle Switches",
+      "name": "SongDatesEnabled"
+    },
+    "type": "Bool",
+    "default": "on",
+    "label": "Release Dates for Songs",
+    "hint": "Gives songs a date for the song list's DATE RELEASED sort when the game has none.\nOfficial DLC uses its US release date; any other song falls back to the date its file was last modified.\nSongs dated within the last few days stay at the top as NEW RELEASE.\nDates the game already has (from Ubisoft's servers, or for disc songs) are never changed.\nSongs are dated as the game loads them, so turning this on takes effect after restarting the game.",
+    "category": "Toggle Switches",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null,
+    "editedBy": null,
+    "mod": "SongDatesMod",
+    "entry": "SongDatesEnabled",
+    "heading": "Songs & Profiles",
+    "entryTitle": "Release Dates for Songs"
+  },
+  {
+    "key": "SongDatesNewDays",
+    "ini": {
+      "section": "Mod Settings",
+      "name": "SongDatesNewDays"
+    },
+    "type": "Int",
+    "default": "14",
+    "label": "Days a Song Shows as New",
+    "hint": "Songs dated within this many days show as NEW RELEASE at the top of the DATE RELEASED sort. 0 dates every song instead.",
+    "category": "Mod Settings",
+    "min": 0,
+    "max": 365,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": {
+      "key": "SongDatesEnabled",
+      "equals": "on"
+    },
+    "editor": null,
+    "editedBy": null,
+    "mod": "SongDatesMod",
+    "entry": "SongDatesEnabled",
+    "heading": null,
+    "entryTitle": null
+  },
+  {
     "key": "MetronomeEnabled",
     "ini": {
       "section": "Toggle Switches",

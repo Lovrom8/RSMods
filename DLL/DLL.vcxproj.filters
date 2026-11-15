@@ -305,6 +305,9 @@
     <ClCompile Include="Mods\MetronomeCountIn.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
+    <ClCompile Include="Mods\SongDatesMod.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
     <ClCompile Include="MemUtil.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -935,6 +938,12 @@
       <Filter>Mods\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Mods\MetronomeCountIn.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\SongDatesMod.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\SongDatesOfficial.inc">
       <Filter>Mods\Headers</Filter>
     </ClInclude>
     <ClInclude Include="CC\CCEffect.hpp">

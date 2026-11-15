@@ -382,4 +382,9 @@ namespace Offsets {
 
 	// Wwise's PortAudio output callback: copies the next rendered slot of Wwise's output ring into the device buffer.
 	inline VersioningStruct<uintptr_t> func_wwiseOutputCallback;
+
+	// Song release dates: package mount, song entry builder, Score Attack entry, game string formatter.
+	inline VersioningStruct<uintptr_t> hookAddr_SongDatesMount, hookAddr_SongDatesBuilder, hookAddr_SongDatesScoreAttack;
+	inline VersioningStruct<uintptr_t> hookBackAddr_SongDatesMount, hookBackAddr_SongDatesBuilder, hookBackAddr_SongDatesScoreAttack;
+	inline VersioningStruct<uintptr_t> func_SongDatesFormat;
 };
