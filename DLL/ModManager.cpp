@@ -88,6 +88,8 @@ namespace {
 }
 
 namespace ModManager {
+	// An empty file loads as all defaults; a missing one makes ReadStringColors and GetCustomSongTitles return early
+	// with empty tables, so the file has to exist.
 	void InitializeConfiguration() {
 		if (!(std::ifstream("RSMods.ini"))) {
 			std::ofstream RSModsFileOutput("RSMods.ini");

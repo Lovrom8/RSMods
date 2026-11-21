@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "Proxy.hpp"
 
+#include <mutex>
+
 #pragma pack(1)
 
 typedef void(__stdcall* T_XInput_XInputEnable)(BOOL enable);
@@ -14,44 +16,40 @@ typedef DWORD(__stdcall* T_XInput_XInputSetState)(DWORD dwUserIndex, XINPUT_VIBR
 FARPROC proxy[7] = { 0 };
 HINSTANCE originalDLL;
 
-/// <summary>
-/// Shutdown Proxy to original xinput1_3.dll
-/// </summary>
-void Proxy::Shutdown() {
-	FreeLibrary(originalDLL);
+namespace {
+	std::once_flag proxyInitOnce;
+	bool proxyInitSucceeded = false;
 }
 
 /// <summary>
-/// Setup prooxy to original xinput1_3.dll
+/// Load the system xinput1_3.dll on the first proxied call, so DllMain never calls LoadLibrary under the loader lock.
+/// Concurrent first calls load it once; a failed load is remembered and every export reports no controller.
 /// </summary>
 bool Proxy::Init() {
-	char winpath[MAX_PATH];
+	try {
+		return detail::InitializeOnce(proxyInitOnce, proxyInitSucceeded, [] {
+			char winpath[MAX_PATH]{};
+			const UINT length = GetSystemDirectoryA(winpath, sizeof(winpath));
+			if (length == 0 || length >= sizeof(winpath) || strcat_s(winpath, "\\xinput1_3.dll") != 0)
+				return false;
 
-	// DLL has already been loaded, so act like we've already setup the proxy.
-	if (originalDLL)
-		return true;
+			originalDLL = LoadLibraryA(winpath);
+			if (!originalDLL)
+				return false;
 
-	// Get path to "...System32/xinput1_3.dll"
-	GetSystemDirectoryA(winpath, sizeof(winpath));
-	strcat_s(winpath, "\\xinput1_3.dll");
-
-	// Load the real xinput1_3.dll
-	originalDLL = LoadLibraryA(winpath);
-
-	// Verify that we have actually loaded the DLL.
-	if (!originalDLL)
+			proxy[0] = GetProcAddress(originalDLL, "XInputEnable");
+			proxy[1] = GetProcAddress(originalDLL, "XInputGetBatteryInformation");
+			proxy[2] = GetProcAddress(originalDLL, "XInputGetCapabilities");
+			proxy[3] = GetProcAddress(originalDLL, "XInputGetDSoundAudioDeviceGuids");
+			proxy[4] = GetProcAddress(originalDLL, "XInputGetKeystroke");
+			proxy[5] = GetProcAddress(originalDLL, "XInputGetState");
+			proxy[6] = GetProcAddress(originalDLL, "XInputSetState");
+			return true;
+		});
+	}
+	catch (...) {
 		return false;
-
-	// Create an array of the addresses to call when Rocksmith asks us to do XInput calls.
-	proxy[0] = GetProcAddress(originalDLL, "XInputEnable");
-	proxy[1] = GetProcAddress(originalDLL, "XInputGetBatteryInformation");
-	proxy[2] = GetProcAddress(originalDLL, "XInputGetCapabilities");
-	proxy[3] = GetProcAddress(originalDLL, "XInputGetDSoundAudioDeviceGuids");
-	proxy[4] = GetProcAddress(originalDLL, "XInputGetKeystroke");
-	proxy[5] = GetProcAddress(originalDLL, "XInputGetState");
-	proxy[6] = GetProcAddress(originalDLL, "XInputSetState");
-
-	return true;
+	}
 }
 
 
@@ -70,43 +68,43 @@ extern "C" {
 
 	// Export symbol as XInputEnable, and proxy to the real XInputEnable
 	void __stdcall XInput_XInputEnable(BOOL enable) {
-		if (!proxy[XInput_Proxy::Enable]) return;
+		if (!Proxy::Init() || !proxy[XInput_Proxy::Enable]) return;
 		return ((T_XInput_XInputEnable)proxy[XInput_Proxy::Enable])(enable);
 	}
 
 	// Export symbol as XInputGetBatteryInformation, and proxy to the real XInputGetBatteryInformation
 	DWORD __stdcall XInput_XInputGetBatteryInformation(DWORD dwUserIndex, BYTE devType, XINPUT_BATTERY_INFORMATION* batteryInformation) {
-		if (!proxy[XInput_Proxy::GetBatteryInformation]) return ERROR_DEVICE_NOT_CONNECTED;
+		if (!Proxy::Init() || !proxy[XInput_Proxy::GetBatteryInformation]) return ERROR_DEVICE_NOT_CONNECTED;
 		return ((T_XInput_XInputGetBatteryInformation)proxy[XInput_Proxy::GetBatteryInformation])(dwUserIndex, devType, batteryInformation);
 	}
 
 	// Export symbol as XInputGetCapabilities, and proxy to the real XInputGetCapabilities
 	DWORD __stdcall XInput_XInputGetCapabilities(DWORD dwUserIndex, DWORD dwFlags, XINPUT_CAPABILITIES* capabilities) {
-		if (!proxy[XInput_Proxy::GetCapabilities]) return ERROR_DEVICE_NOT_CONNECTED;
+		if (!Proxy::Init() || !proxy[XInput_Proxy::GetCapabilities]) return ERROR_DEVICE_NOT_CONNECTED;
 		return ((T_XInput_XInputGetCapabilities)proxy[XInput_Proxy::GetCapabilities])(dwUserIndex, dwFlags, capabilities);
 	}
 
 	// Export symbol as XInputGetDSoundAudioDeviceGuids, and proxy to the real XInputGetDSoundAudioDeviceGuids
 	DWORD __stdcall XInput_XInputGetDSoundAudioDeviceGuids(DWORD dwUserIndex, GUID* pDSoundRenderGuid, GUID* DSoundCaptureGuid) {
-		if (!proxy[XInput_Proxy::GetDSoundAudioDeviceGuids]) return ERROR_DEVICE_NOT_CONNECTED;
+		if (!Proxy::Init() || !proxy[XInput_Proxy::GetDSoundAudioDeviceGuids]) return ERROR_DEVICE_NOT_CONNECTED;
 		return ((T_XInput_XInputGetDSoundAudioDeviceGuids)proxy[XInput_Proxy::GetDSoundAudioDeviceGuids])(dwUserIndex, pDSoundRenderGuid, DSoundCaptureGuid);
 	}
 
 	// Export symbol as XInputGetKeystroke, and proxy to the real XInputGetKeystroke
 	DWORD __stdcall XInput_XInputGetKeystroke(DWORD dwUserIndex, DWORD dwReserved, XINPUT_KEYSTROKE* keystroke) {
-		if (!proxy[XInput_Proxy::GetKeystroke]) return ERROR_DEVICE_NOT_CONNECTED;
+		if (!Proxy::Init() || !proxy[XInput_Proxy::GetKeystroke]) return ERROR_DEVICE_NOT_CONNECTED;
 		return ((T_XInput_XInputGetKeystroke)proxy[XInput_Proxy::GetKeystroke])(dwUserIndex, dwReserved, keystroke);
 	}
 
 	// Export symbol as XInputGetState, and proxy to the real XInputGetState
 	DWORD __stdcall XInput_XInputGetState(DWORD dwUserIndex, XINPUT_STATE* state) {
-		if (!proxy[XInput_Proxy::GetState]) return ERROR_DEVICE_NOT_CONNECTED;
+		if (!Proxy::Init() || !proxy[XInput_Proxy::GetState]) return ERROR_DEVICE_NOT_CONNECTED;
 		return ((T_XInput_XInputGetState)proxy[XInput_Proxy::GetState])(dwUserIndex, state);
 	}
 
 	// Export symbol as XInputSetState, and proxy to the real XInputSetState
 	DWORD __stdcall  XInput_XInputSetState(DWORD dwUserIndex, XINPUT_VIBRATION* vibration) {
-		if (!proxy[XInput_Proxy::SetState]) return ERROR_DEVICE_NOT_CONNECTED;
+		if (!Proxy::Init() || !proxy[XInput_Proxy::SetState]) return ERROR_DEVICE_NOT_CONNECTED;
 		return ((T_XInput_XInputSetState)proxy[XInput_Proxy::SetState])(dwUserIndex, vibration);
 	}
 }

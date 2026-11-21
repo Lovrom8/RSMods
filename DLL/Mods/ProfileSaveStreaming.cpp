@@ -1862,7 +1862,15 @@ namespace ProfileSaveStreaming {
 	/// </summary>
 	void Initialize() {
 		if (!Settings::IsOn(Settings::Setting::FastProfileLoadAndSave)) {
-			LOG_INFO("(PROFILE SAVE) Fast profile load and save is off" << std::endl);
+			// Reread the file so a misread setting can be told apart from one that is really off.
+			CSimpleIniA reader;
+			const bool iniLoaded = reader.LoadFile("RSMods.ini") >= 0;
+			const char* rawValue = iniLoaded ? reader.GetValue("Toggle Switches", "FastProfileLoadAndSave", nullptr) : nullptr;
+			const std::string fileText = !iniLoaded ? "<not loaded>" : !rawValue ? "<missing>" : !*rawValue ? "<empty>"
+				: "\"" + std::string(rawValue) + "\"";
+			LOG_INFO("(PROFILE SAVE) Fast profile load and save is off (setting \""
+				<< Settings::ReturnSettingValue(Settings::Setting::FastProfileLoadAndSave) << "\"; RSMods.ini "
+				<< (iniLoaded ? "loaded" : "not loaded") << ", FastProfileLoadAndSave " << fileText << ")" << std::endl);
 			return;
 		}
 		if (!Settings::IsOn(Settings::Setting::BackupProfile)) {

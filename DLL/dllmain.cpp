@@ -311,12 +311,14 @@ static DWORD WINAPI ShowUnsupportedVersionNotice(LPVOID) {
 }
 
 /// <summary>
-/// Unhook all threads to take advantage of multi-threading.
+/// Boot patches and the mod threads, still under the loader lock: the contract is on DllMain.
 /// </summary>
 void Initialize() {
 	LogSettings::startupTime = clock();
+	// The identity reads the mapped headers and sums the executable file through imagehlp, an import mapped before DllMain.
 	GameVersion::LogIdentity();
 	if (GameVersion::Current() == Framework::GameVersion::Build::Unknown) {
+		// MessageBox is user32 and would block this thread, so the notice gets its own; it starts once the lock drops.
 		HANDLE notice = CreateThread(nullptr, 0, ShowUnsupportedVersionNotice, nullptr, 0, nullptr);
 		if (notice)
 			CloseHandle(notice);
@@ -325,6 +327,9 @@ void Initialize() {
 		return;
 	}
 
+	// Host detection and the first RSMods.ini read; a changed host queues a SettingEdits write on a worker thread
+	// that starts once the lock drops. The boot patches below read memory, the cache file and d3d9.dll directly and
+	// write through the engine's protection dispatch; none of it loads a DLL.
 	MemUtil::LogMemoryProtectionPolicy();
 	UplayLoginMod::InstallMetadataGuard();
 	MemUtil::BeginBootPatchBundle(Framework::BootPatch::Bundle::SignIn);
@@ -365,6 +370,7 @@ void Initialize() {
 
 	Wwise::Exports::Initialize();
 
+	// Created here, running once the lock drops; nothing in DllMain waits for them.
 	std::thread(MainThread).detach(); // Mod Toggle based on menus
 	std::thread(StallMonitorThread).detach(); // Logs a MainThread hook that never returns
 	std::thread(MidiThread).detach(); // MIDI Auto Tuning / True Tuning
@@ -396,6 +402,7 @@ void SetupLogging() {
 	const std::string debugLogPath = PathNextToExecutable("RSMods_debug.txt");
 	const bool debugLogPresent = std::ifstream(debugLogPath).good();
 
+	// Debug only. kernel32 and the static CRT, both initialized before DllMain; nothing waits on the console host.
 	if (debug) {
 		AllocConsole();
 
@@ -421,7 +428,12 @@ static bool IsRunningUnderGame() {
 }
 
 /// <summary>
-/// Hook into the game for us to run our own code. **DISPLAYS DEBUG CONSOLE ON DEBUG BUILD**
+/// Startup contract. The game LoadLibrary's this DLL from its input setup, after DirectInput8 exists, so this runs
+/// under the loader lock with game threads alive and no earlier hook point: Initialize stays here to keep the patch
+/// timing. Everything reachable from here is kernel32, the static CRT, file I/O, the patch engine and threads that
+/// nothing here waits for. Never add LoadLibrary or FreeLibrary, registry or COM calls, a wait on another thread, or
+/// an API that loads a DLL on its own (version, shell, WinHTTP); the system XInput loads on the first proxied call.
+/// **DISPLAYS DEBUG CONSOLE ON DEBUG BUILD**
 /// </summary>
 /// <param name="hModule"></param>
 /// <param name="dwReason"></param>
@@ -444,7 +456,6 @@ BOOL APIENTRY DllMain(HMODULE hModule, uint32_t dwReason, LPVOID) {
 				HMODULE self = nullptr;
 				GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_PIN | GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, reinterpret_cast<LPCWSTR>(&DllMain), &self);
 			}
-			Proxy::Init(); // Proxy all real XInput commands to the actual xinput1_3.dll.
 			Initialize(); // Inject our mod code.
 			return TRUE;
 		case DLL_PROCESS_DETACH:
@@ -452,7 +463,6 @@ BOOL APIENTRY DllMain(HMODULE hModule, uint32_t dwReason, LPVOID) {
 				return TRUE;
 			}
 			DirectInputCapture::Shutdown();
-			Proxy::Shutdown(); // Kill Proxy to xinput1_3.dll
 
 			if (Menu::ImGuiInit)
 			{

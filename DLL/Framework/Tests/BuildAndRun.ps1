@@ -114,6 +114,7 @@ $Tests = @(
     @{ Name = 'ShaderScanTests'; Sources = @() },
     @{ Name = 'TitleFadeBytesTests'; Sources = @() },
     @{ Name = 'GameVersionTests';       Sources = @('GameVersion.cpp') },
+    @{ Name = 'ProxyLazyLoadTests';     Sources = @() },
     @{ Name = 'InstructionPatchTests'; Sources = @() },
     @{ Name = 'MemoryPatchTransactionTests'; Sources = @() },
     @{ Name = 'BootPatchBundlePolicyTests'; Sources = @() },

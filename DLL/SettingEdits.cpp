@@ -102,19 +102,30 @@ namespace SettingEdits {
 			return text;
 		}
 
+		// Flushed to disk before the swap, so a power cut leaves the old file or the new one, never an empty one.
+		void WriteTemporaryFile(const std::string& text) {
+			HANDLE file = CreateFileA(kTemporaryFile, GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+			if (file == INVALID_HANDLE_VALUE)
+				throw std::runtime_error("couldn't write next to RSMods.ini (error " + std::to_string(GetLastError()) + ")");
+
+			DWORD written = 0;
+			const bool ok = WriteFile(file, text.data(), static_cast<DWORD>(text.size()), &written, nullptr)
+				&& written == text.size() && FlushFileBuffers(file);
+			const DWORD error = ok ? ERROR_SUCCESS : GetLastError();
+			CloseHandle(file);
+			if (!ok) {
+				DeleteFileA(kTemporaryFile);
+				throw std::runtime_error("couldn't write next to RSMods.ini (error " + std::to_string(error) + ")");
+			}
+		}
+
 		// Written whole and swapped in, so the game's own rereads never see a half-written file.
 		void PatchIniFile(const std::vector<Edit>& edits) {
 			std::string text = ReadIniFile();
 			for (const auto& edit : edits)
 				text = IniPatch::SetValue(text, edit.section, edit.name, edit.value);
 
-			{
-				std::ofstream out(kTemporaryFile, std::ios::binary | std::ios::trunc);
-				out.write(text.data(), static_cast<std::streamsize>(text.size()));
-				out.flush();
-				if (!out)
-					throw std::runtime_error("couldn't write next to RSMods.ini");
-			}
+			WriteTemporaryFile(text);
 
 			for (int attempt = 1; ; ++attempt) {
 				if (MoveFileExA(kTemporaryFile, kIniFile, MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH))

@@ -1,8 +1,18 @@
 // DON'T TOUCH THIS FILE!!!!!! IT IS NEEDED FOR ROCKSMITH TO RUN!
 
+#include <mutex>
+#include <utility>
+
 namespace Proxy {
+	namespace detail {
+		template <typename Loader>
+		bool InitializeOnce(std::once_flag& once, bool& initialized, Loader&& loader) {
+			std::call_once(once, [&] { initialized = static_cast<bool>(std::forward<Loader>(loader)()); });
+			return initialized;
+		}
+	}
+
 	bool Init();
-    void Shutdown();
 }
 
 struct XINPUT_BATTERY_INFORMATION {

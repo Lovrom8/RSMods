@@ -10,6 +10,7 @@ namespace {
 		char executable[MAX_PATH];
 		GetModuleFileNameA(NULL, executable, MAX_PATH);
 
+		// Runs under the loader lock: imagehlp is an import, so this maps and sums the file without loading anything.
 		MapFileAndCheckSumA(executable, &headerSum, &checksum);
 
 		return checksum;
