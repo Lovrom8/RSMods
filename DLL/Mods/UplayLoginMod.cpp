@@ -441,14 +441,16 @@ void UplayLoginMod::InstallMetadataGuard() {
 			downloadNoop = LnpSites::At(LnpSites::kRdvMetadataNoop);
 			downloadNoopJump = downloadNoop;
 		}
-		downloadTrampoline = reinterpret_cast<uintptr_t>(MemUtil::TrampHook(
-			reinterpret_cast<PBYTE>(downloadLatestMetadata),
-			reinterpret_cast<PBYTE>(&DownloadLatestMetadataHook), sizeof(downloadEntryBytes)));
-		if (downloadTrampoline)
+		MemUtil::PatchResult result = MemUtil::PatchResult::Original;
+		MemUtil::TrampHook(reinterpret_cast<PBYTE>(downloadLatestMetadata),
+			reinterpret_cast<PBYTE>(&DownloadLatestMetadataHook), sizeof(downloadEntryBytes),
+			&result, &downloadTrampoline);
+		if (result == MemUtil::PatchResult::Installed)
 			LOG_INFO("(UPLAY) RDV metadata guard installed" << std::endl);
-		else {
+		else if (result == MemUtil::PatchResult::RollbackIncomplete)
+			LOG_ERROR("(UPLAY) RDV metadata guard rollback incomplete; the hook may stay live" << std::endl);
+		else
 			LOG_WARNING("(UPLAY) RDV metadata guard hook failed; native metadata path retained" << std::endl);
-		}
 	} else {
 		LOG_WARNING("(UPLAY) RDV metadata guard bytes did not match; native metadata path retained" << std::endl);
 	}

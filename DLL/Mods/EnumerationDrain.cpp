@@ -2258,12 +2258,20 @@ void EnumerationDrain::Install() {
 	}
 	{
 		LOG_INFO("(ENUMERATION) Menu-ready original: 55 8b ec 83 e4 c0" << std::endl);
-		menuReadyBody = reinterpret_cast<uintptr_t>(MemUtil::TrampHook(
-			reinterpret_cast<PBYTE>(ready), reinterpret_cast<PBYTE>(&MenuReadyHook), sizeof(readyBytes)));
-	}
-	if (!menuReadyBody) {
-		LOG_WARNING("(ENUMERATION) Menu-ready hook failed; no further enumeration patches applied" << std::endl);
-		return;
+		MemUtil::PatchResult result = MemUtil::PatchResult::Original;
+		MemUtil::TrampHook(reinterpret_cast<PBYTE>(ready), reinterpret_cast<PBYTE>(&MenuReadyHook),
+			sizeof(readyBytes), &result, &menuReadyBody);
+		switch (result) {
+		case MemUtil::PatchResult::Installed:
+			LOG_INFO("(ENUMERATION) Menu-ready hook installed" << std::endl);
+			break;
+		case MemUtil::PatchResult::Original:
+			LOG_WARNING("(ENUMERATION) Menu-ready hook not installed; original bytes confirmed" << std::endl);
+			return;
+		case MemUtil::PatchResult::RollbackIncomplete:
+			LOG_ERROR("(ENUMERATION) Menu-ready hook outcome is indeterminate; trampoline retained" << std::endl);
+			return;
+		}
 	}
 
 	LARGE_INTEGER frequency{};

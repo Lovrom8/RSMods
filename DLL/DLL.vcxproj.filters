@@ -1099,6 +1099,9 @@
     <ClInclude Include="Framework\GameVersion.hpp">
       <Filter>Framework</Filter>
     </ClInclude>
+    <ClInclude Include="Framework\InstructionPatch.hpp">
+      <Filter>Framework</Filter>
+    </ClInclude>
     <ClInclude Include="Framework\Framework.hpp">
       <Filter>Framework</Filter>
     </ClInclude>

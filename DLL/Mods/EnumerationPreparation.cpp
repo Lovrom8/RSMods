@@ -472,8 +472,17 @@ bool EnumerationPreparation::Install() {
 		if (!MemUtil::MatchesBytes(patch.site, patch.before)) {
 			MapperRestore::PatchRejected("patch transaction byte preflight failed");
 			std::ostringstream actual;
-			for (size_t i = 0; i < patch.before.size(); ++i)
-				actual << std::hex << static_cast<unsigned int>(*reinterpret_cast<const unsigned char*>(patch.site + i)) << ' ';
+			bool readable = true;
+			for (size_t i = 0; i < patch.before.size(); ++i) {
+				unsigned char byte = 0;
+				if (!MemUtil::TryRead(patch.site + i, byte)) {
+					readable = false;
+					break;
+				}
+				actual << std::hex << static_cast<unsigned int>(byte) << ' ';
+			}
+			if (!readable)
+				actual << "<unreadable>";
 			LOG_WARNING("(ENUMERATION) Preparation bytes mismatch at 0x" << std::hex
 				<< patch.site << std::dec << ", actual: " << actual.str() << "; no preparation patches applied" << std::endl);
 			return false;

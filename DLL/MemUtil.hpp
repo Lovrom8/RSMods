@@ -4,6 +4,7 @@
 #include "winternl.h"
 #include <array>
 #include <atomic>
+#include <limits>
 #include <span>
 #include <string_view>
 #include <type_traits>
@@ -26,6 +27,13 @@ namespace MemUtil {
 	bool BootPatchBundleStaging();
 	bool BootPatchStaged(uintptr_t address);
 	bool bCompare(const BYTE* pData, const byte* bMask, const char* szMask);
+
+	// Installed: the replacement is in place, read back. Original: the original bytes and every
+	// page's protection are confirmed. RollbackIncomplete: neither could be confirmed, so anything
+	// the site may jump to must stay alive.
+	enum class PatchResult { Installed, Original, RollbackIncomplete };
+	PatchResult WritePatch(LPVOID address, LPCVOID changeToMake, size_t len);
+	PatchResult WritePointerPatch(LPVOID address, LPCVOID value);
 	bool PatchAdr(VersioningStruct<uintptr_t>& address, LPCVOID changeToMake, size_t len, bool addBaseHandle = false);
 	bool PatchAdr(LPVOID address, LPCVOID changeToMake, size_t len);
 	bool PatchAdr(uintptr_t address, LPCVOID changeToMake, size_t len, bool addBaseHandle);
@@ -61,7 +69,11 @@ namespace MemUtil {
 		std::array<Entry, 16> entries{};
 		std::atomic<size_t> count{ 0 };
 	};
-	PBYTE TrampHook(PBYTE src, PBYTE dst, unsigned int len);
+	// Returns the trampoline unless the source is confirmed original; check result to tell
+	// an installed hook from an incomplete rollback. original receives the trampoline before
+	// the source is written, so a hook entered mid-install never reads a null pointer.
+	PBYTE TrampHook(PBYTE src, PBYTE dst, unsigned int len, PatchResult* result = nullptr,
+		uintptr_t* original = nullptr);
 	bool IsBadReadPtr(const void* pointer);
 	template <typename T>
 		requires std::is_trivially_copyable_v<T>
@@ -116,9 +128,22 @@ template <typename T>
 /// <param name="mask"> - Mask of what bytes we know (notated with an "x") and what bytes we don't (notated with a "?").</param>
 /// <returns>Value if found or NULL if not.</returns>
 T MemUtil::FindPattern(uint32_t address, size_t size, PBYTE pattern, const char* mask) {
-	for (uint32_t i = 0; i < size; i++) {
-		if (bCompare(reinterpret_cast<PBYTE>(address + i), pattern, mask)) {
-			return T(address + i);
+	if (!address || !pattern || !mask || size == 0)
+		return T{};
+	const size_t patternLength = std::string_view(mask).size();
+	if (size < patternLength || static_cast<uint64_t>(size)
+		> (std::numeric_limits<uint64_t>::max)() - address)
+		return T{};
+	const uint64_t rangeEnd = static_cast<uint64_t>(address) + size;
+	if (rangeEnd > static_cast<uint64_t>((std::numeric_limits<uint32_t>::max)()) + 1)
+		return T{};
+	if (patternLength == 0)
+		return T(address);
+	const size_t lastStart = size - patternLength;
+	for (size_t offset = 0; offset <= lastStart; ++offset) {
+		const uint32_t candidate = static_cast<uint32_t>(static_cast<uint64_t>(address) + offset);
+		if (bCompare(reinterpret_cast<PBYTE>(candidate), pattern, mask)) {
+			return T(candidate);
 		}
 	}
 
@@ -132,27 +157,13 @@ template <typename T> requires std::is_trivially_copyable_v<T>
 /// <typeparam name="T"> - Type of the data.</typeparam>
 /// <param name="staticValue"> - Address of the static value.</param>
 /// <param name="data"> - Data we should change the staticValue to.</param>
-/// <param name="lengthOfData"> - Length of the data (needed for VirtualProtect).</param>
+/// <param name="lengthOfData"> - Retained for callers; the write span is sizeof(T).</param>
 /// <returns>Successfully able to set the value.</returns>
-bool MemUtil::SetStaticValue(uintptr_t staticValue, T data, unsigned int lengthOfData) {
-	DWORD dwOldProt, dwDummy;
-
-	// Change memory protection to allow writing
-	NTSTATUS status = HookedVirtualProtect(reinterpret_cast<LPVOID>(staticValue), lengthOfData, PAGE_EXECUTE_READWRITE, dwOldProt);
-	if (!NT_SUCCESS(status)) {
-		return false;
-	}
-
-	// Write the data
-	*reinterpret_cast<T*>(staticValue) = data;
-
-	// Restore original protection
-	status = HookedVirtualProtect(reinterpret_cast<LPVOID>(staticValue), lengthOfData, dwOldProt, dwDummy);
-	if (!NT_SUCCESS(status)) {
-		return false;
-	}
-
-	return true;
+bool MemUtil::SetStaticValue(uintptr_t staticValue, T data, unsigned int) {
+	if constexpr (std::is_pointer_v<T> && sizeof(T) == sizeof(void*))
+		return WritePointerPatch(reinterpret_cast<LPVOID>(staticValue), &data) == PatchResult::Installed;
+	else
+		return WritePatch(reinterpret_cast<LPVOID>(staticValue), &data, sizeof(T)) == PatchResult::Installed;
 }
 
 template <typename T> requires std::is_trivially_copyable_v<T>

@@ -2,6 +2,7 @@
 #include "MemUtil.hpp"
 #include "SettingEdits.hpp"
 #include "Lib/Detours/detours.h"
+#include <optional>
 
 namespace {
 	struct BootPatch {
@@ -9,7 +10,7 @@ namespace {
 		std::vector<unsigned char> original;
 		std::vector<unsigned char> replacement;
 		const char* member;
-		DWORD protection = 0;
+		bool pointerStore;
 	};
 	struct BootBundle {
 		bool staging = false;
@@ -21,7 +22,7 @@ namespace {
 	thread_local BootBundle g_bootBundle;
 	std::atomic<bool> g_bootBundleEnabled{ true };
 
-	bool StageBootPatch(void* address, const void* replacement, size_t length) {
+	bool StageBootPatch(void* address, const void* replacement, size_t length, bool pointerStore = false) {
 		if (g_bootBundle.failed)
 			return false;
 		const uintptr_t start = reinterpret_cast<uintptr_t>(address);
@@ -33,7 +34,7 @@ namespace {
 			}
 		}
 		BootPatch patch{ address, std::vector<unsigned char>(length),
-			std::vector<unsigned char>(length), g_bootBundle.member };
+			std::vector<unsigned char>(length), g_bootBundle.member, pointerStore };
 		for (size_t i = 0; i < length; ++i) {
 			if (!MemUtil::TryRead(reinterpret_cast<uintptr_t>(address) + i, patch.original[i])) {
 				MemUtil::FailBootPatchBundle();
@@ -43,6 +44,134 @@ namespace {
 		memcpy(patch.replacement.data(), replacement, length);
 		g_bootBundle.patches.push_back(std::move(patch));
 		return true;
+	}
+
+	void StorePatchBytes(void* address, const void* bytes, size_t length, bool pointerStore) {
+		if (!pointerStore) {
+			memcpy(address, bytes, length);
+			return;
+		}
+		void* value = nullptr;
+		memcpy(&value, bytes, sizeof(value));
+		InterlockedExchangePointer(reinterpret_cast<PVOID volatile*>(address), value);
+	}
+
+	struct ProtectedRegion {
+		void* base;
+		SIZE_T size;
+		ULONG protection;
+		void* queryBase;
+		SIZE_T querySize;
+	};
+
+	// VirtualProtect reports only the first page's old protection, so record each uniform region.
+	bool QueryRegions(void* address, size_t length, std::vector<ProtectedRegion>& regions) {
+		regions.clear();
+		uintptr_t cursor = reinterpret_cast<uintptr_t>(address);
+		const uintptr_t end = cursor + length;
+		while (cursor < end) {
+			MEMORY_BASIC_INFORMATION info{};
+			if (!NT_SUCCESS(MemUtil::HookedQueryVirtualMemory(reinterpret_cast<LPVOID>(cursor), &info, sizeof(info)))
+				|| info.State != MEM_COMMIT || info.RegionSize == 0)
+				return false;
+			const uintptr_t regionEnd = reinterpret_cast<uintptr_t>(info.BaseAddress) + info.RegionSize;
+			const uintptr_t stop = regionEnd < end ? regionEnd : end;
+			regions.push_back({ reinterpret_cast<void*>(cursor), stop - cursor, info.Protect,
+				info.BaseAddress, info.RegionSize });
+			cursor = stop;
+		}
+		return !regions.empty();
+	}
+
+	void AddBundleRegion(std::vector<ProtectedRegion>& regions, const ProtectedRegion& candidate) {
+		const uintptr_t candidateStart = reinterpret_cast<uintptr_t>(candidate.base);
+		const uintptr_t candidateEnd = candidateStart + candidate.size;
+		for (ProtectedRegion& region : regions) {
+			if (region.queryBase != candidate.queryBase || region.querySize != candidate.querySize
+				|| region.protection != candidate.protection)
+				continue;
+			const uintptr_t start = reinterpret_cast<uintptr_t>(region.base);
+			const uintptr_t end = start + region.size;
+			const uintptr_t mergedStart = start < candidateStart ? start : candidateStart;
+			const uintptr_t mergedEnd = end > candidateEnd ? end : candidateEnd;
+			region.base = reinterpret_cast<void*>(mergedStart);
+			region.size = mergedEnd - mergedStart;
+			return;
+		}
+		regions.push_back(candidate);
+	}
+
+	// Restores the first count regions, retrying each once; false if any stays changed.
+	bool RestoreRegions(const std::vector<ProtectedRegion>& regions, size_t count) {
+		bool restored = true;
+		for (size_t i = 0; i < count; ++i) {
+			const ProtectedRegion& region = regions[i];
+			ULONG ignored = 0;
+			if (NT_SUCCESS(MemUtil::HookedVirtualProtect(region.base, region.size, region.protection, ignored)))
+				continue;
+			if (!NT_SUCCESS(MemUtil::HookedVirtualProtect(region.base, region.size, region.protection, ignored)))
+				restored = false;
+		}
+		return restored;
+	}
+
+	// On failure the regions already opened are restored and restored reports whether that held.
+	bool OpenRegions(const std::vector<ProtectedRegion>& regions, bool& restored) {
+		restored = true;
+		for (size_t i = 0; i < regions.size(); ++i) {
+			ULONG ignored = 0;
+			if (!NT_SUCCESS(MemUtil::HookedVirtualProtect(regions[i].base, regions[i].size,
+				PAGE_EXECUTE_READWRITE, ignored))) {
+				restored = RestoreRegions(regions, i);
+				return false;
+			}
+		}
+		return true;
+	}
+
+	// The outcome is decided by reading the bytes back; protectionRestored covers every region.
+	MemUtil::PatchResult WriteBytes(void* address, const void* bytes, size_t length,
+		bool& protectionRestored, bool pointerStore = false) {
+		using MemUtil::PatchResult;
+		protectionRestored = true;
+		std::vector<unsigned char> original(length);
+		std::vector<ProtectedRegion> regions;
+		if (!QueryRegions(address, length, regions))
+			return PatchResult::Original;
+		if (!OpenRegions(regions, protectionRestored))
+			return protectionRestored ? PatchResult::Original : PatchResult::RollbackIncomplete;
+
+		memcpy(original.data(), address, length);
+		StorePatchBytes(address, bytes, length, pointerStore);
+		PatchResult result = PatchResult::Installed;
+		if (!FlushInstructionCache(GetCurrentProcess(), address, length)) {
+			// Without a flush a stale copy could still run, so put the original back and read it.
+			StorePatchBytes(address, original.data(), length, pointerStore);
+			const bool rollbackFlushed = FlushInstructionCache(GetCurrentProcess(), address, length) != FALSE;
+			result = rollbackFlushed && memcmp(address, original.data(), length) == 0
+				? PatchResult::Original : PatchResult::RollbackIncomplete;
+		}
+		else if (memcmp(address, bytes, length) != 0) {
+			result = PatchResult::RollbackIncomplete;
+		}
+
+		protectionRestored = RestoreRegions(regions, regions.size());
+		if (!protectionRestored) {
+			if (result == PatchResult::Original)
+				result = PatchResult::RollbackIncomplete;
+			LOG_WARNING("(MEMORY) Page protection at 0x" << std::hex << reinterpret_cast<uintptr_t>(address)
+				<< std::dec << " stayed writable after a patch" << std::endl);
+		}
+		return result;
+	}
+
+	std::vector<unsigned char> JumpPatch(void* site, void* target, size_t length) {
+		std::vector<unsigned char> patch(length, 0x90);
+		patch[0] = 0xE9;
+		const uint32_t relative = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(target)
+			- reinterpret_cast<uintptr_t>(site) - 5);
+		memcpy(patch.data() + 1, &relative, sizeof(relative));
+		return patch;
 	}
 }
 
@@ -77,56 +206,76 @@ bool MemUtil::BootPatchStaged(uintptr_t address) {
 }
 
 bool MemUtil::CommitBootPatchBundle() {
-	bool protectionRestored = true;
-	// Preflight protection and unchanged originals before the first game write.
-	for (BootPatch& patch : g_bootBundle.patches) {
+	bool restored = true;
+	std::vector<ProtectedRegion> regions;
+	// Query every member once and retain each unique region's pre-install protection.
+	for (const BootPatch& patch : g_bootBundle.patches) {
 		if (g_bootBundle.failed)
 			break;
 		g_bootBundle.member = patch.member;
-		DWORD oldProtection = 0, ignored = 0;
-		if (!MatchesBytes(reinterpret_cast<uintptr_t>(patch.address), patch.original)
-			|| !NT_SUCCESS(HookedVirtualProtect(patch.address, patch.original.size(),
-				PAGE_EXECUTE_READWRITE, oldProtection))) {
+		std::vector<ProtectedRegion> patchRegions;
+		if (!QueryRegions(patch.address, patch.original.size(), patchRegions)) {
 			FailBootPatchBundle();
 			break;
 		}
-		patch.protection = oldProtection;
-		if (!NT_SUCCESS(HookedVirtualProtect(patch.address, patch.original.size(),
-			oldProtection, ignored))) {
-			FailBootPatchBundle();
-			protectionRestored = NT_SUCCESS(HookedVirtualProtect(patch.address,
-				patch.original.size(), oldProtection, ignored));
-		}
+		for (const ProtectedRegion& region : patchRegions)
+			AddBundleRegion(regions, region);
 	}
 	g_bootBundle.staging = false;
 	size_t attempted = 0;
+	bool sourceWriteAttempted = false;
 	if (!g_bootBundle.failed) {
-		for (const BootPatch& patch : g_bootBundle.patches) {
-			++attempted;
-			if (!PatchAdr(patch.address, patch.replacement.data(), patch.replacement.size())) {
-				g_bootBundle.failed = patch.member;
-				break;
+		bool openRestored = true;
+		if (!OpenRegions(regions, openRestored)) {
+			restored = restored && openRestored;
+			g_bootBundle.failed = g_bootBundle.member;
+		} else {
+			// Do not write any member until every original has survived the open.
+			for (const BootPatch& patch : g_bootBundle.patches) {
+				g_bootBundle.member = patch.member;
+				if (!MatchesBytes(reinterpret_cast<uintptr_t>(patch.address), patch.original)) {
+					g_bootBundle.failed = patch.member;
+					break;
+				}
 			}
+			if (!g_bootBundle.failed) {
+				for (const BootPatch& patch : g_bootBundle.patches) {
+					g_bootBundle.member = patch.member;
+					++attempted;
+					sourceWriteAttempted = true;
+					StorePatchBytes(patch.address, patch.replacement.data(),
+						patch.replacement.size(), patch.pointerStore);
+					if (!FlushInstructionCache(GetCurrentProcess(), patch.address, patch.replacement.size())
+						|| memcmp(patch.address, patch.replacement.data(), patch.replacement.size()) != 0) {
+						g_bootBundle.failed = patch.member;
+						break;
+					}
+				}
+			}
+			if (g_bootBundle.failed) {
+				while (attempted > 0) {
+					const BootPatch& patch = g_bootBundle.patches[--attempted];
+					StorePatchBytes(patch.address, patch.original.data(),
+						patch.original.size(), patch.pointerStore);
+					const bool rollbackFlushed = FlushInstructionCache(GetCurrentProcess(),
+						patch.address, patch.original.size()) != FALSE;
+					if (!rollbackFlushed
+						|| memcmp(patch.address, patch.original.data(), patch.original.size()) != 0) {
+						restored = false;
+						LOG_ERROR("(BOOT BUNDLE) Rollback failed: " << patch.member << " at 0x"
+							<< std::hex << reinterpret_cast<uintptr_t>(patch.address) << std::dec << std::endl);
+					}
+				}
+			}
+			if (!RestoreRegions(regions, regions.size()))
+				restored = false;
 		}
 	}
-	bool restored = protectionRestored;
 	if (g_bootBundle.failed) {
-		while (attempted > 0) {
-			const BootPatch& patch = g_bootBundle.patches[--attempted];
-			const bool bytesRestored = PatchAdr(patch.address, patch.original.data(), patch.original.size());
-			DWORD ignored = 0;
-			const bool pageRestored = NT_SUCCESS(HookedVirtualProtect(patch.address,
-				patch.original.size(), patch.protection, ignored));
-			if (!bytesRestored || !pageRestored) {
-				restored = false;
-				LOG_ERROR("(BOOT BUNDLE) Rollback failed: " << patch.member << " at 0x"
-					<< std::hex << reinterpret_cast<uintptr_t>(patch.address) << std::dec << std::endl);
-			}
-		}
 		LOG_WARNING("(BOOT BUNDLE) Failed member: " << g_bootBundle.failed
 			<< "; bundle stayed off; rollback=" << (restored ? "complete" : "incomplete") << std::endl);
-		// Keep gateways alive if a hook could still reference one after failed rollback.
-		if (restored)
+		// A gateway stays alive once a source write could have published it.
+		if (!sourceWriteAttempted)
 			for (void* gateway : g_bootBundle.gateways)
 				VirtualFree(gateway, 0, MEM_RELEASE);
 	} else {
@@ -179,31 +328,24 @@ bool MemUtil::PatchAdr(uintptr_t address, std::string_view data, bool addBaseHan
 /// <param name="len"> - How long is the edit</param>
 /// <returns></returns>
 bool MemUtil::PatchAdr(LPVOID address, LPCVOID changeToMake, size_t len) {
+	return WritePatch(address, changeToMake, len) == PatchResult::Installed;
+}
+
+MemUtil::PatchResult MemUtil::WritePatch(LPVOID address, LPCVOID changeToMake, size_t len) {
 	if (g_bootBundle.staging)
-		return StageBootPatch(address, changeToMake, len);
-	DWORD dwOldProt, dwDummy, ret;
+		return StageBootPatch(address, changeToMake, len) ? PatchResult::Installed : PatchResult::Original;
+	bool protectionRestored = true;
+	return WriteBytes(address, changeToMake, len, protectionRestored);
+}
 
-
-	// Save old Virtual Protect status, but allow us to Execute, Read, and Write to the executable's memory so we can place our hook.
-	ret = HookedVirtualProtect(address, len, PAGE_EXECUTE_READWRITE, dwOldProt);
-	if (!NT_SUCCESS(ret))
-	{
-		return false;
-	}
-
-	// Write what we had in changeToMake to address, for len bytes.
-	memcpy(address, changeToMake, len);
-
-	// Force the CPU to dump it's cached instruction. Also resets the virtual protect to the status we saved earlier in this function. 
-	FlushInstructionCache(GetCurrentProcess(), address, len);
-
-	ret = HookedVirtualProtect(address, len, dwOldProt, dwDummy);
-	if (!NT_SUCCESS(ret))
-	{
-		return false;
-	}
-
-	return true;
+MemUtil::PatchResult MemUtil::WritePointerPatch(LPVOID address, LPCVOID value) {
+	if (reinterpret_cast<uintptr_t>(address) % alignof(void*) != 0)
+		return PatchResult::Original;
+	if (g_bootBundle.staging)
+		return StageBootPatch(address, value, sizeof(void*), true)
+			? PatchResult::Installed : PatchResult::Original;
+	bool protectionRestored = true;
+	return WriteBytes(address, value, sizeof(void*), protectionRestored, true);
 }
 
 bool MemUtil::PlaceHook(VersioningStruct<uintptr_t>& hookSpot, void* ourFunct, int len, bool addBaseHandle) {
@@ -243,11 +385,7 @@ bool MemUtil::PlaceHook(void* hookSpot, void* ourFunct, int len) {
 		FailBootPatchBundle();
 		return false;
 	}
-	std::vector<unsigned char> patch(static_cast<size_t>(len), 0x90);
-	patch[0] = 0xE9;
-	const uint32_t relative = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(ourFunct)
-		- reinterpret_cast<uintptr_t>(hookSpot) - 5);
-	memcpy(patch.data() + 1, &relative, sizeof(relative));
+	const std::vector<unsigned char> patch = JumpPatch(hookSpot, ourFunct, static_cast<size_t>(len));
 	return PatchAdr(hookSpot, patch.data(), patch.size());
 }
 
@@ -327,8 +465,11 @@ void MemUtil::VTablePatcher::RestoreAll()
 /// <param name="dst"> - What should we run (x86 ASM)</param>
 /// <param name="len"> - How long is the first command (x86 ASM length)</param>
 /// <returns></returns>
-PBYTE MemUtil::TrampHook(PBYTE src, PBYTE dst, unsigned int len)
+PBYTE MemUtil::TrampHook(PBYTE src, PBYTE dst, unsigned int len, PatchResult* result,
+	uintptr_t* original)
 {
+	if (result)
+		*result = PatchResult::Original;
 	if (!src || !dst)
 	{
 		FailBootPatchBundle();
@@ -388,18 +529,37 @@ PBYTE MemUtil::TrampHook(PBYTE src, PBYTE dst, unsigned int len)
 	*dstPos = (unsigned char)0xE9;
 	*(uint32_t*)(dstPos + 1) = (uint32_t)(srcPos - (dstPos + 5));
 
-	// The gateway is freshly written executable code; make sure no stale copy runs.
-	FlushInstructionCache(GetCurrentProcess(), gateway, gatewaySize);
+	// Seal the gateway before any hook can reach it, and make sure no stale copy runs.
+	ULONG writable = 0;
+	if (!NT_SUCCESS(HookedVirtualProtect(gateway, gatewaySize, PAGE_EXECUTE_READ, writable))
+		|| !FlushInstructionCache(GetCurrentProcess(), gateway, gatewaySize)) {
+		VirtualFree(gateway, 0, MEM_RELEASE);
+		FailBootPatchBundle();
+		return nullptr;
+	}
 
-	// Place the hook at the destination
-	if (PlaceHook(src, dst, hookLen)) {
-		if (g_bootBundle.staging)
+	const bool staging = g_bootBundle.staging;
+	if (original)
+		*original = reinterpret_cast<uintptr_t>(gateway);
+	const std::vector<unsigned char> patch = JumpPatch(src, dst, hookLen);
+	const PatchResult outcome = WritePatch(src, patch.data(), patch.size());
+	if (result)
+		*result = outcome;
+	if (outcome == PatchResult::Installed) {
+		if (staging)
 			g_bootBundle.gateways.push_back(gateway);
 		return gateway;
 	}
 
-	VirtualFree(gateway, 0, MEM_RELEASE);
 	FailBootPatchBundle();
+	if (outcome == PatchResult::RollbackIncomplete) {
+		LOG_ERROR("(MEMORY) Hook at 0x" << std::hex << reinterpret_cast<uintptr_t>(src) << std::dec
+			<< " may still be live; its trampoline is kept" << std::endl);
+		return gateway;
+	}
+	// A staged write never reached the source; a direct one may have been live for a moment.
+	if (staging)
+		VirtualFree(gateway, 0, MEM_RELEASE);
 	return nullptr;
 }
 
@@ -562,21 +722,59 @@ void MemUtil::LogMemoryProtectionPolicy() {
 }
 
 namespace {
-	void LogMemoryCall(const char* operation, void* address, const char* path,
-		NTSTATUS status, DWORD error, ULONGLONG start) {
+	std::atomic_flag g_loggedUnresolvedSyscall = ATOMIC_FLAG_INIT;
+	std::atomic_flag g_loggedSyscallFallback = ATOMIC_FLAG_INIT;
+
+	void LogMemoryCall(const char* operation, void* address, SIZE_T length,
+		bool hasProtection, ULONG protection, const char* path, NTSTATUS status,
+		DWORD error, ULONGLONG start) {
 		const ULONGLONG ms = GetTickCount64() - start;
-		if (ms >= 50 || !NT_SUCCESS(status))
+		if (ms >= 50 || !NT_SUCCESS(status)) {
+			if (hasProtection)
+				LOG_WARNING("(MEMORY) " << operation << " address=0x" << std::hex
+					<< reinterpret_cast<uintptr_t>(address) << " length=0x" << length
+					<< " protection=0x" << protection << " path=" << path
+					<< " status=0x" << status << " win32=" << error << std::dec
+					<< " ms=" << ms << std::endl);
+			else
+				LOG_WARNING("(MEMORY) " << operation << " address=0x" << std::hex
+					<< reinterpret_cast<uintptr_t>(address) << " length=0x" << length
+					<< " protection=n/a path=" << path
+					<< " status=0x" << status << " win32=" << error << std::dec
+					<< " ms=" << ms << std::endl);
+		}
+	}
+
+	void LogUnresolvedSyscallOnce(const char* operation, void* address, SIZE_T length,
+		bool hasProtection, ULONG protection, ULONGLONG start) {
+		if (g_loggedUnresolvedSyscall.test_and_set(std::memory_order_relaxed))
+			return;
+		const ULONGLONG ms = GetTickCount64() - start;
+		if (hasProtection)
 			LOG_WARNING("(MEMORY) " << operation << " address=0x" << std::hex
-				<< reinterpret_cast<uintptr_t>(address) << " path=" << path
-				<< " status=0x" << status << " win32=" << error << std::dec
-				<< " ms=" << ms << std::endl);
+				<< reinterpret_cast<uintptr_t>(address) << " length=0x" << length
+				<< " protection=0x" << protection << std::dec
+				<< " path=documented reason=syscall number unresolved status=unresolved win32=0 ms="
+				<< ms << std::endl);
+		else
+			LOG_WARNING("(MEMORY) " << operation << " address=0x" << std::hex
+				<< reinterpret_cast<uintptr_t>(address) << " length=0x" << length
+				<< " protection=n/a path=documented reason=syscall number unresolved status=unresolved win32=0 ms="
+				<< ms << std::endl);
+	}
+
+	void LogSyscallFailureOnce(const char* operation, void* address, SIZE_T length,
+		bool hasProtection, ULONG protection, NTSTATUS status, ULONGLONG start) {
+		if (g_loggedSyscallFallback.test_and_set(std::memory_order_relaxed))
+			return;
+		LogMemoryCall(operation, address, length, hasProtection, protection, "syscall", status, 0, start);
 	}
 }
 
 namespace MemUtil {
 	namespace Detail {
-		static uint32_t ssnProtect = 0x50;
-		static uint32_t ssnQuery = 0x23;
+		static uint32_t ssnProtect = 0;
+		static uint32_t ssnQuery = 0;
 
 		static std::vector<BYTE> ReadNtdllFromDisk() {
 			char sysDir[MAX_PATH];
@@ -602,68 +800,168 @@ namespace MemUtil {
 			return buf;
 		}
 
-		static uint32_t ExtractSyscallFromPE(const std::vector<BYTE>& buf, const char* funcName) {
-			if (buf.empty()) return 0;
+		static std::optional<uint32_t> ExtractSyscallFromPE(const std::vector<BYTE>& buf,
+			const char* funcName) {
+			auto HasRange = [&](size_t offset, size_t length) {
+				return offset <= buf.size() && length <= buf.size() - offset;
+			};
+			if (!HasRange(0, sizeof(IMAGE_DOS_HEADER)))
+				return std::nullopt;
 
-			auto dos = (PIMAGE_DOS_HEADER)buf.data();
-			if (dos->e_magic != IMAGE_DOS_SIGNATURE) return 0;
+			IMAGE_DOS_HEADER dos{};
+			memcpy(&dos, buf.data(), sizeof(dos));
+			if (dos.e_magic != IMAGE_DOS_SIGNATURE || dos.e_lfanew < 0)
+				return std::nullopt;
+			const size_t ntOffset = static_cast<size_t>(dos.e_lfanew);
+			if (!HasRange(ntOffset, sizeof(DWORD) + sizeof(IMAGE_FILE_HEADER)))
+				return std::nullopt;
 
-			auto nt = (PIMAGE_NT_HEADERS)(buf.data() + dos->e_lfanew);
-			if (nt->Signature != IMAGE_NT_SIGNATURE) return 0;
+			DWORD signature = 0;
+			memcpy(&signature, buf.data() + ntOffset, sizeof(signature));
+			if (signature != IMAGE_NT_SIGNATURE)
+				return std::nullopt;
+			IMAGE_FILE_HEADER fileHeader{};
+			memcpy(&fileHeader, buf.data() + ntOffset + sizeof(signature), sizeof(fileHeader));
+			if (fileHeader.Machine != IMAGE_FILE_MACHINE_I386 || fileHeader.NumberOfSections == 0)
+				return std::nullopt;
 
-			DWORD exportRva = nt->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT].VirtualAddress;
-			if (!exportRva) return 0;
+			const size_t optionalOffset = ntOffset + sizeof(signature) + sizeof(fileHeader);
+			constexpr size_t exportHeaderSize = offsetof(IMAGE_OPTIONAL_HEADER32, DataDirectory)
+				+ (IMAGE_DIRECTORY_ENTRY_EXPORT + 1) * sizeof(IMAGE_DATA_DIRECTORY);
+			if (fileHeader.SizeOfOptionalHeader < exportHeaderSize
+				|| !HasRange(optionalOffset, fileHeader.SizeOfOptionalHeader))
+				return std::nullopt;
+			IMAGE_OPTIONAL_HEADER32 optional{};
+			memcpy(&optional, buf.data() + optionalOffset,
+				fileHeader.SizeOfOptionalHeader < sizeof(optional)
+					? fileHeader.SizeOfOptionalHeader : sizeof(optional));
+			if (optional.Magic != IMAGE_NT_OPTIONAL_HDR32_MAGIC
+				|| optional.NumberOfRvaAndSizes <= IMAGE_DIRECTORY_ENTRY_EXPORT
+				|| optional.SizeOfHeaders > buf.size())
+				return std::nullopt;
 
-			auto RvaToRaw = [&](DWORD rva) -> DWORD {
-				PIMAGE_SECTION_HEADER sec = IMAGE_FIRST_SECTION(nt);
-				for (WORD i = 0; i < nt->FileHeader.NumberOfSections; i++, sec++) {
-					if (rva >= sec->VirtualAddress && rva < sec->VirtualAddress + sec->Misc.VirtualSize) {
-						return rva - sec->VirtualAddress + sec->PointerToRawData;
-					}
+			const size_t sectionsOffset = optionalOffset + fileHeader.SizeOfOptionalHeader;
+			if (fileHeader.NumberOfSections > (std::numeric_limits<size_t>::max)()
+				/ sizeof(IMAGE_SECTION_HEADER))
+				return std::nullopt;
+			const size_t sectionsSize = static_cast<size_t>(fileHeader.NumberOfSections)
+				* sizeof(IMAGE_SECTION_HEADER);
+			if (!HasRange(sectionsOffset, sectionsSize))
+				return std::nullopt;
+
+			auto RvaToRaw = [&](DWORD rva, size_t length, size_t& offset, size_t& available) {
+				if (rva < optional.SizeOfHeaders) {
+					offset = rva;
+					available = optional.SizeOfHeaders - rva;
+					if (offset > buf.size())
+						return false;
+					const size_t fileAvailable = buf.size() - offset;
+					if (available > fileAvailable)
+						available = fileAvailable;
+					return length <= available;
 				}
-				return 0;
-				};
-
-			DWORD expOffset = RvaToRaw(exportRva);
-			if (!expOffset) return 0;
-
-			auto exp = (PIMAGE_EXPORT_DIRECTORY)(buf.data() + expOffset);
-			DWORD* names = (DWORD*)(buf.data() + RvaToRaw(exp->AddressOfNames));
-			WORD* ords = (WORD*)(buf.data() + RvaToRaw(exp->AddressOfNameOrdinals));
-			DWORD* funcs = (DWORD*)(buf.data() + RvaToRaw(exp->AddressOfFunctions));
-
-			for (DWORD i = 0; i < exp->NumberOfNames; i++) {
-				const char* name = (const char*)(buf.data() + RvaToRaw(names[i]));
-				if (strcmp(name, funcName) == 0) {
-					DWORD funcRva = funcs[ords[i]];
-					BYTE* code = (BYTE*)(buf.data() + RvaToRaw(funcRva));
-					if (code[0] == 0xB8) { // mov eax, <SSN>
-						return *(uint32_t*)(code + 1);
-					}
-					break;
+				for (WORD i = 0; i < fileHeader.NumberOfSections; ++i) {
+					IMAGE_SECTION_HEADER section{};
+					memcpy(&section, buf.data() + sectionsOffset + i * sizeof(section), sizeof(section));
+					if (rva < section.VirtualAddress)
+						continue;
+					const DWORD delta = rva - section.VirtualAddress;
+					if (delta >= section.SizeOfRawData)
+						continue;
+					if (length > section.SizeOfRawData - delta
+						|| section.PointerToRawData > buf.size()
+						|| delta > buf.size() - section.PointerToRawData)
+						return false;
+					offset = section.PointerToRawData + delta;
+					available = section.SizeOfRawData - delta;
+					const size_t fileAvailable = buf.size() - offset;
+					if (available > fileAvailable)
+						available = fileAvailable;
+					return length <= available;
 				}
+				return false;
+			};
+
+			const IMAGE_DATA_DIRECTORY& exportDirectory =
+				optional.DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT];
+			size_t exportOffset = 0, available = 0;
+			if (!exportDirectory.VirtualAddress || exportDirectory.Size < sizeof(IMAGE_EXPORT_DIRECTORY)
+				|| !RvaToRaw(exportDirectory.VirtualAddress, sizeof(IMAGE_EXPORT_DIRECTORY),
+					exportOffset, available))
+				return std::nullopt;
+			IMAGE_EXPORT_DIRECTORY exports{};
+			memcpy(&exports, buf.data() + exportOffset, sizeof(exports));
+			if (!exports.NumberOfNames || !exports.NumberOfFunctions)
+				return std::nullopt;
+
+			auto ArrayOffset = [&](DWORD rva, DWORD count, size_t elementSize, size_t& offset) {
+				if (count > (std::numeric_limits<size_t>::max)() / elementSize)
+					return false;
+				return RvaToRaw(rva, static_cast<size_t>(count) * elementSize, offset, available);
+			};
+			size_t namesOffset = 0, ordinalsOffset = 0, functionsOffset = 0;
+			if (!ArrayOffset(exports.AddressOfNames, exports.NumberOfNames, sizeof(DWORD), namesOffset)
+				|| !ArrayOffset(exports.AddressOfNameOrdinals, exports.NumberOfNames, sizeof(WORD), ordinalsOffset)
+				|| !ArrayOffset(exports.AddressOfFunctions, exports.NumberOfFunctions, sizeof(DWORD), functionsOffset))
+				return std::nullopt;
+
+			const size_t wantedNameLength = strlen(funcName);
+			const uint64_t exportEnd = static_cast<uint64_t>(exportDirectory.VirtualAddress)
+				+ exportDirectory.Size;
+			for (DWORD i = 0; i < exports.NumberOfNames; ++i) {
+				DWORD nameRva = 0;
+				WORD ordinal = 0;
+				memcpy(&nameRva, buf.data() + namesOffset + static_cast<size_t>(i) * sizeof(nameRva),
+					sizeof(nameRva));
+				memcpy(&ordinal, buf.data() + ordinalsOffset + static_cast<size_t>(i) * sizeof(ordinal),
+					sizeof(ordinal));
+				if (ordinal >= exports.NumberOfFunctions)
+					return std::nullopt;
+				size_t nameOffset = 0, nameAvailable = 0;
+				if (!RvaToRaw(nameRva, 1, nameOffset, nameAvailable))
+					return std::nullopt;
+				const BYTE* name = buf.data() + nameOffset;
+				const BYTE* end = static_cast<const BYTE*>(memchr(name, 0, nameAvailable));
+				if (!end)
+					return std::nullopt;
+				if (static_cast<size_t>(end - name) != wantedNameLength
+					|| memcmp(name, funcName, wantedNameLength) != 0)
+					continue;
+
+				DWORD functionRva = 0;
+				memcpy(&functionRva, buf.data() + functionsOffset
+					+ static_cast<size_t>(ordinal) * sizeof(functionRva), sizeof(functionRva));
+				if (!functionRva || (functionRva >= exportDirectory.VirtualAddress
+					&& static_cast<uint64_t>(functionRva) < exportEnd))
+					return std::nullopt;
+				size_t codeOffset = 0, codeAvailable = 0;
+				if (!RvaToRaw(functionRva, sizeof(BYTE) + sizeof(uint32_t), codeOffset, codeAvailable))
+					return std::nullopt;
+				if (buf[codeOffset] != 0xB8)
+					return std::nullopt;
+				uint32_t number = 0;
+				memcpy(&number, buf.data() + codeOffset + 1, sizeof(number));
+				return number;
 			}
-
-			return 0;
+			return std::nullopt;
 		}
 
-		static uint32_t GetSyscallNumber(const char* funcName, uint32_t fallbackSSN) {
+		static std::optional<uint32_t> GetSyscallNumber(const char* funcName) {
 			HMODULE hNtdll = GetModuleHandleA("ntdll.dll");
 			if (hNtdll) {
-				BYTE* pFunc = (BYTE*)GetProcAddress(hNtdll, funcName);
-				if (pFunc && pFunc[0] == 0xB8) {
-					return *(uint32_t*)(pFunc + 1);
+				BYTE* pFunc = reinterpret_cast<BYTE*>(GetProcAddress(hNtdll, funcName));
+				BYTE opcode = 0;
+				uint32_t number = 0;
+				if (pFunc && MemUtil::TryRead(reinterpret_cast<uintptr_t>(pFunc), opcode)
+					&& opcode == 0xB8
+					&& MemUtil::TryRead(reinterpret_cast<uintptr_t>(pFunc + 1), number)) {
+					return number;
 				}
 			}
 
 			// If memory was modified/hooked by VMProtect, parse fresh unhooked ntdll from disk
 			static const std::vector<BYTE> ntdllDiskBuf = ReadNtdllFromDisk();
-			uint32_t diskSsn = ExtractSyscallFromPE(ntdllDiskBuf, funcName);
-			if (diskSsn != 0) {
-				return diskSsn;
-			}
-
-			return fallbackSSN;
+			return ExtractSyscallFromPE(ntdllDiskBuf, funcName);
 		}
 
 		static __declspec(naked) NTSTATUS NTAPI Syscall_NtProtectVirtualMemory(HANDLE, PVOID*, PSIZE_T, ULONG, PULONG)
@@ -704,23 +1002,32 @@ namespace MemUtil {
 		ULONGLONG start = GetTickCount64();
 		// On Windows the game's own guard slows or refuses the documented call, so go to the kernel first.
 		if (!MemoryHostPolicy().useWineApis) {
-			static const bool initialized = [] {
-				Detail::ssnProtect = Detail::GetSyscallNumber("NtProtectVirtualMemory", 0x50);
+			static const bool resolved = [] {
+				const std::optional<uint32_t> number = Detail::GetSyscallNumber("NtProtectVirtualMemory");
+				if (!number)
+					return false;
+				Detail::ssnProtect = *number;
 				return true;
 			}();
-			(void)initialized;
-			PVOID baseAddress = address;
-			SIZE_T regionSize = len;
-			const NTSTATUS status = Detail::Syscall_NtProtectVirtualMemory(GetCurrentProcess(),
-				&baseAddress, &regionSize, newProtection, &oldProtection);
-			LogMemoryCall("VirtualProtect", address, "syscall", status, 0, start);
-			if (NT_SUCCESS(status))
-				return status;
+			if (resolved) {
+				PVOID baseAddress = address;
+				SIZE_T regionSize = len;
+				const NTSTATUS status = Detail::Syscall_NtProtectVirtualMemory(GetCurrentProcess(),
+					&baseAddress, &regionSize, newProtection, &oldProtection);
+				if (NT_SUCCESS(status)) {
+					LogMemoryCall("VirtualProtect", address, len, true, newProtection,
+						"syscall", status, 0, start);
+					return status;
+				}
+				LogSyscallFailureOnce("VirtualProtect", address, len, true, newProtection, status, start);
+			} else {
+				LogUnresolvedSyscallOnce("VirtualProtect", address, len, true, newProtection, start);
+			}
 			start = GetTickCount64();
 		}
 		const BOOL ok = VirtualProtect(address, len, newProtection, &oldProtection);
 		const DWORD error = ok ? ERROR_SUCCESS : GetLastError();
-		LogMemoryCall("VirtualProtect", address, "documented",
+		LogMemoryCall("VirtualProtect", address, len, true, newProtection, "documented",
 			ok ? STATUS_SUCCESS : STATUS_UNSUCCESSFUL, error, start);
 		return ok ? STATUS_SUCCESS : STATUS_UNSUCCESSFUL;
 	}
@@ -729,22 +1036,31 @@ namespace MemUtil {
 		PMEMORY_BASIC_INFORMATION memoryBuffer, SIZE_T dwLength) {
 		ULONGLONG start = GetTickCount64();
 		if (!MemoryHostPolicy().useWineApis) {
-			static const bool initialized = [] {
-				Detail::ssnQuery = Detail::GetSyscallNumber("NtQueryVirtualMemory", 0x23);
+			static const bool resolved = [] {
+				const std::optional<uint32_t> number = Detail::GetSyscallNumber("NtQueryVirtualMemory");
+				if (!number)
+					return false;
+				Detail::ssnQuery = *number;
 				return true;
 			}();
-			(void)initialized;
-			SIZE_T returnLength = 0;
-			const NTSTATUS status = Detail::Syscall_NtQueryVirtualMemory(GetCurrentProcess(),
-				address, 0, memoryBuffer, dwLength, &returnLength);
-			LogMemoryCall("VirtualQuery", address, "syscall", status, 0, start);
-			if (NT_SUCCESS(status))
-				return status;
+			if (resolved) {
+				SIZE_T returnLength = 0;
+				const NTSTATUS status = Detail::Syscall_NtQueryVirtualMemory(GetCurrentProcess(),
+					address, 0, memoryBuffer, dwLength, &returnLength);
+				if (NT_SUCCESS(status)) {
+					LogMemoryCall("VirtualQuery", address, dwLength, false, 0,
+						"syscall", status, 0, start);
+					return status;
+				}
+				LogSyscallFailureOnce("VirtualQuery", address, dwLength, false, 0, status, start);
+			} else {
+				LogUnresolvedSyscallOnce("VirtualQuery", address, dwLength, false, 0, start);
+			}
 			start = GetTickCount64();
 		}
 		const SIZE_T result = VirtualQuery(address, memoryBuffer, dwLength);
 		const DWORD error = result ? ERROR_SUCCESS : GetLastError();
-		LogMemoryCall("VirtualQuery", address, "documented",
+		LogMemoryCall("VirtualQuery", address, dwLength, false, 0, "documented",
 			result ? STATUS_SUCCESS : STATUS_UNSUCCESSFUL, error, start);
 		return result ? STATUS_SUCCESS : STATUS_UNSUCCESSFUL;
 	}

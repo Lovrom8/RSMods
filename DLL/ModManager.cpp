@@ -66,6 +66,25 @@ namespace {
 
 		return vTable;
 	}
+
+	template <typename T>
+	void InstallD3DHook(const char* name, PBYTE target, PBYTE hook, T& original) {
+		static_assert(sizeof(T) == sizeof(uintptr_t));
+		MemUtil::PatchResult result = MemUtil::PatchResult::Original;
+		MemUtil::TrampHook(target, hook, 5, &result, reinterpret_cast<uintptr_t*>(&original));
+
+		switch (result) {
+		case MemUtil::PatchResult::Installed:
+			LOG_INFO("(D3D) " << name << " hook installed" << std::endl);
+			break;
+		case MemUtil::PatchResult::Original:
+			LOG_WARNING("(D3D) " << name << " hook not installed; original bytes confirmed" << std::endl);
+			break;
+		case MemUtil::PatchResult::RollbackIncomplete:
+			LOG_ERROR("(D3D) " << name << " hook outcome is indeterminate; original trampoline retained" << std::endl);
+			break;
+		}
+	}
 }
 
 namespace ModManager {
@@ -124,22 +143,21 @@ namespace ModManager {
 			return;
 		}
 
-		// Hook D3D functions to use for our own D3D work. Reference D3DHooks
-		oSetVertexDeclaration = (tSetVertexDeclaration)MemUtil::TrampHook((byte*)vTable[D3DInfo::SetVertexDeclaration_Index], (byte*)D3DHooks::Hook_SetVertexDeclaration, 5); // https://docs.microsoft.com/en-us/windows/win32/api/d3d9helper/nf-d3d9helper-idirect3ddevice9-setvertexdeclaration
-		oSetVertexShaderConstantF = (tSetVertexShaderConstantF)MemUtil::TrampHook((byte*)vTable[D3DInfo::SetVertexShaderConstantF_Index], (byte*)D3DHooks::Hook_SetVertexShaderConstantF, 5); // https://docs.microsoft.com/en-us/windows/win32/api/d3d9helper/nf-d3d9helper-idirect3ddevice9-setvertexshaderconstantf
-		oReset = (tReset)MemUtil::TrampHook((byte*)vTable[D3DInfo::Reset_Index], (byte*)D3DHooks::Hook_Reset, 5); // https://docs.microsoft.com/en-us/windows/win32/api/d3d9helper/nf-d3d9helper-idirect3ddevice9-reset
-		oSetVertexShader = (tSetVertexShader)MemUtil::TrampHook((byte*)vTable[D3DInfo::SetVertexShader_Index], (byte*)D3DHooks::Hook_SetVertexShader, 5); // https://docs.microsoft.com/en-us/windows/win32/api/d3d9helper/nf-d3d9helper-idirect3ddevice9-setvertexshader
-		oSetPixelShader = (tSetPixelShader)MemUtil::TrampHook((byte*)vTable[D3DInfo::SetPixelShader_Index], (byte*)D3DHooks::Hook_SetPixelShader, 5); // https://docs.microsoft.com/en-us/windows/win32/api/d3d9helper/nf-d3d9helper-idirect3ddevice9-setpixelshader
-		oSetStreamSource = (tSetStreamSource)MemUtil::TrampHook((byte*)vTable[D3DInfo::SetStreamSource_Index], (byte*)D3DHooks::Hook_SetStreamSource, 5); // https://docs.microsoft.com/en-us/windows/win32/api/d3d9helper/nf-d3d9helper-idirect3ddevice9-setstreamsource
-		oEndScene = (tEndScene)MemUtil::TrampHook((byte*)vTable[D3DInfo::EndScene_Index], (byte*)D3DHooks::Hook_EndScene, 5); // https://docs.microsoft.com/en-us/windows/win32/api/d3d9helper/nf-d3d9helper-idirect3ddevice9-endscene
-		oDrawIndexedPrimitive = (tDrawIndexedPrimitive)MemUtil::TrampHook((byte*)vTable[D3DInfo::DrawIndexedPrimitive_Index], (byte*)D3DHooks::Hook_DIP, 5); // https://docs.microsoft.com/en-us/windows/win32/api/d3d9helper/nf-d3d9helper-idirect3ddevice9-drawindexedprimitive
-		oDrawPrimitive = (tDrawPrimitive)MemUtil::TrampHook((byte*)vTable[D3DInfo::DrawPrimitive_Index], (byte*)D3DHooks::Hook_DP, 5); // https://docs.microsoft.com/en-us/windows/win32/api/d3d9helper/nf-d3d9helper-idirect3ddevice9-drawprimitive
-
-		oStretchRect = (tStretchRect)MemUtil::TrampHook((byte*)vTable[D3DInfo::StretchRect_Index], (byte*)D3DHooks::Hook_StretchRect, 5);
-		oSetRenderTarget = (tSetRenderTarget)MemUtil::TrampHook((byte*)vTable[D3DInfo::SetRenderTarget_Index], (byte*)D3DHooks::Hook_SetRenderTarget, 5);
-		oSetTexture = (tSetTexture)MemUtil::TrampHook((byte*)vTable[D3DInfo::SetTexture_Index], (byte*)D3DHooks::Hook_SetTexture, 5);
-		oDrawPrimitiveUP = (tDrawPrimitiveUP)MemUtil::TrampHook((byte*)vTable[D3DInfo::DrawPrimitiveUP_Index], (byte*)D3DHooks::Hook_DrawPrimitiveUP, 5);
-		oDrawIndexedPrimitiveUP = (tDrawIndexedPrimitiveUP)MemUtil::TrampHook((byte*)vTable[D3DInfo::DrawIndexedPrimitiveUP_Index], (byte*)D3DHooks::Hook_DrawIndexedPrimitiveUP, 5);
+		// Publish each original before its hook can run.
+		InstallD3DHook("SetVertexDeclaration", (PBYTE)vTable[D3DInfo::SetVertexDeclaration_Index], (PBYTE)D3DHooks::Hook_SetVertexDeclaration, oSetVertexDeclaration);
+		InstallD3DHook("SetVertexShaderConstantF", (PBYTE)vTable[D3DInfo::SetVertexShaderConstantF_Index], (PBYTE)D3DHooks::Hook_SetVertexShaderConstantF, oSetVertexShaderConstantF);
+		InstallD3DHook("Reset", (PBYTE)vTable[D3DInfo::Reset_Index], (PBYTE)D3DHooks::Hook_Reset, oReset);
+		InstallD3DHook("SetVertexShader", (PBYTE)vTable[D3DInfo::SetVertexShader_Index], (PBYTE)D3DHooks::Hook_SetVertexShader, oSetVertexShader);
+		InstallD3DHook("SetPixelShader", (PBYTE)vTable[D3DInfo::SetPixelShader_Index], (PBYTE)D3DHooks::Hook_SetPixelShader, oSetPixelShader);
+		InstallD3DHook("SetStreamSource", (PBYTE)vTable[D3DInfo::SetStreamSource_Index], (PBYTE)D3DHooks::Hook_SetStreamSource, oSetStreamSource);
+		InstallD3DHook("EndScene", (PBYTE)vTable[D3DInfo::EndScene_Index], (PBYTE)D3DHooks::Hook_EndScene, oEndScene);
+		InstallD3DHook("DrawIndexedPrimitive", (PBYTE)vTable[D3DInfo::DrawIndexedPrimitive_Index], (PBYTE)D3DHooks::Hook_DIP, oDrawIndexedPrimitive);
+		InstallD3DHook("DrawPrimitive", (PBYTE)vTable[D3DInfo::DrawPrimitive_Index], (PBYTE)D3DHooks::Hook_DP, oDrawPrimitive);
+		InstallD3DHook("StretchRect", (PBYTE)vTable[D3DInfo::StretchRect_Index], (PBYTE)D3DHooks::Hook_StretchRect, oStretchRect);
+		InstallD3DHook("SetRenderTarget", (PBYTE)vTable[D3DInfo::SetRenderTarget_Index], (PBYTE)D3DHooks::Hook_SetRenderTarget, oSetRenderTarget);
+		InstallD3DHook("SetTexture", (PBYTE)vTable[D3DInfo::SetTexture_Index], (PBYTE)D3DHooks::Hook_SetTexture, oSetTexture);
+		InstallD3DHook("DrawPrimitiveUP", (PBYTE)vTable[D3DInfo::DrawPrimitiveUP_Index], (PBYTE)D3DHooks::Hook_DrawPrimitiveUP, oDrawPrimitiveUP);
+		InstallD3DHook("DrawIndexedPrimitiveUP", (PBYTE)vTable[D3DInfo::DrawIndexedPrimitiveUP_Index], (PBYTE)D3DHooks::Hook_DrawIndexedPrimitiveUP, oDrawIndexedPrimitiveUP);
 
 		D3DHooks::InitializeCrcProvider();
 	}

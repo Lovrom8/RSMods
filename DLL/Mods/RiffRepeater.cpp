@@ -1,5 +1,34 @@
 #include "../stdafx.h"
+#include "../Framework/InstructionPatch.hpp"
 #include "RiffRepeater.hpp"
+
+namespace {
+	using RiffInstruction = std::array<std::uint8_t, 6>;
+	constexpr std::array<std::uint8_t, 2> kRiffInstructionShape{ 0xDD, 0x05 };
+	RiffInstruction originalRiffInstruction{};
+	bool riffOriginalCaptured = false;
+
+	void LogRiffPatchResult(const char* action, MemUtil::PatchResult result) {
+		switch (result) {
+		case MemUtil::PatchResult::Installed:
+			LOG_INFO("(RIFF REPEATER) " << action << " bytes confirmed" << std::endl);
+			break;
+		case MemUtil::PatchResult::Original:
+			LOG_WARNING("(RIFF REPEATER) " << action << " write not applied; previous bytes confirmed" << std::endl);
+			break;
+		case MemUtil::PatchResult::RollbackIncomplete:
+			LOG_ERROR("(RIFF REPEATER) " << action << " outcome is indeterminate" << std::endl);
+			break;
+		}
+	}
+
+	void LogRiffOriginal(const RiffInstruction& bytes) {
+		std::ostringstream text;
+		for (std::uint8_t byte : bytes)
+			text << std::hex << static_cast<unsigned int>(byte) << ' ';
+		LOG_INFO("(RIFF REPEATER) Linear speed original: " << text.str() << std::endl);
+	}
+}
 
 const float Divisor = 10000.f;
 const float Max = 400.f;
@@ -173,16 +202,89 @@ void __declspec(naked) hook_timeStretchCalculations() {
 /// Enables the fixes that make Riff Repeater speeds linear. 68% on the slider -> 68% song speed.
 /// </summary>
 void RiffRepeater::EnableLinearSpeeds() {
-	currentlyEnabled_LinearRR = true;
-	MemUtil::PlaceHook(Offsets::ptr_timeStretchCalculations, hook_timeStretchCalculations, 6);
+	const uintptr_t site = Offsets::ptr_timeStretchCalculations.Get();
+	RiffInstruction current{};
+	RiffInstruction hookBytes{};
+	if (!site || !MemUtil::TryRead(site, current)
+		|| !Framework::InstructionPatch::BuildRelativeJump(site,
+			reinterpret_cast<uintptr_t>(&hook_timeStretchCalculations), hookBytes)) {
+		LOG_WARNING("(RIFF REPEATER) Linear speed site could not be read or mapped" << std::endl);
+		return;
+	}
+	if (Framework::InstructionPatch::IsOwnedReplacement(riffOriginalCaptured, current, hookBytes)) {
+		currentlyEnabled_LinearRR = true;
+		return;
+	}
+
+	if (riffOriginalCaptured) {
+		if (current != originalRiffInstruction) {
+			LOG_WARNING("(RIFF REPEATER) Linear speed site changed; no patch applied" << std::endl);
+			return;
+		}
+	}
+	else if (!Framework::InstructionPatch::CaptureOriginal(current, kRiffInstructionShape, originalRiffInstruction)) {
+		LOG_WARNING("(RIFF REPEATER) Linear speed instruction shape mismatch; no patch applied" << std::endl);
+		return;
+	}
+	else {
+		riffOriginalCaptured = true;
+	}
+
+	LogRiffOriginal(originalRiffInstruction);
+	const auto result = MemUtil::WritePatch(reinterpret_cast<LPVOID>(site), hookBytes.data(), hookBytes.size());
+	LogRiffPatchResult("Linear speed install", result);
+	switch (result) {
+	case MemUtil::PatchResult::Installed:
+		currentlyEnabled_LinearRR = true;
+		break;
+	case MemUtil::PatchResult::Original:
+		currentlyEnabled_LinearRR = false;
+		break;
+	case MemUtil::PatchResult::RollbackIncomplete:
+		break;
+	}
 }
 
 /// <summary>
 /// Reverts back to the default way to handle Riff Repeater speeds. 68% on the slider -> 50% song speed.
 /// </summary>
 void RiffRepeater::DisableLinearSpeeds() {
-	currentlyEnabled_LinearRR = false;
-	MemUtil::PatchAdr(Offsets::ptr_timeStretchCalculations, "\xDD\x05\xA0\x18\x22\x01", 6);
+	if (!riffOriginalCaptured) {
+		LOG_WARNING("(RIFF REPEATER) No captured original bytes; site was not restored" << std::endl);
+		return;
+	}
+
+	const uintptr_t site = Offsets::ptr_timeStretchCalculations.Get();
+	RiffInstruction current{};
+	RiffInstruction hookBytes{};
+	if (!site || !MemUtil::TryRead(site, current)
+		|| !Framework::InstructionPatch::BuildRelativeJump(site,
+			reinterpret_cast<uintptr_t>(&hook_timeStretchCalculations), hookBytes)) {
+		LOG_WARNING("(RIFF REPEATER) Linear speed site could not be read or mapped" << std::endl);
+		return;
+	}
+	if (current == originalRiffInstruction) {
+		currentlyEnabled_LinearRR = false;
+		return;
+	}
+	if (!Framework::InstructionPatch::IsOwnedReplacement(riffOriginalCaptured, current, hookBytes)) {
+		LOG_WARNING("(RIFF REPEATER) Linear speed site no longer holds our replacement; no restore made" << std::endl);
+		return;
+	}
+
+	const auto result = MemUtil::WritePatch(reinterpret_cast<LPVOID>(site),
+		originalRiffInstruction.data(), originalRiffInstruction.size());
+	LogRiffPatchResult("Linear speed restore", result);
+	switch (result) {
+	case MemUtil::PatchResult::Installed:
+		currentlyEnabled_LinearRR = false;
+		break;
+	case MemUtil::PatchResult::Original:
+		currentlyEnabled_LinearRR = true;
+		break;
+	case MemUtil::PatchResult::RollbackIncomplete:
+		break;
+	}
 }
 
 void RiffRepeater::HandleSongChange(const std::string& previousSongKey) {

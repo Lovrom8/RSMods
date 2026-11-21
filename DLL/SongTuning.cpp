@@ -176,12 +176,18 @@ void SongTuning::InstallTunerHook() {
 	originalTunerTick = reinterpret_cast<TunerTickFn>(tick);
 	tunerVtable = slot - tunerTickSlotIndex * sizeof(uintptr_t);
 	const uintptr_t hook = reinterpret_cast<uintptr_t>(&Hook_TunerTick);
-	if (!MemUtil::PatchAdr(reinterpret_cast<LPVOID>(slot), &hook, sizeof(hook))) {
-		originalTunerTick = nullptr;
-		LOG_ERROR("(TUNING) Couldn't hook the tuner tick, tuner tuning reads are off" << std::endl);
+	const auto result = MemUtil::WritePatch(reinterpret_cast<LPVOID>(slot), &hook, sizeof(hook));
+	switch (result) {
+	case MemUtil::PatchResult::Installed:
+		LOG_INFO("(TUNING) Hooked the tuner tick" << std::endl);
+		break;
+	case MemUtil::PatchResult::Original:
+		LOG_WARNING("(TUNING) Tuner tick hook was not installed; original slot confirmed" << std::endl);
+		return;
+	case MemUtil::PatchResult::RollbackIncomplete:
+		LOG_ERROR("(TUNING) Tuner tick hook outcome is indeterminate; callback state retained" << std::endl);
 		return;
 	}
-	LOG_INFO("(TUNING) Hooked the tuner tick" << std::endl);
 }
 
 /// <summary>

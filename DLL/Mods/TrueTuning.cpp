@@ -1,5 +1,56 @@
 #include "../stdafx.h"
+#include "../Framework/InstructionPatch.hpp"
 #include "TrueTuning.hpp"
+
+namespace {
+	using TuningInstruction = std::array<std::uint8_t, 6>;
+	using TuningGate = std::array<std::uint8_t, 1>;
+	constexpr std::array<std::uint8_t, 2> kTuningInstructionShape{ 0xD9, 0x05 };
+	constexpr TuningGate kTuningGateShape{ 0x74 };
+	constexpr TuningGate kTuningGatePatch{ 0xEB };
+	TuningInstruction originalTuningInstruction{};
+	TuningGate originalTuningGate{};
+	bool tuningOriginalCaptured = false;
+
+	void LogTuningPatchResult(const char* action, const char* site, MemUtil::PatchResult result) {
+		switch (result) {
+		case MemUtil::PatchResult::Installed:
+			LOG_INFO("(TRUE TUNING) " << action << " " << site << " bytes confirmed" << std::endl);
+			break;
+		case MemUtil::PatchResult::Original:
+			LOG_WARNING("(TRUE TUNING) " << action << " " << site << " write not applied; previous bytes confirmed" << std::endl);
+			break;
+		case MemUtil::PatchResult::RollbackIncomplete:
+			LOG_ERROR("(TRUE TUNING) " << action << " " << site << " outcome is indeterminate" << std::endl);
+			break;
+		}
+	}
+
+	template <std::size_t Size>
+	void RollbackTuningPatch(uintptr_t site, const std::array<std::uint8_t, Size>& expected,
+		const std::array<std::uint8_t, Size>& previous, const char* name) {
+		std::array<std::uint8_t, Size> current{};
+		if (!MemUtil::TryRead(site, current)) {
+			LOG_ERROR("(TRUE TUNING) Could not read " << name << " while rolling back" << std::endl);
+			return;
+		}
+		if (current == previous)
+			return;
+		if (current != expected) {
+			LOG_ERROR("(TRUE TUNING) " << name << " changed during rollback; left untouched" << std::endl);
+			return;
+		}
+		const auto result = MemUtil::WritePatch(reinterpret_cast<LPVOID>(site), previous.data(), previous.size());
+		LogTuningPatchResult("rollback", name, result);
+	}
+
+	void LogTuningBytes(const char* site, const std::uint8_t* bytes, std::size_t size) {
+		std::ostringstream text;
+		for (std::size_t i = 0; i < size; ++i)
+			text << std::hex << static_cast<unsigned int>(bytes[i]) << ' ';
+		LOG_INFO("(TRUE TUNING) " << site << " original: " << text.str() << std::endl);
+	}
+}
 
 const float ForcedTrueTuning = 440.0f;
 
@@ -52,8 +103,62 @@ void __declspec(naked) disableTrueTuning()
 /// </summary>
 void TrueTuning::DisableTrueTuning()
 {
-	MemUtil::PatchAdr(Offsets::ptr_disableTrueTuningGate, "\xEB", 1); // Force a jump into our code, JMP.
-	MemUtil::PlaceHook(Offsets::ptr_disableTrueTuning, disableTrueTuning, 6);
+	const uintptr_t gate = Offsets::ptr_disableTrueTuningGate.Get();
+	const uintptr_t instruction = Offsets::ptr_disableTrueTuning.Get();
+	TuningGate gateBytes{};
+	TuningInstruction instructionBytes{};
+	TuningInstruction hookBytes{};
+	if (!gate || !instruction || !MemUtil::TryRead(gate, gateBytes) || !MemUtil::TryRead(instruction, instructionBytes)
+		|| !Framework::InstructionPatch::BuildRelativeJump(instruction,
+			reinterpret_cast<uintptr_t>(&disableTrueTuning), hookBytes)) {
+		LOG_WARNING("(TRUE TUNING) Disable sites could not be read or mapped; no changes made" << std::endl);
+		return;
+	}
+
+	if (!tuningOriginalCaptured) {
+		if (!Framework::InstructionPatch::CaptureOriginal(instructionBytes, kTuningInstructionShape, originalTuningInstruction)
+			|| !Framework::InstructionPatch::CaptureOriginal(gateBytes, kTuningGateShape, originalTuningGate)) {
+			LOG_WARNING("(TRUE TUNING) Disable instruction shape mismatch; no changes made" << std::endl);
+			return;
+		}
+		tuningOriginalCaptured = true;
+	}
+
+	const bool instructionIsOriginal = instructionBytes == originalTuningInstruction;
+	const bool gateIsOriginal = gateBytes == originalTuningGate;
+	const bool instructionIsHooked = Framework::InstructionPatch::IsOwnedReplacement(
+		tuningOriginalCaptured, instructionBytes, hookBytes);
+	const bool gateIsHooked = Framework::InstructionPatch::IsOwnedReplacement(
+		tuningOriginalCaptured, gateBytes, kTuningGatePatch);
+	if ((!instructionIsOriginal && !instructionIsHooked) || (!gateIsOriginal && !gateIsHooked)) {
+		LOG_WARNING("(TRUE TUNING) Disable sites changed; no changes made" << std::endl);
+		return;
+	}
+	if (instructionIsHooked && gateIsHooked) {
+		LOG_INFO("(TRUE TUNING) Already disabled" << std::endl);
+		return;
+	}
+
+	LogTuningBytes("disable instruction", originalTuningInstruction.data(), originalTuningInstruction.size());
+	LogTuningBytes("disable gate", originalTuningGate.data(), originalTuningGate.size());
+	if (!instructionIsHooked) {
+		const auto result = MemUtil::WritePatch(reinterpret_cast<LPVOID>(instruction), hookBytes.data(), hookBytes.size());
+		LogTuningPatchResult("disable", "instruction", result);
+		if (result != MemUtil::PatchResult::Installed) {
+			RollbackTuningPatch(instruction, hookBytes, originalTuningInstruction, "instruction");
+			return;
+		}
+	}
+
+	if (!gateIsHooked) {
+		const auto result = MemUtil::WritePatch(reinterpret_cast<LPVOID>(gate), kTuningGatePatch.data(), kTuningGatePatch.size());
+		LogTuningPatchResult("disable", "gate", result);
+		if (result != MemUtil::PatchResult::Installed) {
+			RollbackTuningPatch(gate, kTuningGatePatch, originalTuningGate, "gate");
+			RollbackTuningPatch(instruction, hookBytes, originalTuningInstruction, "instruction");
+			return;
+		}
+	}
 
 	LOG_INFO("Disabled true tuning" << std::endl);
 }
@@ -63,8 +168,49 @@ void TrueTuning::DisableTrueTuning()
 /// </summary>
 void TrueTuning::EnableTrueTuning()
 {
-	MemUtil::PatchAdr(Offsets::ptr_disableTrueTuningGate, "\x74", 1); // Change the jump back to a conditional jump, JE.
-	MemUtil::PatchAdr(Offsets::ptr_disableTrueTuning, "\xD9\x05\x68\x44\x22\x01", 6);
+	if (!tuningOriginalCaptured) {
+		LOG_WARNING("(TRUE TUNING) No captured original bytes; sites were not restored" << std::endl);
+		return;
+	}
+
+	const uintptr_t gate = Offsets::ptr_disableTrueTuningGate.Get();
+	const uintptr_t instruction = Offsets::ptr_disableTrueTuning.Get();
+	TuningGate gateBytes{};
+	TuningInstruction instructionBytes{};
+	TuningInstruction hookBytes{};
+	if (!gate || !instruction || !MemUtil::TryRead(gate, gateBytes) || !MemUtil::TryRead(instruction, instructionBytes)
+		|| !Framework::InstructionPatch::BuildRelativeJump(instruction,
+			reinterpret_cast<uintptr_t>(&disableTrueTuning), hookBytes)) {
+		LOG_WARNING("(TRUE TUNING) Enable sites could not be read or mapped; no changes made" << std::endl);
+		return;
+	}
+
+	if (gateBytes == originalTuningGate && instructionBytes == originalTuningInstruction) {
+		LOG_INFO("(TRUE TUNING) Already enabled" << std::endl);
+		return;
+	}
+	if (!Framework::InstructionPatch::IsOwnedReplacement(tuningOriginalCaptured, gateBytes, kTuningGatePatch)
+		|| !Framework::InstructionPatch::IsOwnedReplacement(tuningOriginalCaptured, instructionBytes, hookBytes)) {
+		LOG_WARNING("(TRUE TUNING) Enable sites no longer hold our replacements; no changes made" << std::endl);
+		return;
+	}
+
+	const auto instructionResult = MemUtil::WritePatch(reinterpret_cast<LPVOID>(instruction),
+		originalTuningInstruction.data(), originalTuningInstruction.size());
+	LogTuningPatchResult("enable", "instruction", instructionResult);
+	if (instructionResult != MemUtil::PatchResult::Installed) {
+		RollbackTuningPatch(instruction, originalTuningInstruction, hookBytes, "instruction");
+		return;
+	}
+
+	const auto gateResult = MemUtil::WritePatch(reinterpret_cast<LPVOID>(gate),
+		originalTuningGate.data(), originalTuningGate.size());
+	LogTuningPatchResult("enable", "gate", gateResult);
+	if (gateResult != MemUtil::PatchResult::Installed) {
+		RollbackTuningPatch(gate, originalTuningGate, kTuningGatePatch, "gate");
+		RollbackTuningPatch(instruction, originalTuningInstruction, hookBytes, "instruction");
+		return;
+	}
 
 	LOG_INFO("Enabled true tuning" << std::endl);
 }
