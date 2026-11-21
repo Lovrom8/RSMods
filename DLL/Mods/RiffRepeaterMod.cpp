@@ -141,6 +141,7 @@ void RiffRepeaterMod::SetLoopEnd(const KeyEvent& event) {
 }
 
 void RiffRepeaterMod::OnSongExit(ModContext&) {
+	ResetSongLookup();
 	loopStart = 0.f;
 	roughLoopStart = 0.f;
 	loopEnd = 0.f;
@@ -178,6 +179,57 @@ void RiffRepeaterMod::ChangeSpeed(const ModContext& c, const KeyEvent& event) {
 
 void RiffRepeaterMod::OnTick(ModContext& c) {
 	SyncLinearSpeeds(c);
+	if (!GameState::GameLoaded || c.phase == GamePhase::Loading)
+		return;
+
+	const auto key = GameState::GetSongKey();
+	if (key != songKey_) {
+		songKey_ = key;
+		RiffRepeater::HandleSongChange(key);
+		ResetSongLookup();
+	}
+	if (c.IsOff(Setting::RRSpeedAboveOneHundred)) {
+		if (RiffRepeater::currentlyEnabled_Above100)
+			RiffRepeater::DisableTimeStretch();
+		ResetSongLookup();
+	}
+	RiffRepeater::SaveSpeedToFileOnChange();
+}
+
+void RiffRepeaterMod::ResetSongLookup() {
+	lookupStarted_.reset();
+	nextLookup_ = {};
+	lookupAttempts_ = 0;
+	lookupResult_ = AK_IDNotFound;
+	lookupExhausted_ = false;
+}
+
+void RiffRepeaterMod::ResolveSongID() {
+	if (songKey_.empty() || RiffRepeater::loggedCurrentSongID || lookupExhausted_)
+		return;
+	const auto now = std::chrono::steady_clock::now();
+	if (!lookupStarted_)
+		lookupStarted_ = now;
+	// Banks can become visible after song mode begins. Yield between requests.
+	if (now - *lookupStarted_ >= std::chrono::seconds(30)) {
+		lookupExhausted_ = true;
+		LOG_WARNING("(RIFF REPEATER) Audio object unavailable for Play_" << songKey_
+			<< " after " << lookupAttempts_ << " attempts; AKRESULT=" << lookupResult_
+			<< "; speed control unavailable for this selection" << std::endl);
+		return;
+	}
+	if (now < nextLookup_)
+		return;
+	nextLookup_ = now + std::chrono::seconds(1);
+	++lookupAttempts_;
+	if (RiffRepeater::LogSongID(songKey_, lookupResult_)) {
+		if (lookupAttempts_ > 1)
+			LOG_INFO("(RIFF REPEATER) Audio object ready for Play_" << songKey_
+				<< " after " << lookupAttempts_ << " attempts" << std::endl);
+	}
+	else if (lookupAttempts_ == 1)
+		LOG_INFO("(RIFF REPEATER) Waiting for Play_" << songKey_
+			<< " audio object; AKRESULT=" << lookupResult_ << std::endl);
 }
 
 // Patch (or revert) the linear Riff Repeater speed logic to track the setting.
@@ -217,10 +269,8 @@ void RiffRepeaterMod::OnMenuTick(ModContext& c) {
 }
 
 void RiffRepeaterMod::OnSongTick(ModContext& c) {
-	// First time we see this song, log its id so the >100% speed table can prep.
-	if (RiffRepeater::readyToLogSongID && RiffRepeater::LogSongID(GameState::GetSongKey())) {
-		RiffRepeater::readyToLogSongID = false;
-	}
+	if (c.IsOn(Setting::RRSpeedAboveOneHundred))
+		ResolveSongID();
 
 	// Only attach Time Stretch while the speed isn't 100%, and only once we know which object to attach it to.
 	if (c.IsOn(Setting::RRSpeedAboveOneHundred) && RiffRepeater::loggedCurrentSongID) {

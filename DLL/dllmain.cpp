@@ -55,30 +55,6 @@ unsigned WINAPI MidiThread() {
 	return 0;
 }
 
-unsigned WINAPI RiffRepeaterThread() {
-	// Wait for the game to enter the main menu before attempting to read the current song info, in order to prevent crashes
-	while (!GameState::GameLoaded)
-		Sleep(5000);
-
-	std::string previousSongKey = "";
-
-	// We can only user Riff Repeater while the game is open, so verify it's open. Runs every 100 ms.
-	while (!GameState::GameClosing) {
-		Sleep(100);
-
-		const auto songKey = GameState::GetSongKey();
-		if (songKey != previousSongKey) {
-			previousSongKey = songKey;
-
-			RiffRepeater::HandleSongChange(previousSongKey);
-		}
-
-		RiffRepeater::SaveSpeedToFileOnChange();
-	}
-
-	return 0;
-}
-
 const bool ensureForcedTopMode = false;
 
 /// <summary>
@@ -378,7 +354,6 @@ void Initialize() {
 	std::thread(MainThread).detach(); // Mod Toggle based on menus
 	std::thread(StallMonitorThread).detach(); // Logs a MainThread hook that never returns
 	std::thread(MidiThread).detach(); // MIDI Auto Tuning / True Tuning
-	std::thread(RiffRepeaterThread).detach(); // RR Speed Above 100% Log
 }
 
 /// <summary>

@@ -10,8 +10,8 @@ namespace VolumeControl {
 	void UnmutePlayer(bool player2 = false);
 	MemUtil::PatchResult DisableSongPreviewAudio();
 	MemUtil::PatchResult EnableSongPreviewAudio();
-	void AllowAltTabbingWithAudio();
-	void DisableAltTabbingWithAudio();
+	MemUtil::PatchResult AllowAltTabbingWithAudio();
+	MemUtil::PatchResult DisableAltTabbingWithAudio();
 	inline bool disabledSongPreviewAudio = false;
 	inline bool allowedAltTabbingWithAudio = false;
 	inline bool focusSetterPatched = false;

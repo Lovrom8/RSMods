@@ -128,6 +128,8 @@ void Offsets::Initialize() {
 	ptr_InvalidInputTreeRootEmptyJmpBck = { {0x0092DBF0, baseHandle + 0x005701D0} };
 	ptr_IsWindowInFocus = { {0x1251A78, baseHandle + 0x00E52A78} };						// Static Memory | 00 00 00 80 01 00 00 00 04 00 00 00 01 00 00 00 (second variable)
 	ptr_WindowNotInFocusValue = { {0xEC5D46, baseHandle + 0x00AC5486} };    // Code | c6 05 <IsWindowInFocus> 00 c3: the immediate of the setter that writes 0.
+	// Window-procedure focus loss: PUSH ESI; CALL the native pause event.
+	patch_FocusLostPauseCall = { {0x0078CA4B, baseHandle + 0x0038D82B} };
 
 	// Lua Hijack
 	// Gamebryo Game Engine

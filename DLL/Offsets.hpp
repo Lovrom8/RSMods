@@ -220,6 +220,7 @@ namespace Offsets {
 	// Audio In Background
 	inline VersioningStruct<uintptr_t> ptr_IsWindowInFocus;
 	inline VersioningStruct<uintptr_t> ptr_WindowNotInFocusValue;
+	inline VersioningStruct<uintptr_t> patch_FocusLostPauseCall;
 
 	// Lua Hijack
 		// Gamebryo Game Engine

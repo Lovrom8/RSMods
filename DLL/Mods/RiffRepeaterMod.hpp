@@ -5,11 +5,12 @@
 
 #include <chrono>
 #include <optional>
+#include <string>
 
 // Consolidates the Riff Repeater features that used to live in ModManager:
 //   - LinearRiffRepeater: patches the RR speed logic to be linear, kept in sync with the setting.
 //   - RRSpeedAboveOneHundred: enables >100% time stretch in a song and drops it when leaving to a non-score menu.
-// Also logs the current song id the first time it is seen so the >100% speed table is ready.
+// Resolves song audio objects only while the >100% speed option needs them.
 class RiffRepeaterMod : public Framework::IMod {
 public:
 	MOD_ID(RiffRepeaterMod)
@@ -33,6 +34,8 @@ private:
 	void SyncLinearSpeeds(Framework::ModContext& c);
 	void PublishHud(Framework::ModContext& c);
 	void UpdateLoopState(Framework::ModContext& c);
+	void ResolveSongID();
+	void ResetSongLookup();
 
 	float loopStart = 0.f;
 	float roughLoopStart = 0.f;
@@ -40,4 +43,10 @@ private:
 	std::optional<std::chrono::steady_clock::time_point> loopSeekAt;  // Last seek back, until the timer is seen before loopEnd
 	bool linearPatchUnavailable_ = false;
 	bool linearPatchFaulted_ = false;
+	std::string songKey_;
+	std::optional<std::chrono::steady_clock::time_point> lookupStarted_;
+	std::chrono::steady_clock::time_point nextLookup_{};
+	unsigned int lookupAttempts_ = 0;
+	AKRESULT lookupResult_ = AK_IDNotFound;
+	bool lookupExhausted_ = false;
 };

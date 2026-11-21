@@ -117,22 +117,22 @@ void RiffRepeater::SyncTimeStretch() {
 /// </summary>
 /// <param name="songKey"> - SongKey for the current playing song.</param>
 /// <returns>QueryAudioObjectIDs == AK_SUCCESS</returns>
-bool RiffRepeater::LogSongID(const std::string& songKey) {
+bool RiffRepeater::LogSongID(const std::string& songKey, AKRESULT& result) {
+	result = AK_IDNotFound;
 	if (songKey.empty()) return false;
 
 	std::string playEvent = std::string("Play_") + songKey;
 	AkUInt32 totalObjects = 0;
 
 	// Gets total number of objects so we know how much memory we need to allocate.
-    AKRESULT resCount = Wwise::SoundEngine::Query::QueryAudioObjectIDs(playEvent.c_str(), &totalObjects, nullptr);
+	AKRESULT resCount = Wwise::SoundEngine::Query::QueryAudioObjectIDs(playEvent.c_str(), &totalObjects, nullptr);
+	result = resCount;
 	if (resCount != AK_Success && resCount != AK_PartialSuccess) {
 		loggedCurrentSongID = false;
-		LOG_ERROR("QueryAudioObjectIDs count failed for event " + playEvent << std::endl);
 		return false;
 	}
 	if (totalObjects == 0) {
 		loggedCurrentSongID = false;
-		LOG_INFO("No audio objects for event " + playEvent << std::endl);
 		return false;
 	}
 
@@ -141,14 +141,13 @@ bool RiffRepeater::LogSongID(const std::string& songKey) {
 
 	// Get the Actor-Mixer ID that we need to manipulate the Time_Stretch parameter.
 	resCount = Wwise::SoundEngine::Query::QueryAudioObjectIDs(playEvent.c_str(), &capacity, objects.data());
+	result = resCount;
 	if (resCount != AK_Success && resCount != AK_PartialSuccess) {
 		loggedCurrentSongID = false;
-		LOG_ERROR("QueryAudioObjectIDs fill failed for event " + playEvent << std::endl);
 		return false;
 	}
 	if (capacity == 0) {
 		loggedCurrentSongID = false;
-		LOG_INFO("Zero objects returned on fill for event " + playEvent << std::endl);
 		return false;
 	}
 
@@ -215,16 +214,16 @@ MemUtil::PatchResult RiffRepeater::DisableLinearSpeeds() {
 	return result;
 }
 
-void RiffRepeater::HandleSongChange(const std::string& previousSongKey) {
-	// If we have cached this event, then use the cached version, and tell the other threads to enable the Riff Repeater speed mod.
-	if (auto it = SongObjectIDs.find("Play_" + previousSongKey); it != SongObjectIDs.end()) {
+void RiffRepeater::HandleSongChange(const std::string& songKey) {
+	RemoveTimeStretch();
+	currentSongID = 0;
+	// All song-object state is owned by MainThread (RiffRepeaterMod::OnTick).
+	if (auto it = SongObjectIDs.find("Play_" + songKey); it != SongObjectIDs.end()) {
 		currentSongID = it->second;
-		readyToLogSongID = false;
 		loggedCurrentSongID = true;
 	}
 	else { // We have not seen this event yet, so we need to log the internal ID for the song and cache it.
 		loggedCurrentSongID = false;
-		readyToLogSongID = true; // Wait until the user gets into the song so we can grab this ID.
 	}
 }
 

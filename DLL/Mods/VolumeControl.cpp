@@ -26,7 +26,7 @@ namespace {
 		const std::uintptr_t immediate = Offsets::ptr_WindowNotInFocusValue.GetValue();
 		return MakeSite("focus-state setter", immediate ? immediate - 6 : 0, VersionedPattern<8>{
 			ExactPattern(MakeBytes(0xC6, 0x05, 0x78, 0x1A, 0x25, 0x01, 0x00, 0xC3)),
-			UnavailablePattern<8>()
+			ExpandLnpPattern<8>("C6 05 @E52A78 00 C3")
 		}, replacement);
 	}
 
@@ -37,6 +37,14 @@ namespace {
 			MaskedPattern(MakeBytes(0x00, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00), mask),
 			MaskedPattern(MakeBytes(0x01, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00), mask)
 		}, MakeBytes(0x01, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00));
+	}
+
+	SiteDescriptor<6> FocusLostPauseSite() {
+		// Suppress only the focus-loss caller; cable errors use the same native event.
+		return MakeSite("focus-loss pause call", Offsets::patch_FocusLostPauseCall.GetValue(), VersionedPattern<6>{
+			ExactPattern(MakeBytes(0x56, 0xE8, 0x0F, 0x63, 0xE5, 0xFF)),
+			ExactPattern(MakeBytes(0x56, 0xE8, 0x1F, 0x65, 0xE5, 0xFF))
+		}, MakeBytes(0x90, 0x90, 0x90, 0x90, 0x90, 0x90));
 	}
 }
 
@@ -173,32 +181,30 @@ MemUtil::PatchResult VolumeControl::EnableSongPreviewAudio() {
 /// <summary>
 /// Allows the user to play music in game while Alt+Tabbed.
 /// </summary>
-void VolumeControl::AllowAltTabbingWithAudio() {
-	if (focusPatch.NeedsLifetime())
-		return;
+MemUtil::PatchResult VolumeControl::AllowAltTabbingWithAudio() {
 	const std::uint32_t focusAddress = static_cast<std::uint32_t>(Offsets::ptr_IsWindowInFocus.GetValue());
 	const auto setterReplacement = MakeBytes(0xC6, 0x05,
 		focusAddress & 0xFF, (focusAddress >> 8) & 0xFF, (focusAddress >> 16) & 0xFF, (focusAddress >> 24) & 0xFF,
 		0x01, 0xC3);
 	const auto setter = FocusSetterSite(setterReplacement);
 	const auto variable = FocusVariableSite();
-	const auto result = focusPatch.Install("Background audio", ReadSite, setter, variable);
+	const auto result = focusPatch.Install("Background audio", ReadSite, setter, variable, FocusLostPauseSite());
 	if (result == MemUtil::PatchResult::Installed) {
 		focusSetterPatched = true;
 		allowedAltTabbingWithAudio = true;
 	}
+	return result;
 }
 
 
 /// <summary>
 /// Pauses the audio when the user Alt+Tabs. This is the standard behavior of Rocksmith 2014.
 /// </summary>
-void VolumeControl::DisableAltTabbingWithAudio() {
-	if (!focusPatch.NeedsLifetime())
-		return;
+MemUtil::PatchResult VolumeControl::DisableAltTabbingWithAudio() {
 	const auto result = focusPatch.Restore("Background audio restore");
 	if (result == MemUtil::PatchResult::Original) {
 		focusSetterPatched = false;
 		allowedAltTabbingWithAudio = false;
 	}
+	return result;
 }

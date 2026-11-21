@@ -1,6 +1,8 @@
 #include "../stdafx.h"
 #include "AllowAudioInBackgroundMod.hpp"
 
+#include <stdexcept>
+
 using Framework::ModContext;
 using Framework::SettingDef;
 using Framework::SettingDefs;
@@ -19,11 +21,13 @@ bool AllowAudioInBackgroundMod::IsEnabled(const ModContext& c) const {
 }
 
 void AllowAudioInBackgroundMod::OnEnabled(ModContext&) {
-    VolumeControl::AllowAltTabbingWithAudio();
+    if (VolumeControl::AllowAltTabbingWithAudio() != MemUtil::PatchResult::Installed)
+        throw std::runtime_error("background-audio patch could not be installed");
 }
 
 void AllowAudioInBackgroundMod::OnDisabled(ModContext&) {
-    VolumeControl::DisableAltTabbingWithAudio();
+    if (VolumeControl::DisableAltTabbingWithAudio() != MemUtil::PatchResult::Original)
+        throw std::runtime_error("background-audio patch could not be restored");
 }
 
 static Framework::ModRegistrar<AllowAudioInBackgroundMod> _allowAudioInBackgroundReg;

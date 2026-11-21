@@ -16,14 +16,13 @@ namespace RiffRepeater {
 	void SyncTimeStretch();
 	MemUtil::PatchResult EnableLinearSpeeds();
 	MemUtil::PatchResult DisableLinearSpeeds();
-	bool LogSongID(const std::string& songKey);
-	void HandleSongChange(const std::string& previousSongKey);
+	bool LogSongID(const std::string& songKey, AKRESULT& result);
+	void HandleSongChange(const std::string& songKey);
 	void SaveSpeedToFileOnChange();
 
 	inline std::map<std::string, AkUInt32> SongObjectIDs;
 	inline AkUInt32 currentSongID;
 	inline AkUInt32 timeStretchSongID; // Object the Time Stretch effect is currently attached to.
-	inline bool readyToLogSongID;
 	inline bool loggedCurrentSongID = false;
 
 	inline bool currentlyEnabled_Above100 = false;
