@@ -5,4 +5,5 @@ namespace AssetLoadDrain {
 	void Install();
 	void SetActive(bool active);
 	void SetBootActive(bool active);
+	unsigned int ExtraSteps();
 }

@@ -101,6 +101,7 @@ namespace {
 
 	// Menu state is published by the mod thread.
 	std::atomic<bool> mainMenuSeen = false;
+	std::atomic<double> mainMenuSeenSeconds{ 0.0 };
 	std::atomic<bool> onSignInScreen = false;
 
 	double EffectiveBudgetMs() {
@@ -515,6 +516,7 @@ namespace {
 	unsigned int dlcAtStart = 0;
 	long long queueEmptyTicks = 0;
 	unsigned int waitingAtQueueEmpty = 0;
+	double longestFrameMs = 0.0;
 	long long lastProgressLogTicks = 0;
 
 	std::atomic<bool> progressActive = false;
@@ -1576,6 +1578,7 @@ namespace {
 	}
 
 	void Start(unsigned char* service, long long now) {
+		longestFrameMs = 0.0;
 		EnumerationPreparation::ResetIndexStats();
 		EnumerationPreparation::ResetMapperRestore();
 		scanCacheGeneration = EnumerationCache::BeginMapperRefsScan();
@@ -1752,6 +1755,10 @@ namespace {
 	void LogScanDone(unsigned int total, unsigned int dlc, unsigned int newDlc);
 
 	void Finish() {
+		LOG_INFO("(BOOT DRAIN) scan=" << scanCount
+			<< " menuSeen=" << mainMenuSeenSeconds.load(std::memory_order_acquire)
+			<< " assetStepsAtFinish=" << AssetLoadDrain::ExtraSteps()
+			<< " longestFrameMs=" << longestFrameMs << std::endl);
 		draining = false;
 		EnumerationPreparation::LogIndexStats();
 		LazyVfs::Report("scan done");
@@ -1864,8 +1871,10 @@ namespace {
 			Start(service, Now());
 		++drainTicks;
 		++window.ticks;
-		if (window.lastTickStart)
+		if (window.lastTickStart) {
 			window.maxFrameMs = (std::max)(window.maxFrameMs, (start - window.lastTickStart) / ticksPerMs);
+			longestFrameMs = (std::max)(longestFrameMs, (start - window.lastTickStart) / ticksPerMs);
+		}
 		window.lastTickStart = start;
 		const double budget = EffectiveBudgetMs();
 		scanBudgetSumMs += budget;
@@ -1887,9 +1896,9 @@ namespace {
 		loadStepMs += loadMs;
 
 		unsigned int done = 0;
-		// Before menu readiness, drain before preloader commands are dispatched between frames.
-		// Profile loading shares the frame and must retain its budget.
-		const bool passAll = !mainMenuSeen.load(std::memory_order_relaxed)
+		// The first boot scan uses its per-tick cap and budget; earlier rescans can burst.
+		const bool passAll = !(scanCount == 1 && !mainMenuReady.load(std::memory_order_relaxed))
+			&& !mainMenuSeen.load(std::memory_order_relaxed)
 			&& !UplayLoginMod::IsSourceProfileLoading();
 		const unsigned int perTick = passAll ? 0xFFFFFFFFu : EffectiveMaxPerTick();
 		while (done < perTick && service[off_installing] && QueueLength(service) > 0) {
@@ -2147,6 +2156,9 @@ namespace {
 			menuReadySeconds.store(ProcessSeconds(), std::memory_order_release);
 			LOG_INFO("(BOOT) summary: main menu ready " << menuReadySeconds.load()
 				<< " s after launch; source=first DLC tick after transition completion" << std::endl);
+			LOG_INFO("(BOOT DRAIN) scan=" << scanCount << " clock=process_seconds menuReady="
+				<< menuReadySeconds.load() << " menuSeen=" << mainMenuSeenSeconds.load(std::memory_order_acquire)
+				<< " assetStepsAtMenuReady=" << AssetLoadDrain::ExtraSteps() << std::endl);
 			// Transition completion catches title readiness even if menu polls miss it.
 			GameState::UnlockRealMenu();
 			// Stop cached folder answers here so later DLC additions are visible.
@@ -2362,7 +2374,11 @@ void EnumerationDrain::NoteManualRequest() {
 }
 
 void EnumerationDrain::NoteMenu(const std::string& menu) {
-	if (menu == "MainMenu") mainMenuSeen.store(true, std::memory_order_relaxed);
+	if (menu == "MainMenu") {
+		if (!mainMenuSeen.load(std::memory_order_relaxed))
+			mainMenuSeenSeconds.store(ProcessSeconds(), std::memory_order_release);
+		mainMenuSeen.store(true, std::memory_order_relaxed);
+	}
 	onSignInScreen.store(menu == "pre_enter_prompt" || menu == "TitleScreen" || menu == "SelectionListDialog" ||
 		menu == "ProfileSelect" || menu == "SimpleDialog" || menu == "UplayLoginDialog", std::memory_order_relaxed);
 }

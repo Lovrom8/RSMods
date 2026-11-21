@@ -9,10 +9,10 @@ namespace {
 	bool bootActive = false;
 	// Written on the game thread; read on the loader thread.
 	volatile unsigned int loopActive = 0;
-	volatile unsigned int extraLoads = 0;
+	std::atomic<unsigned int> extraLoads{ 0 };
 
 	extern "C" void __cdecl AssetLoadNoteLoop(unsigned int extra) {
-		extraLoads += extra;
+		extraLoads.fetch_add(extra, std::memory_order_relaxed);
 	}
 
 	// stdcall(this); preserve EBX/ESI/EDI and return the final AL progress flag.
@@ -52,7 +52,7 @@ namespace {
 	void UpdateActive() {
 		const bool active = scanActive || bootActive;
 		if (installed && loopActive != (active ? 1u : 0u))
-			LOG_INFO("(ASSET LOADS) Batching " << (active ? "on" : "off") << ", extra loads so far " << extraLoads << std::endl);
+			LOG_INFO("(ASSET LOADS) Batching " << (active ? "on" : "off") << ", extra loads so far " << extraLoads.load(std::memory_order_relaxed) << std::endl);
 		loopActive = active ? 1 : 0;
 	}
 }
@@ -65,6 +65,10 @@ void AssetLoadDrain::SetActive(bool active) {
 void AssetLoadDrain::SetBootActive(bool active) {
 	bootActive = active;
 	UpdateActive();
+}
+
+unsigned int AssetLoadDrain::ExtraSteps() {
+	return extraLoads.load(std::memory_order_relaxed);
 }
 
 void AssetLoadDrain::Install() {
