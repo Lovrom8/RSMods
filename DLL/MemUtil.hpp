@@ -281,6 +281,8 @@ namespace MemUtil {
 		bool captureNativeEntry = false;
 		std::span<const unsigned char> replacementBytes{};
 		size_t length = 0;
+		// A gateway over bytes not known in advance (no expectedBytes, no length) spans up to the
+		// first instruction boundary at or after this length.
 		size_t minimumLength = 0;
 	};
 
@@ -298,11 +300,17 @@ namespace MemUtil {
 		bool Prepare(std::span<const PreparedPatchRequest> requests);
 		bool Append(const PreparedPatchRequest& request);
 		void Reset() noexcept;
+		// Commit and Rollback write with other threads running unless the owner asked for exclusion:
+		// then they stop every other thread around a write that is not only pointer stores, unless no
+		// other thread exists at that moment; a refused exclusion leaves the bytes untouched. Pausing
+		// every thread is opt-in because the protected executable tolerates it poorly during loading.
+		void RequireThreadExclusion() noexcept { threadExclusion_ = true; }
 		PatchResult Commit() noexcept;
 		PatchResult Rollback() noexcept;
 		PatchOutcome Outcome() const noexcept { return outcome_; }
 		uintptr_t FailureAddress() const noexcept { return failureAddress_; }
 		void Report(const char* group) const;
+		bool ExclusionFailed() const noexcept { return failure_ == Failure::ExecutionSyncFailed; }
 		// Returning an owned entry publishes its address, so the allocation is retained.
 		void* NativeEntry(size_t site) const noexcept;
 		uintptr_t SiteAddress(size_t site) const noexcept;
@@ -313,7 +321,7 @@ namespace MemUtil {
 		friend PBYTE TrampHook(PBYTE src, PBYTE dst, unsigned int len, PatchResult* result,
 			uintptr_t* original);
 		enum class Failure { None, InvalidRequest, BytesMismatch, ReadFailed, QueryFailed, GatewayFailed,
-			CommitFailed };
+			CommitFailed, ExecutionSyncFailed };
 		struct Site {
 			Detail::PatchTransactionSite transaction{};
 			std::vector<unsigned char> original;
@@ -324,6 +332,7 @@ namespace MemUtil {
 		};
 
 		void ReleaseNativeEntries() noexcept;
+		PatchResult RunTransaction(bool rollback) noexcept;
 
 		std::vector<Site> sites_;
 		std::vector<Detail::PatchTransactionRegion> regions_;
@@ -332,9 +341,15 @@ namespace MemUtil {
 		Failure failure_ = Failure::None;
 		uintptr_t failureAddress_ = 0;
 		DWORD failureCode_ = ERROR_SUCCESS;
+		const char* exclusionReason_ = nullptr;
+		DWORD exclusionThread_ = 0;
+		unsigned exclusionPass_ = 0;
 		bool prepared_ = false;
+		// A refused Prepare or Append keeps Commit and Rollback from writing until Reset or Prepare.
+		bool preparationFailed_ = false;
 		bool operationAttempted_ = false;
 		bool useSyscallProtection_ = false;
+		bool threadExclusion_ = false;
 	};
 	bool PatchAdr(VersioningStruct<uintptr_t>& address, LPCVOID changeToMake, size_t len, bool addBaseHandle = false);
 	bool PatchAdr(LPVOID address, LPCVOID changeToMake, size_t len);
@@ -403,6 +418,37 @@ namespace MemUtil {
 	uint32_t GetTextSectionLength();
 	void CheckMemoryProtection(void* address);
 };
+
+namespace MemUtil::Detail {
+	// Offset of the first match that starts at or after from and fits in size bytes, or size when
+	// there is none. size is the whole byte range; mask 'x' marks the bytes that must match.
+	inline size_t FindPatternOffset(const unsigned char* data, size_t size, size_t from,
+		const unsigned char* pattern, const char* mask) noexcept {
+		if (!data || !pattern || !mask)
+			return size;
+		const size_t patternLength = std::string_view(mask).size();
+		if (patternLength == 0 || size < patternLength)
+			return size;
+		for (size_t offset = from; offset <= size - patternLength; ++offset) {
+			size_t matched = 0;
+			while (matched < patternLength
+				&& (mask[matched] != 'x' || data[offset + matched] == pattern[matched]))
+				++matched;
+			if (matched == patternLength)
+				return offset;
+		}
+		return size;
+	}
+
+	// Offset of the only match in the whole range, or size when there is none or more than one.
+	inline size_t FindUniquePatternOffset(const unsigned char* data, size_t size,
+		const unsigned char* pattern, const char* mask) noexcept {
+		const size_t first = FindPatternOffset(data, size, 0, pattern, mask);
+		if (first == size)
+			return size;
+		return FindPatternOffset(data, size, first + 1, pattern, mask) == size ? first : size;
+	}
+}
 
 template <typename T> requires std::is_trivially_copyable_v<T>
 bool MemUtil::TryRead(uintptr_t address, T& value) {

@@ -6,7 +6,6 @@
 #include "../EngineString.hpp"
 #include "../SamplingProfiler.hpp"
 #include "../Framework/ProfilePatchPolicy.hpp"
-#include <TlHelp32.h>
 #include <algorithm>
 #include <atomic>
 #include <array>
@@ -639,329 +638,15 @@ namespace ProfileSaveStreaming {
 			return false;
 		}
 
-		/// <summary>
-		/// Hooks that only work together. If one can't be placed, Undo puts back the ones that were, so the game never runs with half of them.
-		/// </summary>
-		class PatchGroup {
-			struct Saved {
-				uintptr_t address;
-				uint8_t bytes[8];
-				size_t length;
-			};
-			// Fixed storage, so placing a hook never allocates: an allocation can't fail halfway through a group, and the
-			// allocator groups place theirs while every other thread is suspended, possibly inside the heap.
-			std::array<Saved, 4> saved{};
-			size_t savedCount = 0;
-
-			bool Save(uintptr_t address, size_t length) {
-				if (savedCount == saved.size() || length > sizeof(Saved::bytes))
-					return false;
-				saved[savedCount] = { address, {}, length };
-				memcpy(saved[savedCount].bytes, reinterpret_cast<void*>(address), length);
-				savedCount++;
-				return true;
-			}
-
-		public:
-			bool ValidateHook(VersioningStruct<uintptr_t>& at, const uint8_t* expected, size_t length) {
-				return MemUtil::MatchesBytes(at.Get(), std::span<const unsigned char>(expected, length));
-			}
-
-			bool ValidateRedirect(VersioningStruct<uintptr_t>& callSite, uintptr_t expectedTarget) {
-				if (!expectedTarget)
-					return false;
-
-				const uintptr_t site = callSite.Get();
-				const int64_t difference = static_cast<int64_t>(expectedTarget) - static_cast<int64_t>(site + 5);
-				if (difference < INT32_MIN || difference > INT32_MAX)
-					return false;
-				const int32_t relative = static_cast<int32_t>(difference);
-				uint8_t expected[5] = { 0xE8 };
-				memcpy(expected + 1, &relative, sizeof(relative));
-				return MemUtil::MatchesBytes(site, expected);
-			}
-
-			bool Hook(VersioningStruct<uintptr_t>& at, void* hook, int length, const uint8_t* expected) {
-				if (!ValidateHook(at, expected, length))
-					return false;
-				if (!Save(at.Get(), length))
-					return false;
-				if (!MemUtil::PlaceHook(at, hook, length))
-					return false;
-				FlushInstructionCache(GetCurrentProcess(), (void*)at.Get(), length);
-				return true;
-			}
-
-			// Point a validated CALL rel32 somewhere else.
-			bool Redirect(VersioningStruct<uintptr_t>& callSite, void* newTarget, uintptr_t expectedTarget) {
-				const uintptr_t site = callSite.Get();
-				if (!ValidateRedirect(callSite, expectedTarget))
-					return false;
-				if (!Save(site, 5))
-					return false;
-				const int32_t relative = static_cast<int32_t>(reinterpret_cast<uintptr_t>(newTarget) - (site + 5));
-				if (!MemUtil::PatchAdr(site + 1, &relative, sizeof(relative), false))
-					return false;
-				FlushInstructionCache(GetCurrentProcess(), (void*)site, 5);
-				return true;
-			}
-
-			// False if any original could not be put back.
-			bool Undo() {
-				bool restored = true;
-				while (savedCount > 0) {
-					const Saved& entry = saved[--savedCount];
-					restored &= MemUtil::PatchAdr(reinterpret_cast<LPVOID>(entry.address), entry.bytes, entry.length);
-				}
-				return restored;
-			}
-		};
-
-		// While peers are stopped, OS calls are limited to SuspendThread, ResumeThread, GetThreadContext,
-		// WaitForSingleObject(handle, 0), and the prepared commit. Enumeration and handle cleanup stay outside.
-		class OtherThreadsSuspended {
-		public:
-			enum class Failure { None, Snapshot, TooManyThreads, OpenLiveThread, SuspendLiveThread, Context, InPatchSpan, PassLimit };
-			struct FailureInfo {
-				Failure reason = Failure::None;
-				DWORD threadId = 0;
-				DWORD error = ERROR_SUCCESS;
-				unsigned pass = 0;
-			};
-
-		private:
-			struct Thread {
-				DWORD id = 0;
-				HANDLE handle = nullptr;
-				bool suspended = false;
-			};
-			static constexpr size_t maxThreads = 4096;
-			std::array<Thread, maxThreads> threads_{};
-			// A clean probe resumes before the next snapshot, so Toolhelp never runs with peers stopped.
-			std::array<DWORD, maxThreads> previousIds_{};
-			size_t threadCount_ = 0;
-			size_t previousCount_ = 0;
-			bool havePreviousSnapshot_ = false;
-			FailureInfo failure_{};
-
-			bool SnapshotIds(std::array<DWORD, maxThreads>& ids, size_t& count) {
-				count = 0;
-				HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPTHREAD, 0);
-				if (snapshot == INVALID_HANDLE_VALUE) {
-					failure_ = { Failure::Snapshot, 0, GetLastError(), 0 };
-					return false;
-				}
-				THREADENTRY32 entry{};
-				entry.dwSize = sizeof(entry);
-				BOOL more = Thread32First(snapshot, &entry);
-				if (!more) {
-					failure_ = { Failure::Snapshot, 0, GetLastError(), 0 };
-					CloseHandle(snapshot);
-					return false;
-				}
-				const DWORD processId = GetCurrentProcessId();
-				const DWORD currentThreadId = GetCurrentThreadId();
-				while (more) {
-					if (entry.th32OwnerProcessID == processId && entry.th32ThreadID != currentThreadId) {
-						if (count == ids.size()) {
-							failure_ = { Failure::TooManyThreads, entry.th32ThreadID, ERROR_MORE_DATA, 0 };
-							CloseHandle(snapshot);
-							return false;
-						}
-						ids[count++] = entry.th32ThreadID;
-					}
-					entry.dwSize = sizeof(entry);
-					SetLastError(ERROR_SUCCESS);
-					more = Thread32Next(snapshot, &entry);
-					if (!more && GetLastError() != ERROR_NO_MORE_FILES) {
-						failure_ = { Failure::Snapshot, 0, GetLastError(), 0 };
-						CloseHandle(snapshot);
-						return false;
-					}
-				}
-				CloseHandle(snapshot);
-				std::sort(ids.begin(), ids.begin() + count);
-				return true;
-			}
-
-			bool IsStillListed(DWORD id, bool& listed) {
-				std::array<DWORD, maxThreads> ids{};
-				size_t count = 0;
-				if (!SnapshotIds(ids, count))
-					return false;
-				listed = false;
-				for (size_t i = 0; i < count; ++i)
-					listed |= ids[i] == id;
-				return true;
-			}
-
-			void CloseHandles() noexcept {
-				for (size_t i = threadCount_; i > 0; --i) {
-					CloseHandle(threads_[i - 1].handle);
-					threads_[i - 1] = {};
-				}
-				threadCount_ = 0;
-			}
-
-			bool OpenThreads(const std::array<DWORD, maxThreads>& ids, size_t idCount, unsigned pass) {
-				for (size_t i = 0; i < idCount; ++i) {
-					const DWORD id = ids[i];
-					HANDLE thread = OpenThread(THREAD_SUSPEND_RESUME | THREAD_GET_CONTEXT
-						| THREAD_QUERY_LIMITED_INFORMATION | SYNCHRONIZE, FALSE, id);
-					if (!thread) {
-						const DWORD error = GetLastError();
-						bool listed = true;
-						if (IsStillListed(id, listed) && !listed)
-							continue;
-						failure_ = { Failure::OpenLiveThread, id, error, pass };
-						CloseHandles();
-						return false;
-					}
-					threads_[threadCount_++] = { id, thread, false };
-				}
-				return true;
-			}
-
-			bool SuspendOpenedThreads(unsigned pass) {
-				for (size_t i = 0; i < threadCount_; ++i) {
-					Thread& thread = threads_[i];
-					const DWORD previousSuspendCount = SuspendThread(thread.handle);
-					if (previousSuspendCount == static_cast<DWORD>(-1)) {
-						if (WaitForSingleObject(thread.handle, 0) == WAIT_OBJECT_0)
-							continue;
-						failure_ = { Failure::SuspendLiveThread, thread.id, ERROR_GEN_FAILURE, pass };
-						return false;
-					}
-					thread.suspended = true;
-				}
-				return true;
-			}
-
-			bool AnyInside(std::span<const std::pair<uintptr_t, size_t>> spans, unsigned pass) {
-				for (size_t i = 0; i < threadCount_; ++i) {
-					if (!threads_[i].suspended)
-						continue;
-					CONTEXT context{};
-					context.ContextFlags = CONTEXT_CONTROL;
-					if (!GetThreadContext(threads_[i].handle, &context)) {
-						if (WaitForSingleObject(threads_[i].handle, 0) == WAIT_OBJECT_0)
-							continue;
-						failure_ = { Failure::Context, threads_[i].id, ERROR_GEN_FAILURE, pass };
-						return true;
-					}
-					for (const auto& [start, length] : spans) {
-						if (context.Eip >= start && context.Eip - start < length) {
-							failure_ = { Failure::InPatchSpan, threads_[i].id, ERROR_SUCCESS, pass };
-							return true;
-						}
-					}
-				}
+		bool ApplySinglePatch(const MemUtil::PreparedPatchRequest& request, const char* group) {
+			MemUtil::PreparedPatchSet patch;
+			if (!patch.Prepare(std::span<const MemUtil::PreparedPatchRequest>(&request, 1))) {
+				patch.Report(group);
 				return false;
 			}
-
-		public:
-			bool Suspend(std::span<const std::pair<uintptr_t, size_t>> spans) {
-				std::array<DWORD, maxThreads> ids{};
-				for (unsigned pass = 1; pass <= Framework::ProfilePatchPolicy::kMaxSuspensionPasses; ++pass) {
-					size_t idCount = 0;
-					if (!SnapshotIds(ids, idCount)) {
-						failure_.pass = pass;
-						return false;
-					}
-					const bool sameSnapshot = havePreviousSnapshot_ && idCount == previousCount_
-						&& std::equal(ids.begin(), ids.begin() + idCount, previousIds_.begin());
-					if (!havePreviousSnapshot_) {
-						std::copy(ids.begin(), ids.begin() + idCount, previousIds_.begin());
-						previousCount_ = idCount;
-						havePreviousSnapshot_ = true;
-					}
-					else if (!sameSnapshot) {
-						std::copy(ids.begin(), ids.begin() + idCount, previousIds_.begin());
-						previousCount_ = idCount;
-						if (!Framework::ProfilePatchPolicy::CanRetrySuspension(pass)) {
-							failure_ = { Failure::PassLimit, 0, ERROR_SUCCESS, pass };
-							return false;
-						}
-						continue;
-					}
-					if (!OpenThreads(ids, idCount, pass))
-						return false;
-					if (!SuspendOpenedThreads(pass)) {
-						ResumeAll();
-						return false;
-					}
-					if (AnyInside(spans, pass)) {
-						if (failure_.reason != Failure::InPatchSpan) {
-							ResumeAll();
-							return false;
-						}
-						ResumeAll();
-						if (!Framework::ProfilePatchPolicy::CanRetrySuspension(pass)) {
-							failure_ = { Failure::PassLimit, 0, ERROR_SUCCESS, pass };
-							return false;
-						}
-						failure_ = {};
-						Sleep(10);
-						continue;
-					}
-					if (!sameSnapshot) {
-						ResumeAll();
-						if (!Framework::ProfilePatchPolicy::CanRetrySuspension(pass)) {
-							failure_ = { Failure::PassLimit, 0, ERROR_SUCCESS, pass };
-							return false;
-						}
-						continue;
-					}
-					return true;
-				}
-				failure_ = { Failure::PassLimit, 0, ERROR_SUCCESS, Framework::ProfilePatchPolicy::kMaxSuspensionPasses };
-				return false;
-			}
-
-			void ResumeAll() noexcept {
-				for (size_t i = threadCount_; i > 0; --i) {
-					Thread& thread = threads_[i - 1];
-					if (thread.suspended) {
-						ResumeThread(thread.handle);
-						thread.suspended = false;
-					}
-				}
-				CloseHandles();
-			}
-
-			const FailureInfo& FailureDetails() const noexcept { return failure_; }
-
-			~OtherThreadsSuspended() { ResumeAll(); }
-		};
-
-		void ReportSuspensionFailure(const OtherThreadsSuspended::FailureInfo& failure);
-
-		template <typename Place>
-		bool WithOthersSuspended(std::span<const std::pair<uintptr_t, size_t>> spans, Place place) {
-			OtherThreadsSuspended others;
-			const bool suspended = others.Suspend(spans);
-			const bool placed = suspended && place();
-			const OtherThreadsSuspended::FailureInfo failure = others.FailureDetails();
-			others.ResumeAll();
-			if (!suspended)
-				ReportSuspensionFailure(failure);
-			return suspended && placed;
-		}
-
-		void ReportSuspensionFailure(const OtherThreadsSuspended::FailureInfo& failure) {
-			const char* reason = "unknown suspension failure";
-			switch (failure.reason) {
-			case OtherThreadsSuspended::Failure::Snapshot: reason = "thread snapshot failed"; break;
-			case OtherThreadsSuspended::Failure::TooManyThreads: reason = "thread snapshot exceeded its fixed capacity"; break;
-			case OtherThreadsSuspended::Failure::OpenLiveThread: reason = "could not open a live thread"; break;
-			case OtherThreadsSuspended::Failure::SuspendLiveThread: reason = "could not suspend a live thread"; break;
-			case OtherThreadsSuspended::Failure::Context: reason = "could not read a suspended thread context"; break;
-			case OtherThreadsSuspended::Failure::InPatchSpan: reason = "a thread remained in a patched span"; break;
-			case OtherThreadsSuspended::Failure::PassLimit: reason = "thread snapshot pass limit reached"; break;
-			case OtherThreadsSuspended::Failure::None: break;
-			}
-			LOG_ERROR("(PROFILE SAVE) Allocator patch install aborted before patching: " << reason << ", thread="
-				<< failure.threadId << ", pass=" << failure.pass << ", error=" << failure.error << std::endl);
+			const bool installed = patch.Commit() == MemUtil::PatchResult::Installed;
+			patch.Report(group);
+			return installed;
 		}
 
 		// ---- Allocator chunk table growth ----
@@ -1025,17 +710,11 @@ namespace ProfileSaveStreaming {
 		uintptr_t FindUniquePattern(const uint8_t* pattern, const char* mask) {
 			const uint32_t start = MemUtil::GetTextSectionAddress();
 			const uint32_t length = MemUtil::GetTextSectionLength();
-			const size_t patternLength = strlen(mask);
-			if (!start || length <= patternLength)
+			if (!start || !length)
 				return 0;
-
-			const size_t searchable = length - patternLength;
-			const uintptr_t first = MemUtil::FindPattern<uintptr_t>(start, searchable, const_cast<PBYTE>(pattern), mask);
-			if (!first)
-				return 0;
-			const uint32_t next = static_cast<uint32_t>(first + 1);
-			const uintptr_t second = MemUtil::FindPattern<uintptr_t>(next, searchable - (next - start), const_cast<PBYTE>(pattern), mask);
-			return second ? 0 : first;
+			const size_t found = MemUtil::Detail::FindUniquePatternOffset(
+				reinterpret_cast<const unsigned char*>(static_cast<uintptr_t>(start)), length, pattern, mask);
+			return found == length ? 0 : start + found;
 		}
 
 		void InitializeChunkTableGrowth() {
@@ -1050,17 +729,13 @@ namespace ProfileSaveStreaming {
 				MemUtil::PreparedPatchKind::Jump,
 				std::span<const unsigned char>(kChunkGrowthHookBytes, sizeof(kChunkGrowthHookBytes)),
 				0, reinterpret_cast<uintptr_t>(chunkGrowthHook), true };
+			g_chunkGrowthPatches.RequireThreadExclusion();
 			if (!g_chunkGrowthPatches.Prepare(std::span<const MemUtil::PreparedPatchRequest>(&request, 1))) {
 				g_chunkGrowthPatches.Report("(PROFILE SAVE) Allocator chunk table growth");
 				return;
 			}
 			g_nativeChunkGrowth = g_chunkGrowthPatches.NativeEntry(0);
-			const std::pair<uintptr_t, size_t> spans[] = { { site, sizeof(kChunkGrowthHookBytes) } };
-			MemUtil::PatchResult outcome = MemUtil::PatchResult::Original;
-			const bool hooked = WithOthersSuspended(spans, [&] {
-				outcome = g_chunkGrowthPatches.Commit();
-				return outcome == MemUtil::PatchResult::Installed;
-			});
+			const bool hooked = g_chunkGrowthPatches.Commit() == MemUtil::PatchResult::Installed;
 			g_chunkGrowthPatches.Report("(PROFILE SAVE) Allocator chunk table growth");
 			if (!hooked)
 				return;
@@ -1256,19 +931,12 @@ namespace ProfileSaveStreaming {
 				requests[i + 1] = { reinterpret_cast<LPVOID>(calls[i]), MemUtil::PreparedPatchKind::Call,
 					{}, deallocSite, reinterpret_cast<uintptr_t>(allocatorDeallocHook), false };
 			}
+			g_allocatorHintPatches.RequireThreadExclusion();
 			if (!g_allocatorHintPatches.Prepare(requests)) {
 				g_allocatorHintPatches.Report("(PROFILE SAVE) Allocator chunk scan hint");
 				return;
 			}
-			const std::pair<uintptr_t, size_t> spans[] = {
-				{ scanSite + kAllocatorScanHookOffset, sizeof(kAllocatorScanHookBytes) },
-				{ calls[0], 5 }, { calls[1], 5 }, { calls[2], 5 }
-			};
-			MemUtil::PatchResult outcome = MemUtil::PatchResult::Original;
-			const bool hooked = WithOthersSuspended(spans, [&] {
-				outcome = g_allocatorHintPatches.Commit();
-				return outcome == MemUtil::PatchResult::Installed;
-			});
+			const bool hooked = g_allocatorHintPatches.Commit() == MemUtil::PatchResult::Installed;
 			g_allocatorHintPatches.Report("(PROFILE SAVE) Allocator chunk scan hint");
 			if (!hooked)
 				return;
@@ -1696,17 +1364,16 @@ namespace ProfileSaveStreaming {
 
 		void InitializePlaynextTrim() {
 			// The replacement has the same cdecl signature, so the hook just jumps to it.
-			PatchGroup patches;
-			if (!patches.ValidateHook(Offsets::func_playnextTrim, expectedPlaynextTrim, sizeof(expectedPlaynextTrim))) {
-				LOG_ERROR("(PROFILE SAVE) Playnext trim site did not match the reviewed bytes, leaving it unchanged" << std::endl);
-				return;
-			}
-
-			if (patches.Hook(Offsets::func_playnextTrim, TrimPlaynext, sizeof(expectedPlaynextTrim), expectedPlaynextTrim)) {
+			MemUtil::PreparedPatchRequest request{};
+			request.address = reinterpret_cast<LPVOID>(Offsets::func_playnextTrim.Get());
+			request.kind = MemUtil::PreparedPatchKind::Jump;
+			request.expectedBytes = std::span<const unsigned char>(expectedPlaynextTrim, sizeof(expectedPlaynextTrim));
+			request.replacementTarget = reinterpret_cast<uintptr_t>(TrimPlaynext);
+			request.length = sizeof(expectedPlaynextTrim);
+			if (ApplySinglePatch(request, "(PROFILE SAVE) Playnext trim")) {
 				LOG_INFO("(PROFILE SAVE) Replaced the PlaynextStats trim" << std::endl);
 			}
 			else {
-				patches.Undo();
 				LOG_ERROR("(PROFILE SAVE) Failed to replace the PlaynextStats trim" << std::endl);
 			}
 		}
@@ -1716,15 +1383,19 @@ namespace ProfileSaveStreaming {
 		/// </summary>
 		bool InitializeSaveWrapper() {
 			const uintptr_t expectedTarget = ExpectedCallTarget(Offsets::ptr_profileSaveCall, 0x007CD730, 0x007CD7D0, 0x003CE330, 0x003CE3D0);
-			PatchGroup patches;
-			if (!patches.ValidateRedirect(Offsets::ptr_profileSaveCall, expectedTarget)) {
+			if (!expectedTarget) {
 				LOG_ERROR("(PROFILE SAVE) Profile save call did not match the reviewed E8 target, leaving profile load and save unchanged" << std::endl);
 				return false;
 			}
 
 			origSave = reinterpret_cast<tSaveCall>(expectedTarget);
-			if (!patches.Redirect(Offsets::ptr_profileSaveCall, SaveWrapper, expectedTarget)) {
-				patches.Undo();
+			MemUtil::PreparedPatchRequest request{};
+			request.address = reinterpret_cast<LPVOID>(Offsets::ptr_profileSaveCall.Get());
+			request.kind = MemUtil::PreparedPatchKind::Call;
+			request.expectedTarget = expectedTarget;
+			request.replacementTarget = reinterpret_cast<uintptr_t>(SaveWrapper);
+			request.length = 5;
+			if (!ApplySinglePatch(request, "(PROFILE SAVE) Profile save call")) {
 				LOG_ERROR("(PROFILE SAVE) Failed to hook profile saves, not streaming saves or loading profiles in the background" << std::endl);
 				return false;
 			}
@@ -1765,17 +1436,7 @@ namespace ProfileSaveStreaming {
 			}
 			g_nativePrintRoot = g_saveGroupPatches.NativeEntry(2);
 			g_nativeCloneSection = g_saveGroupPatches.NativeEntry(3);
-			const std::pair<uintptr_t, size_t> spans[] = {
-				{ Offsets::ptr_profileSaveCompressBoundCall.Get(), 5 },
-				{ Offsets::ptr_profileSaveCompress2Call.Get(), 5 },
-				{ Offsets::ptr_profileSavePrintRoot.Get(), sizeof(expectedPrintRoot) },
-				{ Offsets::ptr_profileSaveCloneSection.Get(), sizeof(expectedCloneSection) }
-			};
-			MemUtil::PatchResult outcome = MemUtil::PatchResult::Original;
-			const bool hooked = WithOthersSuspended(spans, [&] {
-				outcome = g_saveGroupPatches.Commit();
-				return outcome == MemUtil::PatchResult::Installed;
-			});
+			const bool hooked = g_saveGroupPatches.Commit() == MemUtil::PatchResult::Installed;
 			g_saveGroupPatches.Report("(PROFILE SAVE) Streaming save group");
 			if (!hooked)
 				return;
@@ -1805,15 +1466,7 @@ namespace ProfileSaveStreaming {
 				return false;
 			}
 			g_nativeLoadTick = g_loadGroupPatches.NativeEntry(1);
-			const std::pair<uintptr_t, size_t> spans[] = {
-				{ Offsets::ptr_profileParseCall.Get(), 5 },
-				{ Offsets::ptr_profileLoadTick.Get(), sizeof(expectedLoadTick) }
-			};
-			MemUtil::PatchResult outcome = MemUtil::PatchResult::Original;
-			const bool hooked = WithOthersSuspended(spans, [&] {
-				outcome = g_loadGroupPatches.Commit();
-				return outcome == MemUtil::PatchResult::Installed;
-			});
+			const bool hooked = g_loadGroupPatches.Commit() == MemUtil::PatchResult::Installed;
 			g_loadGroupPatches.Report("(PROFILE SAVE) Background load group");
 			if (!hooked)
 				return false;
@@ -1824,14 +1477,13 @@ namespace ProfileSaveStreaming {
 		}
 
 		void InitializeClearDocument() {
-			PatchGroup patches;
-			if (!patches.ValidateHook(Offsets::ptr_profileLoadClearDocument, expectedClearDocument, sizeof(expectedClearDocument))) {
-				LOG_ERROR("(PROFILE SAVE) Profile document site did not match the reviewed bytes, leaving loaded text unchanged" << std::endl);
-				return;
-			}
-
-			if (!patches.Hook(Offsets::ptr_profileLoadClearDocument, loadClearDocumentHook, sizeof(expectedClearDocument), expectedClearDocument)) {
-				patches.Undo();
+			MemUtil::PreparedPatchRequest request{};
+			request.address = reinterpret_cast<LPVOID>(Offsets::ptr_profileLoadClearDocument.Get());
+			request.kind = MemUtil::PreparedPatchKind::Jump;
+			request.expectedBytes = std::span<const unsigned char>(expectedClearDocument, sizeof(expectedClearDocument));
+			request.replacementTarget = reinterpret_cast<uintptr_t>(loadClearDocumentHook);
+			request.length = sizeof(expectedClearDocument);
+			if (!ApplySinglePatch(request, "(PROFILE SAVE) Profile document clear")) {
 				LOG_ERROR("(PROFILE SAVE) Failed to free the loaded profile text" << std::endl);
 			}
 		}

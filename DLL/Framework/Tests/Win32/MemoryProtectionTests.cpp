@@ -193,7 +193,9 @@ namespace {
 #define VirtualQuery TestVirtualQuery
 #define FlushInstructionCache TestFlushInstructionCache
 #define CSimpleIniA TestIni
+#define MEMUTIL_TESTING
 #include "../../../MemUtil.cpp"
+#undef MEMUTIL_TESTING
 #undef CSimpleIniA
 #undef FlushInstructionCache
 #undef VirtualQuery
@@ -290,6 +292,473 @@ extern "C" __declspec(naked) int __cdecl CheckProtectionAbi() {
 	}
 }
 
+namespace {
+	using TestFunction = int(__cdecl*)();
+	std::atomic<TestFunction> g_spinFunction{ nullptr };
+	std::atomic<bool> g_spinStop{ false };
+	std::atomic<bool> g_spinSawPartial{ false };
+	std::atomic<unsigned int> g_spinCalls{ 0 };
+	std::atomic<bool> g_workerRanWhileSuspended{ false };
+	std::atomic<unsigned int> g_frozenChecks{ 0 };
+	HANDLE g_recheckRelease = nullptr;
+	HANDLE g_recheckCreatedThread = nullptr;
+	bool g_recheckCreateFailed = false;
+
+	DWORD WINAPI SpinCodeWorker(void*) {
+		const TestFunction function = g_spinFunction.load(std::memory_order_acquire);
+		while (!g_spinStop.load(std::memory_order_acquire)) {
+			const int value = function();
+			if (value != 42 && value != 7)
+				g_spinSawPartial.store(true, std::memory_order_release);
+			g_spinCalls.fetch_add(1, std::memory_order_relaxed);
+		}
+		return 0;
+	}
+
+	DWORD WINAPI WaitForReleaseWorker(void*) {
+		WaitForSingleObject(g_recheckRelease, INFINITE);
+		return 0;
+	}
+
+	void __cdecl CreateThreadBeforeSuspend() {
+		if (g_recheckCreatedThread)
+			return;
+		g_recheckCreatedThread = CreateThread(nullptr, 0, WaitForReleaseWorker, nullptr, 0, nullptr);
+		g_recheckCreateFailed = g_recheckCreatedThread == nullptr;
+	}
+
+	// Runs with every other thread suspended: no allocation, only a counter compare over a busy wait.
+	void __cdecl CheckWorkerFrozen() {
+		const unsigned int before = g_spinCalls.load(std::memory_order_relaxed);
+		LARGE_INTEGER frequency{};
+		LARGE_INTEGER start{};
+		LARGE_INTEGER now{};
+		QueryPerformanceFrequency(&frequency);
+		QueryPerformanceCounter(&start);
+		do
+			QueryPerformanceCounter(&now);
+		while (now.QuadPart - start.QuadPart < frequency.QuadPart / 200);
+		if (g_spinCalls.load(std::memory_order_relaxed) != before)
+			g_workerRanWhileSuspended.store(true, std::memory_order_relaxed);
+		g_frozenChecks.fetch_add(1, std::memory_order_relaxed);
+	}
+
+	void TestExecutionSafePatch() {
+		auto* page = static_cast<unsigned char*>(VirtualAlloc(nullptr, 4096,
+			MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE));
+		assert(page);
+		const unsigned char original[] = { 0xB8, 42, 0, 0, 0, 0xC3 };
+		memcpy(page, original, sizeof(original));
+		assert(FlushInstructionCache(GetCurrentProcess(), page, sizeof(original)));
+
+		MemUtil::PreparedPatchRequest request{};
+		request.address = page;
+		request.kind = MemUtil::PreparedPatchKind::Jump;
+		request.expectedBytes = std::span<const unsigned char>(original, 5);
+		request.replacementTarget = reinterpret_cast<uintptr_t>(&Replacement);
+		request.length = 5;
+		MemUtil::PreparedPatchSet patches;
+		patches.RequireThreadExclusion();
+		assert(patches.Prepare(std::span<const MemUtil::PreparedPatchRequest>(&request, 1)));
+
+		g_spinFunction.store(reinterpret_cast<TestFunction>(page), std::memory_order_release);
+		g_spinStop.store(false, std::memory_order_release);
+		g_spinSawPartial.store(false, std::memory_order_release);
+		g_spinCalls.store(0, std::memory_order_relaxed);
+		g_workerRanWhileSuspended.store(false, std::memory_order_relaxed);
+		g_frozenChecks.store(0, std::memory_order_relaxed);
+		HANDLE worker = CreateThread(nullptr, 0, SpinCodeWorker, nullptr, 0, nullptr);
+		assert(worker);
+		while (g_spinCalls.load(std::memory_order_relaxed) < 1000)
+			Sleep(0);
+		MemUtil::Detail::SetExecutionSyncWhileSuspendedForTest(CheckWorkerFrozen);
+		for (unsigned int round = 0; round < 50; ++round) {
+			assert(patches.Commit() == MemUtil::PatchResult::Installed);
+			assert(patches.Rollback() == MemUtil::PatchResult::Original);
+		}
+		MemUtil::Detail::SetExecutionSyncWhileSuspendedForTest(nullptr);
+		const unsigned int callsAfterPatching = g_spinCalls.load(std::memory_order_relaxed);
+		while (g_spinCalls.load(std::memory_order_relaxed) < callsAfterPatching + 1000)
+			Sleep(0);
+		g_spinStop.store(true, std::memory_order_release);
+		assert(WaitForSingleObject(worker, INFINITE) == WAIT_OBJECT_0);
+		assert(CloseHandle(worker));
+		assert(g_frozenChecks.load(std::memory_order_relaxed) == 100);
+		assert(!g_workerRanWhileSuspended.load(std::memory_order_relaxed));
+		assert(!g_spinSawPartial.load(std::memory_order_acquire));
+		assert(memcmp(page, original, sizeof(original)) == 0);
+		assert(VirtualFree(page, 0, MEM_RELEASE));
+	}
+
+	// A thread that never leaves the span keeps every pass from committing; the set fails closed.
+	void TestThreadInsideSpanFailsClosed() {
+		auto* page = static_cast<unsigned char*>(VirtualAlloc(nullptr, 4096,
+			MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE));
+		assert(page);
+		const unsigned char loop[] = { 0xEB, 0xFE, 0x90, 0x90, 0x90 };
+		const unsigned char replacement[] = { 0xEB, 0xFE, 0xCC, 0xCC, 0xCC };
+		memcpy(page, loop, sizeof(loop));
+		assert(FlushInstructionCache(GetCurrentProcess(), page, sizeof(loop)));
+		MemUtil::PreparedPatchRequest request{};
+		request.address = page;
+		request.kind = MemUtil::PreparedPatchKind::Bytes;
+		request.expectedBytes = std::span<const unsigned char>(loop, sizeof(loop));
+		request.replacementBytes = std::span<const unsigned char>(replacement, sizeof(replacement));
+		MemUtil::PreparedPatchSet patches;
+		patches.RequireThreadExclusion();
+		assert(patches.Prepare(std::span<const MemUtil::PreparedPatchRequest>(&request, 1)));
+
+		HANDLE worker = CreateThread(nullptr, 0, reinterpret_cast<LPTHREAD_START_ROUTINE>(page),
+			nullptr, 0, nullptr);
+		assert(worker);
+		Sleep(20);
+		assert(patches.Commit() == MemUtil::PatchResult::Original);
+		assert(patches.ExclusionFailed());
+		assert(memcmp(page, loop, sizeof(loop)) == 0);
+		patches.Report("(TEST) Thread inside span");
+		assert(TerminateThread(worker, 0));
+		assert(WaitForSingleObject(worker, INFINITE) == WAIT_OBJECT_0);
+		assert(CloseHandle(worker));
+		// With the thread gone the same set commits.
+		assert(patches.Commit() == MemUtil::PatchResult::Installed);
+		assert(memcmp(page, replacement, sizeof(replacement)) == 0);
+		assert(VirtualFree(page, 0, MEM_RELEASE));
+	}
+
+	// Without the opt-in a set writes with other threads running, even one inside the span.
+	void TestNoExclusionWithoutOptIn() {
+		auto* page = static_cast<unsigned char*>(VirtualAlloc(nullptr, 4096,
+			MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE));
+		assert(page);
+		const unsigned char loop[] = { 0xEB, 0xFE, 0x90, 0x90, 0x90 };
+		const unsigned char replacement[] = { 0xEB, 0xFE, 0xCC, 0xCC, 0xCC };
+		memcpy(page, loop, sizeof(loop));
+		assert(FlushInstructionCache(GetCurrentProcess(), page, sizeof(loop)));
+		MemUtil::PreparedPatchRequest request{};
+		request.address = page;
+		request.kind = MemUtil::PreparedPatchKind::Bytes;
+		request.expectedBytes = std::span<const unsigned char>(loop, sizeof(loop));
+		request.replacementBytes = std::span<const unsigned char>(replacement, sizeof(replacement));
+		MemUtil::PreparedPatchSet patches;
+		assert(patches.Prepare(std::span<const MemUtil::PreparedPatchRequest>(&request, 1)));
+
+		HANDLE worker = CreateThread(nullptr, 0, reinterpret_cast<LPTHREAD_START_ROUTINE>(page),
+			nullptr, 0, nullptr);
+		assert(worker);
+		Sleep(20);
+		assert(patches.Commit() == MemUtil::PatchResult::Installed);
+		assert(!patches.ExclusionFailed());
+		assert(memcmp(page, replacement, sizeof(replacement)) == 0);
+		assert(TerminateThread(worker, 0));
+		assert(WaitForSingleObject(worker, INFINITE) == WAIT_OBJECT_0);
+		assert(CloseHandle(worker));
+		assert(VirtualFree(page, 0, MEM_RELEASE));
+	}
+
+	void TestNewThreadRecheck() {
+		auto* page = static_cast<unsigned char*>(VirtualAlloc(nullptr, 4096,
+			MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE));
+		assert(page);
+		page[0] = 1;
+		const unsigned char replacement = 2;
+		MemUtil::PreparedPatchRequest request{};
+		request.address = page;
+		request.kind = MemUtil::PreparedPatchKind::Bytes;
+		request.replacementBytes = std::span<const unsigned char>(&replacement, 1);
+		MemUtil::PreparedPatchSet patches;
+		patches.RequireThreadExclusion();
+		assert(patches.Prepare(std::span<const MemUtil::PreparedPatchRequest>(&request, 1)));
+
+		g_recheckRelease = CreateEvent(nullptr, TRUE, FALSE, nullptr);
+		assert(g_recheckRelease);
+		HANDLE anchor = CreateThread(nullptr, 0, WaitForReleaseWorker, nullptr, 0, nullptr);
+		assert(anchor);
+		g_recheckCreatedThread = nullptr;
+		g_recheckCreateFailed = false;
+		const unsigned int untrackedBefore = MemUtil::Detail::ExecutionSyncUntrackedThreadsForTest();
+		MemUtil::Detail::SetExecutionSyncBeforeSuspendForTest(CreateThreadBeforeSuspend);
+		const MemUtil::PatchResult result = patches.Commit();
+		MemUtil::Detail::SetExecutionSyncBeforeSuspendForTest(nullptr);
+		assert(result == MemUtil::PatchResult::Installed);
+		assert(!g_recheckCreateFailed && g_recheckCreatedThread);
+		assert(MemUtil::Detail::ExecutionSyncUntrackedThreadsForTest() > untrackedBefore);
+		assert(page[0] == replacement);
+
+		assert(SetEvent(g_recheckRelease));
+		assert(WaitForSingleObject(anchor, INFINITE) == WAIT_OBJECT_0);
+		assert(WaitForSingleObject(g_recheckCreatedThread, INFINITE) == WAIT_OBJECT_0);
+		assert(CloseHandle(anchor));
+		assert(CloseHandle(g_recheckCreatedThread));
+		assert(CloseHandle(g_recheckRelease));
+		g_recheckRelease = nullptr;
+		assert(VirtualFree(page, 0, MEM_RELEASE));
+	}
+
+	DWORD WINAPI ExitAtOnceWorker(void*) {
+		return 0;
+	}
+
+	// A thread that has exited while a handle to it stays open is still returned by NtGetNextThread
+	// but not by the Toolhelp snapshot. It cannot run, so it must not block the commit.
+	void TestExitedThreadWithOpenHandle() {
+		HANDLE exited = CreateThread(nullptr, 0, ExitAtOnceWorker, nullptr, 0, nullptr);
+		assert(exited);
+		assert(WaitForSingleObject(exited, INFINITE) == WAIT_OBJECT_0);
+		g_recheckRelease = CreateEvent(nullptr, TRUE, FALSE, nullptr);
+		assert(g_recheckRelease);
+		HANDLE live = CreateThread(nullptr, 0, WaitForReleaseWorker, nullptr, 0, nullptr);
+		assert(live);
+
+		auto* page = static_cast<unsigned char*>(VirtualAlloc(nullptr, 4096,
+			MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE));
+		assert(page);
+		page[0] = 1;
+		const unsigned char replacement = 2;
+		MemUtil::PreparedPatchRequest request{};
+		request.address = page;
+		request.kind = MemUtil::PreparedPatchKind::Bytes;
+		request.replacementBytes = std::span<const unsigned char>(&replacement, 1);
+		MemUtil::PreparedPatchSet patches;
+		patches.RequireThreadExclusion();
+		assert(patches.Prepare(std::span<const MemUtil::PreparedPatchRequest>(&request, 1)));
+		const unsigned int untrackedBefore = MemUtil::Detail::ExecutionSyncUntrackedThreadsForTest();
+		const MemUtil::PatchResult result = patches.Commit();
+		if (result != MemUtil::PatchResult::Installed)
+			patches.Report("(TEST) Exited thread with an open handle");
+		assert(result == MemUtil::PatchResult::Installed);
+		assert(MemUtil::Detail::ExecutionSyncUntrackedThreadsForTest() == untrackedBefore);
+		assert(page[0] == replacement);
+
+		assert(SetEvent(g_recheckRelease));
+		assert(WaitForSingleObject(live, INFINITE) == WAIT_OBJECT_0);
+		assert(CloseHandle(live));
+		assert(CloseHandle(g_recheckRelease));
+		g_recheckRelease = nullptr;
+		assert(CloseHandle(exited));
+		assert(VirtualFree(page, 0, MEM_RELEASE));
+	}
+
+	// A refused Append keeps the set from committing the sites appended before it.
+	void TestRefusedAppendBlocksCommit() {
+		auto* page = static_cast<unsigned char*>(VirtualAlloc(nullptr, 4096,
+			MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE));
+		assert(page);
+		page[0] = 1;
+		page[16] = 3;
+		const unsigned char replacement = 2;
+		const unsigned char wrongExpected = 9;
+		MemUtil::PreparedPatchRequest first{};
+		first.address = page;
+		first.kind = MemUtil::PreparedPatchKind::Bytes;
+		first.replacementBytes = std::span<const unsigned char>(&replacement, 1);
+		MemUtil::PreparedPatchRequest second = first;
+		second.address = page + 16;
+		second.expectedBytes = std::span<const unsigned char>(&wrongExpected, 1);
+		MemUtil::PreparedPatchSet patches;
+		patches.RequireThreadExclusion();
+		assert(patches.Append(first));
+		assert(!patches.Append(second));
+		assert(!patches.Append(first));
+		assert(patches.Commit() == MemUtil::PatchResult::Original);
+		assert(page[0] == 1 && page[16] == 3);
+		assert(patches.Rollback() == MemUtil::PatchResult::Original);
+		assert(page[0] == 1);
+		patches.Report("(TEST) Refused append");
+		patches.Reset();
+		assert(patches.Append(first));
+		assert(patches.Commit() == MemUtil::PatchResult::Installed);
+		assert(page[0] == replacement);
+		assert(VirtualFree(page, 0, MEM_RELEASE));
+	}
+
+	bool GatewayRefused(unsigned char* site, std::span<const unsigned char> bytes, size_t length) {
+		memcpy(site, bytes.data(), bytes.size());
+		MemUtil::PreparedPatchRequest request{};
+		request.address = site;
+		request.kind = MemUtil::PreparedPatchKind::Jump;
+		request.expectedBytes = bytes.subspan(0, length);
+		request.length = length;
+		request.replacementTarget = reinterpret_cast<uintptr_t>(&Replacement);
+		request.captureNativeEntry = true;
+		MemUtil::PreparedPatchSet patches;
+		const bool refused = !patches.Prepare(std::span<const MemUtil::PreparedPatchRequest>(&request, 1));
+		return refused && memcmp(site, bytes.data(), bytes.size()) == 0;
+	}
+
+	void TestGatewayRefusals() {
+		auto* page = static_cast<unsigned char*>(VirtualAlloc(nullptr, 4096,
+			MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE));
+		assert(page);
+		// call $+5; pop eax
+		const unsigned char callNext[] = { 0xE8, 0x00, 0x00, 0x00, 0x00, 0x58 };
+		assert(GatewayRefused(page, callNext, 5));
+		// The requested length ends inside mov eax, imm32.
+		const unsigned char splitInstruction[] = { 0x90, 0xB8, 0x2A, 0x00, 0x00, 0x00 };
+		assert(GatewayRefused(page + 32, splitInstruction, 5));
+		// je rel32
+		const unsigned char nearJcc[] = { 0x0F, 0x84, 0x00, 0x01, 0x00, 0x00 };
+		assert(GatewayRefused(page + 64, nearJcc, 6));
+		// je rel8, widened by the decoder.
+		const unsigned char shortJcc[] = { 0x74, 0x10, 0x90, 0x90, 0x90 };
+		assert(GatewayRefused(page + 96, shortJcc, 5));
+		// A call after the first instruction.
+		const unsigned char laterCall[] = { 0x90, 0xE8, 0x10, 0x00, 0x00, 0x00 };
+		assert(GatewayRefused(page + 128, laterCall, 6));
+		// Longer than the gateway snapshot.
+		std::array<unsigned char, Framework::Trampoline::kMaxSpan + 1> longSpan{};
+		longSpan.fill(0x90);
+		assert(GatewayRefused(page + 160, longSpan, longSpan.size()));
+
+		// A vendor entry with unknown bytes spans to the next boundary and keeps whole instructions.
+		const unsigned char prologue[] = { 0x55, 0x8B, 0xEC, 0x83, 0xEC, 0x10, 0xC3 };
+		memcpy(page + 256, prologue, sizeof(prologue));
+		MemUtil::PatchResult result = MemUtil::PatchResult::Original;
+		PBYTE gateway = MemUtil::TrampHook(page + 256, reinterpret_cast<PBYTE>(&Replacement), 5, &result);
+		assert(gateway && result == MemUtil::PatchResult::Installed);
+		assert(memcmp(gateway, prologue, 6) == 0 && gateway[6] == 0xE9);
+		uint32_t back = 0;
+		memcpy(&back, gateway + 7, sizeof(back));
+		assert(reinterpret_cast<uintptr_t>(gateway) + 11 + back == reinterpret_cast<uintptr_t>(page + 262));
+		assert(page[256] == 0xE9 && page[261] == 0x90 && page[262] == 0xC3);
+
+		// The same entry with a relative call in it is refused and left alone.
+		const unsigned char relativePrologue[] = { 0x55, 0xE8, 0x00, 0x01, 0x00, 0x00 };
+		memcpy(page + 288, relativePrologue, sizeof(relativePrologue));
+		assert(!MemUtil::TrampHook(page + 288, reinterpret_cast<PBYTE>(&Replacement), 5, &result));
+		assert(result == MemUtil::PatchResult::Original);
+		assert(memcmp(page + 288, relativePrologue, sizeof(relativePrologue)) == 0);
+		assert(VirtualFree(page, 0, MEM_RELEASE));
+	}
+}
+
+// Drives the NtGetNextThread syscall stub directly and through a suspended commit.
+extern "C" int __cdecl RunNextThreadCases() {
+	if (!MemUtil::Detail::ResolveNextThreadDispatch() || !MemUtil::Detail::useNextThreadSyscall)
+		return 0;
+	g_recheckRelease = CreateEvent(nullptr, TRUE, FALSE, nullptr);
+	HANDLE worker = CreateThread(nullptr, 0, WaitForReleaseWorker, nullptr, 0, nullptr);
+	if (!g_recheckRelease || !worker)
+		return 0;
+	const DWORD workerId = GetThreadId(worker);
+	bool sawCurrent = false;
+	bool sawWorker = false;
+	HANDLE previous = nullptr;
+	for (unsigned int count = 0; count < 4096; ++count) {
+		HANDLE next = nullptr;
+		const NTSTATUS status = MemUtil::Detail::Syscall_NtGetNextThread(GetCurrentProcess(), previous,
+			THREAD_QUERY_LIMITED_INFORMATION, 0, 0, &next);
+		if (previous)
+			CloseHandle(previous);
+		previous = nullptr;
+		if (status == static_cast<NTSTATUS>(0x8000001A))
+			break;
+		if (!NT_SUCCESS(status) || !next)
+			return 0;
+		const DWORD id = GetThreadId(next);
+		sawCurrent = sawCurrent || id == GetCurrentThreadId();
+		sawWorker = sawWorker || id == workerId;
+		previous = next;
+	}
+	if (previous)
+		CloseHandle(previous);
+
+	auto* page = static_cast<unsigned char*>(VirtualAlloc(nullptr, 4096,
+		MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE));
+	if (!page)
+		return 0;
+	page[0] = 1;
+	const unsigned char replacement = 2;
+	MemUtil::PreparedPatchRequest request{};
+	request.address = page;
+	request.kind = MemUtil::PreparedPatchKind::Bytes;
+	request.replacementBytes = std::span<const unsigned char>(&replacement, 1);
+	bool committed = false;
+	{
+		MemUtil::PreparedPatchSet patches;
+		patches.RequireThreadExclusion();
+		committed = patches.Prepare(std::span<const MemUtil::PreparedPatchRequest>(&request, 1))
+			&& patches.Commit() == MemUtil::PatchResult::Installed && page[0] == replacement;
+	}
+	SetEvent(g_recheckRelease);
+	WaitForSingleObject(worker, INFINITE);
+	CloseHandle(worker);
+	CloseHandle(g_recheckRelease);
+	g_recheckRelease = nullptr;
+	VirtualFree(page, 0, MEM_RELEASE);
+	return sawCurrent && sawWorker && committed ? 1 : 0;
+}
+
+namespace {
+	auto g_nextThreadStub = &MemUtil::Detail::Syscall_NtGetNextThread;
+}
+
+// One direct stub call with six pushed arguments must return with ESP exactly where it was and
+// the nonvolatile registers intact; then the commit path runs eight times under the same canaries.
+extern "C" __declspec(naked) int __cdecl CheckNextThreadAbi() {
+	__asm {
+		push ebp
+		mov ebp, esp
+		push ebx
+		push esi
+		push edi
+		sub esp, 8
+		mov dword ptr [ebp - 16], 0
+		mov dword ptr [ebp - 20], esp
+		mov ebx, 13579BDFh
+		mov esi, 2468ACE0h
+		mov edi, 0BADF00Dh
+		lea eax, [ebp - 16]
+		push eax
+		push 0
+		push 0
+		push 1000h
+		push 0
+		push 0FFFFFFFFh
+		call dword ptr [g_nextThreadStub]
+		cmp esp, dword ptr [ebp - 20]
+		jne check_failed
+		test eax, eax
+		jnz check_failed
+		cmp ebx, 13579BDFh
+		jne check_failed
+		cmp esi, 2468ACE0h
+		jne check_failed
+		cmp edi, 0BADF00Dh
+		jne check_failed
+		mov eax, dword ptr [ebp - 16]
+		test eax, eax
+		jz check_failed
+		push eax
+		call dword ptr [CloseHandle]
+		mov dword ptr [ebp - 16], 8
+	check_again:
+		call RunNextThreadCases
+		cmp esp, dword ptr [ebp - 20]
+		jne check_failed
+		test eax, eax
+		jz check_failed
+		cmp ebx, 13579BDFh
+		jne check_failed
+		cmp esi, 2468ACE0h
+		jne check_failed
+		cmp edi, 0BADF00Dh
+		jne check_failed
+		dec dword ptr [ebp - 16]
+		jnz check_again
+		mov eax, 1
+		jmp check_done
+	check_failed:
+		xor eax, eax
+	check_done:
+		lea esp, [ebp - 12]
+		pop edi
+		pop esi
+		pop ebx
+		pop ebp
+		ret
+	}
+}
+
 int main(int argc, char** argv) {
 	const std::vector<BYTE> validPe = MakeTestPe32();
 	const auto syscallNumber = MemUtil::Detail::ExtractSyscallFromPE(validPe, "NtProtectVirtualMemory");
@@ -342,6 +811,9 @@ int main(int argc, char** argv) {
 			assert(info.Protect == PAGE_READWRITE);
 			assert(VirtualFree(memory, 0, MEM_RELEASE));
 			assert(CheckProtectionAbi());
+			assert(MemUtil::Detail::ResolveNextThreadDispatch() && MemUtil::Detail::useNextThreadSyscall);
+			assert(CheckNextThreadAbi());
+			puts("Windows NtGetNextThread syscall ABI PASS");
 			puts("Windows transaction protection ABI PASS");
 			puts("Windows syscall first PASS");
 		}
@@ -706,6 +1178,27 @@ int main(int argc, char** argv) {
 	internalRequest.expectedBytes = std::span<const unsigned char>(internalBranch, sizeof(internalBranch));
 	MemUtil::PreparedPatchSet internalSet;
 	assert(!internalSet.Prepare(std::span<const MemUtil::PreparedPatchRequest>(&internalRequest, 1)));
+	assert(memcmp(page + 288, internalBranch, sizeof(internalBranch)) == 0);
+
+	unsigned char internalCall[] = { 0xE8, 0xFB, 0xFF, 0xFF, 0xFF };
+	memcpy(page + 304, internalCall, sizeof(internalCall));
+	MemUtil::PreparedPatchRequest internalCallRequest = relativeRequest;
+	internalCallRequest.address = page + 304;
+	internalCallRequest.expectedBytes = std::span<const unsigned char>(internalCall, sizeof(internalCall));
+	MemUtil::PreparedPatchSet internalCallSet;
+	assert(!internalCallSet.Prepare(
+		std::span<const MemUtil::PreparedPatchRequest>(&internalCallRequest, 1)));
+	assert(memcmp(page + 304, internalCall, sizeof(internalCall)) == 0);
+
+	unsigned char laterBranch[] = { 0x90, 0x90, 0x90, 0x90, 0x90, 0xEB, 0x00 };
+	memcpy(page + 320, laterBranch, sizeof(laterBranch));
+	MemUtil::PreparedPatchRequest laterBranchRequest = relativeRequest;
+	laterBranchRequest.address = page + 320;
+	laterBranchRequest.expectedBytes = std::span<const unsigned char>(laterBranch, sizeof(laterBranch));
+	MemUtil::PreparedPatchSet laterBranchSet;
+	assert(!laterBranchSet.Prepare(
+		std::span<const MemUtil::PreparedPatchRequest>(&laterBranchRequest, 1)));
+	assert(memcmp(page + 320, laterBranch, sizeof(laterBranch)) == 0);
 
 	// A patch across two pages restores each page's own protection.
 	auto* pair = static_cast<unsigned char*>(VirtualAlloc(nullptr, 8192,
@@ -806,6 +1299,13 @@ int main(int argc, char** argv) {
 	assert(NT_SUCCESS(MemUtil::HookedQueryVirtualMemory(page, &info, sizeof(info))));
 	assert(!NT_SUCCESS(MemUtil::HookedQueryVirtualMemory(page, nullptr, 0)));
 	assert(VirtualFree(page, 0, MEM_RELEASE));
+	TestExecutionSafePatch();
+	TestNewThreadRecheck();
+	TestExitedThreadWithOpenHandle();
+	TestThreadInsideSpanFailsClosed();
+	TestNoExclusionWithoutOptIn();
+	TestRefusedAppendBlocksCommit();
+	TestGatewayRefusals();
 	puts("Boot bundle and documented memory paths ALL PASS");
 }
 

@@ -117,6 +117,8 @@ $Tests = @(
     @{ Name = 'ProxyLazyLoadTests';     Sources = @() },
     @{ Name = 'InstructionPatchTests'; Sources = @() },
     @{ Name = 'MemoryPatchTransactionTests'; Sources = @() },
+    @{ Name = 'ThreadExecutionPolicyTests'; Sources = @() },
+    @{ Name = 'TrampolinePolicyTests'; Sources = @() },
     @{ Name = 'BootPatchBundlePolicyTests'; Sources = @() },
     @{ Name = 'ProfilePatchPolicyTests'; Sources = @() },
     @{ Name = 'LnpSitesTests';          Sources = @() },

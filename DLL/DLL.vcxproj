@@ -622,6 +622,8 @@
     <ClInclude Include="Framework\SettingsManifest.hpp" />
     <ClInclude Include="Framework\GameVersion.hpp" />
     <ClInclude Include="Framework\InstructionPatch.hpp" />
+    <ClInclude Include="Framework\ThreadExecutionPolicy.hpp" />
+    <ClInclude Include="Framework\TrampolinePolicy.hpp" />
     <ClInclude Include="Framework\BootPatchBundlePolicy.hpp" />
     <ClInclude Include="Framework\ProfilePatchPolicy.hpp" />
     <ClInclude Include="NoteData.h" />

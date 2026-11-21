@@ -205,5 +205,34 @@ int main() {
 	assert(memory.events[2].operation == 'P' && memory.events[2].address == FakeMemory::Base
 		&& memory.events[2].protection == 0x04);
 
+	// Unique pattern search covers the whole range, including a match at its very end.
+	{
+		using MemUtil::Detail::FindPatternOffset;
+		using MemUtil::Detail::FindUniquePatternOffset;
+		const unsigned char pattern[] = { 0xAA, 0x00, 0xCC };
+		const char mask[] = "x?x";
+		std::array<unsigned char, 32> text{};
+		text[28] = 0xAA;
+		text[29] = 0x11;
+		text[30] = 0xCC;
+		assert(FindPatternOffset(text.data(), text.size(), 0, pattern, mask) == 28);
+		assert(FindUniquePatternOffset(text.data(), text.size(), pattern, mask) == 28);
+		text[29] = 0xAA;
+		text[31] = 0xCC;
+		assert(FindPatternOffset(text.data(), text.size(), 0, pattern, mask) == 28);
+		assert(FindPatternOffset(text.data(), text.size(), 29, pattern, mask) == 29);
+		assert(FindUniquePatternOffset(text.data(), text.size(), pattern, mask) == text.size());
+		text.fill(0);
+		text[4] = 0xAA;
+		text[6] = 0xCC;
+		text[29] = 0xAA;
+		text[31] = 0xCC;
+		assert(FindUniquePatternOffset(text.data(), text.size(), pattern, mask) == text.size());
+		text[29] = 0;
+		assert(FindUniquePatternOffset(text.data(), text.size(), pattern, mask) == 4);
+		assert(FindUniquePatternOffset(text.data(), 2, pattern, mask) == 2);
+		assert(FindPatternOffset(text.data(), text.size(), 31, pattern, mask) == text.size());
+	}
+
 	puts("Memory patch transaction core ALL PASS");
 }

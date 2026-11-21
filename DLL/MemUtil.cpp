@@ -1,8 +1,12 @@
 #include "stdafx.h"
 #include "MemUtil.hpp"
 #include "SettingEdits.hpp"
+#include "Framework/ThreadExecutionPolicy.hpp"
+#include "Framework/TrampolinePolicy.hpp"
 #include "Lib/Detours/detours.h"
+#include <algorithm>
 #include <optional>
+#include <TlHelp32.h>
 
 namespace {
 	struct BootPatch {
@@ -159,8 +163,11 @@ bool MemUtil::CommitBootPatchBundle() {
 	g_bootBundle.staging = false;
 	if (!g_bootBundle.failed && g_bootBundle.patches.empty())
 		g_bootBundle.transaction.Prepare({});
-	if (!g_bootBundle.failed && g_bootBundle.transaction.Commit() != PatchResult::Installed)
+	if (!g_bootBundle.failed && g_bootBundle.transaction.Commit() != PatchResult::Installed) {
 		g_bootBundle.failed = g_bootBundle.member;
+		if (g_bootBundle.transaction.ExclusionFailed())
+			g_bootBundle.transaction.Report(Framework::BootPatch::BundleName(bundle));
+	}
 	const PatchOutcome outcome = g_bootBundle.transaction.Outcome();
 	if (!g_bootBundle.failed && (outcome.bytes != PatchByteState::Replacement
 		|| !outcome.instructionCacheFlushed || !outcome.protectionRestored))
@@ -405,7 +412,7 @@ PBYTE MemUtil::TrampHook(PBYTE src, PBYTE dst, unsigned int len, PatchResult* re
 {
 	if (result)
 		*result = PatchResult::Original;
-	if (!src || !dst)
+	if (!src || !dst || len < 5)
 	{
 		FailBootPatchBundle();
 		return nullptr;
@@ -415,9 +422,11 @@ PBYTE MemUtil::TrampHook(PBYTE src, PBYTE dst, unsigned int len, PatchResult* re
 	request.kind = PreparedPatchKind::Jump;
 	request.replacementTarget = reinterpret_cast<uintptr_t>(dst);
 	request.captureNativeEntry = true;
-	request.minimumLength = len < 5 ? 5 : len;
+	// Callers pass checked prologue spans, which end on a boundary; vendor entries (D3D) are not
+	// known in advance, so the span extends to the first boundary at or after len.
+	request.minimumLength = len;
 	if (g_bootBundle.staging) {
-		if (!StageBootPatch(request, request.minimumLength))
+		if (!StageBootPatch(request, len))
 			return nullptr;
 		const size_t site = g_bootBundle.transaction.Size() - 1;
 		PBYTE gateway = static_cast<PBYTE>(g_bootBundle.transaction.sites_[site].nativeEntry);
@@ -859,6 +868,12 @@ namespace MemUtil {
 			return ExtractSyscallFromPE(ntdllDiskBuf, funcName);
 		}
 
+		using NtGetNextThreadFunction = NTSTATUS(NTAPI*)(HANDLE, HANDLE, ACCESS_MASK,
+			ULONG, ULONG, PHANDLE);
+		static uint32_t ssnNextThread = 0;
+		static NtGetNextThreadFunction ntGetNextThread = nullptr;
+		static bool useNextThreadSyscall = false;
+
 		static __declspec(naked) NTSTATUS NTAPI Syscall_NtProtectVirtualMemory(HANDLE, PVOID*, PSIZE_T, ULONG, PULONG)
 		{
 			__asm {
@@ -890,6 +905,356 @@ namespace MemUtil {
 					ret 18h
 			}
 		}
+
+		static __declspec(naked) NTSTATUS NTAPI Syscall_NtGetNextThread(HANDLE, HANDLE, ACCESS_MASK,
+			ULONG, ULONG, PHANDLE) {
+			__asm {
+				mov eax, ssnNextThread
+				mov edx, fs: [0C0h]
+				test edx, edx
+				jnz is_wow64
+				mov edx, 7FFE0300h
+				call dword ptr[edx]
+				ret 18h
+			is_wow64:
+				call edx
+				ret 18h
+			}
+		}
+
+		static bool ResolveNextThreadDispatch() {
+			static const bool resolved = [] {
+				HMODULE ntdll = GetModuleHandleA("ntdll.dll");
+				if (!ntdll)
+					return false;
+				auto exported = reinterpret_cast<NtGetNextThreadFunction>(
+					GetProcAddress(ntdll, "NtGetNextThread"));
+				if (!exported)
+					return false;
+				if (MemoryHostPolicy().useWineApis) {
+					ntGetNextThread = exported;
+					return true;
+				}
+				const std::optional<uint32_t> number = GetSyscallNumber("NtGetNextThread");
+				if (number) {
+					ssnNextThread = *number;
+					useNextThreadSyscall = true;
+				}
+				else {
+					ntGetNextThread = exported;
+				}
+				return true;
+			}();
+			return resolved;
+		}
+
+		static NTSTATUS GetNextThread(HANDLE process, HANDLE previous, PHANDLE next) noexcept {
+			if (useNextThreadSyscall)
+				return Syscall_NtGetNextThread(process, previous, THREAD_QUERY_LIMITED_INFORMATION | SYNCHRONIZE,
+					0, 0, next);
+			return ntGetNextThread(process, previous, THREAD_QUERY_LIMITED_INFORMATION | SYNCHRONIZE,
+				0, 0, next);
+		}
+
+#ifdef MEMUTIL_TESTING
+		static void(__cdecl* g_executionSyncTestBeforeSuspend)() = nullptr;
+		static void(__cdecl* g_executionSyncTestWhileSuspended)() = nullptr;
+		static unsigned int g_executionSyncTestUntrackedThreads = 0;
+#endif
+
+		enum class ExclusionFailure { None, Snapshot, TooManyThreads, OpenLiveThread,
+			SuspendLiveThread, Recheck, NewThread, Context, InPatchSpan };
+
+		const char* ExclusionFailureName(ExclusionFailure failure) noexcept {
+			switch (failure) {
+			case ExclusionFailure::Snapshot: return "thread snapshot failed";
+			case ExclusionFailure::TooManyThreads: return "thread count exceeded the fixed capacity";
+			case ExclusionFailure::OpenLiveThread: return "could not open a live thread";
+			case ExclusionFailure::SuspendLiveThread: return "could not suspend a live thread";
+			case ExclusionFailure::Recheck: return "could not re-check threads while suspended";
+			case ExclusionFailure::NewThread: return "a thread started after the snapshot";
+			case ExclusionFailure::Context: return "could not read a suspended thread context";
+			case ExclusionFailure::InPatchSpan: return "a thread was stopped inside a patched span";
+			case ExclusionFailure::None: break;
+			}
+			return "unknown";
+		}
+
+		struct ExclusionThread {
+			DWORD id = 0;
+			HANDLE handle = nullptr;
+			bool suspended = false;
+		};
+		constexpr size_t maxExclusionThreads = 4096;
+
+		// Exclusions are serialized, so one fixed store serves all of them instead of each caller's stack.
+		// Two writers suspending each other would stop both.
+		struct ExclusionStorage {
+			std::array<ExclusionThread, maxExclusionThreads> threads{};
+			std::array<DWORD, maxExclusionThreads> ids{};
+			std::array<DWORD, maxExclusionThreads> listed{};
+			std::array<HANDLE, maxExclusionThreads + 1> recheckHandles{};
+		};
+		static ExclusionStorage g_exclusionStorage;
+		static SRWLOCK g_exclusionLock = SRWLOCK_INIT;
+
+		// Thread operations for Framework::ThreadExecution::Run. While peers are stopped the only calls
+		// are SuspendThread, NtGetNextThread, GetThreadId, GetThreadContext, WaitForSingleObject(h, 0)
+		// and the prepared commit. Handles are closed after the resume.
+		class ThreadExclusionOperations {
+		public:
+			struct FailureInfo {
+				ExclusionFailure reason = ExclusionFailure::None;
+				DWORD threadId = 0;
+				DWORD error = ERROR_SUCCESS;
+				unsigned pass = 0;
+			};
+
+		private:
+			static constexpr NTSTATUS statusNoMoreEntries = static_cast<NTSTATUS>(0x8000001A);
+			ExclusionStorage& storage_;
+			std::span<const std::pair<uintptr_t, size_t>> spans_;
+			size_t threadCount_ = 0;
+			size_t idCount_ = 0;
+			size_t recheckHandleCount_ = 0;
+			DWORD currentThreadId_ = 0;
+			FailureInfo failure_{};
+
+			bool SnapshotIds(std::array<DWORD, maxExclusionThreads>& ids, size_t& count, unsigned pass) {
+				count = 0;
+				HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPTHREAD, 0);
+				if (snapshot == INVALID_HANDLE_VALUE) {
+					failure_ = { ExclusionFailure::Snapshot, 0, GetLastError(), pass };
+					return false;
+				}
+				THREADENTRY32 entry{};
+				entry.dwSize = sizeof(entry);
+				BOOL more = Thread32First(snapshot, &entry);
+				if (!more) {
+					failure_ = { ExclusionFailure::Snapshot, 0, GetLastError(), pass };
+					CloseHandle(snapshot);
+					return false;
+				}
+				const DWORD processId = GetCurrentProcessId();
+				currentThreadId_ = GetCurrentThreadId();
+				while (more) {
+					if (entry.th32OwnerProcessID == processId && entry.th32ThreadID != currentThreadId_) {
+						if (count == ids.size()) {
+							failure_ = { ExclusionFailure::TooManyThreads, entry.th32ThreadID, ERROR_MORE_DATA, pass };
+							CloseHandle(snapshot);
+							return false;
+						}
+						ids[count++] = entry.th32ThreadID;
+					}
+					entry.dwSize = sizeof(entry);
+					SetLastError(ERROR_SUCCESS);
+					more = Thread32Next(snapshot, &entry);
+					if (!more && GetLastError() != ERROR_NO_MORE_FILES) {
+						failure_ = { ExclusionFailure::Snapshot, 0, GetLastError(), pass };
+						CloseHandle(snapshot);
+						return false;
+					}
+				}
+				CloseHandle(snapshot);
+				std::sort(ids.begin(), ids.begin() + count);
+				return true;
+			}
+
+			bool IsStillListed(DWORD id, bool& listed, unsigned pass) {
+				size_t count = 0;
+				if (!SnapshotIds(storage_.listed, count, pass))
+					return false;
+				listed = std::binary_search(storage_.listed.begin(), storage_.listed.begin() + count, id);
+				return true;
+			}
+
+			void CloseHandles() noexcept {
+				for (size_t i = threadCount_; i > 0; --i) {
+					CloseHandle(storage_.threads[i - 1].handle);
+					storage_.threads[i - 1] = {};
+				}
+				threadCount_ = 0;
+				for (size_t i = recheckHandleCount_; i > 0; --i) {
+					CloseHandle(storage_.recheckHandles[i - 1]);
+					storage_.recheckHandles[i - 1] = nullptr;
+				}
+				recheckHandleCount_ = 0;
+			}
+
+			// Opened threads are in snapshot order, which is sorted by id.
+			bool IsOpened(DWORD id) const noexcept {
+				size_t low = 0;
+				size_t high = threadCount_;
+				while (low < high) {
+					const size_t middle = low + (high - low) / 2;
+					if (storage_.threads[middle].id < id)
+						low = middle + 1;
+					else
+						high = middle;
+				}
+				return low < threadCount_ && storage_.threads[low].id == id;
+			}
+
+			bool AnyInside(unsigned pass) noexcept {
+				for (size_t i = 0; i < threadCount_; ++i) {
+					const ExclusionThread& thread = storage_.threads[i];
+					if (!thread.suspended)
+						continue;
+					CONTEXT context{};
+					context.ContextFlags = CONTEXT_CONTROL;
+					if (!GetThreadContext(thread.handle, &context)) {
+						const DWORD error = GetLastError();
+						if (WaitForSingleObject(thread.handle, 0) == WAIT_OBJECT_0)
+							continue;
+						failure_ = { ExclusionFailure::Context, thread.id, error, pass };
+						return true;
+					}
+					for (const auto& [start, length] : spans_)
+						if (context.Eip >= start && context.Eip - start < length) {
+							failure_ = { ExclusionFailure::InPatchSpan, thread.id, ERROR_SUCCESS, pass };
+							return true;
+						}
+				}
+				return false;
+			}
+
+		public:
+			ThreadExclusionOperations(ExclusionStorage& storage,
+				std::span<const std::pair<uintptr_t, size_t>> spans) noexcept
+				: storage_(storage), spans_(spans) {}
+
+			~ThreadExclusionOperations() { Resume(); }
+
+			bool Snapshot(size_t pass) {
+				failure_ = {};
+				return SnapshotIds(storage_.ids, idCount_, static_cast<unsigned>(pass));
+			}
+
+			size_t ThreadCount() const noexcept { return idCount_; }
+
+			bool Prepare() {
+				if (ResolveNextThreadDispatch())
+					return true;
+				failure_ = { ExclusionFailure::Recheck, 0, ERROR_PROC_NOT_FOUND, 0 };
+				return false;
+			}
+
+			bool Open(size_t pass) {
+				for (size_t i = 0; i < idCount_; ++i) {
+					const DWORD id = storage_.ids[i];
+					HANDLE thread = OpenThread(THREAD_SUSPEND_RESUME | THREAD_GET_CONTEXT
+						| THREAD_QUERY_LIMITED_INFORMATION | SYNCHRONIZE, FALSE, id);
+					if (!thread) {
+						const DWORD error = GetLastError();
+						bool listed = true;
+						if (IsStillListed(id, listed, static_cast<unsigned>(pass)) && !listed)
+							continue;
+						failure_ = { ExclusionFailure::OpenLiveThread, id, error, static_cast<unsigned>(pass) };
+						return false;
+					}
+					storage_.threads[threadCount_++] = { id, thread, false };
+				}
+				return true;
+			}
+
+			bool Suspend(size_t pass) noexcept {
+#ifdef MEMUTIL_TESTING
+				if (g_executionSyncTestBeforeSuspend)
+					g_executionSyncTestBeforeSuspend();
+#endif
+				for (size_t i = 0; i < threadCount_; ++i) {
+					ExclusionThread& thread = storage_.threads[i];
+					if (SuspendThread(thread.handle) == static_cast<DWORD>(-1)) {
+						const DWORD error = GetLastError();
+						if (WaitForSingleObject(thread.handle, 0) == WAIT_OBJECT_0)
+							continue;
+						failure_ = { ExclusionFailure::SuspendLiveThread, thread.id, error, static_cast<unsigned>(pass) };
+						return false;
+					}
+					thread.suspended = true;
+				}
+				return true;
+			}
+
+			// Every live thread of the process must be the caller or one opened from the snapshot; a thread
+			// born between the snapshot and the suspension is found here and the pass is retried. An exited
+			// thread whose object a handle keeps alive is still enumerated here but not by Toolhelp; it
+			// cannot run, so it is skipped.
+			Framework::ThreadExecution::CheckResult Recheck(size_t pass) noexcept {
+				const unsigned passNumber = static_cast<unsigned>(pass);
+				HANDLE previous = nullptr;
+				for (;;) {
+					if (recheckHandleCount_ == storage_.recheckHandles.size()) {
+						failure_ = { ExclusionFailure::TooManyThreads, 0, ERROR_MORE_DATA, passNumber };
+						return Framework::ThreadExecution::CheckResult::Failed;
+					}
+					HANDLE next = nullptr;
+					const NTSTATUS status = GetNextThread(GetCurrentProcess(), previous, &next);
+					if (status == statusNoMoreEntries)
+						break;
+					if (!NT_SUCCESS(status) || !next) {
+						failure_ = { ExclusionFailure::Recheck, 0, static_cast<DWORD>(status), passNumber };
+						return Framework::ThreadExecution::CheckResult::Failed;
+					}
+					storage_.recheckHandles[recheckHandleCount_++] = next;
+					previous = next;
+					const DWORD id = GetThreadId(next);
+					if (!id) {
+						failure_ = { ExclusionFailure::Recheck, 0, GetLastError(), passNumber };
+						return Framework::ThreadExecution::CheckResult::Failed;
+					}
+					if (id != currentThreadId_ && !IsOpened(id)) {
+						if (WaitForSingleObject(next, 0) == WAIT_OBJECT_0)
+							continue;
+						failure_ = { ExclusionFailure::NewThread, id, ERROR_RETRY, passNumber };
+#ifdef MEMUTIL_TESTING
+						++g_executionSyncTestUntrackedThreads;
+#endif
+						return Framework::ThreadExecution::CheckResult::Retry;
+					}
+				}
+				if (AnyInside(passNumber))
+					return failure_.reason == ExclusionFailure::InPatchSpan
+						? Framework::ThreadExecution::CheckResult::Retry
+						: Framework::ThreadExecution::CheckResult::Failed;
+#ifdef MEMUTIL_TESTING
+				if (g_executionSyncTestWhileSuspended)
+					g_executionSyncTestWhileSuspended();
+#endif
+				return Framework::ThreadExecution::CheckResult::Clear;
+			}
+
+			void Resume() noexcept {
+				for (size_t i = threadCount_; i > 0; --i) {
+					ExclusionThread& thread = storage_.threads[i - 1];
+					if (thread.suspended) {
+						ResumeThread(thread.handle);
+						thread.suspended = false;
+					}
+				}
+				CloseHandles();
+			}
+
+			void RetryDelay(size_t) noexcept { Sleep(10); }
+
+			void PassLimit(size_t pass) noexcept {
+				failure_.pass = static_cast<unsigned>(pass);
+			}
+
+			const FailureInfo& FailureDetails() const noexcept { return failure_; }
+		};
+
+#ifdef MEMUTIL_TESTING
+		void SetExecutionSyncBeforeSuspendForTest(void(__cdecl* hook)()) noexcept {
+			g_executionSyncTestBeforeSuspend = hook;
+		}
+		void SetExecutionSyncWhileSuspendedForTest(void(__cdecl* hook)()) noexcept {
+			g_executionSyncTestWhileSuspended = hook;
+		}
+		unsigned int ExecutionSyncUntrackedThreadsForTest() noexcept {
+			return g_executionSyncTestUntrackedThreads;
+		}
+#endif
 	}
 
 	NTSTATUS HookedQueryVirtualMemory(LPVOID address,
@@ -996,88 +1361,87 @@ namespace MemUtil {
 			return true;
 		}
 
-		bool BuildGateway(uintptr_t source, size_t fixedLength, size_t minimumLength,
+		// Builds the native entry for a JMP over [source, source + span). With exactLength the span is
+		// requestedLength and must end on an instruction boundary; otherwise it ends at the first
+		// boundary at or after requestedLength (entries whose bytes are not known in advance).
+		// Decoding runs on one snapshot of the live bytes, so the gateway holds exactly the bytes
+		// returned in original, which the caller compares and the commit verifies again.
+		// Refused: spans outside 5..kMaxSpan, undecodable bytes, any relative operand other than
+		// a leading E8/E9 rel32, and a leading target inside the span (or a call to its end).
+		bool BuildGateway(uintptr_t source, size_t requestedLength, bool exactLength,
 			std::vector<unsigned char>& original, void*& gateway, size_t& gatewayLength,
 			DWORD& error) {
-			const size_t required = fixedLength ? fixedLength : minimumLength;
-			if (!fixedLength && minimumLength > (std::numeric_limits<size_t>::max)() - 14)
+			using namespace Framework::Trampoline;
+			error = ERROR_BAD_EXE_FORMAT;
+			const size_t readLength = requestedLength + kDecodeSlack;
+			if (!SpanLengthAllowed(requestedLength)
+				|| readLength > (std::numeric_limits<uintptr_t>::max)() - source)
 				return false;
-			const size_t sourceCapacity = fixedLength ? fixedLength : minimumLength + 14;
-			if (required < 5 || sourceCapacity < required
-				|| sourceCapacity > ((std::numeric_limits<size_t>::max)() - 16) / 2
-				|| sourceCapacity > (std::numeric_limits<uintptr_t>::max)() - source)
+			// Zero padding past the read bytes ends any runaway prefix sequence inside the buffer.
+			std::array<unsigned char, kMaxSpan + kDecodeSlack + 16> snapshot{};
+			if (!ReadPatchMemory(nullptr, source, snapshot.data(), readLength)) {
+				error = ERROR_NOACCESS;
 				return false;
-			const size_t gatewayCapacity = sourceCapacity * 2 + 16;
-			original.resize(sourceCapacity);
-			std::vector<uintptr_t> relativeTargets;
-			relativeTargets.reserve(sourceCapacity);
+			}
+
+			const size_t limit = exactLength ? requestedLength : readLength;
+			size_t offset = 0;
+			bool relocateLeading = false;
+			uintptr_t leadingTarget = 0;
+			while (offset < requestedLength) {
+				PBYTE instruction = snapshot.data() + offset;
+				// Large enough for the longest instruction the zero-padded snapshot can hold.
+				std::array<unsigned char, sizeof(snapshot) + 16> decoded{};
+				PBYTE target = nullptr;
+				LONG extra = 0;
+				PBYTE next = DetourCopyInstructionEx(decoded.data(), instruction, &target, &extra);
+				if (!next || next <= instruction)
+					return false;
+				Instruction facts{};
+				facts.offset = offset;
+				facts.length = static_cast<size_t>(next - instruction);
+				facts.opcode = *instruction;
+				facts.hasTarget = target != nullptr;
+				facts.dynamicTarget = target == DETOUR_INSTRUCTION_TARGET_DYNAMIC;
+				facts.extra = extra;
+				if (!InstructionFits(offset, facts.length, limit))
+					return false;
+				const Verdict verdict = Classify(facts);
+				if (verdict == Verdict::Refuse)
+					return false;
+				if (verdict == Verdict::RelocateLeading) {
+					int32_t relative = 0;
+					memcpy(&relative, snapshot.data() + 1, sizeof(relative));
+					leadingTarget = source + 5 + static_cast<uintptr_t>(relative);
+					relocateLeading = true;
+				}
+				offset += facts.length;
+			}
+			const size_t spanLength = offset;
+			if ((exactLength && spanLength != requestedLength) || spanLength > readLength
+				|| (relocateLeading && !LeadingTargetAllowed(snapshot[0], leadingTarget, source, spanLength)))
+				return false;
+
+			const size_t gatewayCapacity = spanLength + 5;
+			if (!OutputFits(0, spanLength, gatewayCapacity, 5))
+				return false;
 			auto* allocated = static_cast<unsigned char*>(VirtualAlloc(nullptr, gatewayCapacity,
 				MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE));
 			if (!allocated) {
 				error = GetLastError();
 				return false;
 			}
-
-			size_t sourceOffset = 0;
-			size_t destinationOffset = 0;
-			while (sourceOffset < required) {
-				PBYTE instruction = reinterpret_cast<PBYTE>(source + sourceOffset);
-				std::array<unsigned char, 15> probe{};
-				if (!ReadPatchMemory(nullptr, source + sourceOffset, probe.data(), probe.size())) {
-					error = ERROR_NOACCESS;
-					VirtualFree(allocated, 0, MEM_RELEASE);
-					return false;
-				}
-				PBYTE target = nullptr;
-				LONG extra = 0;
-				PBYTE next = DetourCopyInstructionEx(allocated + destinationOffset,
-					instruction, &target, &extra);
-				if (!next || next <= instruction || extra < -15) {
-					error = ERROR_BAD_EXE_FORMAT;
-					VirtualFree(allocated, 0, MEM_RELEASE);
-					return false;
-				}
-				if (target)
-					relativeTargets.push_back(reinterpret_cast<uintptr_t>(target));
-				const size_t instructionLength = static_cast<size_t>(next - instruction);
-				if (instructionLength > sourceCapacity - sourceOffset
-					|| (fixedLength && instructionLength > fixedLength - sourceOffset)
-					|| !ReadPatchMemory(nullptr, source + sourceOffset,
-						original.data() + sourceOffset, instructionLength)) {
-					error = ERROR_BAD_EXE_FORMAT;
-					VirtualFree(allocated, 0, MEM_RELEASE);
-					return false;
-				}
-				const LONG relocatedLength = static_cast<LONG>(instructionLength) + extra;
-				if (relocatedLength <= 0 || static_cast<size_t>(relocatedLength) > gatewayCapacity - destinationOffset - 5) {
-					error = ERROR_BAD_EXE_FORMAT;
-					VirtualFree(allocated, 0, MEM_RELEASE);
-					return false;
-				}
-				destinationOffset += static_cast<size_t>(relocatedLength);
-				sourceOffset += instructionLength;
+			memcpy(allocated, snapshot.data(), spanLength);
+			if (relocateLeading) {
+				const uint32_t relative = static_cast<uint32_t>(leadingTarget
+					- (reinterpret_cast<uintptr_t>(allocated) + 5));
+				memcpy(allocated + 1, &relative, sizeof(relative));
 			}
-			if (fixedLength && sourceOffset != fixedLength) {
-				error = ERROR_BAD_EXE_FORMAT;
-				VirtualFree(allocated, 0, MEM_RELEASE);
-				return false;
-			}
-			const uintptr_t sourceEnd = source + sourceOffset;
-			for (uintptr_t target : relativeTargets) {
-				if (target >= source && target < sourceEnd) {
-					error = ERROR_BAD_EXE_FORMAT;
-					VirtualFree(allocated, 0, MEM_RELEASE);
-					return false;
-				}
-			}
-
-			original.resize(sourceOffset);
-			allocated[destinationOffset] = 0xE9;
-			const uintptr_t returnAddress = source + sourceOffset;
-			const uint32_t backRelative = static_cast<uint32_t>(returnAddress
-				- (reinterpret_cast<uintptr_t>(allocated) + destinationOffset + 5));
-			memcpy(allocated + destinationOffset + 1, &backRelative, sizeof(backRelative));
-			gatewayLength = destinationOffset + 5;
+			allocated[spanLength] = 0xE9;
+			const uint32_t backRelative = static_cast<uint32_t>(source + spanLength
+				- (reinterpret_cast<uintptr_t>(allocated) + spanLength + 5));
+			memcpy(allocated + spanLength + 1, &backRelative, sizeof(backRelative));
+			gatewayLength = gatewayCapacity;
 			DWORD previousProtection = 0;
 			if (!VirtualProtect(allocated, gatewayLength, PAGE_EXECUTE_READ, &previousProtection)
 				|| !FlushInstructionCache(GetCurrentProcess(), allocated, gatewayLength)) {
@@ -1085,6 +1449,8 @@ namespace MemUtil {
 				VirtualFree(allocated, 0, MEM_RELEASE);
 				return false;
 			}
+			original.assign(snapshot.begin(), snapshot.begin() + spanLength);
+			error = ERROR_SUCCESS;
 			gateway = allocated;
 			return true;
 		}
@@ -1113,7 +1479,11 @@ namespace MemUtil {
 		failure_ = Failure::None;
 		failureAddress_ = 0;
 		failureCode_ = ERROR_SUCCESS;
+		exclusionReason_ = nullptr;
+		exclusionThread_ = 0;
+		exclusionPass_ = 0;
 		prepared_ = false;
+		preparationFailed_ = false;
 		operationAttempted_ = false;
 		useSyscallProtection_ = false;
 	}
@@ -1127,6 +1497,7 @@ namespace MemUtil {
 		Reset();
 		if (requests.size() > MaxSites) {
 			failure_ = Failure::InvalidRequest;
+			preparationFailed_ = true;
 			return false;
 		}
 		sites_.reserve(requests.size());
@@ -1141,9 +1512,13 @@ namespace MemUtil {
 	}
 
 	bool PreparedPatchSet::Append(const PreparedPatchRequest& request) {
-		if (failure_ != Failure::None || operationAttempted_ || sites_.size() >= MaxSites) {
+		// A set that was committed keeps its sites for Rollback; a refused one keeps its first failure.
+		if (operationAttempted_ || preparationFailed_)
+			return false;
+		if (sites_.size() >= MaxSites) {
 			failure_ = Failure::InvalidRequest;
 			failureAddress_ = reinterpret_cast<uintptr_t>(request.address);
+			preparationFailed_ = true;
 			return false;
 		}
 		ResolveProtectionDispatch(useSyscallProtection_);
@@ -1153,6 +1528,7 @@ namespace MemUtil {
 			failure_ = failure;
 			failureAddress_ = address;
 			failureCode_ = error;
+			preparationFailed_ = true;
 			if (site.ownsNativeEntry)
 				VirtualFree(site.nativeEntry, 0, MEM_RELEASE);
 			return false;
@@ -1210,19 +1586,18 @@ namespace MemUtil {
 		}
 		case PreparedPatchKind::Jump: {
 			const bool dynamicGateway = request.captureNativeEntry && request.expectedBytes.empty()
-				&& request.length == 0;
-			const size_t length = request.length ? request.length : request.expectedBytes.size();
-			if (!dynamicGateway && length < 5)
+				&& request.length == 0 && request.minimumLength != 0;
+			const size_t length = dynamicGateway ? request.minimumLength
+				: request.length ? request.length : request.expectedBytes.size();
+			if (length < 5)
 				return fail(Failure::InvalidRequest, address);
-			if (!dynamicGateway && !request.expectedBytes.empty() && request.length
+			if (!request.expectedBytes.empty() && request.length
 				&& request.expectedBytes.size() != request.length)
 				return fail(Failure::InvalidRequest, address);
 			if (request.captureNativeEntry) {
-				const size_t minimumLength = request.minimumLength < 5 ? 5 : request.minimumLength;
-				const size_t fixedLength = dynamicGateway ? 0 : length;
 				size_t gatewayLength = 0;
 				DWORD error = ERROR_SUCCESS;
-				if (!BuildGateway(address, fixedLength, minimumLength, site.original,
+				if (!BuildGateway(address, length, !dynamicGateway, site.original,
 					site.nativeEntry, gatewayLength, error))
 					return fail(Failure::GatewayFailed, address, error);
 				site.ownsNativeEntry = true;
@@ -1274,56 +1649,79 @@ namespace MemUtil {
 	}
 
 	PatchResult PreparedPatchSet::Commit() noexcept {
-		operationAttempted_ = true;
-		failure_ = Failure::None;
-		failureAddress_ = 0;
-		failureCode_ = ERROR_SUCCESS;
-		if (!prepared_)
-			return result_ = ToPatchResult(outcome_);
-		std::array<Detail::PatchTransactionSite, MaxSites> transactionSites{};
-		for (size_t i = 0; i < sites_.size(); ++i) {
-			transactionSites[i] = sites_[i].transaction;
-			transactionSites[i].everPublished = transactionSites[i].everPublished || sites_[i].nativeEntryExposed;
-		}
-		outcome_ = Detail::RunPatchTransaction(
-			std::span<Detail::PatchTransactionSite>(transactionSites.data(), sites_.size()), regions_,
-			TransactionOperations(&useSyscallProtection_), false, PAGE_EXECUTE_READWRITE,
-			&failureAddress_);
-		for (size_t i = 0; i < sites_.size(); ++i)
-			sites_[i].transaction.everPublished = transactionSites[i].everPublished;
-		result_ = ToPatchResult(outcome_);
-		if (outcome_.bytes != PatchByteState::Replacement || !outcome_.instructionCacheFlushed
-			|| !outcome_.protectionRestored)
-			failure_ = Failure::CommitFailed;
-		if (failure_ != Failure::None)
-			failureCode_ = GetLastError();
-		return result_;
+		return RunTransaction(false);
 	}
 
 	PatchResult PreparedPatchSet::Rollback() noexcept {
+		return RunTransaction(true);
+	}
+
+	// Exclusion rule: a set that writes anything other than aligned pointer stores runs inside
+	// Framework::ThreadExecution::Run, which suspends every other thread of the process, re-checks for
+	// threads born after its snapshot and for threads stopped inside a patched span, and retries up
+	// to kMaxPasses. It writes without suspending only when the snapshot taken here lists no other
+	// thread. When exclusion is not reached nothing is written and the previous state is reported.
+	PatchResult PreparedPatchSet::RunTransaction(bool rollback) noexcept {
 		operationAttempted_ = true;
+		if (preparationFailed_)
+			return result_ = ToPatchResult(outcome_);
 		failure_ = Failure::None;
 		failureAddress_ = 0;
 		failureCode_ = ERROR_SUCCESS;
+		exclusionReason_ = nullptr;
+		exclusionThread_ = 0;
+		exclusionPass_ = 0;
 		if (!prepared_)
 			return result_ = ToPatchResult(outcome_);
 		std::array<Detail::PatchTransactionSite, MaxSites> transactionSites{};
+		std::array<std::pair<uintptr_t, size_t>, MaxSites> spans{};
+		bool needsExclusion = false;
 		for (size_t i = 0; i < sites_.size(); ++i) {
 			transactionSites[i] = sites_[i].transaction;
 			transactionSites[i].everPublished = transactionSites[i].everPublished || sites_[i].nativeEntryExposed;
+			spans[i] = { sites_[i].transaction.address, sites_[i].original.size() };
+			needsExclusion = needsExclusion || (threadExclusion_ && !sites_[i].transaction.pointerStore);
 		}
-		outcome_ = Detail::RunPatchTransaction(
-			std::span<Detail::PatchTransactionSite>(transactionSites.data(), sites_.size()), regions_,
-			TransactionOperations(&useSyscallProtection_), true, PAGE_EXECUTE_READWRITE,
-			&failureAddress_);
+		DWORD transactionError = ERROR_SUCCESS;
+		auto transaction = [&]() noexcept {
+			outcome_ = Detail::RunPatchTransaction(
+				std::span<Detail::PatchTransactionSite>(transactionSites.data(), sites_.size()), regions_,
+				TransactionOperations(&useSyscallProtection_), rollback, PAGE_EXECUTE_READWRITE,
+				&failureAddress_);
+			transactionError = GetLastError();
+			return true;
+		};
+		if (needsExclusion) {
+			AcquireSRWLockExclusive(&Detail::g_exclusionLock);
+			Detail::ThreadExclusionOperations::FailureInfo exclusion{};
+			bool excluded = false;
+			{
+				Detail::ThreadExclusionOperations threads(Detail::g_exclusionStorage,
+					std::span<const std::pair<uintptr_t, size_t>>(spans.data(), sites_.size()));
+				excluded = Framework::ThreadExecution::Run(threads, Framework::ThreadExecution::kMaxPasses,
+					transaction);
+				exclusion = threads.FailureDetails();
+			}
+			ReleaseSRWLockExclusive(&Detail::g_exclusionLock);
+			if (!excluded) {
+				failure_ = Failure::ExecutionSyncFailed;
+				failureCode_ = exclusion.error;
+				exclusionReason_ = Detail::ExclusionFailureName(exclusion.reason);
+				exclusionThread_ = exclusion.threadId;
+				exclusionPass_ = exclusion.pass;
+				return result_ = ToPatchResult(outcome_);
+			}
+		}
+		else
+			transaction();
 		for (size_t i = 0; i < sites_.size(); ++i)
 			sites_[i].transaction.everPublished = transactionSites[i].everPublished;
 		result_ = ToPatchResult(outcome_);
-		if (outcome_.bytes != PatchByteState::Original || !outcome_.instructionCacheFlushed
-			|| !outcome_.protectionRestored)
+		const PatchByteState expected = rollback ? PatchByteState::Original : PatchByteState::Replacement;
+		if (outcome_.bytes != expected || !outcome_.instructionCacheFlushed || !outcome_.protectionRestored) {
 			failure_ = Failure::CommitFailed;
-		if (failure_ != Failure::None)
-			failureCode_ = GetLastError();
+			failureCode_ = transactionError;
+		}
 		return result_;
 	}
 
@@ -1344,17 +1742,23 @@ namespace MemUtil {
 	}
 
 	void PreparedPatchSet::Report(const char* group) const {
-		if (prepared_ && !operationAttempted_) {
-			LOG_INFO(group << " was prepared; no patch was attempted" << std::endl);
-			return;
-		}
-		if (!prepared_ && failure_ != Failure::None) {
+		if (preparationFailed_) {
 			if (failure_ == Failure::BytesMismatch)
 				LOG_ERROR(group << " expected bytes did not match at 0x" << std::hex << failureAddress_
 					<< std::dec << "; no patch was written" << std::endl);
 			else
 				LOG_ERROR(group << " could not be prepared at 0x" << std::hex << failureAddress_
 					<< std::dec << " (error " << failureCode_ << "); no patch was written" << std::endl);
+			return;
+		}
+		if (prepared_ && !operationAttempted_) {
+			LOG_INFO(group << " was prepared; no patch was attempted" << std::endl);
+			return;
+		}
+		if (failure_ == Failure::ExecutionSyncFailed) {
+			LOG_ERROR(group << " could not stop other threads: " << (exclusionReason_ ? exclusionReason_ : "unknown")
+				<< " (thread " << exclusionThread_ << ", pass " << exclusionPass_ << ", error " << failureCode_
+				<< "); the bytes were not touched" << std::endl);
 			return;
 		}
 		if (result_ == PatchResult::Installed) {
