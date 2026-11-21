@@ -30,7 +30,7 @@ namespace Keybindings {
 		commands.SetKeyResolver([](std::string_view setting) {
 			return Settings::GetKeyBind(std::string(setting));
 		});
-		commands.BindKey(nullptr, "ReloadSettings", 'A', Framework::KeyEdge::Up,
+		commands.BindSetting(nullptr, Settings::Setting::Key::ReloadSettings, Framework::KeyEdge::Up,
 			Framework::Availability::Initialized,
 			[](Framework::ModContext&, const Framework::KeyEvent&) {
 				Framework::Registry().EnqueueSettingsUpdate([] { Settings::UpdateSettings(); });

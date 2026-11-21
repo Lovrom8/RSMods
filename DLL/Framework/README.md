@@ -290,9 +290,9 @@ rule. Fixed-key commands use a final internal pass matching the old inline-host-
 These passes are router implementation details; binding refreshes log physical collisions rather
 than rejecting user configuration.
 
-Force Enumeration is owned by `EnumerationMod`, while the fixed Delete auto-tune intent is owned by
-`MidiMod`. Only the Ctrl+A settings reload shortcut remains host-owned in
-`Keybindings`. Input received before `GameLoaded` is discarded at dispatch and is never replayed afterward.
+Force Enumeration is owned by `EnumerationMod` and manual MIDI auto-tune by `MidiMod`.
+Settings reload is host-owned and configurable in `Keybindings`.
+Input received before `GameLoaded` is discarded at dispatch and is never replayed afterward.
 
 ## Settings
 

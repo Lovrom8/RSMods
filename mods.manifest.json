@@ -1219,6 +1219,30 @@
     "entryTitle": null
   },
   {
+    "key": "ReloadSettingsKey",
+    "ini": {
+      "section": "Keybinds",
+      "name": "ReloadSettingsKey"
+    },
+    "type": "Key",
+    "default": "",
+    "label": "Reload Settings (Ctrl + key)",
+    "hint": "",
+    "category": "Keybinds",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null,
+    "editedBy": null,
+    "mod": "SettingsMenuMod",
+    "entry": "SettingsMenuEnabled",
+    "heading": null,
+    "entryTitle": null
+  },
+  {
     "key": "RemoveSkylineEnabled",
     "ini": {
       "section": "Toggle Switches",
@@ -1899,6 +1923,30 @@
     "type": "Key",
     "default": "O",
     "label": "Change Tuning Offset",
+    "hint": "",
+    "category": "Keybinds",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null,
+    "editedBy": null,
+    "mod": "MidiMod",
+    "entry": "AutoTuneForSong",
+    "heading": null,
+    "entryTitle": null
+  },
+  {
+    "key": "ManualMidiAutoTuneKey",
+    "ini": {
+      "section": "Keybinds",
+      "name": "ManualMidiAutoTuneKey"
+    },
+    "type": "Key",
+    "default": "",
+    "label": "Tune MIDI Pedal",
     "hint": "",
     "category": "Keybinds",
     "min": null,

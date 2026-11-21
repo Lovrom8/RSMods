@@ -274,33 +274,6 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 	// logger is an investigation tool the draw path should not carry.
 	#ifdef _DEBUG
 	if (debug) {
-		if (GetAsyncKeyState(VK_PRIOR) & 1 && currIdx < std::size(allMeshes) - 1)// Page up
-			currIdx++;
-		if (GetAsyncKeyState(VK_NEXT) & 1 && currIdx > 0) // Page down
-			currIdx--;
-
-		if (GetAsyncKeyState(VK_END) & 1) { // Toggle logging
-			LOG_INFO("Logging is ");
-			startLogging = !startLogging;
-			if (!startLogging)
-				LOG_NOHEAD("no longer ");
-			LOG_NOHEAD("armed!" << std::endl);
-		}
-
-		if (GetAsyncKeyState(VK_F8) & 1) { // Save logged meshes to file
-			for (const auto& mesh : allMeshes) {
-				(void)mesh;
-				//Log(mesh.ToString().c_str());
-			}
-		}
-
-		if (GetAsyncKeyState(VK_F7) & 1) { // Save only removed 
-			for (const auto& mesh : removedMeshes) {
-				(void)mesh;
-				//Log(mesh.ToString().c_str());
-			}
-		}
-
 		if (startLogging) {
 			if (std::ranges::find(allMeshes, currentThicc) == allMeshes.end()) // Make sure we don't log what we'd already logged
 				allMeshes.push_back(currentThicc);

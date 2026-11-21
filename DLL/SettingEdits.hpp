@@ -9,7 +9,7 @@
 // so the edit goes to the GUI over WM_COPYDATA; with no GUI, or a GUI set up for another game folder, the game
 // patches the one line itself.
 //
-// Until the file has the edit, rereading it (the GUI's "update all", Ctrl+A) would bring the old value back, so an
+// Until the file has the edit, rereading it (the GUI's "update all" or reload command) would bring the old value back, so an
 // edit stays pending and every reread applies it again until the file shows it.
 namespace SettingEdits {
 	struct Edit {

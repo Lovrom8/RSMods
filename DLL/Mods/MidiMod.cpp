@@ -78,6 +78,7 @@ SettingDefs MidiMod::Settings() const {
 			"Open the custom MIDI and pedal setup editor",
 		}.WithEditor("Midi"),
 		Framework::KeyBind(Setting::Key::TuningOffset, "Change Tuning Offset", "O"),
+		Framework::KeyBind(Setting::Key::ManualMidiAutoTune, "Tune MIDI Pedal", ""),
 	};
 }
 
@@ -299,10 +300,8 @@ void MidiMod::OnInitialize(ModContext& c) {
 			return context.IsOn(Setting::AutoTuneForSong);
 		});
 
-	// Delete is a fixed host shortcut, but its intent belongs to this tuning-controller mod.
-	c.Commands().BindKey(
-		"ManualMidiAutoTune",
-		VK_DELETE,
+	c.Commands().BindSetting(
+		Setting::Key::ManualMidiAutoTune,
 		KeyEdge::Up,
 		Availability::Active,
 		[](ModContext&, const KeyEvent&) {

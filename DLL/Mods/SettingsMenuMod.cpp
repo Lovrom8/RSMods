@@ -25,8 +25,8 @@ SettingDefs SettingsMenuMod::Settings() const {
 			.Ini("Platform", "HostOverride").Choices({ "auto", "windows", "wine" }, "auto")
 			.Hint("Leave on auto. Set to wine if RSMods misdetects Wine, Proton or CrossOver.")
 			.Heading(Framework::SettingHeading::GameAndWindow),
-		// F7/F8 are debug mesh-logging keys and F10 is the Windows menu key.
 		Framework::KeyBind(Setting::Key::ToggleSettingsMenu, "Show In-Game Settings", "VK_F9"),
+		Framework::KeyBind(Setting::Key::ReloadSettings, "Reload Settings (Ctrl + key)", ""),
 	};
 }
 

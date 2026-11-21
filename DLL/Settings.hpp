@@ -177,6 +177,8 @@ namespace Settings {
 			inline constexpr char RemoveLyrics[]         = "RemoveLyricsKey";
 			inline constexpr char RRSpeed[]              = "RRSpeedKey";
 			inline constexpr char TuningOffset[]         = "TuningOffsetKey";
+			inline constexpr char ManualMidiAutoTune[]   = "ManualMidiAutoTuneKey";
+			inline constexpr char ReloadSettings[]       = "ReloadSettingsKey";
 			inline constexpr char ToggleExtendedRange[]  = "ToggleExtendedRangeKey";
 			inline constexpr char LoopStart[]            = "LoopStartKey";
 			inline constexpr char LoopEnd[]              = "LoopEndKey";
