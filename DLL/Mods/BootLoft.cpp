@@ -81,7 +81,7 @@ namespace {
     public:
         MOD_ID(BootLoftMod)
         bool IsEnabled(const Framework::ModContext&) const override {
-            return installed && MemUtil::BootPatchBundleEnabled(Framework::BootPatch::Bundle::SignIn);
+            return installed && MemUtil::BootPatchBundleEnabled(Framework::BootPatch::Bundle::BootLoft);
         }
         void OnTick(Framework::ModContext& c) override {
             const auto& menu = GameState::currentMenu;

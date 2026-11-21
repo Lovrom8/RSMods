@@ -8,6 +8,9 @@ namespace Framework::BootPatch {
 		ProfileAutoLoad,
 		UltrafastCore,
 		DxvkFrameBudget,
+		BootIntro,
+		BootLoft,
+		TitleFade,
 		Count
 	};
 
@@ -28,19 +31,21 @@ namespace Framework::BootPatch {
 
 	inline constexpr std::size_t BundleCount = static_cast<std::size_t>(Bundle::Count);
 
+	// Sign-in and the accelerated-load members are dependency bundles. Cosmetic or
+	// flow-only members have independent bundles so their failure cannot disable the core.
 	constexpr Bundle BundleFor(Member member) {
 		switch (member) {
 		case Member::SourceSignIn:
-		case Member::ProfileCompletion:
-		case Member::BootLoft: return Bundle::SignIn;
+		case Member::ProfileCompletion: return Bundle::SignIn;
+		case Member::BootLoft: return Bundle::BootLoft;
 		case Member::ProfileAutoLoad: return Bundle::ProfileAutoLoad;
 		case Member::DxvkFrameBudget: return Bundle::DxvkFrameBudget;
 		case Member::DlcStorePrefetch:
 		case Member::DlcOwnership:
 		case Member::LazyVfs:
-		case Member::NativeBegin:
-		case Member::BootIntro:
-		case Member::TitleFade: return Bundle::UltrafastCore;
+		case Member::NativeBegin: return Bundle::UltrafastCore;
+		case Member::BootIntro: return Bundle::BootIntro;
+		case Member::TitleFade: return Bundle::TitleFade;
 		case Member::Count: return Bundle::Count;
 		}
 		return Bundle::Count;
@@ -66,10 +71,13 @@ namespace Framework::BootPatch {
 
 	constexpr const char* BundleName(Bundle bundle) {
 		switch (bundle) {
-		case Bundle::SignIn: return "source sign-in, profile completion and BootLoft";
+		case Bundle::SignIn: return "source sign-in and profile completion";
 		case Bundle::ProfileAutoLoad: return "profile autoload";
 		case Bundle::UltrafastCore: return "ultrafast load core";
 		case Bundle::DxvkFrameBudget: return "DXVK frame budget";
+		case Bundle::BootIntro: return "boot intro";
+		case Bundle::BootLoft: return "boot loft";
+		case Bundle::TitleFade: return "title fade";
 		case Bundle::Count: return "unknown";
 		}
 		return "unknown";
@@ -77,11 +85,14 @@ namespace Framework::BootPatch {
 
 	constexpr const char* DisabledFeatures(Bundle bundle) {
 		switch (bundle) {
-		case Bundle::SignIn: return "source sign-in, profile completion and BootLoft";
+		case Bundle::SignIn: return "source sign-in and profile completion";
 		case Bundle::ProfileAutoLoad: return "profile autoload";
 		case Bundle::UltrafastCore:
-			return "DLC store prefetch, DLC ownership, LazyVfs, NativeBegin, BootIntro, TitleFade";
+			return "DLC store prefetch, DLC ownership, LazyVfs, NativeBegin";
 		case Bundle::DxvkFrameBudget: return "DXVK frame budget";
+		case Bundle::BootIntro: return "boot intro";
+		case Bundle::BootLoft: return "boot loft";
+		case Bundle::TitleFade: return "title fade";
 		case Bundle::Count: return "unknown";
 		}
 		return "unknown";

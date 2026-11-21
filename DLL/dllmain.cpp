@@ -313,6 +313,9 @@ void Initialize() {
 		UplayLoginMod::Install();
 	if (MemUtil::BootPatchMember(Framework::BootPatch::Member::ProfileCompletion))
 		NativeBegin::InstallProfileCompletion();
+	MemUtil::CommitBootPatchBundle();
+
+	MemUtil::BeginBootPatchBundle(Framework::BootPatch::Bundle::BootLoft);
 	if (MemUtil::BootPatchMember(Framework::BootPatch::Member::BootLoft))
 		BootLoft::Install();
 	MemUtil::CommitBootPatchBundle();
@@ -330,17 +333,25 @@ void Initialize() {
 			if (MemUtil::BootPatchMember(Framework::BootPatch::Member::DlcOwnership))
 				BugPrevention::DeferDlcOwnershipQueries();
 		}
-		if (MemUtil::BootPatchMember(Framework::BootPatch::Member::TitleFade))
-			TitleFade::Install();
 		if (MemUtil::BootPatchMember(Framework::BootPatch::Member::LazyVfs))
 			LazyVfs::Install();
-		if (MemUtil::BootPatchMember(Framework::BootPatch::Member::BootIntro))
-			BootIntro::Remove();
 		// Automatic Begin only hands over to the replacement completion; without it the title waits for the player.
 		if (MemUtil::BootPatchBundleEnabled(Framework::BootPatch::Bundle::SignIn)
 			&& MemUtil::BootPatchMember(Framework::BootPatch::Member::NativeBegin))
 			NativeBegin::Install();
 	}
+	MemUtil::CommitBootPatchBundle();
+
+	MemUtil::BeginBootPatchBundle(Framework::BootPatch::Bundle::BootIntro);
+	if (UltrafastLoad::Enabled()
+		&& MemUtil::BootPatchMember(Framework::BootPatch::Member::BootIntro))
+		BootIntro::Remove();
+	MemUtil::CommitBootPatchBundle();
+
+	MemUtil::BeginBootPatchBundle(Framework::BootPatch::Bundle::TitleFade);
+	if (UltrafastLoad::Enabled()
+		&& MemUtil::BootPatchMember(Framework::BootPatch::Member::TitleFade))
+		TitleFade::Install();
 	MemUtil::CommitBootPatchBundle();
 
 	MemUtil::BeginBootPatchBundle(Framework::BootPatch::Bundle::DxvkFrameBudget);
