@@ -114,9 +114,9 @@ $Tests = @(
     @{ Name = 'ShaderScanTests'; Sources = @() },
     @{ Name = 'TitleFadeBytesTests'; Sources = @() },
     @{ Name = 'GameVersionTests';       Sources = @('GameVersion.cpp') },
-    @{ Name = 'ProxyLazyLoadTests';     Sources = @() },
+    @{ Name = 'ProxyLazyLoadTests';     Sources = @(); Dir = 'Win32' },  # Windows-only, kept out of the portable glob
     @{ Name = 'InstructionPatchTests'; Sources = @() },
-    @{ Name = 'MemoryPatchTransactionTests'; Sources = @() },
+    @{ Name = 'MemoryPatchTransactionTests'; Sources = @(); Dir = 'Win32' },
     @{ Name = 'ThreadExecutionPolicyTests'; Sources = @() },
     @{ Name = 'TrampolinePolicyTests'; Sources = @() },
     @{ Name = 'BootPatchBundlePolicyTests'; Sources = @() },
@@ -138,7 +138,8 @@ $failed = @()
 foreach ($t in $Tests) {
     $name = $t.Name
     $exe  = Join-Path $OutDir "$name.exe"
-    $srcs = @((Join-Path $TestsDir "$name.cpp")) + ($t.Sources | ForEach-Object { Join-Path $Framework $_ })
+    $testDir = if ($t.Dir) { Join-Path $TestsDir $t.Dir } else { $TestsDir }
+    $srcs = @((Join-Path $testDir "$name.cpp")) +($t.Sources | ForEach-Object { Join-Path $Framework $_ })
     $srcArgs = ($srcs | ForEach-Object { "`"$_`"" }) -join ' '
 
     Write-Host "=== Building $name ===" -ForegroundColor Cyan

@@ -1,7 +1,7 @@
 #define NOMINMAX
 #include <Windows.h>
 
-#include "../../Proxy.hpp"
+#include "../../../Proxy.hpp"
 
 #include <atomic>
 #include <iostream>
