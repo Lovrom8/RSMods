@@ -14,115 +14,118 @@ namespace {
 	const auto readSite = [](std::uintptr_t address, auto& bytes) {
 		return MemUtil::TryRead(address, bytes);
 	};
-	const auto writeSite = [](std::uintptr_t address, const auto& bytes) {
-		return FromWriteResult(MemUtil::WritePatch(reinterpret_cast<LPVOID>(address), bytes.data(), bytes.size()),
-			MemUtil::PatchResult::Installed, MemUtil::PatchResult::Original, MemUtil::PatchResult::RollbackIncomplete);
-	};
 
 	template <std::size_t Size>
-	PatchedSite<Size> MakeSite(const char* name, std::uintptr_t address, const VersionedPattern<Size>& patterns,
-		std::size_t writeOffset = 0, std::size_t writeSize = Size) {
-		return { name, address, GameVersion::Current(), patterns, writeOffset, writeSize };
+	SiteDescriptor<Size> MakeSite(const char* name, std::uintptr_t address, const VersionedPattern<Size>& expected,
+		const std::array<std::uint8_t, Size>& replacement,
+		typename SiteDescriptor<Size>::ReplacementBuilder buildReplacement = nullptr) {
+		return Framework::InstructionPatch::MakeSite(name, address, ::GameVersion::Current(),
+			expected, replacement, buildReplacement);
 	}
 
-	template <std::size_t Size>
-	void LogOriginal(const char* name, std::uintptr_t address, const std::array<std::uint8_t, Size>& bytes) {
+	void LogOriginal(const char* name, std::uintptr_t address, const std::vector<std::uint8_t>& bytes) {
 		std::ostringstream text;
 		for (std::uint8_t byte : bytes)
 			text << std::hex << static_cast<unsigned int>(byte) << ' ';
 		LOG_INFO("(CUSTOM SONG TITLES) " << name << " original at 0x" << std::hex << address << ": " << text.str() << std::endl);
 	}
 
-	const auto logOriginal = [](const char* name, std::uintptr_t address, const auto& bytes) {
-		LogOriginal(name, address, bytes);
-	};
+	bool AppendSites(MemUtil::PreparedPatchSet& patches, const CaptureResult& captured) {
+		return AppendCaptured(captured, [&](const CapturedSite& site) {
+			MemUtil::PreparedPatchRequest request{};
+			request.address = reinterpret_cast<LPVOID>(site.address);
+			request.kind = MemUtil::PreparedPatchKind::Bytes;
+			request.expectedBytes = site.original;
+			request.replacementBytes = site.replacement;
+			request.length = site.original.size();
+			return patches.Append(request);
+		});
+	}
 
-	void LogResult(const char* action, const Result& result) {
-		if (result.outcome == Outcome::Installed) {
-			if (result.changed)
-				LOG_INFO("(CUSTOM SONG TITLES) " << action << " installed" << std::endl);
-		}
-		else if (result.outcome == Outcome::RollbackIncomplete) {
+	void LogValidationFailure(const char* action, const CaptureResult& captured) {
+		if (captured.failure != ValidationFailure::None)
+			LOG_WARNING("(CUSTOM SONG TITLES) " << action << " left unchanged at " << captured.site
+				<< ": " << FailureName(captured.failure) << std::endl);
+	}
+
+	void LogUnavailable(const char* action, const char* site) {
+		LOG_WARNING("(CUSTOM SONG TITLES) " << action << " left unchanged at " << site << ": "
+			<< FailureName(ValidationFailure::Unavailable) << std::endl);
+	}
+
+	void LogResult(const char* action, const CaptureResult& captured, MemUtil::PatchResult result,
+		std::uintptr_t failureAddress) {
+		const char* site = SiteNameAt(captured, failureAddress);
+		if (result == MemUtil::PatchResult::Installed)
+			LOG_INFO("(CUSTOM SONG TITLES) " << action << " installed" << std::endl);
+		else if (result == MemUtil::PatchResult::RollbackIncomplete) {
 			LOG_ERROR("(CUSTOM SONG TITLES) " << action << " outcome is indeterminate at "
-				<< (result.site ? result.site : "patch group") << std::endl);
+				<< (site ? site : "patch group") << std::endl);
 		}
-		else if (result.failure != Failure::None) {
+		else {
 			LOG_WARNING("(CUSTOM SONG TITLES) " << action << " left unchanged at "
-				<< (result.site ? result.site : "patch group") << ": " << FailureName(result.failure) << std::endl);
+				<< (site ? site : "patch group") << ": write was not applied" << std::endl);
 		}
 	}
 
-	PatchedSite<5>& AddedSpacesSite() {
-		static auto site = MakeSite("added spaces call", Offsets::patch_addedSpaces.GetValue(), VersionedPattern<5>{
-			MaskedPattern(MakeBytes(0xE8, 0xD7, 0x64, 0xEB, 0xFF), MakeBytes(0xFF, 0x00, 0x00, 0x00, 0x00)),
-			UnavailablePattern<5>()
-		});
-		return site;
+	void InstallSites(const char* action, CaptureResult captured) {
+		if (captured.failure != ValidationFailure::None) {
+			LogValidationFailure(action, captured);
+			return;
+		}
+		MemUtil::PreparedPatchSet patches;
+		if (!AppendSites(patches, captured)) {
+			LogResult(action, captured, MemUtil::PatchResult::Original, patches.FailureAddress());
+			return;
+		}
+		for (const CapturedSite& site : captured.sites)
+			LogOriginal(site.name, site.address, site.original);
+		LogResult(action, captured, patches.Commit(), patches.FailureAddress());
 	}
 
-	PatchedSite<5>& AddedNumbersSite() {
-		static auto site = MakeSite("added numbers call", Offsets::patch_addedNumbers.GetValue(), VersionedPattern<5>{
-			MaskedPattern(MakeBytes(0xE8, 0x96, 0x64, 0xEB, 0xFF), MakeBytes(0xFF, 0x00, 0x00, 0x00, 0x00)),
-			UnavailablePattern<5>()
-		});
-		return site;
-	}
-
-	PatchedSite<6>& FakeTitlesSite() {
-		static auto site = MakeSite("localized-title hook", Offsets::hookAddr_ModifyLocalized.GetValue(), VersionedPattern<6>{
-			MaskedPattern(MakeBytes(0x8B, 0x0D, 0xFC, 0xFB, 0x35, 0x01), MakeBytes(0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00)),
-			UnavailablePattern<6>()
-		});
-		return site;
-	}
-
-	PatchedSite<3>& SprintfArgumentsSite() {
-		const std::uintptr_t immediate = Offsets::patch_sprintfArg.GetValue();
-		static auto site = MakeSite("localized-title argument count", immediate ? immediate - 2 : 0, VersionedPattern<3>{
-			ExactPattern(MakeBytes(0x83, 0xC4, 0x0C)),
-			UnavailablePattern<3>()
-		}, 2, 1);
-		return site;
-	}
-
-	PatchedSite<5>& MissingLocalizationSite() {
-		static auto site = MakeSite("missing-localization hook", Offsets::hookAddr_MissingLocalization.GetValue(), VersionedPattern<5>{
-			MaskedPattern(MakeBytes(0x68, 0x58, 0x3B, 0x1D, 0x01), MakeBytes(0xFF, 0x00, 0x00, 0x00, 0x00)),
-			UnavailablePattern<5>()
-		});
-		return site;
-	}
-
-	Result InstallTitleSites(bool includeMissingLocalization) {
-		auto& spaces = AddedSpacesSite();
-		auto& numbers = AddedNumbersSite();
-		auto& fakeTitles = FakeTitlesSite();
-		auto& sprintfArguments = SprintfArgumentsSite();
-		auto& missingLocalization = MissingLocalizationSite();
+	void InstallTitleSites(bool includeMissingLocalization, const char* action) {
 		CustomSongTitles::len = includeMissingLocalization ? 5 : 6;
-		if (fakeTitles.Address())
-			Offsets::hookBackAddr_FakeTitles.Get() = fakeTitles.Address() + 6;
-		if (missingLocalization.Address())
-			Offsets::hookBackAddr_missingLocalization.Get() = missingLocalization.Address() + 5;
-		spaces.SetReplacement(MakeBytes(0x58, 0x58, 0x90, 0x90, 0x90));
-		numbers.SetReplacement(MakeBytes(0x5A, 0x5A, 0x90, 0x90, 0x90));
-		sprintfArguments.SetReplacement(MakeBytes(0x83, 0xC4, 0x04));
-
+		const auto spacesReplacement = MakeBytes(0x58, 0x58, 0x90, 0x90, 0x90);
+		const auto numbersReplacement = MakeBytes(0x5A, 0x5A, 0x90, 0x90, 0x90);
+		const auto spaces = MakeSite("added spaces call", Offsets::patch_addedSpaces.GetValue(), VersionedPattern<5>{
+			ExactPattern(MakeBytes(0xE8, 0xD7, 0x64, 0xEB, 0xFF)), UnavailablePattern<5>()
+		}, spacesReplacement);
+		const auto numbers = MakeSite("added numbers call", Offsets::patch_addedNumbers.GetValue(), VersionedPattern<5>{
+			ExactPattern(MakeBytes(0xE8, 0x96, 0x64, 0xEB, 0xFF)), UnavailablePattern<5>()
+		}, numbersReplacement);
+		const auto fakeTitlesAddress = Offsets::hookAddr_ModifyLocalized.GetValue();
 		std::array<std::uint8_t, 6> fakeJump{};
-		if (!BuildRelativeJump(fakeTitles.Address(), reinterpret_cast<std::uintptr_t>(&hook_fakeTitles), fakeJump))
-			return { Outcome::Original, Failure::Unavailable, fakeTitles.Name() };
-		fakeTitles.SetReplacement(fakeJump);
-
+		if (!BuildRelativeJump(fakeTitlesAddress, reinterpret_cast<std::uintptr_t>(&hook_fakeTitles), fakeJump)) {
+			LogUnavailable(action, "localized-title hook");
+			return;
+		}
+		const auto fakeTitles = MakeSite("localized-title hook", fakeTitlesAddress, VersionedPattern<6>{
+			ExactPattern(MakeBytes(0x8B, 0x0D, 0xFC, 0xFB, 0x35, 0x01)), UnavailablePattern<6>()
+		}, fakeJump);
+		const std::uintptr_t sprintfImmediate = Offsets::patch_sprintfArg.GetValue();
+		const auto sprintfArguments = MakeSite("localized-title argument count",
+			sprintfImmediate ? sprintfImmediate - 2 : 0, VersionedPattern<3>{
+				ExactPattern(MakeBytes(0x83, 0xC4, 0x0C)), UnavailablePattern<3>()
+			}, MakeBytes(0x83, 0xC4, 0x04));
+		const auto missingAddress = Offsets::hookAddr_MissingLocalization.GetValue();
 		std::array<std::uint8_t, 5> missingJump{};
-		if (!BuildRelativeJump(missingLocalization.Address(), reinterpret_cast<std::uintptr_t>(&missingLocalizationHookFunc), missingJump))
-			return { Outcome::Original, Failure::Unavailable, missingLocalization.Name() };
-		missingLocalization.SetReplacement(missingJump);
+		if (includeMissingLocalization
+			&& !BuildRelativeJump(missingAddress, reinterpret_cast<std::uintptr_t>(&missingLocalizationHookFunc), missingJump)) {
+			LogUnavailable(action, "missing-localization hook");
+			return;
+		}
+		const auto missingLocalization = MakeSite("missing-localization hook", missingAddress, VersionedPattern<5>{
+			ExactPattern(MakeBytes(0x68, 0x58, 0x3B, 0x1D, 0x01)), UnavailablePattern<5>()
+		}, missingJump);
+		if (fakeTitlesAddress && ::GameVersion::Current() == Framework::GameVersion::Build::September2022)
+			Offsets::hookBackAddr_FakeTitles.Get() = fakeTitlesAddress + 6;
+		if (missingAddress && ::GameVersion::Current() == Framework::GameVersion::Build::September2022)
+			Offsets::hookBackAddr_missingLocalization.Get() = missingAddress + 5;
 
-		const auto read = readSite;
-		const auto write = writeSite;
 		if (includeMissingLocalization)
-			return InstallGroup(read, write, logOriginal, spaces, numbers, fakeTitles, sprintfArguments, missingLocalization);
-		return InstallGroup(read, write, logOriginal, spaces, numbers, fakeTitles);
+			InstallSites(action, CaptureSites(readSite, spaces, numbers, fakeTitles, sprintfArguments, missingLocalization));
+		else
+			InstallSites(action, CaptureSites(readSite, spaces, numbers, fakeTitles));
 	}
 }
 
@@ -221,25 +224,27 @@ void __declspec(naked) missingLocalizationHookFunc() {
 /// Remove spaces and numbers. "SONG LIST 1" -> "SONGLIST"
 /// </summary>
 void CustomSongTitles::PatchSongListAppendages() {
-	auto& spaces = AddedSpacesSite();
-	auto& numbers = AddedNumbersSite();
-	spaces.SetReplacement(MakeBytes(0x58, 0x58, 0x90, 0x90, 0x90));
-	numbers.SetReplacement(MakeBytes(0x5A, 0x5A, 0x90, 0x90, 0x90));
-	LogResult("Song-list appendage patches", InstallGroup(readSite, writeSite, logOriginal, spaces, numbers));
+	const auto spaces = MakeSite("added spaces call", Offsets::patch_addedSpaces.GetValue(), VersionedPattern<5>{
+		ExactPattern(MakeBytes(0xE8, 0xD7, 0x64, 0xEB, 0xFF)), UnavailablePattern<5>()
+	}, MakeBytes(0x58, 0x58, 0x90, 0x90, 0x90));
+	const auto numbers = MakeSite("added numbers call", Offsets::patch_addedNumbers.GetValue(), VersionedPattern<5>{
+		ExactPattern(MakeBytes(0xE8, 0x96, 0x64, 0xEB, 0xFF)), UnavailablePattern<5>()
+	}, MakeBytes(0x5A, 0x5A, 0x90, 0x90, 0x90));
+	InstallSites("Song-list appendage patches", CaptureSites(readSite, spaces, numbers));
 }
 
 /// <summary>
 /// Place Songlist Remove Hooks
 /// </summary>
 void CustomSongTitles::SetFakeListNames() {
-	LogResult("Fake song-list names", InstallTitleSites(false));
+	InstallTitleSites(false, "Fake song-list names");
 }
 
 /// <summary>
 /// Place Songlist Removal Hooks and New Songlist Name Hooks
 /// </summary>
 void CustomSongTitles::HookSongListsKoko() {
-	LogResult("Song-list localization hooks", InstallTitleSites(true));
+	InstallTitleSites(true, "Song-list localization hooks");
 }
 
 /// <summary>

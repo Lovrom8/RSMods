@@ -33,11 +33,15 @@ void TwoRTCBypassMod::SetTwoRTCBypass(bool enable) {
 		return;
 
 	const auto result = QualityOfLife::PatchTwoRTC(enable);
-	if (result.outcome == Framework::InstructionPatch::Outcome::Installed) {
-		bypassInstalled = enable;
+	if (enable && result == MemUtil::PatchResult::Installed) {
+		bypassInstalled = true;
 		bypassNeedsResolution = false;
 	}
-	else if (result.outcome == Framework::InstructionPatch::Outcome::RollbackIncomplete) {
+	else if (!enable && result == MemUtil::PatchResult::Original) {
+		bypassInstalled = false;
+		bypassNeedsResolution = false;
+	}
+	else if (result == MemUtil::PatchResult::RollbackIncomplete) {
 		bypassNeedsResolution = true;
 	}
 }

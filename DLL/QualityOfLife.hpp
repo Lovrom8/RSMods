@@ -1,9 +1,10 @@
 #pragma once
 
 #include "Framework/InstructionPatch.hpp"
+#include "MemUtil.hpp"
 
 namespace QualityOfLife {
-	Framework::InstructionPatch::Result PatchTwoRTC(bool enable);
+	MemUtil::PatchResult PatchTwoRTC(bool enable);
 	HANDLE GetMessageBoxProcess();
 	void StopTwoRSInstances();
 	void LowerNoteDetectionFloor();

@@ -9,42 +9,51 @@ namespace {
 	const auto readSite = [](std::uintptr_t address, auto& bytes) {
 		return MemUtil::TryRead(address, bytes);
 	};
-	const auto writeSite = [](std::uintptr_t address, const auto& bytes) {
-		return FromWriteResult(MemUtil::WritePatch(reinterpret_cast<LPVOID>(address), bytes.data(), bytes.size()),
-			MemUtil::PatchResult::Installed, MemUtil::PatchResult::Original, MemUtil::PatchResult::RollbackIncomplete);
-	};
 
 	template <std::size_t Size>
-	PatchedSite<Size> MakeSite(const char* name, std::uintptr_t address, const VersionedPattern<Size>& patterns) {
-		return { name, address, GameVersion::Current(), patterns };
+	SiteDescriptor<Size> MakeSite(const char* name, std::uintptr_t address, const VersionedPattern<Size>& expected,
+		const std::array<std::uint8_t, Size>& replacement,
+		typename SiteDescriptor<Size>::ReplacementBuilder buildReplacement = nullptr) {
+		return Framework::InstructionPatch::MakeSite(name, address, ::GameVersion::Current(),
+			expected, replacement, buildReplacement);
 	}
 
-	template <std::size_t Size>
-	void LogOriginal(const char* name, std::uintptr_t address, const std::array<std::uint8_t, Size>& bytes) {
+	void LogOriginal(const char* name, std::uintptr_t address, const std::vector<std::uint8_t>& bytes) {
 		std::ostringstream text;
 		for (std::uint8_t byte : bytes)
 			text << std::hex << static_cast<unsigned int>(byte) << ' ';
 		LOG_INFO("(AUDIO DEVICES) " << name << " original at 0x" << std::hex << address << ": " << text.str() << std::endl);
 	}
 
-	const auto logOriginal = [](const char* name, std::uintptr_t address, const auto& bytes) {
-		LogOriginal(name, address, bytes);
-	};
+	bool AppendSites(MemUtil::PreparedPatchSet& patches, const CaptureResult& captured) {
+		return AppendCaptured(captured, [&](const CapturedSite& site) {
+			MemUtil::PreparedPatchRequest request{};
+			request.address = reinterpret_cast<LPVOID>(site.address);
+			request.kind = MemUtil::PreparedPatchKind::Bytes;
+			request.expectedBytes = site.original;
+			request.replacementBytes = site.replacement;
+			request.length = site.original.size();
+			return patches.Append(request);
+		});
+	}
 
-	void LogResult(const Framework::InstructionPatch::Result& result) {
-		using Framework::InstructionPatch::Failure;
-		using Framework::InstructionPatch::Outcome;
-		if (result.outcome == Outcome::Installed) {
-			if (result.changed)
-				LOG_INFO("(AUDIO DEVICES) Output sample-rate hooks installed" << std::endl);
-		}
-		else if (result.outcome == Outcome::RollbackIncomplete) {
+	void LogValidationFailure(const CaptureResult& captured) {
+		if (captured.failure != ValidationFailure::None)
+			LOG_WARNING("(AUDIO DEVICES) Output sample-rate hooks left unchanged at " << captured.site
+				<< ": " << FailureName(captured.failure) << std::endl);
+	}
+
+	void LogResult(const CaptureResult& captured, MemUtil::PatchResult result, std::uintptr_t failureAddress) {
+		const char* site = SiteNameAt(captured, failureAddress);
+		if (result == MemUtil::PatchResult::Installed)
+			LOG_INFO("(AUDIO DEVICES) Output sample-rate hooks installed" << std::endl);
+		else if (result == MemUtil::PatchResult::RollbackIncomplete) {
 			LOG_ERROR("(AUDIO DEVICES) Output sample-rate hook group is indeterminate at "
-				<< (result.site ? result.site : "patch group") << std::endl);
+				<< (site ? site : "patch group") << std::endl);
 		}
-		else if (result.failure != Failure::None) {
+		else {
 			LOG_WARNING("(AUDIO DEVICES) Output sample-rate hooks left unchanged at "
-				<< (result.site ? result.site : "patch group") << ": " << FailureName(result.failure) << std::endl);
+				<< (site ? site : "patch group") << ": write was not applied" << std::endl);
 		}
 	}
 }
@@ -331,22 +340,32 @@ void __declspec(naked) hook_sampleRate_FixDivZeroCrash() {
 /// Must be run on boot. Has no effect when run after the audio engine has initialized.
 /// </summary>
 void AudioDevices::ChangeOutputSampleRate() {
-	static auto requirementSite = MakeSite("sample-rate requirement", Offsets::ptr_sampleRateRequirementAudioOutput.GetValue(), VersionedPattern<5>{
-		ExactPattern(MakeBytes(0xB8, 0x80, 0xBB, 0x00, 0x00)),
-		UnavailablePattern<5>()
-	});
-	static auto divideSite = MakeSite("sample-rate divide guard", Offsets::ptr_sampleRateDivZeroCrash.GetValue(), VersionedPattern<5>{
-		ExactPattern(MakeBytes(0xF7, 0xF3, 0xC1, 0xEE, 0x10)),
-		ExactPattern(MakeBytes(0xF7, 0xF3, 0xC1, 0xEE, 0x10))
-	});
+	const auto requirementAddress = Offsets::ptr_sampleRateRequirementAudioOutput.GetValue();
+	const auto divideAddress = Offsets::ptr_sampleRateDivZeroCrash.GetValue();
 	std::array<std::uint8_t, 5> requirementJump{};
 	std::array<std::uint8_t, 5> divideJump{};
-	if (!BuildRelativeJump(requirementSite.Address(), reinterpret_cast<std::uintptr_t>(&hook_changeSampleRate), requirementJump)
-		|| !BuildRelativeJump(divideSite.Address(), reinterpret_cast<std::uintptr_t>(&hook_sampleRate_FixDivZeroCrash), divideJump)) {
-		LogResult({ Outcome::Original, Failure::Unavailable, "sample-rate hook address" });
+	if (!BuildRelativeJump(requirementAddress, reinterpret_cast<std::uintptr_t>(&hook_changeSampleRate), requirementJump)
+		|| !BuildRelativeJump(divideAddress, reinterpret_cast<std::uintptr_t>(&hook_sampleRate_FixDivZeroCrash), divideJump)) {
+		LOG_WARNING("(AUDIO DEVICES) Output sample-rate hooks left unchanged at sample-rate hook address: "
+			<< FailureName(ValidationFailure::Unavailable) << std::endl);
 		return;
 	}
-	requirementSite.SetReplacement(requirementJump);
-	divideSite.SetReplacement(divideJump);
-	LogResult(InstallGroup(readSite, writeSite, logOriginal, requirementSite, divideSite));
+	const auto requirements = MakeSite("sample-rate requirement", requirementAddress,
+		VersionedPattern<5>{ ExactPattern(MakeBytes(0xB8, 0x80, 0xBB, 0x00, 0x00)), UnavailablePattern<5>() }, requirementJump);
+	const auto divide = MakeSite("sample-rate divide guard", divideAddress,
+		VersionedPattern<5>{ ExactPattern(MakeBytes(0xF7, 0xF3, 0xC1, 0xEE, 0x10)),
+			ExactPattern(MakeBytes(0xF7, 0xF3, 0xC1, 0xEE, 0x10)) }, divideJump);
+	const auto captured = CaptureSites(readSite, requirements, divide);
+	if (captured.failure != ValidationFailure::None) {
+		LogValidationFailure(captured);
+		return;
+	}
+	MemUtil::PreparedPatchSet patches;
+	if (!AppendSites(patches, captured)) {
+		LogResult(captured, MemUtil::PatchResult::Original, patches.FailureAddress());
+		return;
+	}
+	for (const CapturedSite& site : captured.sites)
+		LogOriginal(site.name, site.address, site.original);
+	LogResult(captured, patches.Commit(), patches.FailureAddress());
 }

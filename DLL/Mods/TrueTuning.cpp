@@ -4,77 +4,94 @@
 #include "../VersioningStruct.h"
 #include "TrueTuning.hpp"
 
+#include <memory>
+
 namespace {
 	using namespace Framework::InstructionPatch;
 
 	const auto readSite = [](std::uintptr_t address, auto& bytes) {
 		return MemUtil::TryRead(address, bytes);
 	};
-	const auto writeSite = [](std::uintptr_t address, const auto& bytes) {
-		return FromWriteResult(MemUtil::WritePatch(reinterpret_cast<LPVOID>(address), bytes.data(), bytes.size()),
-			MemUtil::PatchResult::Installed, MemUtil::PatchResult::Original, MemUtil::PatchResult::RollbackIncomplete);
-	};
 
 	template <std::size_t Size>
-	PatchedSite<Size> MakeSite(const char* name, std::uintptr_t address, const VersionedPattern<Size>& patterns,
-		std::size_t writeOffset = 0, std::size_t writeSize = Size) {
-		return { name, address, GameVersion::Current(), patterns, writeOffset, writeSize };
+	SiteDescriptor<Size> MakeSite(const char* name, std::uintptr_t address, const VersionedPattern<Size>& expected,
+		const std::array<std::uint8_t, Size>& replacement,
+		typename SiteDescriptor<Size>::ReplacementBuilder buildReplacement = nullptr) {
+		return Framework::InstructionPatch::MakeSite(name, address, ::GameVersion::Current(),
+			expected, replacement, buildReplacement);
 	}
 
 	template <std::size_t Size>
-	BytePattern<Size> ExpandLnpPattern(const char* text, const std::array<std::uint8_t, Size>& mask) {
+	BytePattern<Size> ExpandLnpPattern(const char* text) {
 		std::vector<unsigned char> expanded;
 		if (!LnpSites::Expand(text, static_cast<std::uint32_t>(GameVersion::ModuleBase()), expanded)
 			|| expanded.size() != Size)
 			return UnavailablePattern<Size>();
 		std::array<std::uint8_t, Size> bytes{};
 		std::copy(expanded.begin(), expanded.end(), bytes.begin());
-		return MaskedPattern(bytes, mask);
+		return ExactPattern(bytes);
 	}
 
-	template <std::size_t Size>
-	void LogOriginal(const char* name, std::uintptr_t address, const std::array<std::uint8_t, Size>& bytes) {
+	void LogOriginal(const char* name, std::uintptr_t address, const std::vector<std::uint8_t>& bytes) {
 		std::ostringstream text;
 		for (std::uint8_t byte : bytes)
 			text << std::hex << static_cast<unsigned int>(byte) << ' ';
 		LOG_INFO("(TRUE TUNING) " << name << " original at 0x" << std::hex << address << ": " << text.str() << std::endl);
 	}
 
-	const auto logOriginal = [](const char* name, std::uintptr_t address, const auto& bytes) {
-		LogOriginal(name, address, bytes);
-	};
-
-	void LogResult(const char* action, const Result& result) {
-		if (result.outcome == Outcome::Installed) {
-			if (result.changed)
-				LOG_INFO("(TRUE TUNING) " << action << " confirmed" << std::endl);
-		}
-		else if (result.outcome == Outcome::RollbackIncomplete) {
-			LOG_ERROR("(TRUE TUNING) " << action << " outcome is indeterminate at "
-				<< (result.site ? result.site : "patch group") << std::endl);
-		}
-		else if (result.failure != Failure::None) {
-			LOG_WARNING("(TRUE TUNING) " << action << " left unchanged at "
-				<< (result.site ? result.site : "patch group") << ": " << FailureName(result.failure) << std::endl);
-		}
-	}
-
-	PatchedSite<2>& TuningGateSite() {
-		constexpr auto mask = MakeBytes(0xFF, 0x00);
-		static auto site = MakeSite("tuning gate", Offsets::ptr_disableTrueTuningGate.GetValue(), VersionedPattern<2>{
-			MaskedPattern(MakeBytes(0x74, 0x31), mask),
-			MaskedPattern(MakeBytes(0x74, 0x31), mask)
-		}, 0, 1);
-		return site;
-	}
-
-	PatchedSite<6>& TuningInstructionSite() {
-		constexpr auto mask = MakeBytes(0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00);
-		static auto site = MakeSite("tuning instruction", Offsets::ptr_disableTrueTuning.GetValue(), VersionedPattern<6>{
-			MaskedPattern(MakeBytes(0xD9, 0x05, 0x68, 0x44, 0x22, 0x01), mask),
-			ExpandLnpPattern<6>("D9 05 @E05D00", mask)
+	bool AppendSites(MemUtil::PreparedPatchSet& patches, const CaptureResult& captured) {
+		return AppendCaptured(captured, [&](const CapturedSite& site) {
+			MemUtil::PreparedPatchRequest request{};
+			request.address = reinterpret_cast<LPVOID>(site.address);
+			request.kind = MemUtil::PreparedPatchKind::Bytes;
+			request.expectedBytes = site.original;
+			request.replacementBytes = site.replacement;
+			request.length = site.original.size();
+			return patches.Append(request);
 		});
-		return site;
+	}
+
+	void LogValidationFailure(const char* action, const CaptureResult& captured) {
+		if (captured.failure != ValidationFailure::None)
+			LOG_WARNING("(TRUE TUNING) " << action << " left unchanged at " << captured.site
+				<< ": " << FailureName(captured.failure) << std::endl);
+	}
+
+	void LogUnavailable(const char* action, const char* site) {
+		LOG_WARNING("(TRUE TUNING) " << action << " left unchanged at " << site << ": "
+			<< FailureName(ValidationFailure::Unavailable) << std::endl);
+	}
+
+	void LogResult(const char* action, const CaptureResult& captured, MemUtil::PatchResult result,
+		std::uintptr_t failureAddress, bool restoring) {
+		const char* site = SiteNameAt(captured, failureAddress);
+		if ((!restoring && result == MemUtil::PatchResult::Installed)
+			|| (restoring && result == MemUtil::PatchResult::Original))
+			LOG_INFO("(TRUE TUNING) " << action << " confirmed" << std::endl);
+		else if (result == MemUtil::PatchResult::RollbackIncomplete) {
+			LOG_ERROR("(TRUE TUNING) " << action << " outcome is indeterminate at "
+				<< (site ? site : "patch group") << std::endl);
+		}
+		else {
+			LOG_WARNING("(TRUE TUNING) " << action << " left unchanged at "
+				<< (site ? site : "patch group") << ": write was not applied" << std::endl);
+		}
+	}
+
+	std::unique_ptr<MemUtil::PreparedPatchSet> tuningPatch;
+	CaptureResult tuningSites;
+
+	SiteDescriptor<2> TuningGateSite() {
+		return MakeSite("tuning gate", Offsets::ptr_disableTrueTuningGate.GetValue(), VersionedPattern<2>{
+			ExactPattern(MakeBytes(0x74, 0x31)), ExactPattern(MakeBytes(0x74, 0x31))
+		}, MakeBytes(0xEB, 0x31));
+	}
+
+	SiteDescriptor<6> TuningInstructionSite(const std::array<std::uint8_t, 6>& replacement) {
+		return MakeSite("tuning instruction", Offsets::ptr_disableTrueTuning.GetValue(), VersionedPattern<6>{
+			ExactPattern(MakeBytes(0xD9, 0x05, 0x68, 0x44, 0x22, 0x01)),
+			ExpandLnpPattern<6>("D9 05 @E25D00")
+		}, replacement);
 	}
 }
 
@@ -129,16 +146,41 @@ void __declspec(naked) disableTrueTuning()
 /// </summary>
 void TrueTuning::DisableTrueTuning()
 {
-	auto& instruction = TuningInstructionSite();
-	auto& gate = TuningGateSite();
-	std::array<std::uint8_t, 6> hookBytes{};
-	if (!BuildRelativeJump(instruction.Address(), reinterpret_cast<std::uintptr_t>(&disableTrueTuning), hookBytes)) {
-		LogResult("Disable", { Outcome::Original, Failure::Unavailable, instruction.Name() });
+	if (tuningPatch) {
+		const auto result = MemUtil::ToPatchResult(tuningPatch->Outcome());
+		if (result != MemUtil::PatchResult::Installed)
+			LogResult("Disable", tuningSites, result, tuningPatch->FailureAddress(), false);
 		return;
 	}
-	instruction.SetReplacement(hookBytes);
-	gate.SetReplacement(MakeBytes(0xEB, 0x31));
-	LogResult("Disable", InstallGroup(readSite, writeSite, logOriginal, instruction, gate));
+	const auto address = Offsets::ptr_disableTrueTuning.GetValue();
+	std::array<std::uint8_t, 6> hookBytes{};
+	if (!BuildRelativeJump(address, reinterpret_cast<std::uintptr_t>(&disableTrueTuning), hookBytes)) {
+		LogUnavailable("Disable", "tuning instruction");
+		return;
+	}
+	const auto instruction = TuningInstructionSite(hookBytes);
+	const auto gate = TuningGateSite();
+	auto captured = CaptureSites(readSite, instruction, gate);
+	if (captured.failure != ValidationFailure::None) {
+		LogValidationFailure("Disable", captured);
+		return;
+	}
+	auto patches = std::make_unique<MemUtil::PreparedPatchSet>();
+	if (!AppendSites(*patches, captured)) {
+		LogResult("Disable", captured, MemUtil::PatchResult::Original, patches->FailureAddress(), false);
+		return;
+	}
+	for (const CapturedSite& site : captured.sites)
+		LogOriginal(site.name, site.address, site.original);
+	const auto result = patches->Commit();
+	const auto failureAddress = patches->FailureAddress();
+	if (result == MemUtil::PatchResult::Original)
+		LogResult("Disable", captured, result, failureAddress, false);
+	else {
+		tuningSites = std::move(captured);
+		tuningPatch = std::move(patches);
+		LogResult("Disable", tuningSites, result, failureAddress, false);
+	}
 }
 
 /// <summary>
@@ -146,14 +188,15 @@ void TrueTuning::DisableTrueTuning()
 /// </summary>
 void TrueTuning::EnableTrueTuning()
 {
-	auto& instruction = TuningInstructionSite();
-	auto& gate = TuningGateSite();
-	std::array<std::uint8_t, 6> hookBytes{};
-	if (!BuildRelativeJump(instruction.Address(), reinterpret_cast<std::uintptr_t>(&disableTrueTuning), hookBytes)) {
-		LogResult("Enable", { Outcome::Original, Failure::Unavailable, instruction.Name() });
+	if (!tuningPatch)
 		return;
+	for (const CapturedSite& site : tuningSites.sites)
+		LogOriginal(site.name, site.address, site.original);
+	const auto result = tuningPatch->Rollback();
+	const auto failureAddress = tuningPatch->FailureAddress();
+	LogResult("Enable", tuningSites, result, failureAddress, true);
+	if (result == MemUtil::PatchResult::Original) {
+		tuningPatch.reset();
+		tuningSites = {};
 	}
-	instruction.SetReplacement(hookBytes);
-	gate.SetReplacement(MakeBytes(0xEB, 0x31));
-	LogResult("Enable", RestoreGroup(readSite, writeSite, logOriginal, instruction, gate));
 }

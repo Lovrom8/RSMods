@@ -5,10 +5,13 @@
 #include "winternl.h"
 #include <array>
 #include <atomic>
+#include <cstdint>
+#include <cstring>
 #include <limits>
 #include <span>
 #include <string_view>
 #include <type_traits>
+#include <vector>
 
 #ifndef STATUS_SUCCESS
 #define STATUS_SUCCESS ((NTSTATUS)0x00000000L)
@@ -29,13 +32,246 @@ namespace MemUtil {
 	bool BootPatchStaged(uintptr_t address);
 	bool bCompare(const BYTE* pData, const byte* bMask, const char* szMask);
 
-	// Installed: the replacement is in place, read back. Original: the original bytes and every
-	// page's protection are confirmed. RollbackIncomplete: neither could be confirmed, so anything
-	// the site may jump to must stay alive.
 	enum class PatchResult { Installed, Original, RollbackIncomplete };
+	enum class PatchByteState { Replacement, Original, Unknown };
+
+	// Installed means replacement bytes were verified and flushed, even if protection restoration
+	// degraded. Original additionally requires verified restoration; every other state is incomplete.
+	struct PatchOutcome {
+		PatchByteState bytes = PatchByteState::Original;
+		bool instructionCacheFlushed = true;
+		bool protectionRestored = true;
+		bool everPublished = false;
+	};
+
+	constexpr PatchResult ToPatchResult(PatchOutcome outcome) noexcept {
+		if (outcome.bytes == PatchByteState::Replacement && outcome.instructionCacheFlushed)
+			return PatchResult::Installed;
+		if (outcome.bytes == PatchByteState::Original && outcome.instructionCacheFlushed
+			&& outcome.protectionRestored)
+			return PatchResult::Original;
+		return PatchResult::RollbackIncomplete;
+	}
+
+	namespace Detail {
+		constexpr bool CanReplacePreparedRecord(PatchResult result, bool hasOwnedGateway) noexcept {
+			return result == PatchResult::Original && !hasOwnedGateway;
+		}
+
+		struct PatchTransactionSite {
+			uintptr_t address = 0;
+			std::span<const unsigned char> original{};
+			std::span<const unsigned char> replacement{};
+			bool pointerStore = false;
+			bool hasNativeEntry = false;
+			bool everPublished = false;
+		};
+
+		struct PatchTransactionRegion {
+			uintptr_t base = 0;
+			size_t size = 0;
+			uint32_t protection = 0;
+			uintptr_t queryBase = 0;
+			size_t querySize = 0;
+			bool opened = false;
+		};
+
+		struct PatchTransactionOperations {
+			void* context = nullptr;
+			bool (*read)(void*, uintptr_t, unsigned char*, size_t) noexcept = nullptr;
+			bool (*write)(void*, uintptr_t, const unsigned char*, size_t, bool) noexcept = nullptr;
+			bool (*protect)(void*, uintptr_t, size_t, uint32_t) noexcept = nullptr;
+			bool (*flush)(void*, uintptr_t, size_t) noexcept = nullptr;
+		};
+
+		inline bool CaptureOriginalBytes(uintptr_t address, std::span<const unsigned char> expected,
+			std::span<unsigned char> original, const PatchTransactionOperations& operations) noexcept {
+			if (!address || original.empty() || (!expected.empty() && expected.size() != original.size())
+				|| !operations.read)
+				return false;
+			if (!operations.read(operations.context, address, original.data(), original.size()))
+				return false;
+			return expected.empty() || memcmp(original.data(), expected.data(), original.size()) == 0;
+		}
+
+		inline bool MatchesPatchBytes(const PatchTransactionSite& site,
+			std::span<const unsigned char> expected, const PatchTransactionOperations& operations) noexcept {
+			std::array<unsigned char, 64> actual{};
+			for (size_t offset = 0; offset < expected.size();) {
+				const size_t remaining = expected.size() - offset;
+				const size_t count = remaining < actual.size() ? remaining : actual.size();
+				if (!operations.read || !operations.read(operations.context, site.address + offset,
+					actual.data(), count) || memcmp(actual.data(), expected.data() + offset, count) != 0)
+					return false;
+				offset += count;
+			}
+			return true;
+		}
+
+		inline PatchOutcome RunPatchTransaction(std::span<PatchTransactionSite> sites,
+			std::span<PatchTransactionRegion> regions, const PatchTransactionOperations& operations,
+			bool rollback, uint32_t writableProtection, uintptr_t* failureAddress = nullptr) noexcept {
+			PatchOutcome outcome{};
+			if (failureAddress)
+				*failureAddress = 0;
+			if (sites.empty()) {
+				outcome.bytes = PatchByteState::Replacement;
+				return outcome;
+			}
+
+			auto inspect = [&]() noexcept {
+				bool allOriginal = true;
+				bool allReplacement = true;
+				for (const PatchTransactionSite& site : sites) {
+					allOriginal = allOriginal && MatchesPatchBytes(site, site.original, operations);
+					allReplacement = allReplacement && MatchesPatchBytes(site, site.replacement, operations);
+				}
+				if (allReplacement)
+					outcome.bytes = PatchByteState::Replacement;
+				else if (allOriginal)
+					outcome.bytes = PatchByteState::Original;
+				else
+					outcome.bytes = PatchByteState::Unknown;
+				outcome.everPublished = false;
+				for (const PatchTransactionSite& site : sites)
+					outcome.everPublished = outcome.everPublished || site.everPublished;
+			};
+			auto restoreRegions = [&]() noexcept {
+				bool restored = true;
+				for (size_t i = regions.size(); i > 0; --i) {
+					PatchTransactionRegion& region = regions[i - 1];
+					if (!region.opened)
+						continue;
+					if (!operations.protect || (!operations.protect(operations.context, region.base,
+						region.size, region.protection) && !operations.protect(operations.context,
+						region.base, region.size, region.protection))) {
+						restored = false;
+						if (failureAddress && !*failureAddress)
+							*failureAddress = region.base;
+					}
+					region.opened = false;
+				}
+				return restored;
+			};
+
+			for (PatchTransactionRegion& region : regions) {
+				if (!operations.protect || !operations.protect(operations.context, region.base,
+					region.size, writableProtection)) {
+					if (failureAddress)
+						*failureAddress = region.base;
+					outcome.protectionRestored = restoreRegions();
+					inspect();
+					return outcome;
+				}
+				region.opened = true;
+			}
+			if (!rollback) {
+				for (const PatchTransactionSite& site : sites) {
+					if (!MatchesPatchBytes(site, site.original, operations)) {
+						if (failureAddress)
+							*failureAddress = site.address;
+						outcome.protectionRestored = restoreRegions();
+						inspect();
+						return outcome;
+					}
+				}
+			}
+
+			size_t attempted = 0;
+			bool failed = false;
+			bool cacheFlushed = true;
+			if (rollback) {
+				for (const PatchTransactionSite& site : sites) {
+					if (!MatchesPatchBytes(site, site.original, operations)
+						&& !MatchesPatchBytes(site, site.replacement, operations)) {
+						if (failureAddress)
+							*failureAddress = site.address;
+						failed = true;
+						break;
+					}
+				}
+				if (!failed) {
+					for (size_t i = sites.size(); i > 0; --i) {
+						PatchTransactionSite& site = sites[i - 1];
+						const bool original = MatchesPatchBytes(site, site.original, operations);
+						if (!original) {
+							if (!operations.write || !operations.write(operations.context, site.address,
+								site.original.data(), site.original.size(), site.pointerStore)) {
+								if (failureAddress)
+									*failureAddress = site.address;
+								failed = true;
+							}
+						}
+						if (!operations.flush || !operations.flush(operations.context, site.address,
+							site.original.size())) {
+							if (failureAddress && !*failureAddress)
+								*failureAddress = site.address;
+							cacheFlushed = false;
+						}
+					}
+				}
+			}
+			else {
+				for (; attempted < sites.size(); ++attempted) {
+					PatchTransactionSite& site = sites[attempted];
+					if (site.hasNativeEntry)
+						site.everPublished = true;
+					if (!operations.write || !operations.write(operations.context, site.address,
+						site.replacement.data(), site.replacement.size(), site.pointerStore)) {
+						if (failureAddress)
+							*failureAddress = site.address;
+						failed = true;
+						++attempted;
+						break;
+					}
+					if (!operations.flush || !operations.flush(operations.context, site.address,
+						site.replacement.size())) {
+						if (failureAddress)
+							*failureAddress = site.address;
+						cacheFlushed = false;
+						failed = true;
+						++attempted;
+						break;
+					}
+					if (!MatchesPatchBytes(site, site.replacement, operations)) {
+						if (failureAddress)
+							*failureAddress = site.address;
+						failed = true;
+						++attempted;
+						break;
+					}
+				}
+				if (failed) {
+					bool rollbackFlushed = true;
+					for (size_t i = attempted; i > 0; --i) {
+						PatchTransactionSite& site = sites[i - 1];
+						if (!operations.write || !operations.write(operations.context, site.address,
+							site.original.data(), site.original.size(), site.pointerStore)) {
+							if (failureAddress && !*failureAddress)
+								*failureAddress = site.address;
+							rollbackFlushed = false;
+						}
+						if (!operations.flush || !operations.flush(operations.context, site.address,
+							site.original.size())) {
+							if (failureAddress && !*failureAddress)
+								*failureAddress = site.address;
+							rollbackFlushed = false;
+						}
+					}
+					cacheFlushed = rollbackFlushed;
+				}
+			}
+
+			outcome.protectionRestored = restoreRegions();
+			outcome.instructionCacheFlushed = cacheFlushed;
+			inspect();
+			return outcome;
+		}
+	}
+
 	PatchResult WritePatch(LPVOID address, LPCVOID changeToMake, size_t len);
 	PatchResult WritePointerPatch(LPVOID address, LPCVOID value);
-	enum class PreparedPatchKind { Jump, Call };
+	enum class PreparedPatchKind { Jump, Call, Bytes, PointerStore };
 	struct PreparedPatchRequest {
 		LPVOID address = nullptr;
 		PreparedPatchKind kind = PreparedPatchKind::Jump;
@@ -43,13 +279,15 @@ namespace MemUtil {
 		uintptr_t expectedTarget = 0;
 		uintptr_t replacementTarget = 0;
 		bool captureNativeEntry = false;
+		std::span<const unsigned char> replacementBytes{};
+		size_t length = 0;
+		size_t minimumLength = 0;
 	};
 
 	// Preparation owns all patch and region metadata used while code is being rewritten.
 	class PreparedPatchSet {
 	public:
-		static constexpr size_t MaxSites = 8;
-		static constexpr size_t MaxPatchBytes = 32;
+		static constexpr size_t MaxSites = 64;
 		static constexpr size_t MaxRegions = MaxSites * 2;
 
 		PreparedPatchSet() = default;
@@ -58,49 +296,45 @@ namespace MemUtil {
 		PreparedPatchSet& operator=(const PreparedPatchSet&) = delete;
 
 		bool Prepare(std::span<const PreparedPatchRequest> requests);
+		bool Append(const PreparedPatchRequest& request);
+		void Reset() noexcept;
 		PatchResult Commit() noexcept;
 		PatchResult Rollback() noexcept;
+		PatchOutcome Outcome() const noexcept { return outcome_; }
+		uintptr_t FailureAddress() const noexcept { return failureAddress_; }
 		void Report(const char* group) const;
+		// Returning an owned entry publishes its address, so the allocation is retained.
 		void* NativeEntry(size_t site) const noexcept;
-		size_t Size() const noexcept { return siteCount_; }
+		uintptr_t SiteAddress(size_t site) const noexcept;
+		size_t SiteLength(size_t site) const noexcept;
+		size_t Size() const noexcept { return sites_.size(); }
 
 	private:
-		enum class Failure { None, InvalidRequest, Capacity, BytesMismatch, QueryFailed, GatewayFailed,
-			OpenFailed, CommitMismatch, WriteFailed, FlushFailed, ReadbackFailed, RestoreFailed };
+		friend PBYTE TrampHook(PBYTE src, PBYTE dst, unsigned int len, PatchResult* result,
+			uintptr_t* original);
+		enum class Failure { None, InvalidRequest, BytesMismatch, ReadFailed, QueryFailed, GatewayFailed,
+			CommitFailed };
 		struct Site {
-			uintptr_t address = 0;
-			size_t length = 0;
-			std::array<unsigned char, MaxPatchBytes> original{};
-			std::array<unsigned char, MaxPatchBytes> replacement{};
+			Detail::PatchTransactionSite transaction{};
+			std::vector<unsigned char> original;
+			std::vector<unsigned char> replacement;
 			void* nativeEntry = nullptr;
 			bool ownsNativeEntry = false;
-		};
-		struct Region {
-			uintptr_t base = 0;
-			SIZE_T size = 0;
-			uintptr_t queryBase = 0;
-			SIZE_T querySize = 0;
-			ULONG protection = 0;
-			bool opened = false;
+			mutable bool nativeEntryExposed = false;
 		};
 
-		bool SetRegionProtection(Region& region, ULONG protection) noexcept;
-		bool RestoreOpenedRegions() noexcept;
-		bool MatchesOriginal(size_t count) const noexcept;
 		void ReleaseNativeEntries() noexcept;
 
-		std::array<Site, MaxSites> sites_{};
-		std::array<Region, MaxRegions> regions_{};
-		size_t siteCount_ = 0;
-		size_t regionCount_ = 0;
+		std::vector<Site> sites_;
+		std::vector<Detail::PatchTransactionRegion> regions_;
+		PatchOutcome outcome_{};
 		PatchResult result_ = PatchResult::Original;
 		Failure failure_ = Failure::None;
 		uintptr_t failureAddress_ = 0;
 		DWORD failureCode_ = ERROR_SUCCESS;
 		bool prepared_ = false;
 		bool operationAttempted_ = false;
-		bool useWineApis_ = true;
-		bool protectSyscallResolved_ = false;
+		bool useSyscallProtection_ = false;
 	};
 	bool PatchAdr(VersioningStruct<uintptr_t>& address, LPCVOID changeToMake, size_t len, bool addBaseHandle = false);
 	bool PatchAdr(LPVOID address, LPCVOID changeToMake, size_t len);
@@ -163,7 +397,6 @@ namespace MemUtil {
 	const char* DetectedHost();
 	bool IsRunningOnWine();
 	void LogMemoryProtectionPolicy();
-	NTSTATUS HookedVirtualProtect(LPVOID address, SIZE_T len, ULONG newProtection, ULONG& oldProtection);
 	NTSTATUS HookedQueryVirtualMemory(LPVOID address, PMEMORY_BASIC_INFORMATION memoryBuffer, SIZE_T dwLength);
 
 	uint32_t GetTextSectionAddress();

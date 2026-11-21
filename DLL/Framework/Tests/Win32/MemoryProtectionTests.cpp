@@ -213,6 +213,95 @@ namespace {
 #undef GetProcAddress
 #undef GetSystemDirectoryA
 
+extern "C" int __cdecl RunRealProtectionCases() {
+	MemoryHostPolicy().useWineApis = false;
+	auto* page = static_cast<unsigned char*>(VirtualAlloc(nullptr, 4096,
+		MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE));
+	assert(page);
+	const unsigned char original = 0x31;
+	const unsigned char replacement = 0x72;
+	const unsigned int protectionCallsBeforeTransactions = g_protectCalls;
+	for (unsigned int repeat = 0; repeat < 4; ++repeat) {
+		page[0] = original;
+		assert(MemUtil::WritePatch(page, &replacement, 1) == MemUtil::PatchResult::Installed);
+		assert(page[0] == replacement && ProtectionAt(page) == PAGE_READWRITE);
+
+		page[16] = original;
+		MemUtil::BeginBootPatchBundle(Framework::BootPatch::Bundle::UltrafastCore);
+		assert(MemUtil::BootPatchMember(Framework::BootPatch::Member::DlcStorePrefetch));
+		assert(MemUtil::PatchAdr(page + 16, &replacement, 1));
+		assert(MemUtil::CommitBootPatchBundle());
+		assert(page[16] == replacement && ProtectionAt(page + 16) == PAGE_READWRITE);
+
+		page[32] = original;
+		MemUtil::PreparedPatchRequest request{};
+		request.address = page + 32;
+		request.kind = MemUtil::PreparedPatchKind::Bytes;
+		request.replacementBytes = std::span<const unsigned char>(&replacement, 1);
+		MemUtil::PreparedPatchSet prepared;
+		assert(prepared.Prepare(std::span<const MemUtil::PreparedPatchRequest>(&request, 1)));
+		assert(prepared.Commit() == MemUtil::PatchResult::Installed);
+		assert(page[32] == replacement && ProtectionAt(page + 32) == PAGE_READWRITE);
+	}
+	assert(g_protectCalls == protectionCallsBeforeTransactions);
+
+	const unsigned int protectionCallsBeforeFailure = g_protectCalls;
+
+	page[48] = original;
+	MemUtil::PreparedPatchRequest failingRequest{};
+	failingRequest.address = page + 48;
+	failingRequest.kind = MemUtil::PreparedPatchKind::Bytes;
+	failingRequest.replacementBytes = std::span<const unsigned char>(&replacement, 1);
+	MemUtil::PreparedPatchSet failing;
+	assert(failing.Prepare(std::span<const MemUtil::PreparedPatchRequest>(&failingRequest, 1)));
+	assert(VirtualFree(page, 0, MEM_RELEASE));
+	assert(failing.Commit() == MemUtil::PatchResult::RollbackIncomplete);
+	assert(failing.Outcome().bytes == MemUtil::PatchByteState::Unknown);
+	assert(g_protectCalls == protectionCallsBeforeFailure);
+	return 1;
+}
+
+extern "C" __declspec(naked) int __cdecl CheckProtectionAbi() {
+	__asm {
+		push ebp
+		mov ebp, esp
+		push ebx
+		push esi
+		push edi
+		sub esp, 8
+		mov dword ptr [ebp - 16], 8
+		mov dword ptr [ebp - 20], esp
+		mov ebx, 13579BDFh
+		mov esi, 2468ACE0h
+		mov edi, 0BADF00Dh
+	check_again:
+		call RunRealProtectionCases
+		cmp esp, dword ptr [ebp - 20]
+		jne check_failed
+		test eax, eax
+		jz check_failed
+		cmp ebx, 13579BDFh
+		jne check_failed
+		cmp esi, 2468ACE0h
+		jne check_failed
+		cmp edi, 0BADF00Dh
+		jne check_failed
+		dec dword ptr [ebp - 16]
+		jnz check_again
+		mov eax, 1
+		jmp check_done
+	check_failed:
+		xor eax, eax
+	check_done:
+		lea esp, [ebp - 12]
+		pop edi
+		pop esi
+		pop ebx
+		pop ebp
+		ret
+	}
+}
+
 int main(int argc, char** argv) {
 	const std::vector<BYTE> validPe = MakeTestPe32();
 	const auto syscallNumber = MemUtil::Detail::ExtractSyscallFromPE(validPe, "NtProtectVirtualMemory");
@@ -261,29 +350,14 @@ int main(int argc, char** argv) {
 		if (!expectedWineApis) {
 			void* memory = VirtualAlloc(nullptr, 4096, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
 			assert(memory);
-			DWORD old = 0;
-			assert(NT_SUCCESS(MemUtil::HookedVirtualProtect(memory, 4096, PAGE_READONLY, old)));
-			// Windows goes to the kernel first; the documented call is only the fallback.
-			assert(old == PAGE_READWRITE && g_protectCalls == 0);
-			assert(NT_SUCCESS(MemUtil::HookedVirtualProtect(memory, 4096, PAGE_READWRITE, old)));
-			assert(old == PAGE_READONLY && g_protectCalls == 0);
 			g_failQuery = true;
 			MEMORY_BASIC_INFORMATION info{};
 			assert(NT_SUCCESS(MemUtil::HookedQueryVirtualMemory(memory, &info, sizeof(info))));
 			assert(info.Protect == PAGE_READWRITE);
 			assert(VirtualFree(memory, 0, MEM_RELEASE));
+			assert(CheckProtectionAbi());
+			puts("Windows transaction protection ABI PASS");
 			puts("Windows syscall first PASS");
-		}
-		if (expectedWineApis) {
-			void* memory = VirtualAlloc(nullptr, 4096, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
-			assert(memory);
-			DWORD old = 0;
-			g_failCall = g_protectCalls + 1;
-			assert(!NT_SUCCESS(MemUtil::HookedVirtualProtect(memory, 1, PAGE_READONLY, old)));
-			g_failQuery = true;
-			MEMORY_BASIC_INFORMATION info{};
-			assert(!NT_SUCCESS(MemUtil::HookedQueryVirtualMemory(memory, &info, sizeof(info))));
-			assert(VirtualFree(memory, 0, MEM_RELEASE));
 		}
 		if (expectedWineApis) {
 			g_failQuery = true;
@@ -300,17 +374,15 @@ int main(int argc, char** argv) {
 	g_unresolveSyscalls = true;
 	void* fallbackMemory = VirtualAlloc(nullptr, 4096, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
 	assert(fallbackMemory);
-	DWORD fallbackOldProtection = 0;
-	assert(NT_SUCCESS(MemUtil::HookedVirtualProtect(fallbackMemory, 4096,
-		PAGE_READONLY, fallbackOldProtection)));
-	assert(fallbackOldProtection == PAGE_READWRITE && g_protectCalls == 1);
+	const unsigned char fallbackReplacement = 0x72;
+	static_cast<unsigned char*>(fallbackMemory)[0] = 0x31;
+	assert(MemUtil::WritePatch(fallbackMemory, &fallbackReplacement, 1) == MemUtil::PatchResult::Installed);
+	assert(static_cast<unsigned char*>(fallbackMemory)[0] == fallbackReplacement);
+	assert(ProtectionAt(fallbackMemory) == PAGE_READWRITE && g_protectCalls == 2);
 	const unsigned int queriesBeforeFallback = g_queryCalls;
 	MEMORY_BASIC_INFORMATION fallbackInfo{};
 	assert(NT_SUCCESS(MemUtil::HookedQueryVirtualMemory(fallbackMemory, &fallbackInfo, sizeof(fallbackInfo))));
-	assert(fallbackInfo.Protect == PAGE_READONLY && g_queryCalls == queriesBeforeFallback + 1);
-	assert(NT_SUCCESS(MemUtil::HookedVirtualProtect(fallbackMemory, 4096,
-		PAGE_READWRITE, fallbackOldProtection)));
-	assert(fallbackOldProtection == PAGE_READONLY && g_protectCalls == 2);
+	assert(fallbackInfo.Protect == PAGE_READWRITE && g_queryCalls == queriesBeforeFallback + 1);
 	assert(VirtualFree(fallbackMemory, 0, MEM_RELEASE));
 	g_unresolveSyscalls = false;
 	MemoryHostPolicy().useWineApis = configuredWineApis;
@@ -320,6 +392,7 @@ int main(int argc, char** argv) {
 		MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE));
 	assert(patternPages);
 	const unsigned char signature[] = { 0xAA, 0xBB, 0xCC, 0xDD };
+	DWORD fallbackOldProtection = 0;
 	memcpy(patternPages + 64, signature, sizeof(signature));
 	patternPages[4094] = signature[0];
 	patternPages[4095] = signature[1];
@@ -378,6 +451,10 @@ int main(int argc, char** argv) {
 	assert(preparedPage[16] == 0xE8 && firstPreparedSite + 5 + installedCallRelative
 		== reinterpret_cast<uintptr_t>(&Replacement));
 	assert(preparedPage[48] == 0xE9);
+	assert(!preparedSet.Prepare(std::span<const MemUtil::PreparedPatchRequest>(&mismatchRequest, 1)));
+	assert(preparedSet.Size() == preparedRequests.size());
+	assert(preparedSet.SiteAddress(0) == firstPreparedSite);
+	assert(preparedSet.Outcome().bytes == MemUtil::PatchByteState::Replacement);
 	g_allocationCount = 0;
 	g_countingAllocations = true;
 	const MemUtil::PatchResult preparedRollback = preparedSet.Rollback();
@@ -452,6 +529,19 @@ int main(int argc, char** argv) {
 	assert(!MemUtil::CommitBootPatchBundle());
 	assert(page[0] == 1 && g_protectCalls == 0);
 
+	auto* overflowPage = static_cast<unsigned char*>(VirtualAlloc(nullptr, 4096,
+		MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE));
+	assert(overflowPage);
+	MemUtil::BeginBootPatchBundle(Framework::BootPatch::Bundle::UltrafastCore);
+	assert(MemUtil::BootPatchMember(Framework::BootPatch::Member::DlcStorePrefetch));
+	for (size_t i = 0; i < MemUtil::PreparedPatchSet::MaxSites; ++i)
+		assert(MemUtil::PatchAdr(overflowPage + i, &first, 1));
+	assert(!MemUtil::PatchAdr(overflowPage + MemUtil::PreparedPatchSet::MaxSites, &first, 1));
+	assert(!MemUtil::CommitBootPatchBundle());
+	assert(!MemUtil::BootPatchBundleEnabled(Framework::BootPatch::Bundle::UltrafastCore));
+	assert(overflowPage[0] == 0 && overflowPage[MemUtil::PreparedPatchSet::MaxSites - 1] == 0);
+	assert(VirtualFree(overflowPage, 0, MEM_RELEASE));
+
 	// Shared members query once each and open and restore their common region once.
 	const unsigned int queriesBeforeBundle = g_queryCalls;
 	const unsigned int opensBeforeBundle = g_openCalls;
@@ -471,6 +561,19 @@ int main(int argc, char** argv) {
 	void* pointerValue = reinterpret_cast<void*>(&Replacement);
 	assert(MemUtil::SetStaticValue(reinterpret_cast<uintptr_t>(&pointerSlot), pointerValue, 0));
 	assert(pointerSlot == pointerValue);
+
+	page[2] = 1;
+	MemUtil::BeginBootPatchBundle(Framework::BootPatch::Bundle::UltrafastCore);
+	assert(MemUtil::BootPatchMember(Framework::BootPatch::Member::DlcStorePrefetch));
+	assert(MemUtil::PatchAdr(page + 2, &first, 1));
+	g_armRestoreFailureAddress = page + 2;
+	assert(!MemUtil::CommitBootPatchBundle());
+	assert(!MemUtil::BootPatchBundleEnabled(Framework::BootPatch::Bundle::UltrafastCore));
+	assert(page[2] == first && ProtectionAt(page + 2) == PAGE_EXECUTE_READWRITE);
+	g_failRestoreAddress = nullptr;
+	DWORD restoredProtection = 0;
+	assert(VirtualProtect(page, 4096, PAGE_READWRITE, &restoredProtection));
+	page[2] = 1;
 
 	// Fail each open and the final restore; a single restore failure is retried.
 	for (unsigned int failure = 1; failure <= 2; ++failure) {
@@ -531,6 +634,7 @@ int main(int argc, char** argv) {
 	const unsigned char code[] = { 0xB8, 42, 0, 0, 0, 0xC3 };
 	memcpy(page + 64, code, sizeof(code));
 	DWORD previous = 0;
+	MEMORY_BASIC_INFORMATION gatewayInfo{};
 	assert(VirtualProtect(page, 4096, PAGE_EXECUTE_READWRITE, &previous));
 	using Function = int(__cdecl*)();
 	const auto original = reinterpret_cast<Function>(page + 64);
@@ -542,7 +646,8 @@ int main(int argc, char** argv) {
 	assert(MemUtil::CommitBootPatchBundle());
 	assert(original() == 7 && reinterpret_cast<Function>(gateway)() == 42);
 	assert(MemUtil::PatchAdr(page + 64, code, sizeof(code)));
-	assert(VirtualFree(gateway, 0, MEM_RELEASE));
+	assert(VirtualQuery(gateway, &gatewayInfo, sizeof(gatewayInfo)));
+	assert(gatewayInfo.State == MEM_COMMIT && reinterpret_cast<Function>(gateway)() == 42);
 
 	// A failed bundle keeps a staged gateway when its source write was attempted.
 	memcpy(page + 96, code, sizeof(code));
@@ -556,7 +661,6 @@ int main(int argc, char** argv) {
 	assert(!MemUtil::CommitBootPatchBundle());
 	g_failFlush = false;
 	g_failFlushAddress = nullptr;
-	MEMORY_BASIC_INFORMATION gatewayInfo{};
 	assert(VirtualQuery(retainedGateway, &gatewayInfo, sizeof(gatewayInfo)));
 	assert(gatewayInfo.State == MEM_COMMIT && reinterpret_cast<Function>(retainedGateway)() == 42);
 	assert(memcmp(page + 96, code, sizeof(code)) == 0);
@@ -571,8 +675,51 @@ int main(int argc, char** argv) {
 	page[112] = 0xCC;
 	assert(!MemUtil::CommitBootPatchBundle());
 	assert(VirtualQuery(unpublishedGateway, &gatewayInfo, sizeof(gatewayInfo)));
-	assert(gatewayInfo.State == MEM_FREE);
+	assert(gatewayInfo.State == MEM_COMMIT && reinterpret_cast<Function>(unpublishedGateway)() == 42);
 	memcpy(page + 112, code, sizeof(code));
+
+	// The shared builder relocates relative calls and refuses partial or internal branch spans.
+	const uintptr_t relativeCallSite = reinterpret_cast<uintptr_t>(page + 224);
+	unsigned char relativeCall[] = { 0xE8, 0, 0, 0, 0, 0xC3 };
+	const uint32_t relativeCallOffset = static_cast<uint32_t>(
+		reinterpret_cast<uintptr_t>(&TestCallOriginal) - (relativeCallSite + 5));
+	memcpy(relativeCall + 1, &relativeCallOffset, sizeof(relativeCallOffset));
+	memcpy(page + 224, relativeCall, sizeof(relativeCall));
+	MemUtil::PreparedPatchRequest relativeRequest{};
+	relativeRequest.address = page + 224;
+	relativeRequest.kind = MemUtil::PreparedPatchKind::Jump;
+	relativeRequest.expectedBytes = std::span<const unsigned char>(relativeCall, 5);
+	relativeRequest.replacementTarget = reinterpret_cast<uintptr_t>(&Replacement);
+	relativeRequest.captureNativeEntry = true;
+	MemUtil::PreparedPatchSet relativeSet;
+	assert(relativeSet.Prepare(std::span<const MemUtil::PreparedPatchRequest>(&relativeRequest, 1)));
+	PBYTE relocatedCall = static_cast<PBYTE>(relativeSet.NativeEntry(0));
+	assert(relocatedCall && reinterpret_cast<Function>(relocatedCall)() == 42);
+	assert(relativeSet.Commit() == MemUtil::PatchResult::Installed);
+	assert(reinterpret_cast<Function>(page + 224)() == 7);
+	assert(relativeSet.Rollback() == MemUtil::PatchResult::Original);
+	assert(reinterpret_cast<Function>(page + 224)() == 42);
+	assert(reinterpret_cast<Function>(relocatedCall)() == 42);
+
+	unsigned char partialCall[] = { 0xE8, 0, 0, 0, 0, 0xB8, 1, 2, 3, 4 };
+	const uintptr_t partialCallSite = reinterpret_cast<uintptr_t>(page + 256);
+	const uint32_t partialCallOffset = static_cast<uint32_t>(
+		reinterpret_cast<uintptr_t>(&TestCallOriginal) - (partialCallSite + 5));
+	memcpy(partialCall + 1, &partialCallOffset, sizeof(partialCallOffset));
+	memcpy(page + 256, partialCall, sizeof(partialCall));
+	MemUtil::PreparedPatchRequest partialRequest = relativeRequest;
+	partialRequest.address = page + 256;
+	partialRequest.expectedBytes = std::span<const unsigned char>(partialCall, 6);
+	MemUtil::PreparedPatchSet partialSet;
+	assert(!partialSet.Prepare(std::span<const MemUtil::PreparedPatchRequest>(&partialRequest, 1)));
+
+	unsigned char internalBranch[] = { 0xEB, 0x00, 0x90, 0x90, 0x90 };
+	memcpy(page + 288, internalBranch, sizeof(internalBranch));
+	MemUtil::PreparedPatchRequest internalRequest = relativeRequest;
+	internalRequest.address = page + 288;
+	internalRequest.expectedBytes = std::span<const unsigned char>(internalBranch, sizeof(internalBranch));
+	MemUtil::PreparedPatchSet internalSet;
+	assert(!internalSet.Prepare(std::span<const MemUtil::PreparedPatchRequest>(&internalRequest, 1)));
 
 	// A patch across two pages restores each page's own protection.
 	auto* pair = static_cast<unsigned char*>(VirtualAlloc(nullptr, 8192,
@@ -669,9 +816,6 @@ int main(int argc, char** argv) {
 	assert(memcmp(page + 192, code, sizeof(code)) == 0);
 	assert(reinterpret_cast<Function>(page + 192)() == 42);
 
-	DWORD old = 0;
-	g_failCall = g_protectCalls + 1;
-	assert(!NT_SUCCESS(MemUtil::HookedVirtualProtect(page, 1, PAGE_READONLY, old)));
 	MEMORY_BASIC_INFORMATION info{};
 	assert(NT_SUCCESS(MemUtil::HookedQueryVirtualMemory(page, &info, sizeof(info))));
 	assert(!NT_SUCCESS(MemUtil::HookedQueryVirtualMemory(page, nullptr, 0)));

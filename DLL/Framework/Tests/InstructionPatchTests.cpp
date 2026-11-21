@@ -1,4 +1,5 @@
 #include "../InstructionPatch.hpp"
+#include "../../LnpSites.hpp"
 
 #include <algorithm>
 #include <array>
@@ -7,154 +8,146 @@
 #include <map>
 #include <vector>
 
+namespace {
+	using namespace Framework::InstructionPatch;
+	enum class EngineResult { Installed, Original, RollbackIncomplete };
+
+	class InjectedEngine {
+	public:
+		explicit InjectedEngine(std::map<std::uintptr_t, std::vector<std::uint8_t>>& memory) : memory_(memory) {}
+
+		bool Append(const CapturedSite& site) {
+			requests_.push_back({ site.address, site.original, site.replacement });
+			return true;
+		}
+
+		EngineResult Commit() {
+			if (attempted_)
+				return EngineResult::Original;
+			for (const auto& request : requests_)
+				if (memory_[request.address] != request.original)
+					return EngineResult::Original;
+			for (const auto& request : requests_)
+				memory_[request.address] = request.replacement;
+			attempted_ = true;
+			return EngineResult::Installed;
+		}
+
+		EngineResult Rollback() {
+			if (!attempted_)
+				return EngineResult::Original;
+			for (const auto& request : requests_)
+				if (memory_[request.address] != request.replacement)
+					return EngineResult::RollbackIncomplete;
+			for (const auto& request : requests_)
+				memory_[request.address] = request.original;
+			return EngineResult::Original;
+		}
+
+	private:
+		struct Request {
+			std::uintptr_t address;
+			std::vector<std::uint8_t> original;
+			std::vector<std::uint8_t> replacement;
+		};
+		std::map<std::uintptr_t, std::vector<std::uint8_t>>& memory_;
+		std::vector<Request> requests_;
+		bool attempted_ = false;
+	};
+
+	auto ReadMemory(std::map<std::uintptr_t, std::vector<std::uint8_t>>& memory) {
+		return [&memory](std::uintptr_t address, auto& bytes) {
+			const auto found = memory.find(address);
+			if (found == memory.end() || found->second.size() != bytes.size())
+				return false;
+			std::copy(found->second.begin(), found->second.end(), bytes.begin());
+			return true;
+		};
+	}
+}
+
 int main() {
-	using Framework::InstructionPatch::BuildRelativeJump;
-	using Framework::InstructionPatch::CaptureOriginal;
-	using Framework::InstructionPatch::HasShape;
-	using Framework::InstructionPatch::IsOwnedReplacement;
+	using Bytes3 = std::array<std::uint8_t, 3>;
+	using Bytes6 = std::array<std::uint8_t, 6>;
+	using Bytes8 = std::array<std::uint8_t, 8>;
+	using Build = Framework::GameVersion::Build;
 
-	const std::array<std::uint8_t, 6> live{ 0xD9, 0x05, 0x00, 0x5D, 0xFF, 0x00 };
-	const std::array<std::uint8_t, 2> shape{ 0xD9, 0x05 };
-	std::array<std::uint8_t, 6> captured{};
-	assert(HasShape(live, shape));
-	assert(CaptureOriginal(live, shape, captured));
-	assert(captured == live);
+	const Bytes3 expected{ 0xE8, 0x10, 0x20 };
+	const Bytes3 replacement{ 0x90, 0x90, 0x90 };
+	const VersionedPattern<3> exactPattern{ ExactPattern(expected), ExactPattern(expected) };
+	std::map<std::uintptr_t, std::vector<std::uint8_t>> memory{
+		{ 0x1000, std::vector<std::uint8_t>(expected.begin(), expected.end()) },
+		{ 0x2000, { 0x11, 0x22, 0x33 } },
+	};
+	auto read = ReadMemory(memory);
 
-	const std::array<std::uint8_t, 6> invalid{ 0xD8, 0x05, 0x00, 0x5D, 0xFF, 0x00 };
-	const std::array<std::uint8_t, 6> unchanged{ 1, 2, 3, 4, 5, 6 };
-	captured = unchanged;
-	assert(!CaptureOriginal(invalid, shape, captured));
-	assert(captured == unchanged);
+	const auto exactSite = MakeSite("exact", 0x1000, Build::September2022, exactPattern, replacement);
+	auto capturedExact = CaptureSites(read, exactSite);
+	assert(capturedExact.failure == ValidationFailure::None);
+	assert(capturedExact.sites[0].original == std::vector<std::uint8_t>(expected.begin(), expected.end()));
+	memory[0x1000][1] ^= 1;
+	assert(CaptureSites(read, exactSite).failure == ValidationFailure::Mismatch);
+	memory[0x1000] = std::vector<std::uint8_t>(expected.begin(), expected.end());
 
-	const std::array<std::uint8_t, 6> replacement{ 0xE9, 1, 2, 3, 4, 0x90 };
-	assert(IsOwnedReplacement(true, replacement, replacement));
-	assert(!IsOwnedReplacement(false, replacement, replacement));
-	assert(!IsOwnedReplacement(true, live, replacement));
+	std::vector<unsigned char> expanded;
+	assert(LnpSites::Expand("DD 05 @E25C50", 0x1D0000, expanded));
+	assert((expanded == std::vector<unsigned char>{ 0xDD, 0x05, 0x50, 0x5C, 0xFF, 0x00 }));
+	Bytes6 lpExpected{};
+	std::copy(expanded.begin(), expanded.end(), lpExpected.begin());
+	const VersionedPattern<6> lpPattern{ UnavailablePattern<6>(), ExactPattern(lpExpected) };
+	const auto lpSite = MakeSite("LP absolute operand", 0x3000, Build::LearnAndPlayDec2024,
+		lpPattern, lpExpected);
+	memory[0x3000] = std::vector<std::uint8_t>(lpExpected.begin(), lpExpected.end());
+	assert(CaptureSites(read, lpSite).failure == ValidationFailure::None);
+	assert(LnpSites::Expand("DD 05 @E25C50", 0x1E0000, expanded));
+	assert(!std::equal(expanded.begin(), expanded.end(), lpExpected.begin()));
+
+	const Bytes8 focusZero{ 0, 0, 0, 0, 4, 0, 0, 0 };
+	const Bytes8 focusOne{ 1, 0, 0, 0, 4, 0, 0, 0 };
+	const auto focusMask = MakeBytes(0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
+	const VersionedPattern<8> focusPattern{
+		MaskedPattern(focusZero, focusMask),
+		MaskedPattern(focusOne, focusMask),
+	};
+	const auto focusSite = MakeSite("focus flag", 0x4000, Build::September2022, focusPattern, focusOne);
+	memory[0x4000] = std::vector<std::uint8_t>(focusZero.begin(), focusZero.end());
+	assert(CaptureSites(read, focusSite).failure == ValidationFailure::None);
+	memory[0x4000] = std::vector<std::uint8_t>(focusOne.begin(), focusOne.end());
+	assert(CaptureSites(read, focusSite).failure == ValidationFailure::None);
+	memory[0x4000][4] = 3;
+	assert(CaptureSites(read, focusSite).failure == ValidationFailure::Mismatch);
+	memory[0x4000] = std::vector<std::uint8_t>(focusZero.begin(), focusZero.end());
+
+	const Bytes3 secondExpected{ 0x11, 0x22, 0x33 };
+	const Bytes3 secondReplacement{ 0x91, 0x92, 0x93 };
+	const VersionedPattern<3> secondPattern{ ExactPattern(secondExpected), ExactPattern(secondExpected) };
+	const auto firstSite = MakeSite("first", 0x1000, Build::September2022, exactPattern, replacement);
+	const auto secondSite = MakeSite("second", 0x2000, Build::September2022, secondPattern, secondReplacement);
+	for (int toggle = 0; toggle < 2; ++toggle) {
+		const auto captured = CaptureSites(read, firstSite, secondSite);
+		assert(captured.failure == ValidationFailure::None && captured.sites.size() == 2);
+		InjectedEngine engine(memory);
+		assert(AppendCaptured(captured, [&](const CapturedSite& site) { return engine.Append(site); }));
+		assert(engine.Commit() == EngineResult::Installed);
+		assert(memory[0x1000] == std::vector<std::uint8_t>(replacement.begin(), replacement.end()));
+		assert(memory[0x2000] == std::vector<std::uint8_t>(secondReplacement.begin(), secondReplacement.end()));
+		assert(engine.Rollback() == EngineResult::Original);
+		assert(engine.Commit() == EngineResult::Original);
+	}
+
+	const auto capturedOwned = CaptureSites(read, firstSite, secondSite);
+	InjectedEngine owner(memory);
+	assert(AppendCaptured(capturedOwned, [&](const CapturedSite& site) { return owner.Append(site); }));
+	assert(owner.Commit() == EngineResult::Installed);
+	memory[0x2000][0] = 0xFF;
+	const auto changedSecond = memory[0x2000];
+	assert(owner.Rollback() == EngineResult::RollbackIncomplete);
+	assert(memory[0x1000] == std::vector<std::uint8_t>(replacement.begin(), replacement.end()));
+	assert(memory[0x2000] == changedSecond);
 
 	std::array<std::uint8_t, 6> jump{};
 	assert(BuildRelativeJump(0x1000, 0x2000, jump));
-	assert((jump == std::array<std::uint8_t, 6>{ 0xE9, 0xFB, 0x0F, 0x00, 0x00, 0x90 }));
+	assert((jump == Bytes6{ 0xE9, 0xFB, 0x0F, 0x00, 0x00, 0x90 }));
 	if constexpr (sizeof(std::uintptr_t) > sizeof(std::uint32_t))
 		assert(!BuildRelativeJump(0x1000, 0x90000000, jump));
-
-	using Framework::InstructionPatch::Failure;
-	using Framework::InstructionPatch::InstallGroup;
-	using Framework::InstructionPatch::MaskedPattern;
-	using Framework::InstructionPatch::Outcome;
-	using Framework::InstructionPatch::PatchedSite;
-	using Framework::InstructionPatch::RestoreGroup;
-	using Framework::InstructionPatch::VersionedPattern;
-
-	using SiteBytes = std::array<std::uint8_t, 3>;
-	const SiteBytes expected{ 0x10, 0x20, 0x30 };
-	const SiteBytes mask{ 0xFF, 0x00, 0xFF };
-	const SiteBytes siteReplacement{ 0x90, 0x90, 0x90 };
-	const VersionedPattern<3> pattern{
-		MaskedPattern(expected, mask),
-		MaskedPattern(expected, mask)
-	};
-	std::map<std::uintptr_t, std::vector<std::uint8_t>> memory{
-		{ 0x1000, { 0x10, 0x21, 0x30 } },
-		{ 0x2000, { 0x10, 0x22, 0x30 } }
-	};
-	auto read = [&](std::uintptr_t address, auto& bytes) {
-		const auto found = memory.find(address);
-		if (found == memory.end() || found->second.size() != bytes.size())
-			return false;
-		std::copy(found->second.begin(), found->second.end(), bytes.begin());
-		return true;
-	};
-	auto write = [&](std::uintptr_t address, const auto& bytes) {
-		const auto found = memory.find(address);
-		if (found == memory.end() || found->second.size() != bytes.size())
-			return Outcome::RollbackIncomplete;
-		std::copy(bytes.begin(), bytes.end(), found->second.begin());
-		return Outcome::Installed;
-	};
-	const auto ignoreOriginal = [](const char*, std::uintptr_t, const auto&) {};
-	PatchedSite<3> site("masked", 0x1000, Framework::GameVersion::Build::September2022, pattern);
-	assert(site.Install(read, write, siteReplacement, ignoreOriginal).outcome == Outcome::Installed);
-	assert(memory[0x1000] == std::vector<std::uint8_t>(siteReplacement.begin(), siteReplacement.end()));
-	assert(site.Restore(read, write, ignoreOriginal).outcome == Outcome::Installed);
-	assert((memory[0x1000] == std::vector<std::uint8_t>{ 0x10, 0x21, 0x30 }));
-
-	memory[0x3000] = { 0x10, 0x23, 0x30 };
-	PatchedSite<3> partialSite("single-byte write", 0x3000, Framework::GameVersion::Build::September2022, pattern, 1, 1);
-	auto writeByte = [&](std::uintptr_t address, const auto& bytes) {
-		if (address != 0x3001 || bytes.size() != 1)
-			return Outcome::RollbackIncomplete;
-		memory[0x3000][1] = bytes[0];
-		return Outcome::Installed;
-	};
-	const SiteBytes partialReplacement{ 0x10, 0x99, 0x30 };
-	assert(partialSite.Install(read, writeByte, partialReplacement, ignoreOriginal).outcome == Outcome::Installed);
-	assert((memory[0x3000] == std::vector<std::uint8_t>{ 0x10, 0x99, 0x30 }));
-	assert(partialSite.Restore(read, writeByte, ignoreOriginal).outcome == Outcome::Installed);
-	assert((memory[0x3000] == std::vector<std::uint8_t>{ 0x10, 0x23, 0x30 }));
-
-	PatchedSite<3> ownedSite("ownership", 0x1000, Framework::GameVersion::Build::September2022, pattern);
-	assert(ownedSite.Install(read, write, siteReplacement, ignoreOriginal).outcome == Outcome::Installed);
-	memory[0x1000][2] = 0x31;
-	const auto changedBytes = memory[0x1000];
-	const auto ownershipResult = ownedSite.Restore(read, write, ignoreOriginal);
-	assert(ownershipResult.outcome == Outcome::Original);
-	assert(ownershipResult.failure == Failure::NotOwned);
-	assert(memory[0x1000] == changedBytes);
-	memory[0x1000] = { 0x10, 0x21, 0x30 };
-
-	PatchedSite<3> first("first", 0x1000, Framework::GameVersion::Build::September2022, pattern);
-	PatchedSite<3> second("second", 0x2000, Framework::GameVersion::Build::September2022, pattern);
-	first.SetReplacement(siteReplacement);
-	second.SetReplacement(siteReplacement);
-	memory[0x2000][0] = 0x11;
-	int writes = 0;
-	auto countWrite = [&](std::uintptr_t address, const auto& bytes) {
-		++writes;
-		return write(address, bytes);
-	};
-	const auto preflight = InstallGroup(read, countWrite, ignoreOriginal, first, second);
-	assert(preflight.outcome == Outcome::Original);
-	assert(preflight.failure == Failure::Mismatch);
-	assert(writes == 0);
-	memory[0x2000] = { 0x10, 0x22, 0x30 };
-
-	first.SetReplacement(siteReplacement);
-	second.SetReplacement(siteReplacement);
-	auto failSecond = [&](std::uintptr_t address, const auto& bytes) {
-		++writes;
-		if (address == 0x2000)
-			return Outcome::Original;
-		return write(address, bytes);
-	};
-	writes = 0;
-	const auto rolledBack = InstallGroup(read, failSecond, ignoreOriginal, first, second);
-	assert(rolledBack.outcome == Outcome::Original);
-	assert(rolledBack.failure == Failure::WriteRejected);
-	assert((memory[0x1000] == std::vector<std::uint8_t>{ 0x10, 0x21, 0x30 }));
-	assert((memory[0x2000] == std::vector<std::uint8_t>{ 0x10, 0x22, 0x30 }));
-
-	memory[0x1000] = { 0x10, 0x21, 0x30 };
-	first.SetReplacement(siteReplacement);
-	second.SetReplacement(siteReplacement);
-	auto failSecondRollback = [&](std::uintptr_t address, const auto& bytes) {
-		++writes;
-		if (address == 0x2000)
-			return Outcome::Original;
-		if (address == 0x1000 && bytes[0] == expected[0])
-			return Outcome::RollbackIncomplete;
-		return write(address, bytes);
-	};
-	const auto incomplete = InstallGroup(read, failSecondRollback, ignoreOriginal, first, second);
-	assert(incomplete.outcome == Outcome::RollbackIncomplete);
-	assert(incomplete.failure == Failure::RollbackFailed);
-
-	first.SetReplacement(siteReplacement);
-	second.SetReplacement(siteReplacement);
-	assert(InstallGroup(read, write, ignoreOriginal, first, second).outcome == Outcome::Installed);
-	memory[0x2000][0] = 0x91;
-	writes = 0;
-	const auto restorePreflight = RestoreGroup(read, countWrite, ignoreOriginal, first, second);
-	assert(restorePreflight.outcome == Outcome::Original);
-	assert(restorePreflight.failure == Failure::NotOwned);
-	assert(writes == 0);
 }

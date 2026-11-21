@@ -5,6 +5,7 @@
 #include "LnpSites.hpp"
 #include "VersioningStruct.h"
 
+#include <memory>
 #include <unordered_map>
 
 namespace {
@@ -13,65 +14,85 @@ namespace {
 	const auto readSite = [](std::uintptr_t address, auto& bytes) {
 		return MemUtil::TryRead(address, bytes);
 	};
-	const auto writeSite = [](std::uintptr_t address, const auto& bytes) {
-		return FromWriteResult(MemUtil::WritePatch(reinterpret_cast<LPVOID>(address), bytes.data(), bytes.size()),
-			MemUtil::PatchResult::Installed, MemUtil::PatchResult::Original, MemUtil::PatchResult::RollbackIncomplete);
-	};
 
 	template <std::size_t Size>
-	PatchedSite<Size> MakeSite(const char* name, std::uintptr_t address, const VersionedPattern<Size>& patterns,
-		std::size_t writeOffset = 0, std::size_t writeSize = Size) {
-		return { name, address, GameVersion::Current(), patterns, writeOffset, writeSize };
+	SiteDescriptor<Size> MakeSite(const char* name, std::uintptr_t address, const VersionedPattern<Size>& expected,
+		const std::array<std::uint8_t, Size>& replacement,
+		typename SiteDescriptor<Size>::ReplacementBuilder buildReplacement = nullptr) {
+		return Framework::InstructionPatch::MakeSite(name, address, ::GameVersion::Current(),
+			expected, replacement, buildReplacement);
 	}
 
 	template <std::size_t Size>
-	BytePattern<Size> ExpandLnpPattern(const char* text, const std::array<std::uint8_t, Size>& mask) {
+	BytePattern<Size> ExpandLnpPattern(const char* text) {
 		std::vector<unsigned char> expanded;
 		if (!LnpSites::Expand(text, static_cast<std::uint32_t>(GameVersion::ModuleBase()), expanded)
 			|| expanded.size() != Size)
 			return UnavailablePattern<Size>();
 		std::array<std::uint8_t, Size> bytes{};
 		std::copy(expanded.begin(), expanded.end(), bytes.begin());
-		return MaskedPattern(bytes, mask);
+		return ExactPattern(bytes);
 	}
 
-	template <std::size_t Size>
-	void LogOriginal(const char* name, std::uintptr_t address, const std::array<std::uint8_t, Size>& bytes) {
+	void LogOriginal(const char* name, std::uintptr_t address, const std::vector<std::uint8_t>& bytes) {
 		std::ostringstream text;
 		for (std::uint8_t byte : bytes)
 			text << std::hex << static_cast<unsigned int>(byte) << ' ';
 		LOG_INFO("(QOL) " << name << " original at 0x" << std::hex << address << ": " << text.str() << std::endl);
 	}
 
-	const auto logOriginal = [](const char* name, std::uintptr_t address, const auto& bytes) {
-		LogOriginal(name, address, bytes);
-	};
+	bool AppendSites(MemUtil::PreparedPatchSet& patches, const CaptureResult& captured) {
+		return AppendCaptured(captured, [&](const CapturedSite& site) {
+			MemUtil::PreparedPatchRequest request{};
+			request.address = reinterpret_cast<LPVOID>(site.address);
+			request.kind = MemUtil::PreparedPatchKind::Bytes;
+			request.expectedBytes = site.original;
+			request.replacementBytes = site.replacement;
+			request.length = site.original.size();
+			return patches.Append(request);
+		});
+	}
 
-	void LogPatchResult(const char* action, const Result& result) {
-		if (result.outcome == Outcome::Installed) {
-			if (result.changed)
-				LOG_INFO("(QOL) " << action << " confirmed" << std::endl);
-		}
-		else if (result.outcome == Outcome::RollbackIncomplete) {
+	void LogValidationFailure(const char* action, const CaptureResult& captured) {
+		if (captured.failure != ValidationFailure::None)
+			LOG_WARNING("(QOL) " << action << " left unchanged at " << captured.site
+				<< ": " << FailureName(captured.failure) << std::endl);
+	}
+
+	void LogUnavailable(const char* action, const char* site) {
+		LOG_WARNING("(QOL) " << action << " left unchanged at " << site << ": "
+			<< FailureName(ValidationFailure::Unavailable) << std::endl);
+	}
+
+	void LogPatchResult(const char* action, const CaptureResult& captured, MemUtil::PatchResult result,
+		std::uintptr_t failureAddress, bool restoring) {
+		const char* site = SiteNameAt(captured, failureAddress);
+		if ((!restoring && result == MemUtil::PatchResult::Installed)
+			|| (restoring && result == MemUtil::PatchResult::Original))
+			LOG_INFO("(QOL) " << action << " confirmed" << std::endl);
+		else if (result == MemUtil::PatchResult::RollbackIncomplete) {
 			LOG_ERROR("(QOL) " << action << " outcome is indeterminate at "
-				<< (result.site ? result.site : "patch group") << std::endl);
+				<< (site ? site : "patch group") << std::endl);
 		}
-		else if (result.failure != Failure::None) {
+		else {
 			LOG_WARNING("(QOL) " << action << " left unchanged at "
-				<< (result.site ? result.site : "patch group") << ": " << FailureName(result.failure) << std::endl);
+				<< (site ? site : "patch group") << ": write was not applied" << std::endl);
 		}
 	}
 
-	PatchedSite<25>& TwoRtcSite() {
-		constexpr auto mask = MakeBytes(0xFF, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0x00,
-			0xFF, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-			0xFF, 0x00, 0x00, 0x00, 0x00);
-		static auto site = MakeSite("two-RTC connection check", Offsets::ptr_twoRTCBypass.GetValue(), VersionedPattern<25>{
-			MaskedPattern(MakeBytes(0xE8, 0x7C, 0x22, 0xE2, 0xFF, 0x84, 0xC0, 0x74, 0x6B, 0xBA,
-				0x34, 0xFE, 0x1C, 0x01, 0x8D, 0xB3, 0x4C, 0x01, 0x00, 0x00, 0xE8, 0xD8, 0xD8, 0xC4, 0xFF), mask),
-			ExpandLnpPattern<25>("E8 9C 24 E2 FF 84 C0 74 6B BA @DD165C 8D B3 4C 01 00 00 E8 18 CA C4 FF", mask)
-		});
-		return site;
+	std::unique_ptr<MemUtil::PreparedPatchSet> twoRtcPatch;
+	CaptureResult twoRtcSites;
+
+	SiteDescriptor<25> TwoRtcSite() {
+		const auto replacement = MakeBytes(
+			0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90,
+			0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90,
+			0x90, 0x90, 0x90, 0x90, 0x90);
+		return MakeSite("two-RTC connection check", Offsets::ptr_twoRTCBypass.GetValue(), VersionedPattern<25>{
+			ExactPattern(MakeBytes(0xE8, 0x7C, 0x22, 0xE2, 0xFF, 0x84, 0xC0, 0x74, 0x6B, 0xBA,
+				0x34, 0xFE, 0x1C, 0x01, 0x8D, 0xB3, 0x4C, 0x01, 0x00, 0x00, 0xE8, 0xD8, 0xD8, 0xC4, 0xFF)),
+			ExpandLnpPattern<25>("E8 9C 24 E2 FF 84 C0 74 6B BA @DD165C 8D B3 4C 01 00 00 E8 18 CA C4 FF")
+		}, replacement);
 	}
 
 	// A menu only finishes loading once its object is ready AND its Flash movie exists. The movie is only made once the game
@@ -249,19 +270,46 @@ namespace {
 }
 
 namespace QualityOfLife {
-	Framework::InstructionPatch::Result PatchTwoRTC(bool enable)
-	{
-		auto& site = TwoRtcSite();
+	MemUtil::PatchResult PatchTwoRTC(bool enable) {
 		if (enable) {
-			const auto result = site.Install(readSite, writeSite, MakeBytes(
-				0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90,
-				0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90,
-				0x90, 0x90, 0x90, 0x90, 0x90), logOriginal);
-			LogPatchResult("Two-RTC bypass", result);
+			if (twoRtcPatch)
+				return MemUtil::ToPatchResult(twoRtcPatch->Outcome());
+			auto captured = CaptureSites(readSite, TwoRtcSite());
+			if (captured.failure != ValidationFailure::None) {
+				LogValidationFailure("Two-RTC bypass", captured);
+				return MemUtil::PatchResult::Original;
+			}
+			auto patches = std::make_unique<MemUtil::PreparedPatchSet>();
+			if (!AppendSites(*patches, captured)) {
+				LogPatchResult("Two-RTC bypass", captured, MemUtil::PatchResult::Original,
+					patches->FailureAddress(), false);
+				return MemUtil::PatchResult::Original;
+			}
+			for (const CapturedSite& site : captured.sites)
+				LogOriginal(site.name, site.address, site.original);
+			const auto result = patches->Commit();
+			const auto failureAddress = patches->FailureAddress();
+			if (result == MemUtil::PatchResult::Original)
+				LogPatchResult("Two-RTC bypass", captured, result, failureAddress, false);
+			else {
+				twoRtcSites = std::move(captured);
+				twoRtcPatch = std::move(patches);
+				LogPatchResult("Two-RTC bypass", twoRtcSites, result, failureAddress, false);
+			}
 			return result;
 		}
-		const auto result = site.Restore(readSite, writeSite, logOriginal);
-		LogPatchResult("Two-RTC restore", result);
+
+		if (!twoRtcPatch)
+			return MemUtil::PatchResult::Original;
+		for (const CapturedSite& site : twoRtcSites.sites)
+			LogOriginal(site.name, site.address, site.original);
+		const auto result = twoRtcPatch->Rollback();
+		const auto failureAddress = twoRtcPatch->FailureAddress();
+		LogPatchResult("Two-RTC restore", twoRtcSites, result, failureAddress, true);
+		if (result == MemUtil::PatchResult::Original) {
+			twoRtcPatch.reset();
+			twoRtcSites = {};
+		}
 		return result;
 	}
 
@@ -335,13 +383,23 @@ namespace QualityOfLife {
 	/// </summary>
 	void LowerNoteDetectionFloor() {
 		const std::uintptr_t immediate = Offsets::ptr_noteDetectionFloor.GetValue();
-		static auto site = MakeSite("note-detection floor", immediate ? immediate - 6 : 0, VersionedPattern<10>{
+		const auto site = MakeSite("note-detection floor", immediate ? immediate - 6 : 0, VersionedPattern<10>{
 			ExactPattern(MakeBytes(0xC7, 0x83, 0xF4, 0x11, 0x00, 0x00, 0x18, 0x00, 0x00, 0x00)),
 			ExactPattern(MakeBytes(0xC7, 0x83, 0xF4, 0x11, 0x00, 0x00, 0x18, 0x00, 0x00, 0x00))
-		}, 6, 1);
-		const auto result = site.Install(readSite, writeSite,
-			MakeBytes(0xC7, 0x83, 0xF4, 0x11, 0x00, 0x00, 0x12, 0x00, 0x00, 0x00), logOriginal);
-		LogPatchResult("Note-detection floor", result);
+		}, MakeBytes(0xC7, 0x83, 0xF4, 0x11, 0x00, 0x00, 0x12, 0x00, 0x00, 0x00));
+		auto captured = CaptureSites(readSite, site);
+		if (captured.failure != ValidationFailure::None) {
+			LogValidationFailure("Note-detection floor", captured);
+			return;
+		}
+		MemUtil::PreparedPatchSet patches;
+		if (!AppendSites(patches, captured)) {
+			LogPatchResult("Note-detection floor", captured, MemUtil::PatchResult::Original, patches.FailureAddress(), false);
+			return;
+		}
+		for (const CapturedSite& capturedSite : captured.sites)
+			LogOriginal(capturedSite.name, capturedSite.address, capturedSite.original);
+		LogPatchResult("Note-detection floor", captured, patches.Commit(), patches.FailureAddress(), false);
 	}
 
 	/// <summary>
@@ -357,23 +415,34 @@ namespace QualityOfLife {
 			return;
 		}
 
-		static auto movieSite = MakeSite("menu movie setup", Offsets::ptr_menuMovieSetup.GetValue(), VersionedPattern<6>{
-			ExactPattern(MakeBytes(0x55, 0x8B, 0xEC, 0x83, 0xE4, 0xF8)),
-			ExactPattern(MakeBytes(0x55, 0x8B, 0xEC, 0x83, 0xE4, 0xF8))
-		});
-		static auto loadSite = MakeSite("menu load update", Offsets::ptr_menuLoadUpdate.GetValue(), VersionedPattern<6>{
-			ExactPattern(MakeBytes(0x55, 0x8B, 0xEC, 0x83, 0xE4, 0xF8)),
-			ExactPattern(MakeBytes(0x55, 0x8B, 0xEC, 0x83, 0xE4, 0xF8))
-		});
 		std::array<std::uint8_t, 6> movieJump{};
 		std::array<std::uint8_t, 6> loadJump{};
-		if (!BuildRelativeJump(movieSite.Address(), reinterpret_cast<std::uintptr_t>(&menuMovieSetupHook), movieJump)
-			|| !BuildRelativeJump(loadSite.Address(), reinterpret_cast<std::uintptr_t>(&menuLoadUpdateHook), loadJump)) {
-			LogPatchResult("Fast Load soft-lock retry", { Outcome::Original, Failure::Unavailable, "menu hooks" });
+		if (!BuildRelativeJump(menuMovieSetup, reinterpret_cast<std::uintptr_t>(&menuMovieSetupHook), movieJump)
+			|| !BuildRelativeJump(menuLoadUpdate, reinterpret_cast<std::uintptr_t>(&menuLoadUpdateHook), loadJump)) {
+			LogUnavailable("Fast Load soft-lock retry", "menu hooks");
 			return;
 		}
-		movieSite.SetReplacement(movieJump);
-		loadSite.SetReplacement(loadJump);
-		LogPatchResult("Fast Load soft-lock retry", InstallGroup(readSite, writeSite, logOriginal, movieSite, loadSite));
+		const auto movieSite = MakeSite("menu movie setup", menuMovieSetup, VersionedPattern<6>{
+			ExactPattern(MakeBytes(0x55, 0x8B, 0xEC, 0x83, 0xE4, 0xF8)),
+			UnavailablePattern<6>()
+		}, movieJump);
+		const auto loadSite = MakeSite("menu load update", menuLoadUpdate, VersionedPattern<6>{
+			ExactPattern(MakeBytes(0x55, 0x8B, 0xEC, 0x83, 0xE4, 0xF8)),
+			ExactPattern(MakeBytes(0x55, 0x8B, 0xEC, 0x83, 0xE4, 0xF8))
+		}, loadJump);
+		auto captured = CaptureSites(readSite, movieSite, loadSite);
+		if (captured.failure != ValidationFailure::None) {
+			LogValidationFailure("Fast Load soft-lock retry", captured);
+			return;
+		}
+		MemUtil::PreparedPatchSet patches;
+		if (!AppendSites(patches, captured)) {
+			LogPatchResult("Fast Load soft-lock retry", captured, MemUtil::PatchResult::Original,
+				patches.FailureAddress(), false);
+			return;
+		}
+		for (const CapturedSite& capturedSite : captured.sites)
+			LogOriginal(capturedSite.name, capturedSite.address, capturedSite.original);
+		LogPatchResult("Fast Load soft-lock retry", captured, patches.Commit(), patches.FailureAddress(), false);
 	}
 }

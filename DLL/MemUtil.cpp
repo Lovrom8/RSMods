@@ -6,11 +6,9 @@
 
 namespace {
 	struct BootPatch {
-		void* address;
-		std::vector<unsigned char> original;
-		std::vector<unsigned char> replacement;
+		uintptr_t address = 0;
+		size_t length = 0;
 		const char* member;
-		bool pointerStore;
 	};
 	struct BootBundle {
 		bool staging = false;
@@ -18,7 +16,7 @@ namespace {
 		const char* member = "startup";
 		const char* failed = nullptr;
 		std::vector<BootPatch> patches;
-		std::vector<void*> gateways;
+		MemUtil::PreparedPatchSet transaction;
 	};
 	struct BootBundleGate {
 		std::atomic<bool> enabled{ true };
@@ -30,52 +28,47 @@ namespace {
 		return static_cast<size_t>(bundle);
 	}
 
-	bool StageBootPatch(void* address, const void* replacement, size_t length, bool pointerStore = false) {
+	bool IsPatchOverlap(uintptr_t address, size_t length, uintptr_t other, size_t otherLength) {
+		if (length > (std::numeric_limits<uintptr_t>::max)() - address
+			|| otherLength > (std::numeric_limits<uintptr_t>::max)() - other)
+			return true;
+		return address < other + otherLength && other < address + length;
+	}
+
+	bool StageBootPatch(const MemUtil::PreparedPatchRequest& request, size_t length) {
 		if (g_bootBundle.failed)
 			return false;
-		const uintptr_t start = reinterpret_cast<uintptr_t>(address);
+		const uintptr_t start = reinterpret_cast<uintptr_t>(request.address);
 		for (const BootPatch& previous : g_bootBundle.patches) {
-			const uintptr_t other = reinterpret_cast<uintptr_t>(previous.address);
-			if (start < other + previous.original.size() && other < start + length) {
+			if (IsPatchOverlap(start, length, previous.address, previous.length)) {
 				MemUtil::FailBootPatchBundle();
 				return false;
 			}
 		}
-		BootPatch patch{ address, std::vector<unsigned char>(length),
-			std::vector<unsigned char>(length), g_bootBundle.member, pointerStore };
-		for (size_t i = 0; i < length; ++i) {
-			if (!MemUtil::TryRead(reinterpret_cast<uintptr_t>(address) + i, patch.original[i])) {
-				MemUtil::FailBootPatchBundle();
-				return false;
-			}
+		if (g_bootBundle.transaction.Size() >= MemUtil::PreparedPatchSet::MaxSites) {
+			LOG_ERROR("(BOOT BUNDLE) " << Framework::BootPatch::BundleName(g_bootBundle.bundle)
+				<< " exceeded the " << MemUtil::PreparedPatchSet::MaxSites
+				<< "-site limit while staging " << g_bootBundle.member << std::endl);
+			MemUtil::FailBootPatchBundle();
+			return false;
 		}
-		memcpy(patch.replacement.data(), replacement, length);
-		g_bootBundle.patches.push_back(std::move(patch));
+		if (!g_bootBundle.transaction.Append(request)) {
+			MemUtil::FailBootPatchBundle();
+			return false;
+		}
+		g_bootBundle.patches.push_back({
+			g_bootBundle.transaction.SiteAddress(g_bootBundle.transaction.Size() - 1),
+			g_bootBundle.transaction.SiteLength(g_bootBundle.transaction.Size() - 1),
+			g_bootBundle.member });
 		return true;
 	}
 
-	void StorePatchBytes(void* address, const void* bytes, size_t length, bool pointerStore) {
-		if (!pointerStore) {
-			memcpy(address, bytes, length);
-			return;
-		}
-		void* value = nullptr;
-		memcpy(&value, bytes, sizeof(value));
-		InterlockedExchangePointer(reinterpret_cast<PVOID volatile*>(address), value);
-	}
-
-	struct ProtectedRegion {
-		void* base;
-		SIZE_T size;
-		ULONG protection;
-		void* queryBase;
-		SIZE_T querySize;
-	};
-
-	// VirtualProtect reports only the first page's old protection, so record each uniform region.
-	bool QueryRegions(void* address, size_t length, std::vector<ProtectedRegion>& regions) {
+	bool QueryRegions(uintptr_t address, size_t length,
+		std::vector<MemUtil::Detail::PatchTransactionRegion>& regions) {
+		uintptr_t cursor = address;
 		regions.clear();
-		uintptr_t cursor = reinterpret_cast<uintptr_t>(address);
+		if (!address || !length || length > (std::numeric_limits<uintptr_t>::max)() - cursor)
+			return false;
 		const uintptr_t end = cursor + length;
 		while (cursor < end) {
 			MEMORY_BASIC_INFORMATION info{};
@@ -83,108 +76,49 @@ namespace {
 				|| info.State != MEM_COMMIT || info.RegionSize == 0)
 				return false;
 			const uintptr_t regionEnd = reinterpret_cast<uintptr_t>(info.BaseAddress) + info.RegionSize;
+			if (regionEnd <= cursor)
+				return false;
 			const uintptr_t stop = regionEnd < end ? regionEnd : end;
-			regions.push_back({ reinterpret_cast<void*>(cursor), stop - cursor, info.Protect,
-				info.BaseAddress, info.RegionSize });
+			regions.push_back({ cursor, stop - cursor, info.Protect,
+				reinterpret_cast<uintptr_t>(info.BaseAddress), info.RegionSize, false });
 			cursor = stop;
 		}
 		return !regions.empty();
 	}
 
-	void AddBundleRegion(std::vector<ProtectedRegion>& regions, const ProtectedRegion& candidate) {
-		const uintptr_t candidateStart = reinterpret_cast<uintptr_t>(candidate.base);
-		const uintptr_t candidateEnd = candidateStart + candidate.size;
-		for (ProtectedRegion& region : regions) {
+	void AddTransactionRegion(std::vector<MemUtil::Detail::PatchTransactionRegion>& regions,
+		const MemUtil::Detail::PatchTransactionRegion& candidate) {
+		const uintptr_t candidateEnd = candidate.base + candidate.size;
+		for (auto& region : regions) {
 			if (region.queryBase != candidate.queryBase || region.querySize != candidate.querySize
 				|| region.protection != candidate.protection)
 				continue;
-			const uintptr_t start = reinterpret_cast<uintptr_t>(region.base);
-			const uintptr_t end = start + region.size;
-			const uintptr_t mergedStart = start < candidateStart ? start : candidateStart;
+			const uintptr_t end = region.base + region.size;
+			const uintptr_t mergedStart = region.base < candidate.base ? region.base : candidate.base;
 			const uintptr_t mergedEnd = end > candidateEnd ? end : candidateEnd;
-			region.base = reinterpret_cast<void*>(mergedStart);
+			region.base = mergedStart;
 			region.size = mergedEnd - mergedStart;
 			return;
 		}
 		regions.push_back(candidate);
 	}
 
-	// Restores the first count regions, retrying each once; false if any stays changed.
-	bool RestoreRegions(const std::vector<ProtectedRegion>& regions, size_t count) {
-		bool restored = true;
-		for (size_t i = 0; i < count; ++i) {
-			const ProtectedRegion& region = regions[i];
-			ULONG ignored = 0;
-			if (NT_SUCCESS(MemUtil::HookedVirtualProtect(region.base, region.size, region.protection, ignored)))
-				continue;
-			if (!NT_SUCCESS(MemUtil::HookedVirtualProtect(region.base, region.size, region.protection, ignored)))
-				restored = false;
-		}
-		return restored;
-	}
-
-	// On failure the regions already opened are restored and restored reports whether that held.
-	bool OpenRegions(const std::vector<ProtectedRegion>& regions, bool& restored) {
-		restored = true;
-		for (size_t i = 0; i < regions.size(); ++i) {
-			ULONG ignored = 0;
-			if (!NT_SUCCESS(MemUtil::HookedVirtualProtect(regions[i].base, regions[i].size,
-				PAGE_EXECUTE_READWRITE, ignored))) {
-				restored = RestoreRegions(regions, i);
-				return false;
-			}
-		}
-		return true;
-	}
-
-	// The outcome is decided by reading the bytes back; protectionRestored covers every region.
-	MemUtil::PatchResult WriteBytes(void* address, const void* bytes, size_t length,
-		bool& protectionRestored, bool pointerStore = false) {
-		using MemUtil::PatchResult;
-		protectionRestored = true;
-		std::vector<unsigned char> original(length);
-		std::vector<ProtectedRegion> regions;
-		if (!QueryRegions(address, length, regions))
-			return PatchResult::Original;
-		if (!OpenRegions(regions, protectionRestored))
-			return protectionRestored ? PatchResult::Original : PatchResult::RollbackIncomplete;
-
-		memcpy(original.data(), address, length);
-		StorePatchBytes(address, bytes, length, pointerStore);
-		PatchResult result = PatchResult::Installed;
-		if (!FlushInstructionCache(GetCurrentProcess(), address, length)) {
-			// Without a flush a stale copy could still run, so put the original back and read it.
-			StorePatchBytes(address, original.data(), length, pointerStore);
-			const bool rollbackFlushed = FlushInstructionCache(GetCurrentProcess(), address, length) != FALSE;
-			result = rollbackFlushed && memcmp(address, original.data(), length) == 0
-				? PatchResult::Original : PatchResult::RollbackIncomplete;
-		}
-		else if (memcmp(address, bytes, length) != 0) {
-			result = PatchResult::RollbackIncomplete;
-		}
-
-		protectionRestored = RestoreRegions(regions, regions.size());
-		if (!protectionRestored) {
-			if (result == PatchResult::Original)
-				result = PatchResult::RollbackIncomplete;
-			LOG_WARNING("(MEMORY) Page protection at 0x" << std::hex << reinterpret_cast<uintptr_t>(address)
-				<< std::dec << " stayed writable after a patch" << std::endl);
-		}
-		return result;
-	}
-
-	std::vector<unsigned char> JumpPatch(void* site, void* target, size_t length) {
-		std::vector<unsigned char> patch(length, 0x90);
-		patch[0] = 0xE9;
-		const uint32_t relative = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(target)
-			- reinterpret_cast<uintptr_t>(site) - 5);
-		memcpy(patch.data() + 1, &relative, sizeof(relative));
-		return patch;
+	void ReportStandalonePatch(const char* operation, uintptr_t address, MemUtil::PatchResult result,
+		const MemUtil::PatchOutcome& outcome) {
+		if (!outcome.protectionRestored)
+			LOG_WARNING("(MEMORY) Page protection at 0x" << std::hex << address << std::dec
+				<< " stayed writable after a patch" << std::endl);
+		if (result == MemUtil::PatchResult::RollbackIncomplete)
+			LOG_ERROR("(MEMORY) " << operation << " at 0x" << std::hex << address << std::dec
+				<< " could not be confirmed; rollback may be incomplete" << std::endl);
 	}
 }
 
 void MemUtil::BeginBootPatchBundle(Framework::BootPatch::Bundle bundle) {
-	g_bootBundle = {};
+	g_bootBundle.transaction.Reset();
+	g_bootBundle.patches.clear();
+	g_bootBundle.failed = nullptr;
+	g_bootBundle.member = "startup";
 	g_bootBundle.bundle = bundle;
 	g_bootBundle.staging = true;
 	g_bootBundleGates[BootBundleIndex(bundle)].enabled.store(false);
@@ -214,8 +148,7 @@ bool MemUtil::BootPatchBundleStaging(Framework::BootPatch::Bundle bundle) {
 
 bool MemUtil::BootPatchStaged(uintptr_t address) {
 	for (const BootPatch& patch : g_bootBundle.patches) {
-		const uintptr_t start = reinterpret_cast<uintptr_t>(patch.address);
-		if (address >= start && address - start < patch.original.size())
+		if (address >= patch.address && address - patch.address < patch.length)
 			return true;
 	}
 	return false;
@@ -223,85 +156,42 @@ bool MemUtil::BootPatchStaged(uintptr_t address) {
 
 bool MemUtil::CommitBootPatchBundle() {
 	const Framework::BootPatch::Bundle bundle = g_bootBundle.bundle;
-	bool restored = true;
-	std::vector<ProtectedRegion> regions;
-	// Query every member once and retain each unique region's pre-install protection.
-	for (const BootPatch& patch : g_bootBundle.patches) {
-		if (g_bootBundle.failed)
-			break;
-		g_bootBundle.member = patch.member;
-		std::vector<ProtectedRegion> patchRegions;
-		if (!QueryRegions(patch.address, patch.original.size(), patchRegions)) {
-			FailBootPatchBundle();
-			break;
-		}
-		for (const ProtectedRegion& region : patchRegions)
-			AddBundleRegion(regions, region);
-	}
 	g_bootBundle.staging = false;
-	size_t attempted = 0;
-	bool sourceWriteAttempted = false;
-	if (!g_bootBundle.failed) {
-		bool openRestored = true;
-		if (!OpenRegions(regions, openRestored)) {
-			restored = restored && openRestored;
-			g_bootBundle.failed = g_bootBundle.member;
-		} else {
-			// Do not write any member until every original has survived the open.
-			for (const BootPatch& patch : g_bootBundle.patches) {
-				g_bootBundle.member = patch.member;
-				if (!MatchesBytes(reinterpret_cast<uintptr_t>(patch.address), patch.original)) {
-					g_bootBundle.failed = patch.member;
-					break;
-				}
+	if (!g_bootBundle.failed && g_bootBundle.patches.empty())
+		g_bootBundle.transaction.Prepare({});
+	if (!g_bootBundle.failed && g_bootBundle.transaction.Commit() != PatchResult::Installed)
+		g_bootBundle.failed = g_bootBundle.member;
+	const PatchOutcome outcome = g_bootBundle.transaction.Outcome();
+	if (!g_bootBundle.failed && (outcome.bytes != PatchByteState::Replacement
+		|| !outcome.instructionCacheFlushed || !outcome.protectionRestored))
+		g_bootBundle.failed = g_bootBundle.member;
+	if (g_bootBundle.failed && g_bootBundle.transaction.FailureAddress()) {
+		for (const BootPatch& patch : g_bootBundle.patches) {
+			if (g_bootBundle.transaction.FailureAddress() >= patch.address
+				&& g_bootBundle.transaction.FailureAddress() - patch.address < patch.length) {
+				g_bootBundle.failed = patch.member;
+				break;
 			}
-			if (!g_bootBundle.failed) {
-				for (const BootPatch& patch : g_bootBundle.patches) {
-					g_bootBundle.member = patch.member;
-					++attempted;
-					sourceWriteAttempted = true;
-					StorePatchBytes(patch.address, patch.replacement.data(),
-						patch.replacement.size(), patch.pointerStore);
-					if (!FlushInstructionCache(GetCurrentProcess(), patch.address, patch.replacement.size())
-						|| memcmp(patch.address, patch.replacement.data(), patch.replacement.size()) != 0) {
-						g_bootBundle.failed = patch.member;
-						break;
-					}
-				}
-			}
-			if (g_bootBundle.failed) {
-				while (attempted > 0) {
-					const BootPatch& patch = g_bootBundle.patches[--attempted];
-					StorePatchBytes(patch.address, patch.original.data(),
-						patch.original.size(), patch.pointerStore);
-					const bool rollbackFlushed = FlushInstructionCache(GetCurrentProcess(),
-						patch.address, patch.original.size()) != FALSE;
-					if (!rollbackFlushed
-						|| memcmp(patch.address, patch.original.data(), patch.original.size()) != 0) {
-						restored = false;
-						LOG_ERROR("(BOOT BUNDLE) Rollback failed: " << patch.member << " at 0x"
-							<< std::hex << reinterpret_cast<uintptr_t>(patch.address) << std::dec << std::endl);
-					}
-				}
-			}
-			if (!RestoreRegions(regions, regions.size()))
-				restored = false;
 		}
 	}
-	if (g_bootBundle.failed) {
+	const bool restored = outcome.protectionRestored
+		&& outcome.bytes != PatchByteState::Unknown && outcome.instructionCacheFlushed;
+	if (g_bootBundle.failed && outcome.bytes == PatchByteState::Replacement
+		&& !outcome.protectionRestored) {
+		LOG_WARNING("(BOOT BUNDLE) " << Framework::BootPatch::BundleName(bundle)
+			<< " installed, but page protection was not restored at 0x" << std::hex
+			<< g_bootBundle.transaction.FailureAddress() << std::dec << "; gate off; features off: "
+			<< Framework::BootPatch::DisabledFeatures(bundle) << std::endl);
+	} else if (g_bootBundle.failed) {
 		LOG_WARNING("(BOOT BUNDLE) " << Framework::BootPatch::BundleName(bundle) << " failed member: "
 			<< g_bootBundle.failed << "; features off: " << Framework::BootPatch::DisabledFeatures(bundle)
 			<< "; rollback=" << (restored ? "complete" : "incomplete") << std::endl);
-		// A gateway stays alive once a source write could have published it.
-		if (!sourceWriteAttempted)
-			for (void* gateway : g_bootBundle.gateways)
-				VirtualFree(gateway, 0, MEM_RELEASE);
 	} else {
 		g_bootBundleGates[BootBundleIndex(bundle)].enabled.store(true);
 		LOG_INFO("(BOOT BUNDLE) " << Framework::BootPatch::BundleName(bundle) << " committed" << std::endl);
 	}
 	g_bootBundle.patches.clear();
-	g_bootBundle.gateways.clear();
+	g_bootBundle.transaction.Reset();
 	return g_bootBundleGates[BootBundleIndex(bundle)].enabled.load();
 }
 
@@ -348,20 +238,38 @@ bool MemUtil::PatchAdr(LPVOID address, LPCVOID changeToMake, size_t len) {
 }
 
 MemUtil::PatchResult MemUtil::WritePatch(LPVOID address, LPCVOID changeToMake, size_t len) {
+	PreparedPatchRequest request{};
+	request.address = address;
+	request.kind = PreparedPatchKind::Bytes;
+	request.replacementBytes = std::span<const unsigned char>(
+		static_cast<const unsigned char*>(changeToMake), len);
+	request.length = len;
 	if (g_bootBundle.staging)
-		return StageBootPatch(address, changeToMake, len) ? PatchResult::Installed : PatchResult::Original;
-	bool protectionRestored = true;
-	return WriteBytes(address, changeToMake, len, protectionRestored);
+		return StageBootPatch(request, len) ? PatchResult::Installed : PatchResult::Original;
+	PreparedPatchSet transaction;
+	if (!transaction.Prepare(std::span<const PreparedPatchRequest>(&request, 1)))
+		return ToPatchResult(transaction.Outcome());
+	const PatchResult result = transaction.Commit();
+	ReportStandalonePatch("Patch", reinterpret_cast<uintptr_t>(address), result, transaction.Outcome());
+	return result;
 }
 
 MemUtil::PatchResult MemUtil::WritePointerPatch(LPVOID address, LPCVOID value) {
-	if (reinterpret_cast<uintptr_t>(address) % alignof(void*) != 0)
-		return PatchResult::Original;
+	PreparedPatchRequest request{};
+	request.address = address;
+	request.kind = PreparedPatchKind::PointerStore;
+	request.replacementBytes = std::span<const unsigned char>(
+		static_cast<const unsigned char*>(value), sizeof(void*));
+	request.length = sizeof(void*);
 	if (g_bootBundle.staging)
-		return StageBootPatch(address, value, sizeof(void*), true)
-			? PatchResult::Installed : PatchResult::Original;
-	bool protectionRestored = true;
-	return WriteBytes(address, value, sizeof(void*), protectionRestored, true);
+		return StageBootPatch(request, sizeof(void*)) ? PatchResult::Installed : PatchResult::Original;
+	PreparedPatchSet transaction;
+	if (!transaction.Prepare(std::span<const PreparedPatchRequest>(&request, 1)))
+		return ToPatchResult(transaction.Outcome());
+	const PatchResult result = transaction.Commit();
+	ReportStandalonePatch("Pointer patch", reinterpret_cast<uintptr_t>(address), result,
+		transaction.Outcome());
+	return result;
 }
 
 bool MemUtil::PlaceHook(VersioningStruct<uintptr_t>& hookSpot, void* ourFunct, int len, bool addBaseHandle) {
@@ -401,8 +309,19 @@ bool MemUtil::PlaceHook(void* hookSpot, void* ourFunct, int len) {
 		FailBootPatchBundle();
 		return false;
 	}
-	const std::vector<unsigned char> patch = JumpPatch(hookSpot, ourFunct, static_cast<size_t>(len));
-	return PatchAdr(hookSpot, patch.data(), patch.size());
+	PreparedPatchRequest request{};
+	request.address = hookSpot;
+	request.kind = PreparedPatchKind::Jump;
+	request.replacementTarget = reinterpret_cast<uintptr_t>(ourFunct);
+	request.length = static_cast<size_t>(len);
+	if (g_bootBundle.staging)
+		return StageBootPatch(request, request.length);
+	PreparedPatchSet transaction;
+	if (!transaction.Prepare(std::span<const PreparedPatchRequest>(&request, 1)))
+		return ToPatchResult(transaction.Outcome()) == PatchResult::Installed;
+	const PatchResult result = transaction.Commit();
+	ReportStandalonePatch("Hook", reinterpret_cast<uintptr_t>(hookSpot), result, transaction.Outcome());
+	return result == PatchResult::Installed;
 }
 
 /// <summary>
@@ -491,91 +410,56 @@ PBYTE MemUtil::TrampHook(PBYTE src, PBYTE dst, unsigned int len, PatchResult* re
 		FailBootPatchBundle();
 		return nullptr;
 	}
-
-	// Calculate safe instruction length without splitting instructions
-	unsigned int hookLen = 0;
-	while (hookLen < 5) {
-		PBYTE next = DetourCopyInstruction(nullptr, src + hookLen, nullptr);
-		if (!next || next <= src + hookLen) {
-			hookLen = (len >= 5) ? len : 5;
-			break;
-		}
-		hookLen = (unsigned int)(next - src);
-	}
-
-	if (len > hookLen) {
-		hookLen = len;
-	}
-
-	// Relocating the stolen prologue can make it grow (a short jump promotes to a
-	// near jump, and so on), so give the gateway generous headroom over hookLen.
-	const unsigned int gatewaySize = hookLen * 2 + 16;
-
-	// Create the gateway (relocated prologue + the jmp back to the original).
-	auto gateway = (PBYTE)VirtualAlloc(nullptr, gatewaySize, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
-
-	// Makes sure gateway doesn't equal null
-	if (!gateway)
-	{
-		FailBootPatchBundle();
-		return nullptr;
-	}
-
-	// Copy the overwritten bytes into the gateway, relocating any relative instructions
-	// as we go, while keeping in mind any changes done by other tools (Steam, Rivatuner, ...). 
-	// DetourCopyInstructionEx rewrites each relative operand for the gateway's address, and
-	// reports via `extra` how many bytes the relocated instruction grew by.
-	PBYTE srcPos = src;
-	PBYTE dstPos = gateway;
-	while (srcPos < src + hookLen) {
-		PBYTE target = nullptr;
-		LONG extra = 0;
-		PBYTE srcNext = DetourCopyInstructionEx(dstPos, srcPos, &target, &extra);
-		if (!srcNext || srcNext <= srcPos) {
-			VirtualFree(gateway, 0, MEM_RELEASE);
+	PreparedPatchRequest request{};
+	request.address = src;
+	request.kind = PreparedPatchKind::Jump;
+	request.replacementTarget = reinterpret_cast<uintptr_t>(dst);
+	request.captureNativeEntry = true;
+	request.minimumLength = len < 5 ? 5 : len;
+	if (g_bootBundle.staging) {
+		if (!StageBootPatch(request, request.minimumLength))
+			return nullptr;
+		const size_t site = g_bootBundle.transaction.Size() - 1;
+		PBYTE gateway = static_cast<PBYTE>(g_bootBundle.transaction.sites_[site].nativeEntry);
+		if (!gateway) {
 			FailBootPatchBundle();
 			return nullptr;
 		}
-		dstPos += (srcNext - srcPos) + extra;
-		srcPos = srcNext;
-	}
-
-	// Jump from the end of the relocated prologue back into the original function,
-	// continuing at the first instruction boundary past the bytes we stole (srcPos).
-	*dstPos = (unsigned char)0xE9;
-	*(uint32_t*)(dstPos + 1) = (uint32_t)(srcPos - (dstPos + 5));
-
-	// Seal the gateway before any hook can reach it, and make sure no stale copy runs.
-	ULONG writable = 0;
-	if (!NT_SUCCESS(HookedVirtualProtect(gateway, gatewaySize, PAGE_EXECUTE_READ, writable))
-		|| !FlushInstructionCache(GetCurrentProcess(), gateway, gatewaySize)) {
-		VirtualFree(gateway, 0, MEM_RELEASE);
-		FailBootPatchBundle();
-		return nullptr;
-	}
-
-	const bool staging = g_bootBundle.staging;
-	if (original)
-		*original = reinterpret_cast<uintptr_t>(gateway);
-	const std::vector<unsigned char> patch = JumpPatch(src, dst, hookLen);
-	const PatchResult outcome = WritePatch(src, patch.data(), patch.size());
-	if (result)
-		*result = outcome;
-	if (outcome == PatchResult::Installed) {
-		if (staging)
-			g_bootBundle.gateways.push_back(gateway);
+		g_bootBundle.transaction.sites_[site].nativeEntryExposed = true;
+		if (original)
+			*original = reinterpret_cast<uintptr_t>(gateway);
+		if (result)
+			*result = PatchResult::Installed;
 		return gateway;
 	}
 
+	PreparedPatchSet transaction;
+	if (!transaction.Prepare(std::span<const PreparedPatchRequest>(&request, 1))) {
+		FailBootPatchBundle();
+		return nullptr;
+	}
+	PBYTE gateway = static_cast<PBYTE>(transaction.sites_[0].nativeEntry);
+	if (original) {
+		*original = reinterpret_cast<uintptr_t>(gateway);
+		transaction.sites_[0].nativeEntryExposed = true;
+	}
+	const PatchResult outcome = transaction.Commit();
+	if (!transaction.Outcome().protectionRestored)
+		LOG_WARNING("(MEMORY) Page protection at 0x" << std::hex << reinterpret_cast<uintptr_t>(src)
+			<< std::dec << " stayed writable after a patch" << std::endl);
+	if (result)
+		*result = outcome;
+	if (outcome == PatchResult::Installed) {
+		transaction.sites_[0].nativeEntryExposed = true;
+		return gateway;
+	}
 	FailBootPatchBundle();
 	if (outcome == PatchResult::RollbackIncomplete) {
+		transaction.sites_[0].nativeEntryExposed = true;
 		LOG_ERROR("(MEMORY) Hook at 0x" << std::hex << reinterpret_cast<uintptr_t>(src) << std::dec
 			<< " may still be live; its trampoline is kept" << std::endl);
 		return gateway;
 	}
-	// A staged write never reached the source; a direct one may have been live for a moment.
-	if (staging)
-		VirtualFree(gateway, 0, MEM_RELEASE);
 	return nullptr;
 }
 
@@ -1013,41 +897,6 @@ namespace MemUtil {
 		}
 	}
 
-	NTSTATUS HookedVirtualProtect(LPVOID address, SIZE_T len, ULONG newProtection,
-		ULONG& oldProtection) {
-		ULONGLONG start = GetTickCount64();
-		// On Windows the game's own guard slows or refuses the documented call, so go to the kernel first.
-		if (!MemoryHostPolicy().useWineApis) {
-			static const bool resolved = [] {
-				const std::optional<uint32_t> number = Detail::GetSyscallNumber("NtProtectVirtualMemory");
-				if (!number)
-					return false;
-				Detail::ssnProtect = *number;
-				return true;
-			}();
-			if (resolved) {
-				PVOID baseAddress = address;
-				SIZE_T regionSize = len;
-				const NTSTATUS status = Detail::Syscall_NtProtectVirtualMemory(GetCurrentProcess(),
-					&baseAddress, &regionSize, newProtection, &oldProtection);
-				if (NT_SUCCESS(status)) {
-					LogMemoryCall("VirtualProtect", address, len, true, newProtection,
-						"syscall", status, 0, start);
-					return status;
-				}
-				LogSyscallFailureOnce("VirtualProtect", address, len, true, newProtection, status, start);
-			} else {
-				LogUnresolvedSyscallOnce("VirtualProtect", address, len, true, newProtection, start);
-			}
-			start = GetTickCount64();
-		}
-		const BOOL ok = VirtualProtect(address, len, newProtection, &oldProtection);
-		const DWORD error = ok ? ERROR_SUCCESS : GetLastError();
-		LogMemoryCall("VirtualProtect", address, len, true, newProtection, "documented",
-			ok ? STATUS_SUCCESS : STATUS_UNSUCCESSFUL, error, start);
-		return ok ? STATUS_SUCCESS : STATUS_UNSUCCESSFUL;
-	}
-
 	NTSTATUS HookedQueryVirtualMemory(LPVOID address,
 		PMEMORY_BASIC_INFORMATION memoryBuffer, SIZE_T dwLength) {
 		ULONGLONG start = GetTickCount64();
@@ -1081,322 +930,378 @@ namespace MemUtil {
 		return result ? STATUS_SUCCESS : STATUS_UNSUCCESSFUL;
 	}
 
+	namespace {
+		bool ReadPatchMemory(void*, uintptr_t address, unsigned char* output, size_t length) noexcept {
+			if (!address || !output || !length)
+				return false;
+			__try {
+				memcpy(output, reinterpret_cast<const void*>(address), length);
+				return true;
+			}
+			__except (EXCEPTION_EXECUTE_HANDLER) {
+				return false;
+			}
+		}
+
+		bool WritePatchMemory(void*, uintptr_t address, const unsigned char* bytes, size_t length,
+			bool pointerStore) noexcept {
+			if (!address || !bytes || !length)
+				return false;
+			if (pointerStore) {
+				if (length != sizeof(void*) || address % alignof(void*))
+					return false;
+				void* value = nullptr;
+				memcpy(&value, bytes, sizeof(value));
+				InterlockedExchangePointer(reinterpret_cast<PVOID volatile*>(address), value);
+				return true;
+			}
+			__try {
+				memcpy(reinterpret_cast<void*>(address), bytes, length);
+				return true;
+			}
+			__except (EXCEPTION_EXECUTE_HANDLER) {
+				return false;
+			}
+		}
+
+		bool FlushPatchMemory(void*, uintptr_t address, size_t length) noexcept {
+			return FlushInstructionCache(GetCurrentProcess(), reinterpret_cast<LPCVOID>(address), length) != FALSE;
+		}
+
+		bool ProtectPatchMemory(void* context, uintptr_t address, size_t length,
+			uint32_t protection) noexcept {
+			const bool useSyscall = *static_cast<const bool*>(context);
+			if (useSyscall) {
+				PVOID baseAddress = reinterpret_cast<PVOID>(address);
+				SIZE_T regionSize = length;
+				ULONG previous = 0;
+				return NT_SUCCESS(Detail::Syscall_NtProtectVirtualMemory(GetCurrentProcess(),
+					&baseAddress, &regionSize, protection, &previous));
+			}
+			DWORD previous = 0;
+			return VirtualProtect(reinterpret_cast<LPVOID>(address), length, protection, &previous) != FALSE;
+		}
+
+		Detail::PatchTransactionOperations TransactionOperations(void* context) noexcept {
+			return { context, ReadPatchMemory, WritePatchMemory, ProtectPatchMemory, FlushPatchMemory };
+		}
+
+		bool ResolveProtectionDispatch(bool& useSyscall) {
+			useSyscall = false;
+			if (MemoryHostPolicy().useWineApis)
+				return true;
+			static const bool resolved = [] {
+				const std::optional<uint32_t> number = Detail::GetSyscallNumber("NtProtectVirtualMemory");
+				if (!number)
+					return false;
+				Detail::ssnProtect = *number;
+				return true;
+			}();
+			useSyscall = resolved;
+			return true;
+		}
+
+		bool BuildGateway(uintptr_t source, size_t fixedLength, size_t minimumLength,
+			std::vector<unsigned char>& original, void*& gateway, size_t& gatewayLength,
+			DWORD& error) {
+			const size_t required = fixedLength ? fixedLength : minimumLength;
+			if (!fixedLength && minimumLength > (std::numeric_limits<size_t>::max)() - 14)
+				return false;
+			const size_t sourceCapacity = fixedLength ? fixedLength : minimumLength + 14;
+			if (required < 5 || sourceCapacity < required
+				|| sourceCapacity > ((std::numeric_limits<size_t>::max)() - 16) / 2
+				|| sourceCapacity > (std::numeric_limits<uintptr_t>::max)() - source)
+				return false;
+			const size_t gatewayCapacity = sourceCapacity * 2 + 16;
+			original.resize(sourceCapacity);
+			std::vector<uintptr_t> relativeTargets;
+			relativeTargets.reserve(sourceCapacity);
+			auto* allocated = static_cast<unsigned char*>(VirtualAlloc(nullptr, gatewayCapacity,
+				MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE));
+			if (!allocated) {
+				error = GetLastError();
+				return false;
+			}
+
+			size_t sourceOffset = 0;
+			size_t destinationOffset = 0;
+			while (sourceOffset < required) {
+				PBYTE instruction = reinterpret_cast<PBYTE>(source + sourceOffset);
+				std::array<unsigned char, 15> probe{};
+				if (!ReadPatchMemory(nullptr, source + sourceOffset, probe.data(), probe.size())) {
+					error = ERROR_NOACCESS;
+					VirtualFree(allocated, 0, MEM_RELEASE);
+					return false;
+				}
+				PBYTE target = nullptr;
+				LONG extra = 0;
+				PBYTE next = DetourCopyInstructionEx(allocated + destinationOffset,
+					instruction, &target, &extra);
+				if (!next || next <= instruction || extra < -15) {
+					error = ERROR_BAD_EXE_FORMAT;
+					VirtualFree(allocated, 0, MEM_RELEASE);
+					return false;
+				}
+				if (target)
+					relativeTargets.push_back(reinterpret_cast<uintptr_t>(target));
+				const size_t instructionLength = static_cast<size_t>(next - instruction);
+				if (instructionLength > sourceCapacity - sourceOffset
+					|| (fixedLength && instructionLength > fixedLength - sourceOffset)
+					|| !ReadPatchMemory(nullptr, source + sourceOffset,
+						original.data() + sourceOffset, instructionLength)) {
+					error = ERROR_BAD_EXE_FORMAT;
+					VirtualFree(allocated, 0, MEM_RELEASE);
+					return false;
+				}
+				const LONG relocatedLength = static_cast<LONG>(instructionLength) + extra;
+				if (relocatedLength <= 0 || static_cast<size_t>(relocatedLength) > gatewayCapacity - destinationOffset - 5) {
+					error = ERROR_BAD_EXE_FORMAT;
+					VirtualFree(allocated, 0, MEM_RELEASE);
+					return false;
+				}
+				destinationOffset += static_cast<size_t>(relocatedLength);
+				sourceOffset += instructionLength;
+			}
+			if (fixedLength && sourceOffset != fixedLength) {
+				error = ERROR_BAD_EXE_FORMAT;
+				VirtualFree(allocated, 0, MEM_RELEASE);
+				return false;
+			}
+			const uintptr_t sourceEnd = source + sourceOffset;
+			for (uintptr_t target : relativeTargets) {
+				if (target >= source && target < sourceEnd) {
+					error = ERROR_BAD_EXE_FORMAT;
+					VirtualFree(allocated, 0, MEM_RELEASE);
+					return false;
+				}
+			}
+
+			original.resize(sourceOffset);
+			allocated[destinationOffset] = 0xE9;
+			const uintptr_t returnAddress = source + sourceOffset;
+			const uint32_t backRelative = static_cast<uint32_t>(returnAddress
+				- (reinterpret_cast<uintptr_t>(allocated) + destinationOffset + 5));
+			memcpy(allocated + destinationOffset + 1, &backRelative, sizeof(backRelative));
+			gatewayLength = destinationOffset + 5;
+			DWORD previousProtection = 0;
+			if (!VirtualProtect(allocated, gatewayLength, PAGE_EXECUTE_READ, &previousProtection)
+				|| !FlushInstructionCache(GetCurrentProcess(), allocated, gatewayLength)) {
+				error = GetLastError();
+				VirtualFree(allocated, 0, MEM_RELEASE);
+				return false;
+			}
+			gateway = allocated;
+			return true;
+		}
+
+	}
+
 	PreparedPatchSet::~PreparedPatchSet() {
 		ReleaseNativeEntries();
 	}
 
 	void PreparedPatchSet::ReleaseNativeEntries() noexcept {
-		for (size_t i = 0; i < siteCount_; ++i) {
-			if (sites_[i].ownsNativeEntry)
-				VirtualFree(sites_[i].nativeEntry, 0, MEM_RELEASE);
-			sites_[i].nativeEntry = nullptr;
-			sites_[i].ownsNativeEntry = false;
+		for (Site& site : sites_) {
+			if (site.ownsNativeEntry && !site.transaction.everPublished && !site.nativeEntryExposed)
+				VirtualFree(site.nativeEntry, 0, MEM_RELEASE);
+			site.nativeEntry = nullptr;
+			site.ownsNativeEntry = false;
 		}
 	}
 
-	bool PreparedPatchSet::Prepare(std::span<const PreparedPatchRequest> requests) {
-		if (operationAttempted_ && result_ != PatchResult::Original) {
-			failure_ = Failure::InvalidRequest;
-			return false;
-		}
-		for (size_t i = 0; i < siteCount_; ++i) {
-			if (!sites_[i].ownsNativeEntry)
-				continue;
-			failure_ = Failure::InvalidRequest;
-			failureAddress_ = sites_[i].address;
-			return false;
-		}
+	void PreparedPatchSet::Reset() noexcept {
 		ReleaseNativeEntries();
-		sites_ = {};
-		regions_ = {};
-		siteCount_ = 0;
-		regionCount_ = 0;
+		sites_.clear();
+		regions_.clear();
+		outcome_ = {};
 		result_ = PatchResult::Original;
 		failure_ = Failure::None;
 		failureAddress_ = 0;
 		failureCode_ = ERROR_SUCCESS;
 		prepared_ = false;
 		operationAttempted_ = false;
+		useSyscallProtection_ = false;
+	}
 
-		if (requests.empty() || requests.size() > MaxSites) {
-			failure_ = requests.empty() ? Failure::InvalidRequest : Failure::Capacity;
+	bool PreparedPatchSet::Prepare(std::span<const PreparedPatchRequest> requests) {
+		bool hasOwnedGateway = false;
+		for (const Site& site : sites_)
+			hasOwnedGateway = hasOwnedGateway || site.ownsNativeEntry;
+		if (!Detail::CanReplacePreparedRecord(result_, hasOwnedGateway))
+			return false;
+		Reset();
+		if (requests.size() > MaxSites) {
+			failure_ = Failure::InvalidRequest;
 			return false;
 		}
-
-		useWineApis_ = MemoryHostPolicy().useWineApis;
-		const std::optional<uint32_t> protectNumber = Detail::GetSyscallNumber("NtProtectVirtualMemory");
-		protectSyscallResolved_ = protectNumber.has_value();
-		if (protectNumber)
-			Detail::ssnProtect = *protectNumber;
-		(void)Detail::GetSyscallNumber("NtQueryVirtualMemory");
-
-		for (const PreparedPatchRequest& request : requests) {
-			Site& site = sites_[siteCount_];
-			site.address = reinterpret_cast<uintptr_t>(request.address);
-			if (!site.address || request.replacementTarget == 0) {
-				failure_ = Failure::InvalidRequest;
-				failureAddress_ = site.address;
+		sites_.reserve(requests.size());
+		regions_.reserve(MaxRegions);
+		for (const PreparedPatchRequest& request : requests)
+			if (!Append(request)) {
+				prepared_ = false;
 				return false;
 			}
-
-			if (request.kind == PreparedPatchKind::Call) {
-				site.length = 5;
-				if (!request.expectedTarget) {
-					failure_ = Failure::InvalidRequest;
-					failureAddress_ = site.address;
-					return false;
-				}
-				site.original[0] = 0xE8;
-				const uint32_t expectedRelative = static_cast<uint32_t>(request.expectedTarget - (site.address + 5));
-				memcpy(site.original.data() + 1, &expectedRelative, sizeof(expectedRelative));
-				site.replacement[0] = 0xE8;
-				const uint32_t replacementRelative = static_cast<uint32_t>(request.replacementTarget - (site.address + 5));
-				memcpy(site.replacement.data() + 1, &replacementRelative, sizeof(replacementRelative));
-				if (request.captureNativeEntry)
-					site.nativeEntry = reinterpret_cast<void*>(request.expectedTarget);
-			}
-			else {
-				site.length = request.expectedBytes.size();
-				if (site.length < 5 || site.length > MaxPatchBytes) {
-					failure_ = Failure::InvalidRequest;
-					failureAddress_ = site.address;
-					return false;
-				}
-				memcpy(site.original.data(), request.expectedBytes.data(), site.length);
-				memset(site.replacement.data(), 0x90, site.length);
-				site.replacement[0] = 0xE9;
-				const uint32_t relative = static_cast<uint32_t>(request.replacementTarget - (site.address + 5));
-				memcpy(site.replacement.data() + 1, &relative, sizeof(relative));
-			}
-
-			const uintptr_t siteEnd = site.address + site.length;
-			if (siteEnd < site.address) {
-				failure_ = Failure::InvalidRequest;
-				failureAddress_ = site.address;
-				return false;
-			}
-			for (size_t previous = 0; previous < siteCount_; ++previous) {
-				const Site& existing = sites_[previous];
-				if (site.address < existing.address + existing.length
-					&& existing.address < siteEnd) {
-					failure_ = Failure::InvalidRequest;
-					failureAddress_ = site.address;
-					return false;
-				}
-			}
-			if (!MatchesBytes(site.address, std::span<const unsigned char>(site.original.data(), site.length))) {
-				failure_ = Failure::BytesMismatch;
-				failureAddress_ = site.address;
-				return false;
-			}
-			++siteCount_;
-
-			if (request.captureNativeEntry && request.kind == PreparedPatchKind::Jump) {
-				auto* gateway = static_cast<unsigned char*>(VirtualAlloc(nullptr, site.length + 5,
-					MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE));
-				if (!gateway) {
-					failure_ = Failure::GatewayFailed;
-					failureAddress_ = site.address;
-					failureCode_ = GetLastError();
-					return false;
-				}
-				memcpy(gateway, site.original.data(), site.length);
-				gateway[site.length] = 0xE9;
-				const uint32_t backRelative = static_cast<uint32_t>(site.address + site.length
-					- (reinterpret_cast<uintptr_t>(gateway) + site.length + 5));
-				memcpy(gateway + site.length + 1, &backRelative, sizeof(backRelative));
-				DWORD previousProtection = 0;
-				if (!VirtualProtect(gateway, site.length + 5, PAGE_EXECUTE_READ, &previousProtection)
-					|| !FlushInstructionCache(GetCurrentProcess(), gateway, site.length + 5)) {
-					failure_ = Failure::GatewayFailed;
-					failureAddress_ = site.address;
-					failureCode_ = GetLastError();
-					VirtualFree(gateway, 0, MEM_RELEASE);
-					return false;
-				}
-				site.nativeEntry = gateway;
-				site.ownsNativeEntry = true;
-			}
-			else if (request.captureNativeEntry && request.kind != PreparedPatchKind::Call) {
-				failure_ = Failure::InvalidRequest;
-				failureAddress_ = site.address;
-				return false;
-			}
-
-			uintptr_t cursor = site.address;
-			while (cursor < siteEnd) {
-				MEMORY_BASIC_INFORMATION info{};
-				if (!NT_SUCCESS(HookedQueryVirtualMemory(reinterpret_cast<LPVOID>(cursor), &info, sizeof(info)))
-					|| info.State != MEM_COMMIT || !info.RegionSize) {
-					failure_ = Failure::QueryFailed;
-					failureAddress_ = cursor;
-					failureCode_ = GetLastError();
-					return false;
-				}
-				const uintptr_t queryBase = reinterpret_cast<uintptr_t>(info.BaseAddress);
-				const uintptr_t queryEnd = queryBase + info.RegionSize;
-				if (queryBase > cursor || queryEnd <= cursor) {
-					failure_ = Failure::QueryFailed;
-					failureAddress_ = cursor;
-					return false;
-				}
-				const uintptr_t regionEnd = queryEnd < siteEnd ? queryEnd : siteEnd;
-				bool merged = false;
-				for (size_t i = 0; i < regionCount_; ++i) {
-					Region& region = regions_[i];
-					if (region.queryBase != queryBase || region.querySize != info.RegionSize
-						|| region.protection != info.Protect)
-						continue;
-					const uintptr_t oldEnd = region.base + region.size;
-					const uintptr_t begin = region.base < cursor ? region.base : cursor;
-					const uintptr_t end = oldEnd > regionEnd ? oldEnd : regionEnd;
-					region.base = begin;
-					region.size = end - begin;
-					merged = true;
-					break;
-				}
-				if (!merged) {
-					if (regionCount_ == regions_.size()) {
-						failure_ = Failure::Capacity;
-						failureAddress_ = cursor;
-						return false;
-					}
-					regions_[regionCount_++] = { cursor, regionEnd - cursor, queryBase,
-						info.RegionSize, info.Protect, false };
-				}
-				cursor = regionEnd;
-			}
-		}
-
 		prepared_ = true;
 		return true;
 	}
 
-	bool PreparedPatchSet::SetRegionProtection(Region& region, ULONG protection) noexcept {
-		if (!useWineApis_ && protectSyscallResolved_) {
-			PVOID baseAddress = reinterpret_cast<PVOID>(region.base);
-			SIZE_T regionSize = region.size;
-			ULONG previous = 0;
-			const NTSTATUS status = Detail::Syscall_NtProtectVirtualMemory(GetCurrentProcess(),
-				&baseAddress, &regionSize, protection, &previous);
-			if (NT_SUCCESS(status))
-				return true;
+	bool PreparedPatchSet::Append(const PreparedPatchRequest& request) {
+		if (failure_ != Failure::None || operationAttempted_ || sites_.size() >= MaxSites) {
+			failure_ = Failure::InvalidRequest;
+			failureAddress_ = reinterpret_cast<uintptr_t>(request.address);
+			return false;
 		}
-		DWORD previous = 0;
-		if (VirtualProtect(reinterpret_cast<LPVOID>(region.base), region.size, protection, &previous))
-			return true;
-		failureCode_ = GetLastError();
-		return false;
-	}
+		ResolveProtectionDispatch(useSyscallProtection_);
 
-	bool PreparedPatchSet::RestoreOpenedRegions() noexcept {
-		bool restored = true;
-		for (size_t i = regionCount_; i > 0; --i) {
-			Region& region = regions_[i - 1];
-			if (!region.opened)
-				continue;
-			if (!SetRegionProtection(region, region.protection)
-				&& !SetRegionProtection(region, region.protection)) {
-				restored = false;
-				failureAddress_ = region.base;
+		Site site{};
+		auto fail = [&](Failure failure, uintptr_t address, DWORD error = ERROR_SUCCESS) {
+			failure_ = failure;
+			failureAddress_ = address;
+			failureCode_ = error;
+			if (site.ownsNativeEntry)
+				VirtualFree(site.nativeEntry, 0, MEM_RELEASE);
+			return false;
+		};
+
+		const uintptr_t address = reinterpret_cast<uintptr_t>(request.address);
+		if (!address || (!request.replacementTarget && (request.kind == PreparedPatchKind::Jump
+			|| request.kind == PreparedPatchKind::Call)))
+			return fail(Failure::InvalidRequest, address);
+
+		switch (request.kind) {
+		case PreparedPatchKind::Bytes:
+			if (request.replacementBytes.empty() || (request.length && request.length != request.replacementBytes.size()))
+				return fail(Failure::InvalidRequest, address);
+			site.original.resize(request.replacementBytes.size());
+			site.replacement.assign(request.replacementBytes.begin(), request.replacementBytes.end());
+			if (!Detail::CaptureOriginalBytes(address, request.expectedBytes, site.original,
+				TransactionOperations(nullptr)))
+				return fail(request.expectedBytes.empty() ? Failure::ReadFailed : Failure::BytesMismatch, address);
+			break;
+		case PreparedPatchKind::PointerStore:
+			if (address % alignof(void*) || request.replacementBytes.size() != sizeof(void*)
+				|| (request.length && request.length != sizeof(void*))
+				|| (!request.expectedBytes.empty() && request.expectedBytes.size() != sizeof(void*)))
+				return fail(Failure::InvalidRequest, address);
+			site.original.resize(sizeof(void*));
+			site.replacement.assign(request.replacementBytes.begin(), request.replacementBytes.end());
+			site.transaction.pointerStore = true;
+			if (!Detail::CaptureOriginalBytes(address, request.expectedBytes, site.original,
+				TransactionOperations(nullptr)))
+				return fail(request.expectedBytes.empty() ? Failure::ReadFailed : Failure::BytesMismatch, address);
+			break;
+		case PreparedPatchKind::Call: {
+			if (!request.expectedTarget || (request.length && request.length != 5)
+				|| request.captureNativeEntry && request.expectedTarget == 0)
+				return fail(Failure::InvalidRequest, address);
+			std::vector<unsigned char> encodedExpected(5);
+			encodedExpected[0] = 0xE8;
+			const uint32_t expectedRelative = static_cast<uint32_t>(request.expectedTarget - (address + 5));
+			memcpy(encodedExpected.data() + 1, &expectedRelative, sizeof(expectedRelative));
+			if (!request.expectedBytes.empty() && (request.expectedBytes.size() != 5
+				|| memcmp(request.expectedBytes.data(), encodedExpected.data(), 5) != 0))
+				return fail(Failure::InvalidRequest, address);
+			site.original.resize(5);
+			if (!Detail::CaptureOriginalBytes(address, encodedExpected, site.original,
+				TransactionOperations(nullptr)))
+				return fail(Failure::BytesMismatch, address);
+			site.replacement.resize(5);
+			site.replacement[0] = 0xE8;
+			const uint32_t replacementRelative = static_cast<uint32_t>(request.replacementTarget - (address + 5));
+			memcpy(site.replacement.data() + 1, &replacementRelative, sizeof(replacementRelative));
+			if (request.captureNativeEntry)
+				site.nativeEntry = reinterpret_cast<void*>(request.expectedTarget);
+			break;
+		}
+		case PreparedPatchKind::Jump: {
+			const bool dynamicGateway = request.captureNativeEntry && request.expectedBytes.empty()
+				&& request.length == 0;
+			const size_t length = request.length ? request.length : request.expectedBytes.size();
+			if (!dynamicGateway && length < 5)
+				return fail(Failure::InvalidRequest, address);
+			if (!dynamicGateway && !request.expectedBytes.empty() && request.length
+				&& request.expectedBytes.size() != request.length)
+				return fail(Failure::InvalidRequest, address);
+			if (request.captureNativeEntry) {
+				const size_t minimumLength = request.minimumLength < 5 ? 5 : request.minimumLength;
+				const size_t fixedLength = dynamicGateway ? 0 : length;
+				size_t gatewayLength = 0;
+				DWORD error = ERROR_SUCCESS;
+				if (!BuildGateway(address, fixedLength, minimumLength, site.original,
+					site.nativeEntry, gatewayLength, error))
+					return fail(Failure::GatewayFailed, address, error);
+				site.ownsNativeEntry = true;
+				if (!request.expectedBytes.empty()
+					&& (request.expectedBytes.size() != site.original.size()
+						|| memcmp(request.expectedBytes.data(), site.original.data(), site.original.size()) != 0))
+					return fail(Failure::BytesMismatch, address);
+				site.transaction.hasNativeEntry = true;
 			}
-			region.opened = false;
+			else {
+				site.original.resize(length);
+				if (!Detail::CaptureOriginalBytes(address, request.expectedBytes, site.original,
+					TransactionOperations(nullptr)))
+					return fail(request.expectedBytes.empty() ? Failure::ReadFailed : Failure::BytesMismatch, address);
+			}
+			site.replacement.assign(site.original.size(), 0x90);
+			site.replacement[0] = 0xE9;
+			const uint32_t relative = static_cast<uint32_t>(request.replacementTarget - (address + 5));
+			memcpy(site.replacement.data() + 1, &relative, sizeof(relative));
+			break;
 		}
-		return restored;
-	}
+		default:
+			return fail(Failure::InvalidRequest, address);
+		}
 
-	bool PreparedPatchSet::MatchesOriginal(size_t count) const noexcept {
-		for (size_t i = 0; i < count; ++i)
-			if (memcmp(reinterpret_cast<const void*>(sites_[i].address), sites_[i].original.data(), sites_[i].length) != 0)
-				return false;
+		if (site.original.empty() || site.original.size() != site.replacement.size()
+			|| site.original.size() > (std::numeric_limits<uintptr_t>::max)() - address)
+			return fail(Failure::InvalidRequest, address);
+		const size_t length = site.original.size();
+		for (const Site& existing : sites_) {
+			if (IsPatchOverlap(address, length, existing.transaction.address, existing.original.size()))
+				return fail(Failure::InvalidRequest, address);
+		}
+
+		std::vector<Detail::PatchTransactionRegion> queriedRegions;
+		if (!QueryRegions(address, length, queriedRegions))
+			return fail(Failure::QueryFailed, address, GetLastError());
+		if (regions_.size() + queriedRegions.size() > MaxRegions)
+			return fail(Failure::InvalidRequest, address);
+
+		site.transaction.address = address;
+		site.transaction.original = site.original;
+		site.transaction.replacement = site.replacement;
+		for (const auto& region : queriedRegions)
+			AddTransactionRegion(regions_, region);
+		sites_.push_back(std::move(site));
+		prepared_ = true;
 		return true;
 	}
 
 	PatchResult PreparedPatchSet::Commit() noexcept {
 		operationAttempted_ = true;
-		if (!prepared_) {
-			result_ = PatchResult::Original;
-			return result_;
-		}
 		failure_ = Failure::None;
 		failureAddress_ = 0;
 		failureCode_ = ERROR_SUCCESS;
-		size_t opened = 0;
-		for (; opened < regionCount_; ++opened) {
-			if (!SetRegionProtection(regions_[opened], PAGE_EXECUTE_READWRITE)) {
-				failure_ = Failure::OpenFailed;
-				failureAddress_ = regions_[opened].base;
-				const bool restored = RestoreOpenedRegions();
-				result_ = restored && MatchesOriginal(siteCount_)
-					? PatchResult::Original : PatchResult::RollbackIncomplete;
-				return result_;
-			}
-			regions_[opened].opened = true;
+		if (!prepared_)
+			return result_ = ToPatchResult(outcome_);
+		std::array<Detail::PatchTransactionSite, MaxSites> transactionSites{};
+		for (size_t i = 0; i < sites_.size(); ++i) {
+			transactionSites[i] = sites_[i].transaction;
+			transactionSites[i].everPublished = transactionSites[i].everPublished || sites_[i].nativeEntryExposed;
 		}
-
-		for (size_t i = 0; i < siteCount_; ++i) {
-			if (memcmp(reinterpret_cast<const void*>(sites_[i].address), sites_[i].original.data(), sites_[i].length) == 0)
-				continue;
-			failure_ = Failure::CommitMismatch;
-			failureAddress_ = sites_[i].address;
-			const bool restored = RestoreOpenedRegions();
-			result_ = restored && MatchesOriginal(siteCount_)
-				? PatchResult::Original : PatchResult::RollbackIncomplete;
-			return result_;
-		}
-
-		size_t attempted = 0;
-		bool writeFailed = false;
-		for (; attempted < siteCount_; ++attempted) {
-			Site& site = sites_[attempted];
-			memcpy(reinterpret_cast<void*>(site.address), site.replacement.data(), site.length);
-			if (!FlushInstructionCache(GetCurrentProcess(), reinterpret_cast<LPCVOID>(site.address), site.length)) {
-				failure_ = Failure::FlushFailed;
-				failureAddress_ = site.address;
-				failureCode_ = GetLastError();
-				writeFailed = true;
-				++attempted;
-				break;
-			}
-			if (memcmp(reinterpret_cast<const void*>(site.address), site.replacement.data(), site.length) != 0) {
-				failure_ = Failure::ReadbackFailed;
-				failureAddress_ = site.address;
-				writeFailed = true;
-				++attempted;
-				break;
-			}
-		}
-		if (writeFailed) {
-			bool rollbackFlushed = true;
-			for (size_t i = attempted; i > 0; --i) {
-				Site& site = sites_[i - 1];
-				memcpy(reinterpret_cast<void*>(site.address), site.original.data(), site.length);
-				if (!FlushInstructionCache(GetCurrentProcess(), reinterpret_cast<LPCVOID>(site.address), site.length)) {
-					rollbackFlushed = false;
-					failureCode_ = GetLastError();
-				}
-			}
-			const bool restored = RestoreOpenedRegions();
-			result_ = rollbackFlushed && restored && MatchesOriginal(siteCount_)
-				? PatchResult::Original : PatchResult::RollbackIncomplete;
-			return result_;
-		}
-
-		const bool restored = RestoreOpenedRegions();
-		if (!restored) {
-			failure_ = Failure::RestoreFailed;
-			result_ = PatchResult::RollbackIncomplete;
-			return result_;
-		}
-		for (size_t i = 0; i < siteCount_; ++i) {
-			if (memcmp(reinterpret_cast<const void*>(sites_[i].address), sites_[i].replacement.data(), sites_[i].length) != 0) {
-				failure_ = Failure::ReadbackFailed;
-				failureAddress_ = sites_[i].address;
-				result_ = PatchResult::RollbackIncomplete;
-				return result_;
-			}
-		}
-		result_ = PatchResult::Installed;
+		outcome_ = Detail::RunPatchTransaction(
+			std::span<Detail::PatchTransactionSite>(transactionSites.data(), sites_.size()), regions_,
+			TransactionOperations(&useSyscallProtection_), false, PAGE_EXECUTE_READWRITE,
+			&failureAddress_);
+		for (size_t i = 0; i < sites_.size(); ++i)
+			sites_[i].transaction.everPublished = transactionSites[i].everPublished;
+		result_ = ToPatchResult(outcome_);
+		if (outcome_.bytes != PatchByteState::Replacement || !outcome_.instructionCacheFlushed
+			|| !outcome_.protectionRestored)
+			failure_ = Failure::CommitFailed;
+		if (failure_ != Failure::None)
+			failureCode_ = GetLastError();
 		return result_;
 	}
 
@@ -1405,61 +1310,42 @@ namespace MemUtil {
 		failure_ = Failure::None;
 		failureAddress_ = 0;
 		failureCode_ = ERROR_SUCCESS;
-		if (!prepared_) {
-			result_ = PatchResult::Original;
-			return result_;
+		if (!prepared_)
+			return result_ = ToPatchResult(outcome_);
+		std::array<Detail::PatchTransactionSite, MaxSites> transactionSites{};
+		for (size_t i = 0; i < sites_.size(); ++i) {
+			transactionSites[i] = sites_[i].transaction;
+			transactionSites[i].everPublished = transactionSites[i].everPublished || sites_[i].nativeEntryExposed;
 		}
-		if (result_ == PatchResult::Original && MatchesOriginal(siteCount_)) {
-			result_ = PatchResult::Original;
-			return result_;
-		}
-
-		for (size_t i = 0; i < regionCount_; ++i) {
-			if (!SetRegionProtection(regions_[i], PAGE_EXECUTE_READWRITE)) {
-				failure_ = Failure::OpenFailed;
-				failureAddress_ = regions_[i].base;
-				const bool restored = RestoreOpenedRegions();
-				result_ = restored && MatchesOriginal(siteCount_)
-					? PatchResult::Original : PatchResult::RollbackIncomplete;
-				return result_;
-			}
-			regions_[i].opened = true;
-		}
-
-		for (size_t i = 0; i < siteCount_; ++i) {
-			const Site& site = sites_[i];
-			const void* bytes = reinterpret_cast<const void*>(site.address);
-			if (memcmp(bytes, site.original.data(), site.length) == 0
-				|| memcmp(bytes, site.replacement.data(), site.length) == 0)
-				continue;
-			failure_ = Failure::CommitMismatch;
-			failureAddress_ = site.address;
-			const bool restored = RestoreOpenedRegions();
-			result_ = restored && MatchesOriginal(siteCount_)
-				? PatchResult::Original : PatchResult::RollbackIncomplete;
-			return result_;
-		}
-
-		bool flushed = true;
-		for (size_t i = 0; i < siteCount_; ++i) {
-			Site& site = sites_[i];
-			if (memcmp(reinterpret_cast<const void*>(site.address), site.original.data(), site.length) != 0)
-				memcpy(reinterpret_cast<void*>(site.address), site.original.data(), site.length);
-			if (!FlushInstructionCache(GetCurrentProcess(), reinterpret_cast<LPCVOID>(site.address), site.length)) {
-				flushed = false;
-				failureCode_ = GetLastError();
-			}
-		}
-		const bool restored = RestoreOpenedRegions();
-		result_ = flushed && restored && MatchesOriginal(siteCount_)
-			? PatchResult::Original : PatchResult::RollbackIncomplete;
-		if (result_ == PatchResult::RollbackIncomplete && failure_ == Failure::None)
-			failure_ = !flushed ? Failure::FlushFailed : Failure::RestoreFailed;
+		outcome_ = Detail::RunPatchTransaction(
+			std::span<Detail::PatchTransactionSite>(transactionSites.data(), sites_.size()), regions_,
+			TransactionOperations(&useSyscallProtection_), true, PAGE_EXECUTE_READWRITE,
+			&failureAddress_);
+		for (size_t i = 0; i < sites_.size(); ++i)
+			sites_[i].transaction.everPublished = transactionSites[i].everPublished;
+		result_ = ToPatchResult(outcome_);
+		if (outcome_.bytes != PatchByteState::Original || !outcome_.instructionCacheFlushed
+			|| !outcome_.protectionRestored)
+			failure_ = Failure::CommitFailed;
+		if (failure_ != Failure::None)
+			failureCode_ = GetLastError();
 		return result_;
 	}
 
 	void* PreparedPatchSet::NativeEntry(size_t site) const noexcept {
-		return site < siteCount_ ? sites_[site].nativeEntry : nullptr;
+		if (site >= sites_.size())
+			return nullptr;
+		if (sites_[site].ownsNativeEntry)
+			sites_[site].nativeEntryExposed = true;
+		return sites_[site].nativeEntry;
+	}
+
+	uintptr_t PreparedPatchSet::SiteAddress(size_t site) const noexcept {
+		return site < sites_.size() ? sites_[site].transaction.address : 0;
+	}
+
+	size_t PreparedPatchSet::SiteLength(size_t site) const noexcept {
+		return site < sites_.size() ? sites_[site].original.size() : 0;
 	}
 
 	void PreparedPatchSet::Report(const char* group) const {
@@ -1476,8 +1362,13 @@ namespace MemUtil {
 					<< std::dec << " (error " << failureCode_ << "); no patch was written" << std::endl);
 			return;
 		}
-		if (result_ == PatchResult::Installed)
-			LOG_INFO(group << " installed all " << siteCount_ << " sites" << std::endl);
+		if (result_ == PatchResult::Installed) {
+			if (outcome_.protectionRestored)
+				LOG_INFO(group << " installed all " << sites_.size() << " sites" << std::endl);
+			else
+				LOG_WARNING(group << " installed all " << sites_.size()
+					<< " sites, but page protection was not restored" << std::endl);
+		}
 		else if (result_ == PatchResult::Original)
 			LOG_INFO(group << " is confirmed original at every attempted site" << std::endl);
 		else

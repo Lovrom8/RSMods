@@ -7,59 +7,24 @@
 #include <cstddef>
 #include <cstdint>
 #include <limits>
-#include <span>
-#include <tuple>
+#include <utility>
+#include <vector>
 
 namespace Framework::InstructionPatch {
-	enum class Outcome {
-		Installed,
-		Original,
-		RollbackIncomplete,
-	};
-
-	enum class Failure {
+	enum class ValidationFailure {
 		None,
 		Unavailable,
 		Unreadable,
 		Mismatch,
-		NotOwned,
-		NoCapturedOriginal,
-		WriteRejected,
-		WriteIndeterminate,
-		RollbackFailed,
 	};
 
-	constexpr const char* FailureName(Failure failure) noexcept {
+	constexpr const char* FailureName(ValidationFailure failure) noexcept {
 		switch (failure) {
-		case Failure::Unavailable: return "site unavailable on this build";
-		case Failure::Unreadable: return "site could not be read";
-		case Failure::Mismatch: return "original bytes did not match";
-		case Failure::NotOwned: return "site no longer holds our replacement";
-		case Failure::NoCapturedOriginal: return "original bytes were not captured";
-		case Failure::WriteRejected: return "write was not applied";
-		case Failure::WriteIndeterminate: return "write outcome is indeterminate";
-		case Failure::RollbackFailed: return "rollback outcome is indeterminate";
+		case ValidationFailure::Unavailable: return "site unavailable on this build";
+		case ValidationFailure::Unreadable: return "site could not be read";
+		case ValidationFailure::Mismatch: return "original bytes did not match";
 		default: return "no failure";
 		}
-	}
-
-	struct Result {
-		Outcome outcome = Outcome::Original;
-		Failure failure = Failure::None;
-		const char* site = nullptr;
-		bool changed = false;
-	};
-
-	template <typename NativeOutcome>
-	constexpr Outcome FromWriteResult(NativeOutcome result, NativeOutcome installed,
-		NativeOutcome original, NativeOutcome rollbackIncomplete) noexcept {
-		if (result == installed)
-			return Outcome::Installed;
-		if (result == original)
-			return Outcome::Original;
-		if (result == rollbackIncomplete)
-			return Outcome::RollbackIncomplete;
-		return Outcome::RollbackIncomplete;
 	}
 
 	template <typename... Bytes>
@@ -107,347 +72,107 @@ namespace Framework::InstructionPatch {
 		return true;
 	}
 
-	// A site's state changes only after the injected writer confirms the requested bytes.
 	template <std::size_t Size>
-	class PatchedSite {
-	public:
+	struct SiteDescriptor {
 		using Bytes = std::array<std::uint8_t, Size>;
+		using ReplacementBuilder = bool (*)(const Bytes&, Bytes&) noexcept;
 
-		PatchedSite(const char* name, std::uintptr_t address, GameVersion::Build build,
-			const VersionedPattern<Size>& patterns, std::size_t writeOffset = 0, std::size_t writeSize = Size) noexcept
-			: name_(name), address_(address), writeOffset_(writeOffset), writeSize_(writeSize) {
-			if (writeSize_ == 0 || writeOffset_ > Size || writeSize_ > Size - writeOffset_)
-				address_ = 0;
-			const BytePattern<Size>* selected = nullptr;
-			switch (build) {
-			case GameVersion::Build::September2022:
-				selected = &patterns.september2022;
-				break;
-			case GameVersion::Build::LearnAndPlayDec2024:
-				selected = &patterns.learnAndPlay;
-				break;
-			default:
-				break;
-			}
-			if (!selected || !selected->available) {
-				address_ = 0;
-				return;
-			}
-			expected_ = selected->bytes;
-			mask_ = selected->mask;
-		}
-
-		std::uintptr_t Address() const noexcept { return address_; }
-		const char* Name() const noexcept { return name_; }
-		const Result& LastResult() const noexcept { return lastResult_; }
-
-		void SetReplacement(const Bytes& replacement) noexcept {
-			replacement_ = replacement;
-		}
-
-		template <typename Read, typename Write, typename BeforeWrite>
-		Result Install(Read&& read, Write&& write, const Bytes& replacement, BeforeWrite&& beforeWrite) {
-			SetReplacement(replacement);
-			if (!PrepareInstall(read))
-				return lastResult_;
-			return InstallPrepared(read, write, beforeWrite);
-		}
-
-		template <typename Read, typename Write, typename Transform, typename BeforeWrite>
-		Result InstallTransform(Read&& read, Write&& write, Transform&& transform, BeforeWrite&& beforeWrite) {
-			if (!PrepareInstall(read))
-				return lastResult_;
-			if (preparedAlreadyInstalled_)
-				return lastResult_;
-			SetReplacement(transform(preparedOriginal_));
-			return InstallPrepared(read, write, beforeWrite);
-		}
-
-		template <typename Read, typename Write, typename BeforeWrite>
-		Result Restore(Read&& read, Write&& write, BeforeWrite&& beforeWrite) {
-			if (!PrepareRestore(read))
-				return lastResult_;
-			return RestorePrepared(read, write, beforeWrite);
-		}
-
-		template <typename Read>
-		bool PrepareInstall(Read&& read) {
-			prepared_ = false;
-			lastChanged_ = false;
-			lastRestored_ = false;
-			if (!address_)
-				return Fail(Outcome::Original, Failure::Unavailable);
-
-			Bytes current{};
-			if (!read(address_, current))
-				return Fail(Outcome::Original, Failure::Unreadable);
-
-			if (captured_ && current == replacement_) {
-				preparedOriginal_ = original_;
-				preparedAlreadyInstalled_ = true;
-				prepared_ = true;
-				lastResult_ = { Outcome::Installed, Failure::None, name_ };
-				return true;
-			}
-			if (!MatchesMasked(current, expected_, mask_))
-				return Fail(Outcome::Original, Failure::Mismatch);
-
-			preparedOriginal_ = current;
-			preparedAlreadyInstalled_ = false;
-			prepared_ = true;
-			lastResult_ = { Outcome::Original, Failure::None, name_ };
-			return true;
-		}
-
-		template <typename Read>
-		bool PrepareRestore(Read&& read) {
-			prepared_ = false;
-			lastChanged_ = false;
-			lastRestored_ = false;
-			if (!address_)
-				return Fail(Outcome::Original, Failure::Unavailable);
-			if (!captured_)
-				return Fail(Outcome::Original, Failure::NoCapturedOriginal);
-
-			Bytes current{};
-			if (!read(address_, current))
-				return Fail(Outcome::RollbackIncomplete, Failure::Unreadable);
-			if (current != original_ && current != replacement_)
-				return Fail(Outcome::Original, Failure::NotOwned);
-
-			preparedOriginal_ = current;
-			preparedAlreadyOriginal_ = current == original_;
-			prepared_ = true;
-			lastResult_ = { Outcome::Original, Failure::None, name_ };
-			return true;
-		}
-
-		template <typename Read, typename Write, typename BeforeWrite>
-		Result InstallPrepared(Read&& read, Write&& write, BeforeWrite&& beforeWrite) {
-			if (!prepared_ || preparedAlreadyInstalled_)
-				return lastResult_;
-
-			Bytes current{};
-			if (!read(address_, current))
-				return FailResult(Outcome::Original, Failure::Unreadable);
-			if (current != preparedOriginal_)
-				return FailResult(Outcome::Original, Failure::Mismatch);
-
-			original_ = preparedOriginal_;
-			captured_ = true;
-			beforeWrite(name_, address_, original_);
-			const Outcome outcome = write(address_ + writeOffset_,
-				std::span<const std::uint8_t>(replacement_.data() + writeOffset_, writeSize_));
-			lastChanged_ = outcome != Outcome::Original;
-			if (outcome == Outcome::Installed) {
-				lastResult_ = { Outcome::Installed, Failure::None, name_, true };
-				return lastResult_;
-			}
-			return FailResult(outcome, outcome == Outcome::Original ? Failure::WriteRejected : Failure::WriteIndeterminate);
-		}
-
-		template <typename Read, typename Write, typename BeforeWrite>
-		Result RestorePrepared(Read&& read, Write&& write, BeforeWrite&& beforeWrite) {
-			if (!prepared_)
-				return lastResult_;
-			if (preparedAlreadyOriginal_) {
-				lastResult_ = { Outcome::Installed, Failure::None, name_ };
-				return lastResult_;
-			}
-
-			Bytes current{};
-			if (!read(address_, current))
-				return FailResult(Outcome::RollbackIncomplete, Failure::Unreadable);
-			if (current != replacement_)
-				return FailResult(Outcome::Original, Failure::NotOwned);
-
-			beforeWrite(name_, address_, original_);
-			const Outcome outcome = write(address_ + writeOffset_,
-				std::span<const std::uint8_t>(original_.data() + writeOffset_, writeSize_));
-			lastChanged_ = outcome != Outcome::Installed;
-			lastRestored_ = outcome == Outcome::Installed;
-			if (outcome == Outcome::Installed) {
-				lastResult_ = { Outcome::Installed, Failure::None, name_, true };
-				return lastResult_;
-			}
-			return FailResult(outcome, outcome == Outcome::Original ? Failure::WriteRejected : Failure::WriteIndeterminate);
-		}
-
-		template <typename Read, typename Write>
-		bool RollbackInstall(Read&& read, Write&& write) {
-			if (!lastChanged_)
-				return true;
-			Bytes current{};
-			if (!read(address_, current))
-				return false;
-			if (current == original_) {
-				lastChanged_ = false;
-				return true;
-			}
-			if (current != replacement_)
-				return false;
-			if (write(address_ + writeOffset_,
-				std::span<const std::uint8_t>(original_.data() + writeOffset_, writeSize_)) != Outcome::Installed)
-				return false;
-			lastChanged_ = false;
-			return true;
-		}
-
-		template <typename Read, typename Write>
-		bool RollbackRestore(Read&& read, Write&& write) {
-			if (!lastRestored_)
-				return true;
-			Bytes current{};
-			if (!read(address_, current) || current != original_)
-				return false;
-			const Outcome outcome = write(address_ + writeOffset_,
-				std::span<const std::uint8_t>(replacement_.data() + writeOffset_, writeSize_));
-			if (outcome == Outcome::Installed) {
-				lastRestored_ = false;
-				return true;
-			}
-			return false;
-		}
-
-	private:
-		Result FailResult(Outcome outcome, Failure failure) noexcept {
-			prepared_ = false;
-			lastResult_ = { outcome, failure, name_ };
-			return lastResult_;
-		}
-
-		bool Fail(Outcome outcome, Failure failure) noexcept {
-			prepared_ = false;
-			lastResult_ = { outcome, failure, name_ };
-			return false;
-		}
-
-		const char* name_ = nullptr;
-		std::uintptr_t address_ = 0;
-		std::size_t writeOffset_ = 0;
-		std::size_t writeSize_ = Size;
-		Bytes expected_{};
-		Bytes mask_{};
-		Bytes original_{};
-		Bytes replacement_{};
-		Bytes preparedOriginal_{};
-		bool captured_ = false;
-		bool prepared_ = false;
-		bool preparedAlreadyInstalled_ = false;
-		bool preparedAlreadyOriginal_ = false;
-		bool lastChanged_ = false;
-		bool lastRestored_ = false;
-		Result lastResult_{};
+		const char* name = nullptr;
+		std::uintptr_t address = 0;
+		GameVersion::Build build = GameVersion::Build::Unknown;
+		VersionedPattern<Size> expected{};
+		Bytes replacement{};
+		ReplacementBuilder buildReplacement = nullptr;
 	};
 
-	namespace Detail {
-		inline const auto NoopBeforeWrite = [](const char*, std::uintptr_t, const auto&) {};
+	template <std::size_t Size>
+	SiteDescriptor<Size> MakeSite(const char* name, std::uintptr_t address, GameVersion::Build build,
+		const VersionedPattern<Size>& expected, const std::array<std::uint8_t, Size>& replacement,
+		typename SiteDescriptor<Size>::ReplacementBuilder buildReplacement = nullptr) noexcept {
+		return { name, address, build, expected, replacement, buildReplacement };
+	}
 
-		template <std::size_t Index = 0, typename Tuple>
-		Result FirstFailure(Tuple& sites) {
-			if constexpr (Index == std::tuple_size_v<Tuple>) {
-				return { Outcome::Original, Failure::None, nullptr };
-			}
-			else {
-				auto& site = std::get<Index>(sites);
-				if (site.LastResult().failure != Failure::None)
-					return site.LastResult();
-				return FirstFailure<Index + 1>(sites);
-			}
+	struct CapturedSite {
+		const char* name = nullptr;
+		std::uintptr_t address = 0;
+		std::vector<std::uint8_t> original;
+		std::vector<std::uint8_t> replacement;
+	};
+
+	struct CaptureResult {
+		std::vector<CapturedSite> sites;
+		ValidationFailure failure = ValidationFailure::None;
+		const char* site = nullptr;
+	};
+
+	template <std::size_t Size, typename Read>
+	ValidationFailure CaptureSite(const SiteDescriptor<Size>& site, Read&& read, CapturedSite& captured) {
+		if (!site.address)
+			return ValidationFailure::Unavailable;
+
+		const BytePattern<Size>* expected = nullptr;
+		switch (site.build) {
+		case GameVersion::Build::September2022:
+			expected = &site.expected.september2022;
+			break;
+		case GameVersion::Build::LearnAndPlayDec2024:
+			expected = &site.expected.learnAndPlay;
+			break;
+		default:
+			break;
 		}
+		if (!expected || !expected->available)
+			return ValidationFailure::Unavailable;
+
+		typename SiteDescriptor<Size>::Bytes original{};
+		if (!read(site.address, original))
+			return ValidationFailure::Unreadable;
+		if (!MatchesMasked(original, expected->bytes, expected->mask))
+			return ValidationFailure::Mismatch;
+
+		auto replacement = site.replacement;
+		if (site.buildReplacement && !site.buildReplacement(original, replacement))
+			return ValidationFailure::Unavailable;
+
+		captured.name = site.name;
+		captured.address = site.address;
+		captured.original.assign(original.begin(), original.end());
+		captured.replacement.assign(replacement.begin(), replacement.end());
+		return ValidationFailure::None;
 	}
 
-	template <typename Read, typename Write, typename BeforeWrite, typename... Sites>
-	Result InstallGroup(Read&& read, Write&& write, BeforeWrite&& beforeWrite, Sites&... sites) {
-		static_assert(sizeof...(Sites) > 0);
-		std::tuple<Sites&...> group(sites...);
-		const std::array<bool, sizeof...(Sites)> prepared{ sites.PrepareInstall(read)... };
-		if (!std::all_of(prepared.begin(), prepared.end(), [](bool value) { return value; }))
-			return Detail::FirstFailure(group);
-
-		Result failure{};
-		bool failed = false;
-		bool changed = false;
-		std::apply([&](auto&... site) {
-			const auto applyOne = [&](auto& current) {
-				if (failed)
-					return;
-				const Result result = current.InstallPrepared(read, write, beforeWrite);
-				if (result.outcome != Outcome::Installed) {
-					failure = result;
-					failed = true;
-				}
-				changed = changed || result.changed;
-			};
-			(applyOne(site), ...);
-		}, group);
-		if (!failed)
-			return { Outcome::Installed, Failure::None, nullptr, changed };
-
-		bool rollbackComplete = true;
-		std::apply([&](auto&... site) { ((rollbackComplete = site.RollbackInstall(read, write) && rollbackComplete), ...); }, group);
-		return rollbackComplete
-			? Result{ Outcome::Original, failure.failure, failure.site }
-			: Result{ Outcome::RollbackIncomplete, Failure::RollbackFailed, failure.site, true };
+	template <typename Read, typename... Sites>
+	CaptureResult CaptureSites(Read&& read, const Sites&... sites) {
+		CaptureResult captured;
+		const auto captureOne = [&](const auto& site) {
+			if (captured.failure != ValidationFailure::None)
+				return;
+			CapturedSite bytes;
+			captured.failure = CaptureSite(site, read, bytes);
+			if (captured.failure == ValidationFailure::None)
+				captured.sites.push_back(std::move(bytes));
+			else
+				captured.site = site.name;
+		};
+		(captureOne(sites), ...);
+		return captured;
 	}
 
-	template <typename Read, typename Write, typename BeforeWrite, typename... Sites>
-	Result RestoreGroup(Read&& read, Write&& write, BeforeWrite&& beforeWrite, Sites&... sites) {
-		static_assert(sizeof...(Sites) > 0);
-		std::tuple<Sites&...> group(sites...);
-		const std::array<bool, sizeof...(Sites)> prepared{ sites.PrepareRestore(read)... };
-		if (!std::all_of(prepared.begin(), prepared.end(), [](bool value) { return value; }))
-			return Detail::FirstFailure(group);
-
-		Result failure{};
-		bool failed = false;
-		bool changed = false;
-		std::apply([&](auto&... site) {
-			const auto applyOne = [&](auto& current) {
-				if (failed)
-					return;
-				const Result result = current.RestorePrepared(read, write, beforeWrite);
-				if (result.outcome != Outcome::Installed) {
-					failure = result;
-					failed = true;
-				}
-				changed = changed || result.changed;
-			};
-			(applyOne(site), ...);
-		}, group);
-		if (!failed)
-			return { Outcome::Installed, Failure::None, nullptr, changed };
-
-		bool rollbackComplete = true;
-		std::apply([&](auto&... site) { ((rollbackComplete = site.RollbackRestore(read, write) && rollbackComplete), ...); }, group);
-		return rollbackComplete
-			? Result{ Outcome::Original, failure.failure, failure.site }
-			: Result{ Outcome::RollbackIncomplete, Failure::RollbackFailed, failure.site, true };
-	}
-
-	template <std::size_t Size, std::size_t ShapeSize>
-	constexpr bool HasShape(const std::array<std::uint8_t, Size>& bytes,
-		const std::array<std::uint8_t, ShapeSize>& shape) noexcept {
-		static_assert(ShapeSize <= Size);
-		for (std::size_t i = 0; i < ShapeSize; ++i)
-			if (bytes[i] != shape[i])
+	template <typename Append>
+	bool AppendCaptured(const CaptureResult& captured, Append&& append) {
+		if (captured.failure != ValidationFailure::None)
+			return false;
+		for (const CapturedSite& site : captured.sites)
+			if (!append(site))
 				return false;
 		return true;
 	}
 
-	template <std::size_t Size, std::size_t ShapeSize>
-	constexpr bool CaptureOriginal(const std::array<std::uint8_t, Size>& bytes,
-		const std::array<std::uint8_t, ShapeSize>& shape, std::array<std::uint8_t, Size>& original) noexcept {
-		if (!HasShape(bytes, shape))
-			return false;
-		original = bytes;
-		return true;
-	}
-
-	template <std::size_t Size>
-	constexpr bool IsOwnedReplacement(bool captured, const std::array<std::uint8_t, Size>& current,
-		const std::array<std::uint8_t, Size>& replacement) noexcept {
-		return captured && current == replacement;
+	inline const char* SiteNameAt(const CaptureResult& captured, std::uintptr_t address) noexcept {
+		for (const CapturedSite& site : captured.sites)
+			if (site.address == address)
+				return site.name;
+		return nullptr;
 	}
 
 	template <std::size_t Size>
