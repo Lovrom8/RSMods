@@ -10,13 +10,10 @@ public sealed class TwitchServiceTests
     [Fact]
     public async Task Start_ValidatesStoredToken_ObtainsIdentity_AndStartsOneEventSubSession()
     {
-        if (!OperatingSystem.IsWindows())
-            return;
-
         using var temporary = new TemporaryDirectory();
         string tokenPath = temporary.File("TwitchAuth.dat");
         string rewardsPath = temporary.File("TwitchEnabledEffects.xml");
-        var tokenStore = new TwitchTokenStore(tokenPath);
+        var tokenStore = new TwitchTokenStore(tokenPath, new TestTokenProtector());
         tokenStore.Save(new TwitchTokenSet
         {
             AccessToken = "stored-access",
@@ -67,12 +64,9 @@ public sealed class TwitchServiceTests
     [Fact]
     public async Task Start_MissingRequiredScope_ClearsTokenAndRequiresReauthorization()
     {
-        if (!OperatingSystem.IsWindows())
-            return;
-
         using var temporary = new TemporaryDirectory();
         string tokenPath = temporary.File("TwitchAuth.dat");
-        var tokenStore = new TwitchTokenStore(tokenPath);
+        var tokenStore = new TwitchTokenStore(tokenPath, new TestTokenProtector());
         tokenStore.Save(new TwitchTokenSet
         {
             AccessToken = "old-access",
@@ -116,7 +110,7 @@ public sealed class TwitchServiceTests
             var options = new TwitchOptions("public-client");
             await using var service = new TwitchService(
                 options,
-                new TwitchTokenStore(temporary.File("TwitchAuth.dat")),
+                new TwitchTokenStore(temporary.File("TwitchAuth.dat"), new TestTokenProtector()),
                 new TwitchRewardRepository(temporary.File("TwitchEnabledEffects.xml")),
                 new TwitchAuthService(new HttpClient(handler), options),
                 new TwitchApiClient(new HttpClient(handler), options),

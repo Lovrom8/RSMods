@@ -14,7 +14,7 @@ public sealed class TwitchServiceSessionTests
     {
         public Harness(int effectPort = 0, bool storeToken = true)
         {
-            TokenStore = new TwitchTokenStore(Temporary.File("TwitchAuth.dat"));
+            TokenStore = new TwitchTokenStore(Temporary.File("TwitchAuth.dat"), new TestTokenProtector());
             if (storeToken)
             {
                 TokenStore.Save(new TwitchTokenSet
@@ -78,9 +78,6 @@ public sealed class TwitchServiceSessionTests
     [Fact]
     public async Task Maintenance_RefreshesBeforeTheTokenExpires_NotAtTheNextHourlyCheck()
     {
-        if (!OperatingSystem.IsWindows())
-            return;
-
         await using var harness = new Harness();
         await harness.StartAuthorizedAsync(expiresIn: 20 * 60);
 
@@ -104,9 +101,6 @@ public sealed class TwitchServiceSessionTests
     [Fact]
     public async Task EventSubCredentials_RefreshARejectedToken_AndKeepTheLogin()
     {
-        if (!OperatingSystem.IsWindows())
-            return;
-
         await using var harness = new Harness();
         await harness.StartAuthorizedAsync();
         TwitchEventSubCredentials first = await harness.EventSub.GetCredentialsAsync();
@@ -124,9 +118,6 @@ public sealed class TwitchServiceSessionTests
     [Fact]
     public async Task EventSubCredentials_RefreshRefused_RequiresReauthorization()
     {
-        if (!OperatingSystem.IsWindows())
-            return;
-
         await using var harness = new Harness();
         await harness.StartAuthorizedAsync();
 
@@ -141,9 +132,6 @@ public sealed class TwitchServiceSessionTests
     [Fact]
     public async Task Maintenance_SurvivesAnHttpClientTimeout_AndRecovers()
     {
-        if (!OperatingSystem.IsWindows())
-            return;
-
         await using var harness = new Harness();
         await harness.StartAuthorizedAsync();
 
@@ -161,9 +149,6 @@ public sealed class TwitchServiceSessionTests
     [Fact]
     public async Task Start_UnexpectedValidationFailure_LeavesMaintenanceToRetry()
     {
-        if (!OperatingSystem.IsWindows())
-            return;
-
         await using var harness = new Harness();
         harness.Http.Enqueue(_ => throw new InvalidOperationException("Something nobody planned for."));
 
@@ -180,9 +165,6 @@ public sealed class TwitchServiceSessionTests
     [Fact]
     public async Task Maintenance_RestartsAFailedSession_ButNotOneTheUserStopped()
     {
-        if (!OperatingSystem.IsWindows())
-            return;
-
         await using var harness = new Harness();
         await harness.StartAuthorizedAsync();
         Assert.Equal(1, harness.EventSub.StartCount);
@@ -207,9 +189,6 @@ public sealed class TwitchServiceSessionTests
     [Fact]
     public async Task Forget_DuringValidation_IsNotUndoneWhenTheValidationFinishes()
     {
-        if (!OperatingSystem.IsWindows())
-            return;
-
         await using var harness = new Harness();
         await harness.StartAuthorizedAsync();
         var validationArrived = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -235,9 +214,6 @@ public sealed class TwitchServiceSessionTests
     [Fact]
     public async Task Revocation_DuringValidation_IsNotUndoneWhenTheValidationFinishes()
     {
-        if (!OperatingSystem.IsWindows())
-            return;
-
         await using var harness = new Harness();
         await harness.StartAuthorizedAsync();
         var validationArrived = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);

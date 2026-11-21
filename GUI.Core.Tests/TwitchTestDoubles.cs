@@ -189,3 +189,11 @@ internal sealed class FakeEventSubClient : ITwitchEventSubClient
     public void Emit(TwitchTriggerEvent trigger) => TriggerReceived?.Invoke(this, new TwitchTriggerEventArgs(trigger));
     public void Revoke(string type, string status) => Revoked?.Invoke(this, new TwitchRevocationEventArgs(type, status));
 }
+
+// Stands in for DPAPI so the store and service logic also run off Windows; not encryption.
+internal sealed class TestTokenProtector : ITwitchTokenProtector
+{
+    public byte[] Protect(byte[] plaintext) => plaintext.Select(b => (byte)(b ^ 0x5A)).ToArray();
+
+    public byte[] Unprotect(byte[] encrypted) => Protect(encrypted);
+}
