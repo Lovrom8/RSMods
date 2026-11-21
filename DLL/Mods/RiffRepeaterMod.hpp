@@ -38,4 +38,6 @@ private:
 	float roughLoopStart = 0.f;
 	float loopEnd = 0.f;
 	std::optional<std::chrono::steady_clock::time_point> loopSeekAt;  // Last seek back, until the timer is seen before loopEnd
+	bool linearPatchUnavailable_ = false;
+	bool linearPatchFaulted_ = false;
 };

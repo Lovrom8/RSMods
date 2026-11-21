@@ -113,22 +113,35 @@ registration. They are deliberately separate from settings keys. The
 `static Framework::ModRegistrar<T>` line must stay in the `.cpp`, never a header: it only pushes a POD
 factory node at load time (loader-lock safe), and the registry constructs the mod later on MainThread.
 
-### Hooking game functions
+### Patching game memory
 
-A mod installs its own hooks; the framework has no registry for game functions (D3D calls go through
-`ctx.Draw()`). `MemUtil::PlaceHook` (as `RiffRepeater`, `TrueTuning` and `BugPrevention` do),
-`MemUtil::PatchAdr`, `MemUtil::VTablePatcher` and Detours (in `stdafx.h`) all work from the mod's own file.
+Use `Framework::InstructionPatch::MakeSite` to describe exact expected bytes for each supported build.
+Use `UnavailablePattern` for an unconfirmed build and `LnpSites::Expand` for Learn & Play absolute
+operands; those operands are based on the live module address. `CaptureSites` checks the live bytes and
+stores the originals. `SitePatch::PatchedSiteGroup` is the adapter used by host and mod callers; it owns
+the `MemUtil::PreparedPatchSet` that installs and restores those sites. `PreparedPatchSet` is the only
+code-memory writer.
 
-- **Install once and leave it.** Hook in `OnInitialize`, or on the first tick after `Loading` if the code
-  isn't there yet, and keep the hook for the life of the process. Gate what it does on the mod's own
-  atomic flag, set last in `OnEnabled` and cleared in `OnDisabled`. Unhooking while another thread may be
-  inside the hook isn't safe, and the framework never unhooks for you.
-- **It runs on the game's thread, not MainThread.** There's no `ModContext` there, nothing catches a
-  throw, and it must not block. The `Settings` getters are thread-safe, but cache what a hot hook needs.
-- **Sharing a site.** A second `PlaceHook` on the same address overwrites the first mod's jump. Detours
-  chains instead, but nothing decides which mod runs first. Conflict claims can't help either way, because
-  hooks are installed whether a mod is active or not. When two mods need the same function, move the hook
-  into core and give mods an event, as `DeviceEvents` does for D3D.
+- **Keep the owner with the patch.** Keep a group alive while its replacement bytes are installed.
+  Restore only through the same group, and only while its replacement bytes still own the site. Never
+  restore from inside a hook: code may already be executing its callback.
+- **Read the outcome.** `Installed` means replacement bytes were verified and the instruction cache was
+  flushed; `Original` means the original bytes were confirmed; `RollbackIncomplete` means the result is
+  unresolved. Keep an incomplete group, surface the failure to the owning mod, and do not retry it every
+  tick. A mod that cannot install its required patch must not remain `Active`.
+- **A boot bundle is host-owned.** It stages related startup sites as one transaction before the registry
+  exists, and its settings take effect on the next start. It does not imply that the game has no native
+  threads: this proxy loads after DirectInput8 creation, so game threads can already run when `DllMain`
+  and boot bundles commit. Pausing every other thread is opt-in per set
+  (`PreparedPatchSet::RequireThreadExclusion`) and reserved for the allocator groups: general pausing made
+  the protected executable exit silently. Any other code patch needs its own reasoning for why the site is
+  not executing while it is written.
+- **Hooks run on the game's thread, not `MainThread`.** They have no `ModContext`, cannot report an
+  exception to the registry, and must not block. Cache any setting a hot hook needs. The framework has
+  no registry for game functions; when multiple mods need one site, move the hook into core and expose
+  an event, as `DeviceEvents` does for D3D.
+- **A green build does not prove execution.** Run the Win32 memory-protection tests and have the owner
+  boot the game before treating a patch as hardware-verified.
 
 ## Lifecycle state machine
 
@@ -167,8 +180,9 @@ Registered ──OnInitialize──▶ Inactive ──OnEnabled──▶ Active
     MainThread pass faults it like a hook ([`docs/draw-registry.md`](docs/draw-registry.md) §8.10).
   - A tick hook (`OnTick`/`OnMenuTick`/`OnSongTick`/`OnSongEnter`/`OnSongExit`) or
     `OnSettingsChanged` throws → the mod is faulted immediately; an `Active` one receives a best-effort
-    `OnDisabled` revert first. Only the `OnSongExit`/`OnDisabled` calls made while tearing a mod down
-    are best-effort, since the mod is leaving anyway.
+    `OnDisabled` revert first. If `OnDisabled` throws during a normal disable or suppression, teardown
+    faults the mod; keep any unresolved patch group owned and do not retry it from `OnDisabled`. An
+    `OnSongExit` throw during teardown remains best-effort because the mod is already leaving.
 - **Shutdown**: `OnSongExit`(if in song) → `OnDisabled`(if active) → `OnShutdown`, then the
   registry drops every registration but keeps the mod objects alive until it is destroyed itself
   (process exit): the game keeps rendering while it closes, and a frame already in flight may still
@@ -277,7 +291,7 @@ These passes are router implementation details; binding refreshes log physical c
 than rejecting user configuration.
 
 Force Enumeration is owned by `EnumerationMod`, while the fixed Delete auto-tune intent is owned by
-`MidiMod`. Only the Ctrl+A settings reload and Backspace debug-menu shortcuts remain host-owned in
+`MidiMod`. Only the Ctrl+A settings reload shortcut remains host-owned in
 `Keybindings`. Input received before `GameLoaded` is discarded at dispatch and is never replayed afterward.
 
 ## Settings

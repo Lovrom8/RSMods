@@ -567,6 +567,29 @@ static void Test_StatusSnapshotReflectsStates() {
 	Expect(reg.StatusSnapshot().empty(), "status snapshot is empty after shutdown");
 }
 
+static void Test_DisableFailureFaultsWithoutRetry() {
+	ClearEvents();
+	ModRegistry reg;
+	TestMod* mod = Add(reg, "DisableFailure");
+	reg.DispatchInitialize();
+	reg.Tick(GamePhase::Menu);
+	ClearEvents();
+	mod->throwOn = "OnDisabled";
+	mod->enabled = false;
+	reg.Tick(GamePhase::Menu);
+	const auto snapshot = reg.StatusSnapshot();
+	const auto* status = FindStatus(snapshot, "DisableFailure");
+	Expect(status && status->kind == Framework::ModStatusKind::Faulted,
+		"failed normal disable reports Faulted");
+	ExpectSeq({ "DisableFailure:OnDisabled" }, "failed disable runs teardown once");
+	ClearEvents();
+	mod->enabled = true;
+	reg.Tick(GamePhase::Menu);
+	reg.Tick(GamePhase::Menu);
+	Expect(EventsEmpty(), "faulted teardown is neither retried nor ticked");
+	reg.Shutdown();
+}
+
 static void Test_RetryFaultedMods() {
 	ClearEvents();
 	ModRegistry reg;
@@ -785,6 +808,7 @@ int main() {
 	Test_StartupOrderHarvestsSettingsBeforeDispatchInitialize();
 	Test_ShutdownRevertsInOrderAndKeepsModsAlive();
 	Test_StatusSnapshotReflectsStates();
+	Test_DisableFailureFaultsWithoutRetry();
 	Test_RetryFaultedMods();
 	Test_FaultKeepsSettingsSchema();
 	Test_IsEnabledThrowFaults();

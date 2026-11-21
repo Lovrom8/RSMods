@@ -2,93 +2,17 @@
 #include "BugPrevention.hpp"
 #include "../MemUtil.hpp"
 #include "../LnpSiteCheck.hpp"
-#include "../Framework/InstructionPatch.hpp"
+#include "../SitePatchGroup.hpp"
 #include "../VersioningStruct.h"
 
 namespace {
 	using namespace Framework::InstructionPatch;
-
-	const auto readSite = [](std::uintptr_t address, auto& bytes) {
-		return MemUtil::TryRead(address, bytes);
-	};
-
-	template <std::size_t Size>
-	SiteDescriptor<Size> MakeSite(const char* name, std::uintptr_t address, const VersionedPattern<Size>& expected,
-		const std::array<std::uint8_t, Size>& replacement,
-		typename SiteDescriptor<Size>::ReplacementBuilder buildReplacement = nullptr) {
-		return Framework::InstructionPatch::MakeSite(name, address, ::GameVersion::Current(),
-			expected, replacement, buildReplacement);
-	}
-
-	template <std::size_t Size>
-	BytePattern<Size> ExpandLnpPattern(const char* text) {
-		std::vector<unsigned char> expanded;
-		if (!LnpSites::Expand(text, static_cast<std::uint32_t>(GameVersion::ModuleBase()), expanded)
-			|| expanded.size() != Size)
-			return UnavailablePattern<Size>();
-		std::array<std::uint8_t, Size> bytes{};
-		std::copy(expanded.begin(), expanded.end(), bytes.begin());
-		return ExactPattern(bytes);
-	}
-
-	void LogOriginal(const char* name, std::uintptr_t address, const std::vector<std::uint8_t>& bytes) {
-		std::ostringstream text;
-		for (std::uint8_t byte : bytes)
-			text << std::hex << static_cast<unsigned int>(byte) << ' ';
-		LOG_INFO("(BUG PREVENTION) " << name << " original at 0x" << std::hex << address << ": " << text.str() << std::endl);
-	}
-
-	bool AppendSites(MemUtil::PreparedPatchSet& patches, const CaptureResult& captured) {
-		return AppendCaptured(captured, [&](const CapturedSite& site) {
-			MemUtil::PreparedPatchRequest request{};
-			request.address = reinterpret_cast<LPVOID>(site.address);
-			request.kind = MemUtil::PreparedPatchKind::Bytes;
-			request.expectedBytes = site.original;
-			request.replacementBytes = site.replacement;
-			request.length = site.original.size();
-			return patches.Append(request);
-		});
-	}
-
-	void LogValidationFailure(const char* action, const CaptureResult& captured) {
-		if (captured.failure != ValidationFailure::None)
-			LOG_WARNING("(BUG PREVENTION) " << action << " left unchanged at " << captured.site
-				<< ": " << FailureName(captured.failure) << std::endl);
-	}
-
-	void LogUnavailable(const char* action, const char* site) {
-		LOG_WARNING("(BUG PREVENTION) " << action << " left unchanged at " << site << ": "
-			<< FailureName(ValidationFailure::Unavailable) << std::endl);
-	}
-
-	void LogResult(const char* action, const CaptureResult& captured, MemUtil::PatchResult result,
-		std::uintptr_t failureAddress) {
-		const char* site = SiteNameAt(captured, failureAddress);
-		if (result == MemUtil::PatchResult::Installed)
-			LOG_INFO("(BUG PREVENTION) " << action << " confirmed" << std::endl);
-		else if (result == MemUtil::PatchResult::RollbackIncomplete) {
-			LOG_ERROR("(BUG PREVENTION) " << action << " outcome is indeterminate at "
-				<< (site ? site : "patch group") << std::endl);
-		}
-		else {
-			LOG_WARNING("(BUG PREVENTION) " << action << " left unchanged at "
-				<< (site ? site : "patch group") << ": write was not applied" << std::endl);
-		}
-	}
+	using namespace SitePatch;
+	// These startup groups are installed from MainThread and remain owned for the process lifetime.
+	std::vector<std::unique_ptr<PatchedSiteGroup>> retainedSiteGroups;
 
 	void InstallSites(const char* action, CaptureResult captured) {
-		if (captured.failure != ValidationFailure::None) {
-			LogValidationFailure(action, captured);
-			return;
-		}
-		MemUtil::PreparedPatchSet patches;
-		if (!AppendSites(patches, captured)) {
-			LogResult(action, captured, MemUtil::PatchResult::Original, patches.FailureAddress());
-			return;
-		}
-		for (const CapturedSite& site : captured.sites)
-			LogOriginal(site.name, site.address, site.original);
-		LogResult(action, captured, patches.Commit(), patches.FailureAddress());
+		SitePatch::InstallRetained(retainedSiteGroups, "BUG PREVENTION", action, std::move(captured));
 	}
 }
 
@@ -152,7 +76,7 @@ namespace BugPrevention {
 			ExactPattern(MakeBytes(0x0F, 0x83, 0x18, 0x02, 0x00, 0x00)),
 			ExactPattern(MakeBytes(0x0F, 0x83, 0x18, 0x02, 0x00, 0x00))
 		}, replacement);
-		InstallSites("Oculus crash guard", CaptureSites(readSite, site));
+		InstallSites("Oculus crash guard", CaptureSites(ReadSite, site));
 	}
 
 	/// <summary>
@@ -165,7 +89,7 @@ namespace BugPrevention {
 		const auto site = MakeSite("stuck-tone branch", Offsets::ptr_StuckToneJmp.GetValue(), VersionedPattern<2>{
 			ExactPattern(MakeBytes(0x75, 0x13)), ExactPattern(MakeBytes(0x75, 0x13))
 		}, replacement);
-		InstallSites("Stuck-tone guard", CaptureSites(readSite, site));
+		InstallSites("Stuck-tone guard", CaptureSites(ReadSite, site));
 	}
 
 	/// <summary>
@@ -183,7 +107,7 @@ namespace BugPrevention {
 			ExactPattern(MakeBytes(0x0F, 0x8C, 0x9A, 0xFD, 0xFF, 0xFF)),
 			ExactPattern(MakeBytes(0x0F, 0x8C, 0x9A, 0xFD, 0xFF, 0xFF))
 		}, secondReplacement);
-		InstallSites("PnP crash guard", CaptureSites(readSite, firstSite, secondSite));
+		InstallSites("PnP crash guard", CaptureSites(ReadSite, firstSite, secondSite));
 	}
 
 	/// <summary>
@@ -201,7 +125,7 @@ namespace BugPrevention {
 		const auto clipboardSite = MakeSite("password clipboard branch", Offsets::ptr_Password_LimitCharacters_Clipboard.GetValue(), VersionedPattern<2>{
 			ExactPattern(MakeBytes(0x74, 0x1C)), ExactPattern(MakeBytes(0x74, 0x1C))
 		}, replacement);
-		InstallSites("Complex password checks", CaptureSites(readSite, passwordSite, clipboardSite));
+		InstallSites("Complex password checks", CaptureSites(ReadSite, passwordSite, clipboardSite));
 	}
 
 	/// <summary>
@@ -218,7 +142,7 @@ namespace BugPrevention {
 		const auto site = MakeSite("profile platform-ID branch", Offsets::ptr_SaveFilePlatformIdCheck.GetValue(), VersionedPattern<2>{
 			ExactPattern(MakeBytes(0x74, 0x2F)), ExactPattern(MakeBytes(0x74, 0x2F))
 		}, replacement);
-		InstallSites("Cross-platform profile-ID check", CaptureSites(readSite, site));
+		InstallSites("Cross-platform profile-ID check", CaptureSites(ReadSite, site));
 	}
 
 	void __declspec(naked) advancedDisplayCrashHook()
@@ -249,14 +173,14 @@ namespace BugPrevention {
 		std::array<std::uint8_t, 7> replacement{};
 		const auto address = Offsets::ptr_AdvancedDisplayCrash.GetValue();
 		if (!BuildRelativeJump(address, reinterpret_cast<std::uintptr_t>(&advancedDisplayCrashHook), replacement)) {
-			LogUnavailable("Advanced-display guard", "advanced-display hook");
+			SitePatch::LogUnavailable("BUG PREVENTION", "Advanced-display guard", "advanced-display hook");
 			return;
 		}
 		const auto site = MakeSite("advanced-display hook", address, VersionedPattern<7>{
 			ExactPattern(MakeBytes(0x8A, 0x51, 0x04, 0x57, 0x8B, 0x7E, 0x0C)),
 			UnavailablePattern<7>()
 		}, replacement);
-		InstallSites("Advanced-display guard", CaptureSites(readSite, site));
+		InstallSites("Advanced-display guard", CaptureSites(ReadSite, site));
 	}
 
 
@@ -271,7 +195,7 @@ namespace BugPrevention {
 			ExactPattern(MakeBytes(0x83, 0x7B, 0x0C, 0x01, 0x0F, 0x8C, 0x75, 0x02, 0x00, 0x00)),
 			UnavailablePattern<10>()
 		}, replacement);
-		InstallSites("PortAudio input guard", CaptureSites(readSite, site));
+		InstallSites("PortAudio input guard", CaptureSites(ReadSite, site));
 	}
 
 	/// <summary>
@@ -283,7 +207,7 @@ namespace BugPrevention {
 			ExactPattern(MakeBytes(0x8B, 0x8D, 0xC4, 0xFD, 0xFF, 0xFF, 0x8B, 0x1C, 0x81)),
 			ExactPattern(MakeBytes(0x8B, 0x8D, 0xC4, 0xFD, 0xFF, 0xFF, 0x8B, 0x1C, 0x81))
 		}, replacement);
-		InstallSites("Additional audio devices guard", CaptureSites(readSite, site));
+		InstallSites("Additional audio devices guard", CaptureSites(ReadSite, site));
 	}
 
 	void __declspec(naked) controllerAxisBoundsHook() {
@@ -318,14 +242,14 @@ namespace BugPrevention {
 		const auto address = Offsets::ptr_ControllerAxisBounds.GetValue();
 		std::array<std::uint8_t, 6> replacement{};
 		if (!BuildRelativeJump(address, reinterpret_cast<std::uintptr_t>(&controllerAxisBoundsHook), replacement)) {
-			LogUnavailable("Controller-axis guard", "controller-axis hook");
+			SitePatch::LogUnavailable("BUG PREVENTION", "Controller-axis guard", "controller-axis hook");
 			return;
 		}
 		const auto site = MakeSite("controller-axis hook", address, VersionedPattern<6>{
 			ExactPattern(MakeBytes(0x55, 0x8B, 0xEC, 0x83, 0xEC, 0x08)),
 			ExactPattern(MakeBytes(0x55, 0x8B, 0xEC, 0x83, 0xEC, 0x08))
 		}, replacement);
-		InstallSites("Controller-axis guard", CaptureSites(readSite, site));
+		InstallSites("Controller-axis guard", CaptureSites(ReadSite, site));
 	}
 
 	void __stdcall LogInvalidUIInputCrash() {
@@ -365,14 +289,14 @@ namespace BugPrevention {
 		const auto address = Offsets::ptr_InvalidInputTreeRootCheck.GetValue();
 		std::array<std::uint8_t, hookLength> replacement{};
 		if (!BuildRelativeJump(address, reinterpret_cast<std::uintptr_t>(&invalidInputTreeRootHook), replacement)) {
-			LogUnavailable("UI input guard", "invalid-input tree hook");
+			SitePatch::LogUnavailable("BUG PREVENTION", "UI input guard", "invalid-input tree hook");
 			return;
 		}
 		const auto site = MakeSite("invalid-input tree hook", address, VersionedPattern<hookLength>{
 			ExactPattern(MakeBytes(0x85, 0xDB, 0x0F, 0x84, 0x98, 0x00, 0x00, 0x00)),
 			UnavailablePattern<hookLength>()
 		}, replacement);
-		InstallSites("UI input guard", CaptureSites(readSite, site));
+		InstallSites("UI input guard", CaptureSites(ReadSite, site));
 	}
 
 	/// <summary>
@@ -405,14 +329,15 @@ namespace BugPrevention {
 		const auto address = Offsets::ptr_calibrationSampleCountClamp.GetValue();
 		std::array<std::uint8_t, 10> replacement{};
 		if (!BuildRelativeJump(address, reinterpret_cast<std::uintptr_t>(&calibrationSampleCountClampHook), replacement)) {
-			LogUnavailable("High-framerate calibration guard", "calibration sample-count hook");
+			SitePatch::LogUnavailable("BUG PREVENTION", "High-framerate calibration guard",
+				"calibration sample-count hook");
 			return;
 		}
 		const auto site = MakeSite("calibration sample-count hook", address, VersionedPattern<10>{
 			ExactPattern(MakeBytes(0x8B, 0x54, 0x24, 0x10, 0x89, 0x93, 0x88, 0x07, 0x00, 0x00)),
 			UnavailablePattern<10>()
 		}, replacement);
-		InstallSites("High-framerate calibration guard", CaptureSites(readSite, site));
+		InstallSites("High-framerate calibration guard", CaptureSites(ReadSite, site));
 	}
 
 	/// <summary>
@@ -435,6 +360,6 @@ namespace BugPrevention {
 				0xC7, 0x46, 0x40, 0xE0, 0xD2, 0x19, 0x01)),
 			lnp
 		}, std::array<std::uint8_t, 27>{}, buildReplacement);
-		InstallSites("Modifying-functions guard", CaptureSites(readSite, site));
+		InstallSites("Modifying-functions guard", CaptureSites(ReadSite, site));
 	}
 }

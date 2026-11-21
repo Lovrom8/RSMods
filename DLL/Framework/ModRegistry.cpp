@@ -170,19 +170,20 @@ namespace Framework {
 		}
 
 		// Best-effort revert of live game state before a mod leaves Active.
-		void Revert(Record& record) {
+		bool Revert(Record& record) {
 			if (record.inSong) {
 				Invoke(record, &IMod::OnSongExit, "OnSongExit");
 				record.inSong = false;
 			}
 
-			Invoke(record, &IMod::OnDisabled, "OnDisabled");
+			return Invoke(record, &IMod::OnDisabled, "OnDisabled");
 		}
 
 		// Leaves Active: revert live game state immediately (render callbacks aren't waited for; see
 		// ModState), then settle into Inactive - or Faulted when the teardown is itself a fault.
 		void BeginTeardown(Record& record, DeactivationReason reason) {
-			Revert(record);
+			if (!Revert(record))
+				reason = DeactivationReason::Faulted;
 
 			// Unlike command bindings, a HUD element is meaningless once the mod stops ticking,
 			// so drop it on every deactivation. The mod re-publishes on its next active tick.

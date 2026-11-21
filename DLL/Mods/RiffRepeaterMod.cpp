@@ -2,6 +2,8 @@
 #include "RiffRepeaterMod.hpp"
 #include "../SongTimer.hpp"
 
+#include <stdexcept>
+
 using Framework::ModContext;
 using Framework::KeyEdge;
 using Framework::Availability;
@@ -63,6 +65,9 @@ SettingDefs RiffRepeaterMod::Settings() const {
 }
 
 void RiffRepeaterMod::OnInitialize(ModContext& c) {
+	if (linearPatchFaulted_ || linearPatchUnavailable_)
+		throw std::runtime_error("linear-speed patch is unavailable or indeterminate");
+
 	c.Commands().BindSetting(
 		Setting::Key::Rewind,
 		KeyEdge::Up,
@@ -143,6 +148,14 @@ void RiffRepeaterMod::OnSongExit(ModContext&) {
 }
 
 void RiffRepeaterMod::OnDisabled(ModContext&) {
+	if (!linearPatchFaulted_ && RiffRepeater::currentlyEnabled_LinearRR) {
+		const auto result = RiffRepeater::DisableLinearSpeeds();
+		if (result != MemUtil::PatchResult::Original) {
+			linearPatchFaulted_ = true;
+			throw std::runtime_error(result == MemUtil::PatchResult::Installed
+				? "linear-speed patch is still installed after rollback" : "linear-speed patch rollback is indeterminate");
+		}
+	}
 	loopStart = 0.f;
 	roughLoopStart = 0.f;
 	loopEnd = 0.f;
@@ -169,11 +182,27 @@ void RiffRepeaterMod::OnTick(ModContext& c) {
 
 // Patch (or revert) the linear Riff Repeater speed logic to track the setting.
 void RiffRepeaterMod::SyncLinearSpeeds(ModContext& c) {
+	if (linearPatchUnavailable_ || linearPatchFaulted_)
+		return;
+
 	if (c.IsOn(Setting::LinearRiffRepeater) && !RiffRepeater::currentlyEnabled_LinearRR) {
-		RiffRepeater::EnableLinearSpeeds();
+		const auto result = RiffRepeater::EnableLinearSpeeds();
+		if (result == MemUtil::PatchResult::Original) {
+			linearPatchUnavailable_ = true;
+			throw std::runtime_error("linear-speed patch was not installed");
+		}
+		else if (result == MemUtil::PatchResult::RollbackIncomplete) {
+			linearPatchFaulted_ = true;
+			throw std::runtime_error("linear-speed patch install is indeterminate");
+		}
 	}
 	else if (c.IsOff(Setting::LinearRiffRepeater) && RiffRepeater::currentlyEnabled_LinearRR) {
-		RiffRepeater::DisableLinearSpeeds();
+		const auto result = RiffRepeater::DisableLinearSpeeds();
+		if (result != MemUtil::PatchResult::Original) {
+			linearPatchFaulted_ = true;
+			throw std::runtime_error(result == MemUtil::PatchResult::Installed
+				? "linear-speed patch is still installed after rollback" : "linear-speed patch rollback is indeterminate");
+		}
 	}
 }
 

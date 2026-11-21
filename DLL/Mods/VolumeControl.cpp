@@ -1,76 +1,17 @@
 #include "../stdafx.h"
 #include "VolumeControl.hpp"
-#include "../Framework/InstructionPatch.hpp"
-#include "../LnpSites.hpp"
+#include "../SitePatchGroup.hpp"
 #include "../VersioningStruct.h"
 
 #include <memory>
 
 namespace {
 	using namespace Framework::InstructionPatch;
+	using namespace SitePatch;
 
-	const auto readSite = [](std::uintptr_t address, auto& bytes) {
-		return MemUtil::TryRead(address, bytes);
-	};
-
-	template <std::size_t Size>
-	SiteDescriptor<Size> MakeSite(const char* name, std::uintptr_t address, const VersionedPattern<Size>& expected,
-		const std::array<std::uint8_t, Size>& replacement,
-		typename SiteDescriptor<Size>::ReplacementBuilder buildReplacement = nullptr) {
-		return Framework::InstructionPatch::MakeSite(name, address, ::GameVersion::Current(),
-			expected, replacement, buildReplacement);
-	}
-
-	void LogOriginal(const char* name, std::uintptr_t address, const std::vector<std::uint8_t>& bytes) {
-		std::ostringstream text;
-		for (std::uint8_t byte : bytes)
-			text << std::hex << static_cast<unsigned int>(byte) << ' ';
-		LOG_INFO("(VOLUME CONTROL) " << name << " original at 0x" << std::hex << address << ": " << text.str() << std::endl);
-	}
-
-	bool AppendSites(MemUtil::PreparedPatchSet& patches, const CaptureResult& captured) {
-		return AppendCaptured(captured, [&](const CapturedSite& site) {
-			MemUtil::PreparedPatchRequest request{};
-			request.address = reinterpret_cast<LPVOID>(site.address);
-			request.kind = MemUtil::PreparedPatchKind::Bytes;
-			request.expectedBytes = site.original;
-			request.replacementBytes = site.replacement;
-			request.length = site.original.size();
-			return patches.Append(request);
-		});
-	}
-
-	void LogValidationFailure(const char* action, const CaptureResult& captured) {
-		if (captured.failure != ValidationFailure::None)
-			LOG_WARNING("(VOLUME CONTROL) " << action << " left unchanged at " << captured.site
-				<< ": " << FailureName(captured.failure) << std::endl);
-	}
-
-	void LogUnavailable(const char* action, const char* site) {
-		LOG_WARNING("(VOLUME CONTROL) " << action << " left unchanged at " << site << ": "
-			<< FailureName(ValidationFailure::Unavailable) << std::endl);
-	}
-
-	void LogResult(const char* action, const CaptureResult& captured, MemUtil::PatchResult result,
-		std::uintptr_t failureAddress, bool restoring) {
-		const char* site = SiteNameAt(captured, failureAddress);
-		if ((!restoring && result == MemUtil::PatchResult::Installed)
-			|| (restoring && result == MemUtil::PatchResult::Original))
-			LOG_INFO("(VOLUME CONTROL) " << action << " confirmed" << std::endl);
-		else if (result == MemUtil::PatchResult::RollbackIncomplete) {
-			LOG_ERROR("(VOLUME CONTROL) " << action << " outcome is indeterminate at "
-				<< (site ? site : "patch group") << std::endl);
-		}
-		else {
-			LOG_WARNING("(VOLUME CONTROL) " << action << " left unchanged at "
-				<< (site ? site : "patch group") << ": write was not applied" << std::endl);
-		}
-	}
-
-	std::unique_ptr<MemUtil::PreparedPatchSet> songPreviewPatch;
-	CaptureResult songPreviewSites;
-	std::unique_ptr<MemUtil::PreparedPatchSet> focusPatch;
-	CaptureResult focusSites;
+	// These groups are changed by mod lifecycle callbacks on MainThread.
+	PatchedSiteGroup songPreviewPatch("VOLUME CONTROL");
+	PatchedSiteGroup focusPatch("VOLUME CONTROL");
 
 	SiteDescriptor<16> SongPreviewSite() {
 		return MakeSite("song-preview event", Offsets::patch_SongPreviewWwiseEvent.GetValue(), VersionedPattern<16>{
@@ -166,40 +107,14 @@ float VolumeControl::CurrentVolume(const char* mixer) {
 /// <summary>
 /// Disables the song previews when hovering over a song.
 /// </summary>
-void VolumeControl::DisableSongPreviewAudio() {
-	if (!disabledSongPreviewAudio) {
-		if (songPreviewPatch) {
-			const auto result = MemUtil::ToPatchResult(songPreviewPatch->Outcome());
-			if (result == MemUtil::PatchResult::Installed)
-				disabledSongPreviewAudio = true;
-			LogResult("Song previews disabled", songPreviewSites, result, songPreviewPatch->FailureAddress(), false);
-			return;
-		}
-		auto captured = CaptureSites(readSite, SongPreviewSite());
-		if (captured.failure != ValidationFailure::None) {
-			LogValidationFailure("Song previews disabled", captured);
-			return;
-		}
-		auto patches = std::make_unique<MemUtil::PreparedPatchSet>();
-		if (!AppendSites(*patches, captured)) {
-			LogResult("Song previews disabled", captured, MemUtil::PatchResult::Original, patches->FailureAddress(), false);
-			return;
-		}
-		for (const CapturedSite& site : captured.sites)
-			LogOriginal(site.name, site.address, site.original);
-		const auto result = patches->Commit();
-		if (result == MemUtil::PatchResult::Installed)
-			disabledSongPreviewAudio = true;
-		if (result != MemUtil::PatchResult::Original) {
-			songPreviewSites = std::move(captured);
-			songPreviewPatch = std::move(patches);
-		}
-		LogResult("Song previews disabled", songPreviewSites.sites.empty() ? captured : songPreviewSites,
-			result, patches ? patches->FailureAddress() : songPreviewPatch->FailureAddress(), false);
-	}
-	else {
-		LOG_WARNING("Tried to disable song previews when they are already disabled!" << std::endl);
-	}
+MemUtil::PatchResult VolumeControl::DisableSongPreviewAudio() {
+	if (disabledSongPreviewAudio)
+		return MemUtil::PatchResult::Installed;
+
+	const auto result = songPreviewPatch.Install("Song previews disabled", ReadSite, SongPreviewSite());
+	if (result == MemUtil::PatchResult::Installed)
+		disabledSongPreviewAudio = true;
+	return result;
 }
 
 void VolumeControl::MutePlayer(bool player2) {
@@ -248,29 +163,18 @@ void VolumeControl::UnmutePlayer(bool player2)
 /// <summary>
 /// Enables the song previews when hovering over a song.
 /// </summary>
-void VolumeControl::EnableSongPreviewAudio() {
-	if (songPreviewPatch) {
-		for (const CapturedSite& site : songPreviewSites.sites)
-			LogOriginal(site.name, site.address, site.original);
-		const auto result = songPreviewPatch->Rollback();
-		if (result == MemUtil::PatchResult::Original) {
-			disabledSongPreviewAudio = false;
-			songPreviewPatch.reset();
-			songPreviewSites = {};
-		}
-		LogResult("Song previews restored", songPreviewSites, result,
-			songPreviewPatch ? songPreviewPatch->FailureAddress() : 0, true);
-	}
-	else {
-		LOG_WARNING("Tried to enable song previews when they are already enabled!" << std::endl);
-	}
+MemUtil::PatchResult VolumeControl::EnableSongPreviewAudio() {
+	const auto result = songPreviewPatch.Restore("Song previews restored");
+	if (result == MemUtil::PatchResult::Original)
+		disabledSongPreviewAudio = false;
+	return result;
 }
 
 /// <summary>
 /// Allows the user to play music in game while Alt+Tabbed.
 /// </summary>
 void VolumeControl::AllowAltTabbingWithAudio() {
-	if (focusPatch)
+	if (focusPatch.NeedsLifetime())
 		return;
 	const std::uint32_t focusAddress = static_cast<std::uint32_t>(Offsets::ptr_IsWindowInFocus.GetValue());
 	const auto setterReplacement = MakeBytes(0xC6, 0x05,
@@ -278,29 +182,11 @@ void VolumeControl::AllowAltTabbingWithAudio() {
 		0x01, 0xC3);
 	const auto setter = FocusSetterSite(setterReplacement);
 	const auto variable = FocusVariableSite();
-	auto captured = CaptureSites(readSite, setter, variable);
-	if (captured.failure != ValidationFailure::None) {
-		LogValidationFailure("Background audio", captured);
-		return;
-	}
-	auto patches = std::make_unique<MemUtil::PreparedPatchSet>();
-	if (!AppendSites(*patches, captured)) {
-		LogResult("Background audio", captured, MemUtil::PatchResult::Original, patches->FailureAddress(), false);
-		return;
-	}
-	for (const CapturedSite& site : captured.sites)
-		LogOriginal(site.name, site.address, site.original);
-	const auto result = patches->Commit();
+	const auto result = focusPatch.Install("Background audio", ReadSite, setter, variable);
 	if (result == MemUtil::PatchResult::Installed) {
 		focusSetterPatched = true;
 		allowedAltTabbingWithAudio = true;
 	}
-	if (result != MemUtil::PatchResult::Original) {
-		focusSites = std::move(captured);
-		focusPatch = std::move(patches);
-	}
-	LogResult("Background audio", focusSites.sites.empty() ? captured : focusSites, result,
-		focusPatch ? focusPatch->FailureAddress() : patches->FailureAddress(), false);
 }
 
 
@@ -308,17 +194,11 @@ void VolumeControl::AllowAltTabbingWithAudio() {
 /// Pauses the audio when the user Alt+Tabs. This is the standard behavior of Rocksmith 2014.
 /// </summary>
 void VolumeControl::DisableAltTabbingWithAudio() {
-	if (!focusPatch)
+	if (!focusPatch.NeedsLifetime())
 		return;
-	for (const CapturedSite& site : focusSites.sites)
-		LogOriginal(site.name, site.address, site.original);
-	const auto result = focusPatch->Rollback();
+	const auto result = focusPatch.Restore("Background audio restore");
 	if (result == MemUtil::PatchResult::Original) {
 		focusSetterPatched = false;
 		allowedAltTabbingWithAudio = false;
-		focusPatch.reset();
-		focusSites = {};
 	}
-	LogResult("Background audio restore", focusSites, result,
-		focusPatch ? focusPatch->FailureAddress() : 0, true);
 }

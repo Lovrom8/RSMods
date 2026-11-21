@@ -1156,6 +1156,9 @@
     <ClInclude Include="QualityOfLife.hpp">
       <Filter>Main Headers</Filter>
     </ClInclude>
+    <ClInclude Include="SitePatchGroup.hpp">
+      <Filter>Main Headers</Filter>
+    </ClInclude>
     <ClInclude Include="Keybindings.hpp">
       <Filter>Main Headers</Filter>
     </ClInclude>

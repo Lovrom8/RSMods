@@ -45,6 +45,25 @@ namespace {
 		Framework::Hud().SetLayoutAspect(0.0f);
 	}
 
+	uintptr_t FindUniqueAspectLoad() {
+		const uint32_t start = MemUtil::GetTextSectionAddress();
+		const size_t length = MemUtil::GetTextSectionLength();
+		constexpr size_t patternLength = sizeof(aspectLoadSignature);
+		if (!start || length < patternLength)
+			return 0;
+
+		uintptr_t match = 0;
+		const auto* text = reinterpret_cast<const BYTE*>(start);
+		for (size_t offset = 0; offset <= length - patternLength; ++offset) {
+			if (!MemUtil::bCompare(text + offset, aspectLoadSignature, aspectLoadMask))
+				continue;
+			if (match)
+				return 0;
+			match = static_cast<uintptr_t>(start) + offset;
+		}
+		return match;
+	}
+
 	// Once per frame, so the per-draw and per-bind paths never touch Settings or query the swap chain.
 	void UpdateState(IDirect3DDevice9* device) {
 		using namespace UltrawideState;
@@ -280,8 +299,7 @@ void UltrawideMod::EnsurePatched() {
 		return;
 
 	if (!operandAddress) {
-		const uintptr_t match = MemUtil::FindPattern<uintptr_t>(MemUtil::GetTextSectionAddress(), MemUtil::GetTextSectionLength(),
-			const_cast<PBYTE>(aspectLoadSignature), aspectLoadMask);
+		const uintptr_t match = FindUniqueAspectLoad();
 
 		if (match) {
 			const uintptr_t candidate = match + aspectLoadOperandOffset;

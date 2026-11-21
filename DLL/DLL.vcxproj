@@ -626,6 +626,7 @@
     <ClInclude Include="Framework\TrampolinePolicy.hpp" />
     <ClInclude Include="Framework\BootPatchBundlePolicy.hpp" />
     <ClInclude Include="Framework\ProfilePatchPolicy.hpp" />
+    <ClInclude Include="SitePatchGroup.hpp" />
     <ClInclude Include="NoteData.h" />
     <ClInclude Include="ObjectUtil.hpp" />
     <ClInclude Include="CC\Effects\ShuffleTonesEffect.hpp" />

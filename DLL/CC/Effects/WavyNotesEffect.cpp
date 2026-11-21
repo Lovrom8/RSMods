@@ -1,9 +1,43 @@
 #include "../../stdafx.h"
 #include "WavyNotesEffect.hpp"
+#include "../../SitePatchGroup.hpp"
 
 using namespace CrowdControl::Enums;
 
 namespace CrowdControl::Effects {
+	namespace {
+		using namespace Framework::InstructionPatch;
+
+		constexpr auto nativeNotePosition = MakeBytes(
+			0xD9, 0x00, 0xD9, 0x5C, 0x24, 0x24, 0xD9, 0x40, 0x04, 0xD9, 0x5C, 0x24, 0x28,
+			0xD9, 0x40, 0x08, 0xD9, 0x5C, 0x24, 0x2C, 0xD9, 0x44, 0x24, 0x24, 0xD9, 0x5B,
+			0x70, 0xD9, 0x44, 0x24, 0x28, 0xD9, 0x5B, 0x74, 0xD9, 0x44, 0x24, 0x2C, 0xD9,
+			0x5B, 0x78);
+		static_assert(nativeNotePosition.size() == 41);
+		// RunCommand holds effectsMutex around Test and Start, which serializes group access.
+		SitePatch::PatchedSiteGroup wavyNotesPatch("CROWD CONTROL");
+		bool wavyNotesUnavailable = false;
+
+		MemUtil::PatchResult InstallWavyNotesHook() {
+			if (wavyNotesUnavailable)
+				return MemUtil::PatchResult::Original;
+
+			const auto address = Offsets::ptr_wavyNotesHook.GetValue();
+			std::array<std::uint8_t, 41> replacement{};
+			if (!BuildRelativeJump(address, reinterpret_cast<std::uintptr_t>(&NotePositionHook), replacement)) {
+				SitePatch::LogUnavailable("CROWD CONTROL", "Wavy Notes", "note-position hook");
+				wavyNotesUnavailable = true;
+				return MemUtil::PatchResult::Original;
+			}
+
+			const auto site = SitePatch::MakeSite("note-position hook", address,
+				VersionedPattern<41>{ ExactPattern(nativeNotePosition), ExactPattern(nativeNotePosition) }, replacement);
+			const auto result = wavyNotesPatch.Install("Wavy Notes", SitePatch::ReadSite, site);
+			wavyNotesUnavailable = result == MemUtil::PatchResult::Original;
+			return result;
+		}
+	}
+
 	extern "C" static void ApplyWavyNotes()
 	{
 		if (wavyNotesEnabled && vec->y > -5.0f) {
@@ -57,6 +91,8 @@ namespace CrowdControl::Effects {
 
 		if (!CanStart())
 			return Enums::EffectStatus::Retry;
+		if (InstallWavyNotesHook() != MemUtil::PatchResult::Installed)
+			return Enums::EffectStatus::Unavailable;
 
 		return Enums::EffectStatus::Success;
 	}
@@ -65,6 +101,8 @@ namespace CrowdControl::Effects {
 	Enums::EffectStatus WavyNotesEffect::OnStart(const Structs::Request& request)
 	{
 		LOG_INFO("WavyNotesEffect::Start()" << std::endl);
+		if (InstallWavyNotesHook() != MemUtil::PatchResult::Installed)
+			return Enums::EffectStatus::Unavailable;
 
 		SetDuration(request);
 		running = true;

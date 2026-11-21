@@ -1,6 +1,8 @@
 #include "../stdafx.h"
 #include "SongPreviewsMod.hpp"
 
+#include <stdexcept>
+
 using Framework::ModContext;
 using Framework::SettingDef;
 using Framework::SettingDefs;
@@ -19,11 +21,16 @@ bool SongPreviewsMod::IsEnabled(const ModContext& c) const {
 }
 
 void SongPreviewsMod::OnEnabled(ModContext&) {
-    VolumeControl::DisableSongPreviewAudio();
+	const auto result = VolumeControl::DisableSongPreviewAudio();
+	if (result != MemUtil::PatchResult::Installed)
+		throw std::runtime_error(result == MemUtil::PatchResult::RollbackIncomplete
+			? "song-preview patch outcome is indeterminate"
+			: "song-preview patch was not installed");
 }
 
 void SongPreviewsMod::OnDisabled(ModContext&) {
-    VolumeControl::EnableSongPreviewAudio();
+	if (VolumeControl::EnableSongPreviewAudio() != MemUtil::PatchResult::Original)
+		throw std::runtime_error("song-preview patch rollback is indeterminate");
 }
 
 static Framework::ModRegistrar<SongPreviewsMod> _songPreviewsReg;

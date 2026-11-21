@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../QualityOfLife.hpp"
 #include "../Framework/Framework.hpp"
+#include "../SitePatchGroup.hpp"
 
 class TwoRTCBypassMod : public Framework::IMod {
 public:
@@ -16,6 +16,5 @@ public:
 private:
 	void SetTwoRTCBypass(bool enable);
 
-	bool bypassInstalled = false;
-	bool bypassNeedsResolution = false;
+	SitePatch::PatchedSiteGroup bypassPatch_{ "TWO RTC" };
 };

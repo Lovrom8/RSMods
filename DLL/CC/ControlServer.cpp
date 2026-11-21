@@ -15,6 +15,7 @@
 #include "CCEnums.hpp"
 
 #include "../D3D/D3DHooks.hpp"
+#include "../SitePatchGroup.hpp"
 
 #pragma comment(lib, "Ws2_32.lib")
 
@@ -26,9 +27,20 @@ using nlohmann::json;
 
 namespace CrowdControl {
 	namespace {
+		using namespace Framework::InstructionPatch;
+
 		std::jthread connectionThread;
 		std::jthread effectThread;
 		std::jthread objectUpdateThread;
+		// StartServer installs this once from MainThread; the effect threads never touch the group.
+		SitePatch::PatchedSiteGroup scrollSpeedPatch("CROWD CONTROL");
+
+		SiteDescriptor<3> ScrollSpeedSite(const char* name, std::uintptr_t address) {
+			const auto original = MakeBytes(0xD9, 0x43, 0x1C);
+			return SitePatch::MakeSite(name, address, VersionedPattern<3>{
+				ExactPattern(original), ExactPattern(original)
+			}, MakeBytes(0xD9, 0xE8, 0x90));
+		}
 
 		// Keep these alive until process exit. The worker threads are terminated while parked in wake.wait_for, which leaves the condition
 		// variable's internal mutex owned. The Debug CRT aborts from the static destructor, then the abort dialog can call WndProc after Settings is gone.
@@ -316,9 +328,9 @@ namespace CrowdControl {
 		effectThread = std::jthread(EffectRunThread);
 		objectUpdateThread = std::jthread(ObjectUtilUpdateThread);
 
-		// Patch scroll speed to be 10x faster
-		MemUtil::PatchAdr(Offsets::patch_scrollSpeedLTTarget, (UINT*)Offsets::patch_scrollSpeedChange, 3);
-		MemUtil::PatchAdr(Offsets::patch_scrollSpeedGTTarget, (UINT*)Offsets::patch_scrollSpeedChange, 3);
+		const auto lessThan = ScrollSpeedSite("scroll-speed less-than", Offsets::patch_scrollSpeedLTTarget.GetValue());
+		const auto greaterThan = ScrollSpeedSite("scroll-speed greater-than", Offsets::patch_scrollSpeedGTTarget.GetValue());
+		scrollSpeedPatch.Install("Scroll-speed patches", SitePatch::ReadSite, lessThan, greaterThan);
 	}
 
 	void StopServer() {

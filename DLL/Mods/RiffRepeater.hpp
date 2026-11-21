@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../MemUtil.hpp"
+
 namespace RiffRepeater {
 	// Real song speed limits, in percent. 6.25% = 1/16x, 400% = 4x.
 	inline constexpr float MinRealSpeed = 6.25f;
@@ -12,8 +14,8 @@ namespace RiffRepeater {
 	void RemoveTimeStretch();
 	void DisableTimeStretch();
 	void SyncTimeStretch();
-	void EnableLinearSpeeds();
-	void DisableLinearSpeeds();
+	MemUtil::PatchResult EnableLinearSpeeds();
+	MemUtil::PatchResult DisableLinearSpeeds();
 	bool LogSongID(const std::string& songKey);
 	void HandleSongChange(const std::string& previousSongKey);
 	void SaveSpeedToFileOnChange();

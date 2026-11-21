@@ -18,8 +18,6 @@ namespace CrowdControl::Effects {
 		explicit WavyNotesEffect(int64_t durationMilliseconds)
 		{
 			duration_ms = durationMilliseconds;
-
-			MemUtil::PlaceHook(Offsets::ptr_wavyNotesHook, NotePositionHook, 41);
 		}
 
 		std::vector<std::string> ClaimsExclusive() const override
