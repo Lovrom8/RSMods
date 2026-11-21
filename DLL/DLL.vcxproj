@@ -623,6 +623,7 @@
     <ClInclude Include="Framework\GameVersion.hpp" />
     <ClInclude Include="Framework\InstructionPatch.hpp" />
     <ClInclude Include="Framework\BootPatchBundlePolicy.hpp" />
+    <ClInclude Include="Framework\ProfilePatchPolicy.hpp" />
     <ClInclude Include="NoteData.h" />
     <ClInclude Include="ObjectUtil.hpp" />
     <ClInclude Include="CC\Effects\ShuffleTonesEffect.hpp" />

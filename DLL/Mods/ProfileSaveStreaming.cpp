@@ -5,7 +5,9 @@
 #include "../MemUtil.hpp"
 #include "../EngineString.hpp"
 #include "../SamplingProfiler.hpp"
+#include "../Framework/ProfilePatchPolicy.hpp"
 #include <TlHelp32.h>
+#include <algorithm>
 #include <atomic>
 #include <array>
 #include <condition_variable>
@@ -76,6 +78,7 @@ namespace ProfileSaveStreaming {
 			uint32_t uncompressedSize = 0;
 			Payload payload = Payload::None;
 			bool armed = false;	// The PRFLDB writer asked for the payload; the next compress2 on this thread takes it.
+			Framework::ProfilePatchPolicy::ModeLatch mode;
 		};
 
 		SaveState save;
@@ -96,6 +99,10 @@ namespace ProfileSaveStreaming {
 
 		bool SaveGroupEnabled() noexcept {
 			return g_saveGroupEnabled.load(std::memory_order_acquire);
+		}
+
+		bool SaveModeEnabled() noexcept {
+			return save.mode.Enabled();
 		}
 
 		void** VTable(void* object) {
@@ -495,7 +502,7 @@ namespace ProfileSaveStreaming {
 		/// We already have the compressed data, and the game's commit step passes an empty buffer because our JSON string is empty.
 		/// </summary>
 		uint32_t __cdecl CompressBound(uint32_t sourceLen) {
-			if (!SaveGroupEnabled())
+			if (!SaveModeEnabled())
 				return origCompressBound(sourceLen);
 			if (sourceLen == 0 && OnSaveThread() && save.payload == Payload::Streamed) {
 				save.armed = true;
@@ -509,7 +516,7 @@ namespace ProfileSaveStreaming {
 		/// Any other empty source is a cancelled save. Failing here takes the writer's own "couldn't write the file" path, so the file isn't touched.
 		/// </summary>
 		int __cdecl Compress2(uint8_t* dest, uint32_t* destLen, const uint8_t* source, uint32_t sourceLen, int level) {
-			if (!SaveGroupEnabled())
+			if (!SaveModeEnabled())
 				return origCompress2(dest, destLen, source, sourceLen, level);
 			if (sourceLen != 0)
 				return origCompress2(dest, destLen, source, sourceLen, level);
@@ -543,7 +550,7 @@ namespace ProfileSaveStreaming {
 			__asm {
 				pushfd
 				pushad
-				call SaveGroupEnabled
+				call SaveModeEnabled
 				test al, al
 				jz native
 				popad
@@ -568,7 +575,7 @@ namespace ProfileSaveStreaming {
 			__asm {
 				pushfd
 				pushad
-				call SaveGroupEnabled
+				call SaveModeEnabled
 				test al, al
 				jz native
 				popad
@@ -606,7 +613,6 @@ namespace ProfileSaveStreaming {
 		constexpr uint8_t expectedPrintRoot[] = { 0x8B, 0x45, 0xC4, 0x8B, 0x13 };
 		// cmp dword ptr [profile adapter], 0. The absolute operand differs per build: 2022 0x01374E94, LP base + 0xF75E94.
 		constexpr uint8_t expectedLoadTick[] = { 0x83, 0x3D, 0x94, 0x4E, 0x37, 0x01, 0x00 };
-		constexpr uint8_t expectedLoadTickLP[] = { 0x83, 0x3D, 0x94, 0x5E, 0x14, 0x01, 0x00 };
 		constexpr uint8_t expectedClearDocument[] = { 0x8B, 0x56, 0x14, 0x8D, 0x4E, 0x10 };
 		constexpr uint8_t expectedPlaynextTrim[] = { 0x55, 0x8B, 0xEC, 0x83, 0xEC, 0x18 };
 
@@ -621,8 +627,16 @@ namespace ProfileSaveStreaming {
 			return 0;
 		}
 
-		const uint8_t* ExpectedLoadTickBytes() {
-			return Offsets::ptr_profileLoadTick.Get() == 0x008CB326 ? expectedLoadTick : expectedLoadTickLP;
+		bool ExpectedLoadTickBytes(std::array<uint8_t, sizeof(expectedLoadTick)>& expected) {
+			const uintptr_t site = Offsets::ptr_profileLoadTick.Get();
+			if (site == 0x008CB326) {
+				memcpy(expected.data(), expectedLoadTick, sizeof(expectedLoadTick));
+				return true;
+			}
+			if (site == Offsets::baseHandle + 0x004CA986)
+				return Framework::ProfilePatchPolicy::BuildLearnAndPlayLoadTickExpected(
+					static_cast<uint32_t>(Offsets::baseHandle), expected);
+			return false;
 		}
 
 		/// <summary>
@@ -703,9 +717,8 @@ namespace ProfileSaveStreaming {
 			}
 		};
 
-		// Every other thread in the process, suspended while allocator code is rewritten. The allocator runs on all of them, so
-		// none may execute a span while it is half written. Nothing in between may allocate or log: a suspended thread can
-		// hold the heap or log lock.
+		// While peers are stopped, OS calls are limited to SuspendThread, ResumeThread, GetThreadContext,
+		// WaitForSingleObject(handle, 0), and the prepared commit. Enumeration and handle cleanup stay outside.
 		class OtherThreadsSuspended {
 		public:
 			enum class Failure { None, Snapshot, TooManyThreads, OpenLiveThread, SuspendLiveThread, Context, InPatchSpan, PassLimit };
@@ -720,11 +733,15 @@ namespace ProfileSaveStreaming {
 			struct Thread {
 				DWORD id = 0;
 				HANDLE handle = nullptr;
+				bool suspended = false;
 			};
 			static constexpr size_t maxThreads = 4096;
-			static constexpr unsigned maxPasses = 4;
 			std::array<Thread, maxThreads> threads_{};
+			// A clean probe resumes before the next snapshot, so Toolhelp never runs with peers stopped.
+			std::array<DWORD, maxThreads> previousIds_{};
 			size_t threadCount_ = 0;
+			size_t previousCount_ = 0;
+			bool havePreviousSnapshot_ = false;
 			FailureInfo failure_{};
 
 			bool SnapshotIds(std::array<DWORD, maxThreads>& ids, size_t& count) {
@@ -763,6 +780,7 @@ namespace ProfileSaveStreaming {
 					}
 				}
 				CloseHandle(snapshot);
+				std::sort(ids.begin(), ids.begin() + count);
 				return true;
 			}
 
@@ -777,27 +795,63 @@ namespace ProfileSaveStreaming {
 				return true;
 			}
 
-			bool AlreadySuspended(DWORD id) const {
-				for (size_t i = 0; i < threadCount_; ++i)
-					if (threads_[i].id == id)
-						return true;
-				return false;
+			void CloseHandles() noexcept {
+				for (size_t i = threadCount_; i > 0; --i) {
+					CloseHandle(threads_[i - 1].handle);
+					threads_[i - 1] = {};
+				}
+				threadCount_ = 0;
 			}
 
-			bool AnyInside(std::span<const std::pair<uintptr_t, size_t>> spans) {
+			bool OpenThreads(const std::array<DWORD, maxThreads>& ids, size_t idCount, unsigned pass) {
+				for (size_t i = 0; i < idCount; ++i) {
+					const DWORD id = ids[i];
+					HANDLE thread = OpenThread(THREAD_SUSPEND_RESUME | THREAD_GET_CONTEXT
+						| THREAD_QUERY_LIMITED_INFORMATION | SYNCHRONIZE, FALSE, id);
+					if (!thread) {
+						const DWORD error = GetLastError();
+						bool listed = true;
+						if (IsStillListed(id, listed) && !listed)
+							continue;
+						failure_ = { Failure::OpenLiveThread, id, error, pass };
+						CloseHandles();
+						return false;
+					}
+					threads_[threadCount_++] = { id, thread, false };
+				}
+				return true;
+			}
+
+			bool SuspendOpenedThreads(unsigned pass) {
 				for (size_t i = 0; i < threadCount_; ++i) {
+					Thread& thread = threads_[i];
+					const DWORD previousSuspendCount = SuspendThread(thread.handle);
+					if (previousSuspendCount == static_cast<DWORD>(-1)) {
+						if (WaitForSingleObject(thread.handle, 0) == WAIT_OBJECT_0)
+							continue;
+						failure_ = { Failure::SuspendLiveThread, thread.id, ERROR_GEN_FAILURE, pass };
+						return false;
+					}
+					thread.suspended = true;
+				}
+				return true;
+			}
+
+			bool AnyInside(std::span<const std::pair<uintptr_t, size_t>> spans, unsigned pass) {
+				for (size_t i = 0; i < threadCount_; ++i) {
+					if (!threads_[i].suspended)
+						continue;
 					CONTEXT context{};
 					context.ContextFlags = CONTEXT_CONTROL;
 					if (!GetThreadContext(threads_[i].handle, &context)) {
-						const DWORD error = GetLastError();
 						if (WaitForSingleObject(threads_[i].handle, 0) == WAIT_OBJECT_0)
 							continue;
-						failure_ = { Failure::Context, threads_[i].id, error, 0 };
+						failure_ = { Failure::Context, threads_[i].id, ERROR_GEN_FAILURE, pass };
 						return true;
 					}
 					for (const auto& [start, length] : spans) {
-						if (context.Eip >= start && context.Eip < start + length) {
-							failure_ = { Failure::InPatchSpan, threads_[i].id, ERROR_SUCCESS, 0 };
+						if (context.Eip >= start && context.Eip - start < length) {
+							failure_ = { Failure::InPatchSpan, threads_[i].id, ERROR_SUCCESS, pass };
 							return true;
 						}
 					}
@@ -808,76 +862,71 @@ namespace ProfileSaveStreaming {
 		public:
 			bool Suspend(std::span<const std::pair<uintptr_t, size_t>> spans) {
 				std::array<DWORD, maxThreads> ids{};
-				for (unsigned pass = 1; pass <= maxPasses; ++pass) {
+				for (unsigned pass = 1; pass <= Framework::ProfilePatchPolicy::kMaxSuspensionPasses; ++pass) {
 					size_t idCount = 0;
 					if (!SnapshotIds(ids, idCount)) {
 						failure_.pass = pass;
 						return false;
 					}
-					bool newlySuspended = false;
-					for (size_t i = 0; i < idCount; ++i) {
-						const DWORD id = ids[i];
-						if (AlreadySuspended(id))
-							continue;
-						if (threadCount_ == threads_.size()) {
-							failure_ = { Failure::TooManyThreads, id, ERROR_MORE_DATA, pass };
-							return false;
-						}
-						HANDLE thread = OpenThread(THREAD_SUSPEND_RESUME | THREAD_GET_CONTEXT
-							| THREAD_QUERY_LIMITED_INFORMATION | SYNCHRONIZE, FALSE, id);
-						if (!thread) {
-							const DWORD error = GetLastError();
-							bool listed = true;
-							if (IsStillListed(id, listed) && !listed)
-								continue;
-							failure_ = { Failure::OpenLiveThread, id, error, pass };
-							return false;
-						}
-						const DWORD previousSuspendCount = SuspendThread(thread);
-						if (previousSuspendCount == static_cast<DWORD>(-1)) {
-							const DWORD error = GetLastError();
-							if (WaitForSingleObject(thread, 0) == WAIT_OBJECT_0) {
-								CloseHandle(thread);
-								continue;
-							}
-							CloseHandle(thread);
-							failure_ = { Failure::SuspendLiveThread, id, error, pass };
-							return false;
-						}
-						threads_[threadCount_++] = { id, thread };
-						newlySuspended |= previousSuspendCount == 0;
+					const bool sameSnapshot = havePreviousSnapshot_ && idCount == previousCount_
+						&& std::equal(ids.begin(), ids.begin() + idCount, previousIds_.begin());
+					if (!havePreviousSnapshot_) {
+						std::copy(ids.begin(), ids.begin() + idCount, previousIds_.begin());
+						previousCount_ = idCount;
+						havePreviousSnapshot_ = true;
 					}
-					if (AnyInside(spans)) {
-						if (failure_.reason != Failure::InPatchSpan) {
-							failure_.pass = pass;
-							return false;
-						}
-						failure_.reason = Failure::None;
-						ResumeAll();
-						if (pass == maxPasses) {
+					else if (!sameSnapshot) {
+						std::copy(ids.begin(), ids.begin() + idCount, previousIds_.begin());
+						previousCount_ = idCount;
+						if (!Framework::ProfilePatchPolicy::CanRetrySuspension(pass)) {
 							failure_ = { Failure::PassLimit, 0, ERROR_SUCCESS, pass };
 							return false;
 						}
+						continue;
+					}
+					if (!OpenThreads(ids, idCount, pass))
+						return false;
+					if (!SuspendOpenedThreads(pass)) {
+						ResumeAll();
+						return false;
+					}
+					if (AnyInside(spans, pass)) {
+						if (failure_.reason != Failure::InPatchSpan) {
+							ResumeAll();
+							return false;
+						}
+						ResumeAll();
+						if (!Framework::ProfilePatchPolicy::CanRetrySuspension(pass)) {
+							failure_ = { Failure::PassLimit, 0, ERROR_SUCCESS, pass };
+							return false;
+						}
+						failure_ = {};
 						Sleep(10);
 						continue;
 					}
-					if (!newlySuspended)
-						return true;
-					if (pass == maxPasses) {
-						failure_ = { Failure::PassLimit, 0, ERROR_SUCCESS, pass };
-						return false;
+					if (!sameSnapshot) {
+						ResumeAll();
+						if (!Framework::ProfilePatchPolicy::CanRetrySuspension(pass)) {
+							failure_ = { Failure::PassLimit, 0, ERROR_SUCCESS, pass };
+							return false;
+						}
+						continue;
 					}
+					return true;
 				}
+				failure_ = { Failure::PassLimit, 0, ERROR_SUCCESS, Framework::ProfilePatchPolicy::kMaxSuspensionPasses };
 				return false;
 			}
 
 			void ResumeAll() noexcept {
 				for (size_t i = threadCount_; i > 0; --i) {
-					ResumeThread(threads_[i - 1].handle);
-					CloseHandle(threads_[i - 1].handle);
-					threads_[i - 1] = {};
+					Thread& thread = threads_[i - 1];
+					if (thread.suspended) {
+						ResumeThread(thread.handle);
+						thread.suspended = false;
+					}
 				}
-				threadCount_ = 0;
+				CloseHandles();
 			}
 
 			const FailureInfo& FailureDetails() const noexcept { return failure_; }
@@ -1010,13 +1059,12 @@ namespace ProfileSaveStreaming {
 			MemUtil::PatchResult outcome = MemUtil::PatchResult::Original;
 			const bool hooked = WithOthersSuspended(spans, [&] {
 				outcome = g_chunkGrowthPatches.Commit();
-				if (outcome == MemUtil::PatchResult::Installed)
-					g_chunkGrowthEnabled.store(true, std::memory_order_release);
 				return outcome == MemUtil::PatchResult::Installed;
 			});
 			g_chunkGrowthPatches.Report("(PROFILE SAVE) Allocator chunk table growth");
 			if (!hooked)
 				return;
+			g_chunkGrowthEnabled.store(true, std::memory_order_release);
 
 			LOG_INFO("(PROFILE SAVE) Allocator chunk tables grow geometrically (hook at 0x" << std::hex << site << std::dec << ")" << std::endl);
 		}
@@ -1219,13 +1267,12 @@ namespace ProfileSaveStreaming {
 			MemUtil::PatchResult outcome = MemUtil::PatchResult::Original;
 			const bool hooked = WithOthersSuspended(spans, [&] {
 				outcome = g_allocatorHintPatches.Commit();
-				if (outcome == MemUtil::PatchResult::Installed)
-					g_allocatorHintEnabled.store(true, std::memory_order_release);
 				return outcome == MemUtil::PatchResult::Installed;
 			});
 			g_allocatorHintPatches.Report("(PROFILE SAVE) Allocator chunk scan hint");
 			if (!hooked)
 				return;
+			g_allocatorHintEnabled.store(true, std::memory_order_release);
 			LOG_INFO("(PROFILE SAVE) Allocator chunk scan hint installed: scan 0x" << std::hex
 				<< scanSite + kAllocatorScanHookOffset << ", deallocate 0x" << deallocSite << ", callers 0x"
 				<< calls[0] << ", 0x" << calls[1] << ", 0x" << calls[2] << std::dec << std::endl);
@@ -1264,11 +1311,25 @@ namespace ProfileSaveStreaming {
 		tJsonParse origParse = nullptr;
 		tSaveCall origSave = nullptr;
 		std::atomic<bool> g_loadGroupEnabled{ false };
+		std::atomic<Framework::ProfilePatchPolicy::OperationMode> g_loadMode{ Framework::ProfilePatchPolicy::OperationMode::Inactive };
 		void* g_nativeLoadTick = nullptr;
 		MemUtil::PreparedPatchSet g_loadGroupPatches;
 
 		bool LoadGroupEnabled() noexcept {
 			return g_loadGroupEnabled.load(std::memory_order_acquire);
+		}
+
+		bool LoadModeEnabled() noexcept {
+			using Framework::ProfilePatchPolicy::CaptureOperationMode;
+			using Framework::ProfilePatchPolicy::OperationMode;
+
+			// The native path runs to the function epilogue; the replacement holds its mode across multiple ticks.
+			OperationMode mode = g_loadMode.load(std::memory_order_acquire);
+			if (loadState == LoadState::Idle) {
+				mode = CaptureOperationMode(LoadGroupEnabled());
+				g_loadMode.store(mode, std::memory_order_release);
+			}
+			return mode == OperationMode::Replacement;
 		}
 
 		typedef void* (*tGetAllocatorOwner)();
@@ -1392,6 +1453,7 @@ namespace ProfileSaveStreaming {
 			profileService[0x68] = 0;
 			loadState = LoadState::Idle;
 			loadIndex = -1;
+			g_loadMode.store(Framework::ProfilePatchPolicy::OperationMode::Inactive, std::memory_order_release);
 
 			const ULONGLONG now = GetTickCount64();
 			LOG_INFO("(PROFILE SAVE) Loaded profile in " << (now - loadStartTime) / 1000.0 << "s (read " << (parseStartTime - loadStartTime) / 1000.0
@@ -1403,7 +1465,7 @@ namespace ProfileSaveStreaming {
 		/// The game's profile parse call. Hand over what ParseProfile already parsed.
 		/// </summary>
 		void __cdecl Parse(void** out, int flags, const char** cursor) {
-			if (!LoadGroupEnabled()) {
+			if (g_loadMode.load(std::memory_order_acquire) != Framework::ProfilePatchPolicy::OperationMode::Replacement) {
 				origParse(out, flags, cursor);
 				return;
 			}
@@ -1436,6 +1498,7 @@ namespace ProfileSaveStreaming {
 				return;
 			}
 			save = SaveState{};
+			save.mode.Begin(SaveGroupEnabled());
 
 			const ULONGLONG start = GetTickCount64();
 			SamplingProfiler::Start(GetCurrentThreadId(), "profile_save");
@@ -1458,7 +1521,7 @@ namespace ProfileSaveStreaming {
 			__asm {
 				pushfd
 				pushad
-				call LoadGroupEnabled
+				call LoadModeEnabled
 				test al, al
 				jz native
 				popad
@@ -1702,12 +1765,21 @@ namespace ProfileSaveStreaming {
 			}
 			g_nativePrintRoot = g_saveGroupPatches.NativeEntry(2);
 			g_nativeCloneSection = g_saveGroupPatches.NativeEntry(3);
-			const MemUtil::PatchResult outcome = g_saveGroupPatches.Commit();
-			if (outcome == MemUtil::PatchResult::Installed)
-				g_saveGroupEnabled.store(true, std::memory_order_release);
+			const std::pair<uintptr_t, size_t> spans[] = {
+				{ Offsets::ptr_profileSaveCompressBoundCall.Get(), 5 },
+				{ Offsets::ptr_profileSaveCompress2Call.Get(), 5 },
+				{ Offsets::ptr_profileSavePrintRoot.Get(), sizeof(expectedPrintRoot) },
+				{ Offsets::ptr_profileSaveCloneSection.Get(), sizeof(expectedCloneSection) }
+			};
+			MemUtil::PatchResult outcome = MemUtil::PatchResult::Original;
+			const bool hooked = WithOthersSuspended(spans, [&] {
+				outcome = g_saveGroupPatches.Commit();
+				return outcome == MemUtil::PatchResult::Installed;
+			});
 			g_saveGroupPatches.Report("(PROFILE SAVE) Streaming save group");
-			if (outcome != MemUtil::PatchResult::Installed)
+			if (!hooked)
 				return;
+			g_saveGroupEnabled.store(true, std::memory_order_release);
 
 			LOG_INFO("(PROFILE SAVE) Streaming profile saves" << std::endl);
 		}
@@ -1716,12 +1788,16 @@ namespace ProfileSaveStreaming {
 			const uintptr_t expectedTarget = ExpectedCallTarget(Offsets::ptr_profileParseCall, 0x00896CDC, 0x00889010, 0x0049681C, 0x00488A90);
 
 			origParse = reinterpret_cast<tJsonParse>(expectedTarget);
-			const uint8_t* expectedTick = ExpectedLoadTickBytes();
+			std::array<uint8_t, sizeof(expectedLoadTick)> expectedTick{};
+			if (!ExpectedLoadTickBytes(expectedTick)) {
+				LOG_WARNING("(PROFILE SAVE) Profile load tick site was not a supported build, leaving background loading off" << std::endl);
+				return false;
+			}
 			const std::array<MemUtil::PreparedPatchRequest, 2> requests = {{
 				{ reinterpret_cast<LPVOID>(Offsets::ptr_profileParseCall.Get()), MemUtil::PreparedPatchKind::Call,
 					{}, expectedTarget, reinterpret_cast<uintptr_t>(Parse), true },
 				{ reinterpret_cast<LPVOID>(Offsets::ptr_profileLoadTick.Get()), MemUtil::PreparedPatchKind::Jump,
-					std::span<const unsigned char>(expectedTick, sizeof(expectedLoadTick)), 0,
+					std::span<const unsigned char>(expectedTick), 0,
 					reinterpret_cast<uintptr_t>(loadTickHook), true }
 			}};
 			if (!g_loadGroupPatches.Prepare(requests)) {
@@ -1729,12 +1805,19 @@ namespace ProfileSaveStreaming {
 				return false;
 			}
 			g_nativeLoadTick = g_loadGroupPatches.NativeEntry(1);
-			const MemUtil::PatchResult outcome = g_loadGroupPatches.Commit();
-			if (outcome == MemUtil::PatchResult::Installed)
-				g_loadGroupEnabled.store(true, std::memory_order_release);
+			const std::pair<uintptr_t, size_t> spans[] = {
+				{ Offsets::ptr_profileParseCall.Get(), 5 },
+				{ Offsets::ptr_profileLoadTick.Get(), sizeof(expectedLoadTick) }
+			};
+			MemUtil::PatchResult outcome = MemUtil::PatchResult::Original;
+			const bool hooked = WithOthersSuspended(spans, [&] {
+				outcome = g_loadGroupPatches.Commit();
+				return outcome == MemUtil::PatchResult::Installed;
+			});
 			g_loadGroupPatches.Report("(PROFILE SAVE) Background load group");
-			if (outcome != MemUtil::PatchResult::Installed)
+			if (!hooked)
 				return false;
+			g_loadGroupEnabled.store(true, std::memory_order_release);
 
 			LOG_INFO("(PROFILE SAVE) Loading profiles in the background" << std::endl);
 			return true;

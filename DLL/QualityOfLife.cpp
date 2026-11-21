@@ -1,10 +1,79 @@
 #include "stdafx.h"
 #include "QualityOfLife.hpp"
 #include "EngineString.hpp"
+#include "Framework/InstructionPatch.hpp"
+#include "LnpSites.hpp"
+#include "VersioningStruct.h"
 
 #include <unordered_map>
 
 namespace {
+	using namespace Framework::InstructionPatch;
+
+	const auto readSite = [](std::uintptr_t address, auto& bytes) {
+		return MemUtil::TryRead(address, bytes);
+	};
+	const auto writeSite = [](std::uintptr_t address, const auto& bytes) {
+		return FromWriteResult(MemUtil::WritePatch(reinterpret_cast<LPVOID>(address), bytes.data(), bytes.size()),
+			MemUtil::PatchResult::Installed, MemUtil::PatchResult::Original, MemUtil::PatchResult::RollbackIncomplete);
+	};
+
+	template <std::size_t Size>
+	PatchedSite<Size> MakeSite(const char* name, std::uintptr_t address, const VersionedPattern<Size>& patterns,
+		std::size_t writeOffset = 0, std::size_t writeSize = Size) {
+		return { name, address, GameVersion::Current(), patterns, writeOffset, writeSize };
+	}
+
+	template <std::size_t Size>
+	BytePattern<Size> ExpandLnpPattern(const char* text, const std::array<std::uint8_t, Size>& mask) {
+		std::vector<unsigned char> expanded;
+		if (!LnpSites::Expand(text, static_cast<std::uint32_t>(GameVersion::ModuleBase()), expanded)
+			|| expanded.size() != Size)
+			return UnavailablePattern<Size>();
+		std::array<std::uint8_t, Size> bytes{};
+		std::copy(expanded.begin(), expanded.end(), bytes.begin());
+		return MaskedPattern(bytes, mask);
+	}
+
+	template <std::size_t Size>
+	void LogOriginal(const char* name, std::uintptr_t address, const std::array<std::uint8_t, Size>& bytes) {
+		std::ostringstream text;
+		for (std::uint8_t byte : bytes)
+			text << std::hex << static_cast<unsigned int>(byte) << ' ';
+		LOG_INFO("(QOL) " << name << " original at 0x" << std::hex << address << ": " << text.str() << std::endl);
+	}
+
+	const auto logOriginal = [](const char* name, std::uintptr_t address, const auto& bytes) {
+		LogOriginal(name, address, bytes);
+	};
+
+	void LogPatchResult(const char* action, const Result& result) {
+		if (result.outcome == Outcome::Installed) {
+			if (result.changed)
+				LOG_INFO("(QOL) " << action << " confirmed" << std::endl);
+		}
+		else if (result.outcome == Outcome::RollbackIncomplete) {
+			LOG_ERROR("(QOL) " << action << " outcome is indeterminate at "
+				<< (result.site ? result.site : "patch group") << std::endl);
+		}
+		else if (result.failure != Failure::None) {
+			LOG_WARNING("(QOL) " << action << " left unchanged at "
+				<< (result.site ? result.site : "patch group") << ": " << FailureName(result.failure) << std::endl);
+		}
+	}
+
+	PatchedSite<25>& TwoRtcSite() {
+		constexpr auto mask = MakeBytes(0xFF, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0x00,
+			0xFF, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+			0xFF, 0x00, 0x00, 0x00, 0x00);
+		static auto site = MakeSite("two-RTC connection check", Offsets::ptr_twoRTCBypass.GetValue(), VersionedPattern<25>{
+			MaskedPattern(MakeBytes(0xE8, 0x7C, 0x22, 0xE2, 0xFF, 0x84, 0xC0, 0x74, 0x6B, 0xBA,
+				0x34, 0xFE, 0x1C, 0x01, 0x8D, 0xB3, 0x4C, 0x01, 0x00, 0x00, 0xE8, 0xD8, 0xD8, 0xC4, 0xFF), mask),
+			ExpandLnpPattern<25>("E8 9C 24 E2 FF 84 C0 74 6B BA @DD165C 8D B3 4C 01 00 00 E8 18 CA C4 FF", mask)
+		});
+		return site;
+	}
+
 	// A menu only finishes loading once its object is ready AND its Flash movie exists. The movie is only made once the game
 	// answers the menu's request for its movie file, and it only answers if it can find that file in its index of the game's
 	// files. When the intro ends, the game (re)builds that index in the background, which takes a second or two (longer on slow
@@ -180,14 +249,20 @@ namespace {
 }
 
 namespace QualityOfLife {
-	/// <summary>
-	/// Patches Two RTC cables error message.
-	/// </summary>
-	void PatchTwoRTC()
+	Framework::InstructionPatch::Result PatchTwoRTC(bool enable)
 	{
-		char patch[25];
-		std::fill_n(patch, 25, static_cast<char>(0x90));
-		MemUtil::PatchAdr(Offsets::ptr_twoRTCBypass, patch, sizeof(patch));
+		auto& site = TwoRtcSite();
+		if (enable) {
+			const auto result = site.Install(readSite, writeSite, MakeBytes(
+				0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90,
+				0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90,
+				0x90, 0x90, 0x90, 0x90, 0x90), logOriginal);
+			LogPatchResult("Two-RTC bypass", result);
+			return result;
+		}
+		const auto result = site.Restore(readSite, writeSite, logOriginal);
+		LogPatchResult("Two-RTC restore", result);
+		return result;
 	}
 
 	/// <summary>
@@ -259,9 +334,14 @@ namespace QualityOfLife {
 	/// The game reads the floor when note detection starts, so this has to be patched early.
 	/// </summary>
 	void LowerNoteDetectionFloor() {
-		MemUtil::PatchAdr(Offsets::ptr_noteDetectionFloor, "\x12", 1);
-
-		LOG_INFO("Lowered note detection floor" << std::endl);
+		const std::uintptr_t immediate = Offsets::ptr_noteDetectionFloor.GetValue();
+		static auto site = MakeSite("note-detection floor", immediate ? immediate - 6 : 0, VersionedPattern<10>{
+			ExactPattern(MakeBytes(0xC7, 0x83, 0xF4, 0x11, 0x00, 0x00, 0x18, 0x00, 0x00, 0x00)),
+			ExactPattern(MakeBytes(0xC7, 0x83, 0xF4, 0x11, 0x00, 0x00, 0x18, 0x00, 0x00, 0x00))
+		}, 6, 1);
+		const auto result = site.Install(readSite, writeSite,
+			MakeBytes(0xC7, 0x83, 0xF4, 0x11, 0x00, 0x00, 0x12, 0x00, 0x00, 0x00), logOriginal);
+		LogPatchResult("Note-detection floor", result);
 	}
 
 	/// <summary>
@@ -277,19 +357,23 @@ namespace QualityOfLife {
 			return;
 		}
 
-		// Movie setup first, so every menu movie is known before anything can be retried.
-		if (!MemUtil::PlaceHook(Offsets::ptr_menuMovieSetup, menuMovieSetupHook, 6)) {
-			LOG_ERROR("(QOL) Fast Load soft lock retry: failed to hook menu movie setup" << std::endl);
+		static auto movieSite = MakeSite("menu movie setup", Offsets::ptr_menuMovieSetup.GetValue(), VersionedPattern<6>{
+			ExactPattern(MakeBytes(0x55, 0x8B, 0xEC, 0x83, 0xE4, 0xF8)),
+			ExactPattern(MakeBytes(0x55, 0x8B, 0xEC, 0x83, 0xE4, 0xF8))
+		});
+		static auto loadSite = MakeSite("menu load update", Offsets::ptr_menuLoadUpdate.GetValue(), VersionedPattern<6>{
+			ExactPattern(MakeBytes(0x55, 0x8B, 0xEC, 0x83, 0xE4, 0xF8)),
+			ExactPattern(MakeBytes(0x55, 0x8B, 0xEC, 0x83, 0xE4, 0xF8))
+		});
+		std::array<std::uint8_t, 6> movieJump{};
+		std::array<std::uint8_t, 6> loadJump{};
+		if (!BuildRelativeJump(movieSite.Address(), reinterpret_cast<std::uintptr_t>(&menuMovieSetupHook), movieJump)
+			|| !BuildRelativeJump(loadSite.Address(), reinterpret_cast<std::uintptr_t>(&menuLoadUpdateHook), loadJump)) {
+			LogPatchResult("Fast Load soft-lock retry", { Outcome::Original, Failure::Unavailable, "menu hooks" });
 			return;
 		}
-		FlushInstructionCache(GetCurrentProcess(), reinterpret_cast<void*>(menuMovieSetup), 6);
-
-		if (!MemUtil::PlaceHook(Offsets::ptr_menuLoadUpdate, menuLoadUpdateHook, 6)) {
-			LOG_ERROR("(QOL) Fast Load soft lock retry: failed to hook the menu load update" << std::endl);
-			return;
-		}
-		FlushInstructionCache(GetCurrentProcess(), reinterpret_cast<void*>(menuLoadUpdate), 6);
-
-		LOG_INFO("(QOL) Fast Load soft lock retry installed" << std::endl);
+		movieSite.SetReplacement(movieJump);
+		loadSite.SetReplacement(loadJump);
+		LogPatchResult("Fast Load soft-lock retry", InstallGroup(readSite, writeSite, logOriginal, movieSite, loadSite));
 	}
 }

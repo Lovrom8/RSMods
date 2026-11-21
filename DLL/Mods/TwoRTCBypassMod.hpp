@@ -16,6 +16,6 @@ public:
 private:
 	void SetTwoRTCBypass(bool enable);
 
-	unsigned char originalBytes[25]{};
-	bool capturedOriginal = false;
+	bool bypassInstalled = false;
+	bool bypassNeedsResolution = false;
 };

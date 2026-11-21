@@ -1,5 +1,53 @@
 #include "../stdafx.h"
 #include "AudioDevices.hpp"
+#include "../Framework/InstructionPatch.hpp"
+#include "../VersioningStruct.h"
+
+namespace {
+	using namespace Framework::InstructionPatch;
+
+	const auto readSite = [](std::uintptr_t address, auto& bytes) {
+		return MemUtil::TryRead(address, bytes);
+	};
+	const auto writeSite = [](std::uintptr_t address, const auto& bytes) {
+		return FromWriteResult(MemUtil::WritePatch(reinterpret_cast<LPVOID>(address), bytes.data(), bytes.size()),
+			MemUtil::PatchResult::Installed, MemUtil::PatchResult::Original, MemUtil::PatchResult::RollbackIncomplete);
+	};
+
+	template <std::size_t Size>
+	PatchedSite<Size> MakeSite(const char* name, std::uintptr_t address, const VersionedPattern<Size>& patterns) {
+		return { name, address, GameVersion::Current(), patterns };
+	}
+
+	template <std::size_t Size>
+	void LogOriginal(const char* name, std::uintptr_t address, const std::array<std::uint8_t, Size>& bytes) {
+		std::ostringstream text;
+		for (std::uint8_t byte : bytes)
+			text << std::hex << static_cast<unsigned int>(byte) << ' ';
+		LOG_INFO("(AUDIO DEVICES) " << name << " original at 0x" << std::hex << address << ": " << text.str() << std::endl);
+	}
+
+	const auto logOriginal = [](const char* name, std::uintptr_t address, const auto& bytes) {
+		LogOriginal(name, address, bytes);
+	};
+
+	void LogResult(const Framework::InstructionPatch::Result& result) {
+		using Framework::InstructionPatch::Failure;
+		using Framework::InstructionPatch::Outcome;
+		if (result.outcome == Outcome::Installed) {
+			if (result.changed)
+				LOG_INFO("(AUDIO DEVICES) Output sample-rate hooks installed" << std::endl);
+		}
+		else if (result.outcome == Outcome::RollbackIncomplete) {
+			LOG_ERROR("(AUDIO DEVICES) Output sample-rate hook group is indeterminate at "
+				<< (result.site ? result.site : "patch group") << std::endl);
+		}
+		else if (result.failure != Failure::None) {
+			LOG_WARNING("(AUDIO DEVICES) Output sample-rate hooks left unchanged at "
+				<< (result.site ? result.site : "patch group") << ": " << FailureName(result.failure) << std::endl);
+		}
+	}
+}
 
 /// <summary>
 /// Setup active microphones map with all the available microphones and their respective IDs.
@@ -283,6 +331,22 @@ void __declspec(naked) hook_sampleRate_FixDivZeroCrash() {
 /// Must be run on boot. Has no effect when run after the audio engine has initialized.
 /// </summary>
 void AudioDevices::ChangeOutputSampleRate() {
-	MemUtil::PlaceHook(Offsets::ptr_sampleRateRequirementAudioOutput, hook_changeSampleRate, 5);
-	MemUtil::PlaceHook(Offsets::ptr_sampleRateDivZeroCrash, hook_sampleRate_FixDivZeroCrash, 5);
+	static auto requirementSite = MakeSite("sample-rate requirement", Offsets::ptr_sampleRateRequirementAudioOutput.GetValue(), VersionedPattern<5>{
+		ExactPattern(MakeBytes(0xB8, 0x80, 0xBB, 0x00, 0x00)),
+		UnavailablePattern<5>()
+	});
+	static auto divideSite = MakeSite("sample-rate divide guard", Offsets::ptr_sampleRateDivZeroCrash.GetValue(), VersionedPattern<5>{
+		ExactPattern(MakeBytes(0xF7, 0xF3, 0xC1, 0xEE, 0x10)),
+		ExactPattern(MakeBytes(0xF7, 0xF3, 0xC1, 0xEE, 0x10))
+	});
+	std::array<std::uint8_t, 5> requirementJump{};
+	std::array<std::uint8_t, 5> divideJump{};
+	if (!BuildRelativeJump(requirementSite.Address(), reinterpret_cast<std::uintptr_t>(&hook_changeSampleRate), requirementJump)
+		|| !BuildRelativeJump(divideSite.Address(), reinterpret_cast<std::uintptr_t>(&hook_sampleRate_FixDivZeroCrash), divideJump)) {
+		LogResult({ Outcome::Original, Failure::Unavailable, "sample-rate hook address" });
+		return;
+	}
+	requirementSite.SetReplacement(requirementJump);
+	divideSite.SetReplacement(divideJump);
+	LogResult(InstallGroup(readSite, writeSite, logOriginal, requirementSite, divideSite));
 }

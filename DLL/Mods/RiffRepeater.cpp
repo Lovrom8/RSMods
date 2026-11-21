@@ -1,32 +1,71 @@
 #include "../stdafx.h"
 #include "../Framework/InstructionPatch.hpp"
+#include "../LnpSites.hpp"
+#include "../VersioningStruct.h"
 #include "RiffRepeater.hpp"
 
 namespace {
-	using RiffInstruction = std::array<std::uint8_t, 6>;
-	constexpr std::array<std::uint8_t, 2> kRiffInstructionShape{ 0xDD, 0x05 };
-	RiffInstruction originalRiffInstruction{};
-	bool riffOriginalCaptured = false;
+	using namespace Framework::InstructionPatch;
 
-	void LogRiffPatchResult(const char* action, MemUtil::PatchResult result) {
-		switch (result) {
-		case MemUtil::PatchResult::Installed:
-			LOG_INFO("(RIFF REPEATER) " << action << " bytes confirmed" << std::endl);
-			break;
-		case MemUtil::PatchResult::Original:
-			LOG_WARNING("(RIFF REPEATER) " << action << " write not applied; previous bytes confirmed" << std::endl);
-			break;
-		case MemUtil::PatchResult::RollbackIncomplete:
-			LOG_ERROR("(RIFF REPEATER) " << action << " outcome is indeterminate" << std::endl);
-			break;
-		}
+	const auto readSite = [](std::uintptr_t address, auto& bytes) {
+		return MemUtil::TryRead(address, bytes);
+	};
+	const auto writeSite = [](std::uintptr_t address, const auto& bytes) {
+		return FromWriteResult(MemUtil::WritePatch(reinterpret_cast<LPVOID>(address), bytes.data(), bytes.size()),
+			MemUtil::PatchResult::Installed, MemUtil::PatchResult::Original, MemUtil::PatchResult::RollbackIncomplete);
+	};
+
+	template <std::size_t Size>
+	PatchedSite<Size> MakeSite(const char* name, std::uintptr_t address, const VersionedPattern<Size>& patterns) {
+		return { name, address, GameVersion::Current(), patterns };
 	}
 
-	void LogRiffOriginal(const RiffInstruction& bytes) {
+	template <std::size_t Size>
+	BytePattern<Size> ExpandLnpPattern(const char* text, const std::array<std::uint8_t, Size>& mask) {
+		std::vector<unsigned char> expanded;
+		if (!LnpSites::Expand(text, static_cast<std::uint32_t>(GameVersion::ModuleBase()), expanded)
+			|| expanded.size() != Size)
+			return UnavailablePattern<Size>();
+		std::array<std::uint8_t, Size> bytes{};
+		std::copy(expanded.begin(), expanded.end(), bytes.begin());
+		return MaskedPattern(bytes, mask);
+	}
+
+	template <std::size_t Size>
+	void LogOriginal(const char* name, std::uintptr_t address, const std::array<std::uint8_t, Size>& bytes) {
 		std::ostringstream text;
 		for (std::uint8_t byte : bytes)
 			text << std::hex << static_cast<unsigned int>(byte) << ' ';
-		LOG_INFO("(RIFF REPEATER) Linear speed original: " << text.str() << std::endl);
+		LOG_INFO("(RIFF REPEATER) " << name << " original at 0x" << std::hex << address << ": " << text.str() << std::endl);
+	}
+
+	const auto logOriginal = [](const char* name, std::uintptr_t address, const auto& bytes) {
+		LogOriginal(name, address, bytes);
+	};
+
+	void LogResult(const char* action, const Result& result) {
+		if (result.outcome == Outcome::Installed) {
+			if (result.changed)
+				LOG_INFO("(RIFF REPEATER) " << action << " confirmed" << std::endl);
+		}
+		else if (result.outcome == Outcome::RollbackIncomplete) {
+			LOG_ERROR("(RIFF REPEATER) " << action << " outcome is indeterminate at "
+				<< (result.site ? result.site : "linear-speed site") << std::endl);
+		}
+		else if (result.failure != Failure::None) {
+			LOG_WARNING("(RIFF REPEATER) " << action << " left unchanged at "
+				<< (result.site ? result.site : "linear-speed site") << ": " << FailureName(result.failure) << std::endl);
+		}
+	}
+
+	using RiffInstruction = std::array<std::uint8_t, 6>;
+	PatchedSite<6>& RiffSite() {
+		constexpr auto mask = MakeBytes(0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00);
+		static auto site = MakeSite("linear-speed instruction", Offsets::ptr_timeStretchCalculations.GetValue(), VersionedPattern<6>{
+			MaskedPattern(MakeBytes(0xDD, 0x05, 0xB8, 0x43, 0x22, 0x01), mask),
+			ExpandLnpPattern<6>("DD 05 @E05C50", mask)
+		});
+		return site;
 	}
 }
 
@@ -202,89 +241,37 @@ void __declspec(naked) hook_timeStretchCalculations() {
 /// Enables the fixes that make Riff Repeater speeds linear. 68% on the slider -> 68% song speed.
 /// </summary>
 void RiffRepeater::EnableLinearSpeeds() {
-	const uintptr_t site = Offsets::ptr_timeStretchCalculations.Get();
-	RiffInstruction current{};
+	auto& site = RiffSite();
 	RiffInstruction hookBytes{};
-	if (!site || !MemUtil::TryRead(site, current)
-		|| !Framework::InstructionPatch::BuildRelativeJump(site,
-			reinterpret_cast<uintptr_t>(&hook_timeStretchCalculations), hookBytes)) {
-		LOG_WARNING("(RIFF REPEATER) Linear speed site could not be read or mapped" << std::endl);
+	if (!BuildRelativeJump(site.Address(), reinterpret_cast<std::uintptr_t>(&hook_timeStretchCalculations), hookBytes)) {
+		LogResult("Linear-speed install", { Outcome::Original, Failure::Unavailable, site.Name() });
 		return;
 	}
-	if (Framework::InstructionPatch::IsOwnedReplacement(riffOriginalCaptured, current, hookBytes)) {
+	const auto result = site.Install(readSite, writeSite, hookBytes, logOriginal);
+	if (result.outcome == Outcome::Installed)
 		currentlyEnabled_LinearRR = true;
-		return;
-	}
-
-	if (riffOriginalCaptured) {
-		if (current != originalRiffInstruction) {
-			LOG_WARNING("(RIFF REPEATER) Linear speed site changed; no patch applied" << std::endl);
-			return;
-		}
-	}
-	else if (!Framework::InstructionPatch::CaptureOriginal(current, kRiffInstructionShape, originalRiffInstruction)) {
-		LOG_WARNING("(RIFF REPEATER) Linear speed instruction shape mismatch; no patch applied" << std::endl);
-		return;
-	}
-	else {
-		riffOriginalCaptured = true;
-	}
-
-	LogRiffOriginal(originalRiffInstruction);
-	const auto result = MemUtil::WritePatch(reinterpret_cast<LPVOID>(site), hookBytes.data(), hookBytes.size());
-	LogRiffPatchResult("Linear speed install", result);
-	switch (result) {
-	case MemUtil::PatchResult::Installed:
-		currentlyEnabled_LinearRR = true;
-		break;
-	case MemUtil::PatchResult::Original:
+	else if (result.outcome == Outcome::Original && result.failure == Failure::WriteRejected)
 		currentlyEnabled_LinearRR = false;
-		break;
-	case MemUtil::PatchResult::RollbackIncomplete:
-		break;
-	}
+	LogResult("Linear-speed install", result);
 }
 
 /// <summary>
 /// Reverts back to the default way to handle Riff Repeater speeds. 68% on the slider -> 50% song speed.
 /// </summary>
 void RiffRepeater::DisableLinearSpeeds() {
-	if (!riffOriginalCaptured) {
-		LOG_WARNING("(RIFF REPEATER) No captured original bytes; site was not restored" << std::endl);
-		return;
-	}
-
-	const uintptr_t site = Offsets::ptr_timeStretchCalculations.Get();
-	RiffInstruction current{};
+	auto& site = RiffSite();
 	RiffInstruction hookBytes{};
-	if (!site || !MemUtil::TryRead(site, current)
-		|| !Framework::InstructionPatch::BuildRelativeJump(site,
-			reinterpret_cast<uintptr_t>(&hook_timeStretchCalculations), hookBytes)) {
-		LOG_WARNING("(RIFF REPEATER) Linear speed site could not be read or mapped" << std::endl);
+	if (!BuildRelativeJump(site.Address(), reinterpret_cast<std::uintptr_t>(&hook_timeStretchCalculations), hookBytes)) {
+		LogResult("Linear-speed restore", { Outcome::Original, Failure::Unavailable, site.Name() });
 		return;
 	}
-	if (current == originalRiffInstruction) {
+	site.SetReplacement(hookBytes);
+	const auto result = site.Restore(readSite, writeSite, logOriginal);
+	if (result.outcome == Outcome::Installed)
 		currentlyEnabled_LinearRR = false;
-		return;
-	}
-	if (!Framework::InstructionPatch::IsOwnedReplacement(riffOriginalCaptured, current, hookBytes)) {
-		LOG_WARNING("(RIFF REPEATER) Linear speed site no longer holds our replacement; no restore made" << std::endl);
-		return;
-	}
-
-	const auto result = MemUtil::WritePatch(reinterpret_cast<LPVOID>(site),
-		originalRiffInstruction.data(), originalRiffInstruction.size());
-	LogRiffPatchResult("Linear speed restore", result);
-	switch (result) {
-	case MemUtil::PatchResult::Installed:
-		currentlyEnabled_LinearRR = false;
-		break;
-	case MemUtil::PatchResult::Original:
+	else if (result.outcome == Outcome::Original && result.failure == Failure::WriteRejected)
 		currentlyEnabled_LinearRR = true;
-		break;
-	case MemUtil::PatchResult::RollbackIncomplete:
-		break;
-	}
+	LogResult("Linear-speed restore", result);
 }
 
 void RiffRepeater::HandleSongChange(const std::string& previousSongKey) {
