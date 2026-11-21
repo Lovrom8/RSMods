@@ -10,7 +10,7 @@ $exe = Join-Path $outputPath 'MemoryProtectionTests.exe'
 $detours = Join-Path $PSScriptRoot '../../../Lib/Detours/detours.lib'
 & cmd /c "call `"$vcvars`" -vcvars_ver=14.29 >nul 2>nul && cl /nologo /std:c++latest /EHsc /W4 /WX /MT /O2 /Gy /GL /Fo:`"$outputPath/`" `"$source`" /Fe:`"$exe`" /link /OPT:REF /MANIFEST:EMBED `"$detours`" advapi32.lib"
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-foreach ($mode in @('wine_get_version', 'wine_get_build_id', 'wine_get_host_version', 'HKCU', 'HKLM', 'native')) {
+foreach ($mode in @('wine_get_version', 'wine_get_build_id', 'wine_get_host_version', 'native')) {
     & $exe $mode
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 }

@@ -1882,6 +1882,10 @@ namespace ProfileSaveStreaming {
 			return;
 		}
 
+		// The read and decompress before the parse still run on the main thread and can take seconds on a big profile;
+		// keep Windows from swapping the window for a "Not Responding" ghost meanwhile.
+		DisableProcessWindowsGhosting();
+
 		const bool numberHashHooked = JsonNumberHash::Install();
 		InitializeChunkTableGrowth();
 		InitializeAllocatorScanHint();

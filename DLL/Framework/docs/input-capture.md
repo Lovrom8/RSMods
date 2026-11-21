@@ -33,7 +33,7 @@ inside the hook, restore) is `MemUtil::VTablePatcher`. `EndScene` sets the flag 
 **Keyboard** goes through `WndProc` instead. While the menu is open and an ImGui widget is active
 (a text field being typed into, a slider being dragged), key messages stop there, so they can't also
 fire mod hotkeys. The test is `ImGui::IsAnyItemActive()`, not `io.WantCaptureKeyboard`: keyboard nav
-is on, which makes the latter true whenever the menu has focus, and that would swallow the Backspace
+is on, which makes the latter true whenever the menu has focus, and that would swallow the F9
 that closes the menu.
 
 Mods don't call this. Anything drawn through `MenuRegistry` is inside the menu, so the host's flag

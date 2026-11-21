@@ -39,14 +39,6 @@ namespace Keybindings {
 			[](const Framework::ModContext&, const Framework::KeyEvent& event) {
 				return event.control;
 			});
-		commands.BindKey(nullptr, "ToggleDebugMenu", VK_BACK, Framework::KeyEdge::Up,
-			Framework::Availability::Initialized,
-			[](Framework::ModContext&, const Framework::KeyEvent&) {
-				Menu::menuEnabled = !Menu::menuEnabled;
-			},
-			[](const Framework::ModContext&, const Framework::KeyEvent&) {
-				return D3DHooks::debug;
-			});
 	}
 
 	void UpdateSettingsOnGUIChange(LPARAM lParam) {

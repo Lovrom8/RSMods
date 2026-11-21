@@ -236,7 +236,6 @@ namespace {
 SettingDefs ProfileAutoLoadMod::Settings() const {
 	return {
 		SettingDef::Toggle(Setting::ProfileAutoLoad, "ProfileAutoLoad", "Load Profile Automatically", "Mod Settings", "Mod Settings", "on")
-			.MigratesFrom("Toggle Switches", "ForceProfileLoad")
 			.Hint("Loads your profile at startup without the profile screen.\n"
 				"Turn it off if you see problems with your profile at startup.")
 			.Heading(Framework::SettingHeading::SongsAndProfiles),

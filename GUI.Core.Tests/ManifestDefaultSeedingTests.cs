@@ -6,10 +6,10 @@ namespace RSMods.Core.Tests;
 public sealed class ManifestDefaultSeedingTests
 {
     [Theory]
-    [InlineData(null, "off")]
+    [InlineData(null, "on")]
     [InlineData("on", "on")]
     [InlineData("off", "off")]
-    public void ProfileMigrationSurvivesGuiSave(string? explicitValue, string expected)
+    public void LegacyForceProfileLoadDoesNotDecideAutoload(string? explicitValue, string expected)
     {
         using var directory = new TemporaryDirectory();
         string path = directory.File("RSMods.ini");

@@ -567,13 +567,8 @@ namespace {
 			for (const char* name : { "wine_get_version", "wine_get_build_id" })
 				if (GetProcAddress(ntdll, name)) return "Wine";
 		}
-		for (HKEY root : { HKEY_LOCAL_MACHINE, HKEY_CURRENT_USER }) {
-			HKEY key = nullptr;
-			if (RegOpenKeyExW(root, L"Software\\Wine", 0, KEY_READ, &key) == ERROR_SUCCESS) {
-				RegCloseKey(key);
-				return "Wine";
-			}
-		}
+		// No registry probe: this runs under the loader lock on every boot. A Wine build that hides
+		// its ntdll exports is covered by [Platform] HostOverride = wine.
 		return "Windows";
 	}
 

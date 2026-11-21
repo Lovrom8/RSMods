@@ -3,8 +3,8 @@
 #include "BootIntro.hpp"
 
 namespace {
-	// Title Tick is slot +0x18; wait for input-ready state 0x12 before Begin.
-	// State 0x11 is loaded but hidden.
+	// Title Tick is slot +0x18. State 0x11 is loaded but hidden, 0x12 input-ready after the transition.
+	// Begin at 0x11 so the title never has to appear.
 	uintptr_t titleVtable = 0;
 	uintptr_t titleTickSlot = 0;
 	uintptr_t titleTick = 0;
@@ -24,10 +24,9 @@ namespace {
 	using BeginFn = bool(__thiscall*)(void* connect, unsigned int player, unsigned int inputUser);
 
 	bool accepted = false;
-	// Retry a refused Begin only after a new readiness edge.
+	// Retry a refused Begin only after a new readiness edge: becoming ready, or moving from hidden to input-ready.
 	bool wasReady = false;
-	// Shared by title Tick and autosave thunk on the game thread.
-	volatile unsigned char skipSignIn = 0;
+	int readyState = 0;
 
 	template <typename T>
 	bool Read(uintptr_t address, T& value) {
@@ -37,19 +36,16 @@ namespace {
 		return true;
 	}
 
-	bool SignInBypassOn() {
-		return Settings::ReturnSettingValue(Settings::Setting::UplayLogin) != "ask";
-	}
-
 	void TryBegin(uintptr_t title) {
 		uintptr_t vtable = 0;
 		int state = 0;
 		unsigned char input = 0;
 		const bool ready = Read(title, vtable) && vtable == titleVtable
-			&& Read(title + off_state, state) && state == stateInputReady
+			&& Read(title + off_state, state) && (state == stateLoadedHidden || state == stateInputReady)
 			&& Read(title + off_inputEnabled, input) && input != 0;
-		const bool edge = ready && !wasReady;
+		const bool edge = ready && state != readyState;
 		wasReady = ready;
+		readyState = ready ? state : 0;
 		if (!edge)
 			return;
 
@@ -63,16 +59,16 @@ namespace {
 
 		accepted = reinterpret_cast<BeginFn>(begin)(reinterpret_cast<void*>(connect), 0, 0);
 		if (accepted)
-			LOG_INFO("(NATIVE BEGIN) Sign-in started from the title" << std::endl);
+			LOG_INFO("(NATIVE BEGIN) Sign-in started from the " << (state == stateLoadedHidden ? "hidden " : "") << "title" << std::endl);
 		else
 			LOG_INFO("(NATIVE BEGIN) Sign-in refused, waiting for the title to be ready again" << std::endl);
 	}
 
-	// Skip the warning after flushing pending profile writes through the native save path.
+	// Skip the four-second autosave warning after flushing pending profile writes through the native save path.
+	// Independent of the Uplay Login choice, which only decides the Ubisoft dialogs.
 	// SaveProfile takes the manager on stack, ret 4; SignInFlowComplete has no arguments.
 	uintptr_t armWarning = 0;
 	constexpr unsigned char armWarningBytes[] = { 0xC6, 0x43, 0x18, 0x01, 0xEB, 0x57 };
-	uintptr_t armWarningJumpTarget = 0;
 	uintptr_t gameService = 0;
 	constexpr uintptr_t off_saveManager = 0x30;
 	constexpr uintptr_t off_flushGate = 0x0C;
@@ -137,22 +133,15 @@ namespace {
 
 	__declspec(naked) void SignInCompleteThunk() {
 		__asm {
-			cmp byte ptr [skipSignIn], 0
-			je native
 			call SaveBeforeMenu
 			call dword ptr [signInFlowCompleteCall]
 			jmp dword ptr [handlerTailJump]
-		native:
-			mov byte ptr [ebx + 0x18], 1
-			jmp dword ptr [armWarningJumpTarget]
 		}
 	}
 
 	int __fastcall TitleTick(void* title, void*) {
-		if (!accepted) {
-			skipSignIn = SignInBypassOn() ? 1 : 0;
+		if (!accepted)
 			TryBegin(reinterpret_cast<uintptr_t>(title));
-		}
 		const int result = reinterpret_cast<TickFn>(titleTick)(title);
 		// Release the splash only after the title leaves its loaded-hidden state.
 		int shownState = 0;
@@ -215,8 +204,6 @@ void NativeBegin::Install() {
 	MemUtil::PlaceHook(reinterpret_cast<void*>(signInFlowCompleteCall),
 		reinterpret_cast<void*>(&CompleteProfileSignIn), sizeof(completeBytes));
 	MemUtil::PatchAdr(reinterpret_cast<LPVOID>(titleTickSlot), &hook, sizeof(hook));
-	// Resolve the short jump relative to the end of the six patched bytes.
-	armWarningJumpTarget = armWarning + sizeof(armWarningBytes) + armWarningBytes[5];
 	if (MemUtil::MatchesBytes(armWarning, armWarningBytes) && MemUtil::MatchesBytes(saveProfile, saveProfileBytes))
 		MemUtil::PlaceHook(reinterpret_cast<void*>(armWarning), reinterpret_cast<void*>(&SignInCompleteThunk), sizeof(armWarningBytes));
 	else {

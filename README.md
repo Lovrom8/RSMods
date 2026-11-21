@@ -229,7 +229,7 @@ Same VKey format. Require `VolumeControl = on`. Use Control with the key to decr
 | `Fretless` | `off` | on/off | Remove fret wire. |
 | `Inlays` | `off` | on/off | Remove inlays (stock dots only). |
 | `RemoveFingerprints` | `off` | on/off | Remove fingerprint / hand indicators. |
-| `FastProfileLoadAndSave` | `off` | on/off | Load and save big profiles in pieces, so the game doesn't freeze or crash on them. |
+| `FastProfileLoadAndSave` | `on` | on/off | Load and save big profiles in pieces, so the game doesn't freeze or crash on them. |
 | `ToggleLoftWhen` | `manual` | `startup` / `song` / `manual` | When loft toggles. |
 | `ToggleSkylineWhen` | `song` | `startup` / `song` | When skyline is removed. |
 | `LaneMarkers` | `off` | on/off | Remove unused lane markers. |

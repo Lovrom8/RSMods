@@ -292,7 +292,8 @@ namespace {
 }
 
 void DxvkFrameBudget::Install() {
-	if (!UltrafastLoad::Enabled())
+	// Its own bundle: a failed ultrafast core member must not bring back the 30 ms pacing.
+	if (!UltrafastLoad::SettingOn())
 		return;
 	const bool lnp = GameVersion::IsLearnAndPlay();
 	if (!lnp && !GameVersion::IsSeptember2022()) {

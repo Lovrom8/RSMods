@@ -62,7 +62,6 @@ namespace {
 			return strcmp(key, "HostOverride") == 0 ? g_override : g_savedHost;
 		}
 	};
-	HKEY g_wineRoot = nullptr;
 	unsigned int g_protectCalls = 0;
 	unsigned int g_openCalls = 0;
 	unsigned int g_restoreCalls = 0;
@@ -138,13 +137,6 @@ namespace {
 			return strcmp(name, g_wineExport) == 0 ? reinterpret_cast<FARPROC>(1) : nullptr;
 		return GetProcAddress(module, name);
 	}
-	LSTATUS WINAPI TestRegOpenKeyExW(HKEY root, LPCWSTR, DWORD, REGSAM, PHKEY key) {
-		if (root != g_wineRoot)
-			return ERROR_FILE_NOT_FOUND;
-		*key = root;
-		return ERROR_SUCCESS;
-	}
-	LSTATUS WINAPI TestRegCloseKey(HKEY) { return ERROR_SUCCESS; }
 	UINT WINAPI TestGetSystemDirectoryA(LPSTR buffer, UINT size) {
 		if (g_unresolveSyscalls) {
 			SetLastError(ERROR_PATH_NOT_FOUND);
@@ -197,8 +189,6 @@ namespace {
 
 #define GetProcAddress TestGetProcAddress
 #define GetSystemDirectoryA TestGetSystemDirectoryA
-#define RegOpenKeyExW TestRegOpenKeyExW
-#define RegCloseKey TestRegCloseKey
 #define VirtualProtect TestVirtualProtect
 #define VirtualQuery TestVirtualQuery
 #define FlushInstructionCache TestFlushInstructionCache
@@ -208,8 +198,6 @@ namespace {
 #undef FlushInstructionCache
 #undef VirtualQuery
 #undef VirtualProtect
-#undef RegCloseKey
-#undef RegOpenKeyExW
 #undef GetProcAddress
 #undef GetSystemDirectoryA
 
@@ -327,8 +315,6 @@ int main(int argc, char** argv) {
 		g_wineExport = argv[1];
 		if (argc > 2) g_override = argv[2];
 		if (argc > 3) g_hostName = argv[3];
-		if (strcmp(argv[1], "HKCU") == 0) g_wineRoot = HKEY_CURRENT_USER;
-		if (strcmp(argv[1], "HKLM") == 0) g_wineRoot = HKEY_LOCAL_MACHINE;
 		const char* expectedHost = strcmp(argv[1], "native") == 0 ? "Windows" : "Wine";
 		if (g_hostName && strcmp(g_hostName, "Linux") == 0) expectedHost = "Wine-Linux";
 		if (g_hostName && strcmp(g_hostName, "Darwin") == 0) expectedHost = "Wine-macOS";

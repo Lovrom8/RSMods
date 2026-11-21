@@ -3026,10 +3026,6 @@
     "visibleWhen": null,
     "editor": null,
     "editedBy": null,
-    "migratesFrom": {
-      "section": "Toggle Switches",
-      "name": "ForceProfileLoad"
-    },
     "mod": "ProfileAutoLoadMod",
     "entry": "ProfileAutoLoad",
     "heading": "Songs & Profiles",
@@ -3305,7 +3301,7 @@
       "name": "FastProfileLoadAndSave"
     },
     "type": "Bool",
-    "default": "off",
+    "default": "on",
     "label": "Fast Profile Load/Save",
     "hint": "Big profiles can freeze Rocksmith for minutes when it loads them, and crash it when it saves them.\nThis mod saves and loads the profile in pieces instead, so the game keeps running and doesn't run out of memory.\nBecause it changes how your profile is saved, it needs Backup Profile on, and only runs once your profiles have been backed up.\nThis mod must be enabled when you start the game for it to take effect.",
     "category": "Toggle Switches",

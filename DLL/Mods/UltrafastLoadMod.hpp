@@ -12,5 +12,8 @@ public:
 
 namespace UltrafastLoad {
 	// Read once at DLL attach, before the settings store is available.
+	// The setting is on and the ultrafast core bundle is staging or committed.
 	bool Enabled();
+	// The setting alone, on a known executable; for patches outside the core bundle.
+	bool SettingOn();
 }

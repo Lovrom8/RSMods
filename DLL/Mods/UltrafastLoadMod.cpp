@@ -24,6 +24,10 @@ bool UltrafastLoad::Enabled() {
 	if (!MemUtil::BootPatchBundleEnabled(Framework::BootPatch::Bundle::UltrafastCore)
 		&& !MemUtil::BootPatchBundleStaging(Framework::BootPatch::Bundle::UltrafastCore))
 		return false;
+	return SettingOn();
+}
+
+bool UltrafastLoad::SettingOn() {
 	if (GameVersion::Current() == Framework::GameVersion::Build::Unknown) {
 		static const bool logged = [] {
 			LOG_WARNING("(STARTUP) Ultrafast Load disabled: unknown executable" << std::endl);
