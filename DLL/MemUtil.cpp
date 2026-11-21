@@ -1064,6 +1064,410 @@ namespace MemUtil {
 			result ? STATUS_SUCCESS : STATUS_UNSUCCESSFUL, error, start);
 		return result ? STATUS_SUCCESS : STATUS_UNSUCCESSFUL;
 	}
+
+	PreparedPatchSet::~PreparedPatchSet() {
+		ReleaseNativeEntries();
+	}
+
+	void PreparedPatchSet::ReleaseNativeEntries() noexcept {
+		for (size_t i = 0; i < siteCount_; ++i) {
+			if (sites_[i].ownsNativeEntry)
+				VirtualFree(sites_[i].nativeEntry, 0, MEM_RELEASE);
+			sites_[i].nativeEntry = nullptr;
+			sites_[i].ownsNativeEntry = false;
+		}
+	}
+
+	bool PreparedPatchSet::Prepare(std::span<const PreparedPatchRequest> requests) {
+		if (operationAttempted_ && result_ != PatchResult::Original) {
+			failure_ = Failure::InvalidRequest;
+			return false;
+		}
+		for (size_t i = 0; i < siteCount_; ++i) {
+			if (!sites_[i].ownsNativeEntry)
+				continue;
+			failure_ = Failure::InvalidRequest;
+			failureAddress_ = sites_[i].address;
+			return false;
+		}
+		ReleaseNativeEntries();
+		sites_ = {};
+		regions_ = {};
+		siteCount_ = 0;
+		regionCount_ = 0;
+		result_ = PatchResult::Original;
+		failure_ = Failure::None;
+		failureAddress_ = 0;
+		failureCode_ = ERROR_SUCCESS;
+		prepared_ = false;
+		operationAttempted_ = false;
+
+		if (requests.empty() || requests.size() > MaxSites) {
+			failure_ = requests.empty() ? Failure::InvalidRequest : Failure::Capacity;
+			return false;
+		}
+
+		useWineApis_ = MemoryHostPolicy().useWineApis;
+		const std::optional<uint32_t> protectNumber = Detail::GetSyscallNumber("NtProtectVirtualMemory");
+		protectSyscallResolved_ = protectNumber.has_value();
+		if (protectNumber)
+			Detail::ssnProtect = *protectNumber;
+		(void)Detail::GetSyscallNumber("NtQueryVirtualMemory");
+
+		for (const PreparedPatchRequest& request : requests) {
+			Site& site = sites_[siteCount_];
+			site.address = reinterpret_cast<uintptr_t>(request.address);
+			if (!site.address || request.replacementTarget == 0) {
+				failure_ = Failure::InvalidRequest;
+				failureAddress_ = site.address;
+				return false;
+			}
+
+			if (request.kind == PreparedPatchKind::Call) {
+				site.length = 5;
+				if (!request.expectedTarget) {
+					failure_ = Failure::InvalidRequest;
+					failureAddress_ = site.address;
+					return false;
+				}
+				site.original[0] = 0xE8;
+				const uint32_t expectedRelative = static_cast<uint32_t>(request.expectedTarget - (site.address + 5));
+				memcpy(site.original.data() + 1, &expectedRelative, sizeof(expectedRelative));
+				site.replacement[0] = 0xE8;
+				const uint32_t replacementRelative = static_cast<uint32_t>(request.replacementTarget - (site.address + 5));
+				memcpy(site.replacement.data() + 1, &replacementRelative, sizeof(replacementRelative));
+				if (request.captureNativeEntry)
+					site.nativeEntry = reinterpret_cast<void*>(request.expectedTarget);
+			}
+			else {
+				site.length = request.expectedBytes.size();
+				if (site.length < 5 || site.length > MaxPatchBytes) {
+					failure_ = Failure::InvalidRequest;
+					failureAddress_ = site.address;
+					return false;
+				}
+				memcpy(site.original.data(), request.expectedBytes.data(), site.length);
+				memset(site.replacement.data(), 0x90, site.length);
+				site.replacement[0] = 0xE9;
+				const uint32_t relative = static_cast<uint32_t>(request.replacementTarget - (site.address + 5));
+				memcpy(site.replacement.data() + 1, &relative, sizeof(relative));
+			}
+
+			const uintptr_t siteEnd = site.address + site.length;
+			if (siteEnd < site.address) {
+				failure_ = Failure::InvalidRequest;
+				failureAddress_ = site.address;
+				return false;
+			}
+			for (size_t previous = 0; previous < siteCount_; ++previous) {
+				const Site& existing = sites_[previous];
+				if (site.address < existing.address + existing.length
+					&& existing.address < siteEnd) {
+					failure_ = Failure::InvalidRequest;
+					failureAddress_ = site.address;
+					return false;
+				}
+			}
+			if (!MatchesBytes(site.address, std::span<const unsigned char>(site.original.data(), site.length))) {
+				failure_ = Failure::BytesMismatch;
+				failureAddress_ = site.address;
+				return false;
+			}
+			++siteCount_;
+
+			if (request.captureNativeEntry && request.kind == PreparedPatchKind::Jump) {
+				auto* gateway = static_cast<unsigned char*>(VirtualAlloc(nullptr, site.length + 5,
+					MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE));
+				if (!gateway) {
+					failure_ = Failure::GatewayFailed;
+					failureAddress_ = site.address;
+					failureCode_ = GetLastError();
+					return false;
+				}
+				memcpy(gateway, site.original.data(), site.length);
+				gateway[site.length] = 0xE9;
+				const uint32_t backRelative = static_cast<uint32_t>(site.address + site.length
+					- (reinterpret_cast<uintptr_t>(gateway) + site.length + 5));
+				memcpy(gateway + site.length + 1, &backRelative, sizeof(backRelative));
+				DWORD previousProtection = 0;
+				if (!VirtualProtect(gateway, site.length + 5, PAGE_EXECUTE_READ, &previousProtection)
+					|| !FlushInstructionCache(GetCurrentProcess(), gateway, site.length + 5)) {
+					failure_ = Failure::GatewayFailed;
+					failureAddress_ = site.address;
+					failureCode_ = GetLastError();
+					VirtualFree(gateway, 0, MEM_RELEASE);
+					return false;
+				}
+				site.nativeEntry = gateway;
+				site.ownsNativeEntry = true;
+			}
+			else if (request.captureNativeEntry && request.kind != PreparedPatchKind::Call) {
+				failure_ = Failure::InvalidRequest;
+				failureAddress_ = site.address;
+				return false;
+			}
+
+			uintptr_t cursor = site.address;
+			while (cursor < siteEnd) {
+				MEMORY_BASIC_INFORMATION info{};
+				if (!NT_SUCCESS(HookedQueryVirtualMemory(reinterpret_cast<LPVOID>(cursor), &info, sizeof(info)))
+					|| info.State != MEM_COMMIT || !info.RegionSize) {
+					failure_ = Failure::QueryFailed;
+					failureAddress_ = cursor;
+					failureCode_ = GetLastError();
+					return false;
+				}
+				const uintptr_t queryBase = reinterpret_cast<uintptr_t>(info.BaseAddress);
+				const uintptr_t queryEnd = queryBase + info.RegionSize;
+				if (queryBase > cursor || queryEnd <= cursor) {
+					failure_ = Failure::QueryFailed;
+					failureAddress_ = cursor;
+					return false;
+				}
+				const uintptr_t regionEnd = queryEnd < siteEnd ? queryEnd : siteEnd;
+				bool merged = false;
+				for (size_t i = 0; i < regionCount_; ++i) {
+					Region& region = regions_[i];
+					if (region.queryBase != queryBase || region.querySize != info.RegionSize
+						|| region.protection != info.Protect)
+						continue;
+					const uintptr_t oldEnd = region.base + region.size;
+					const uintptr_t begin = region.base < cursor ? region.base : cursor;
+					const uintptr_t end = oldEnd > regionEnd ? oldEnd : regionEnd;
+					region.base = begin;
+					region.size = end - begin;
+					merged = true;
+					break;
+				}
+				if (!merged) {
+					if (regionCount_ == regions_.size()) {
+						failure_ = Failure::Capacity;
+						failureAddress_ = cursor;
+						return false;
+					}
+					regions_[regionCount_++] = { cursor, regionEnd - cursor, queryBase,
+						info.RegionSize, info.Protect, false };
+				}
+				cursor = regionEnd;
+			}
+		}
+
+		prepared_ = true;
+		return true;
+	}
+
+	bool PreparedPatchSet::SetRegionProtection(Region& region, ULONG protection) noexcept {
+		if (!useWineApis_ && protectSyscallResolved_) {
+			PVOID baseAddress = reinterpret_cast<PVOID>(region.base);
+			SIZE_T regionSize = region.size;
+			ULONG previous = 0;
+			const NTSTATUS status = Detail::Syscall_NtProtectVirtualMemory(GetCurrentProcess(),
+				&baseAddress, &regionSize, protection, &previous);
+			if (NT_SUCCESS(status))
+				return true;
+		}
+		DWORD previous = 0;
+		if (VirtualProtect(reinterpret_cast<LPVOID>(region.base), region.size, protection, &previous))
+			return true;
+		failureCode_ = GetLastError();
+		return false;
+	}
+
+	bool PreparedPatchSet::RestoreOpenedRegions() noexcept {
+		bool restored = true;
+		for (size_t i = regionCount_; i > 0; --i) {
+			Region& region = regions_[i - 1];
+			if (!region.opened)
+				continue;
+			if (!SetRegionProtection(region, region.protection)
+				&& !SetRegionProtection(region, region.protection)) {
+				restored = false;
+				failureAddress_ = region.base;
+			}
+			region.opened = false;
+		}
+		return restored;
+	}
+
+	bool PreparedPatchSet::MatchesOriginal(size_t count) const noexcept {
+		for (size_t i = 0; i < count; ++i)
+			if (memcmp(reinterpret_cast<const void*>(sites_[i].address), sites_[i].original.data(), sites_[i].length) != 0)
+				return false;
+		return true;
+	}
+
+	PatchResult PreparedPatchSet::Commit() noexcept {
+		operationAttempted_ = true;
+		if (!prepared_) {
+			result_ = PatchResult::Original;
+			return result_;
+		}
+		failure_ = Failure::None;
+		failureAddress_ = 0;
+		failureCode_ = ERROR_SUCCESS;
+		size_t opened = 0;
+		for (; opened < regionCount_; ++opened) {
+			if (!SetRegionProtection(regions_[opened], PAGE_EXECUTE_READWRITE)) {
+				failure_ = Failure::OpenFailed;
+				failureAddress_ = regions_[opened].base;
+				const bool restored = RestoreOpenedRegions();
+				result_ = restored && MatchesOriginal(siteCount_)
+					? PatchResult::Original : PatchResult::RollbackIncomplete;
+				return result_;
+			}
+			regions_[opened].opened = true;
+		}
+
+		for (size_t i = 0; i < siteCount_; ++i) {
+			if (memcmp(reinterpret_cast<const void*>(sites_[i].address), sites_[i].original.data(), sites_[i].length) == 0)
+				continue;
+			failure_ = Failure::CommitMismatch;
+			failureAddress_ = sites_[i].address;
+			const bool restored = RestoreOpenedRegions();
+			result_ = restored && MatchesOriginal(siteCount_)
+				? PatchResult::Original : PatchResult::RollbackIncomplete;
+			return result_;
+		}
+
+		size_t attempted = 0;
+		bool writeFailed = false;
+		for (; attempted < siteCount_; ++attempted) {
+			Site& site = sites_[attempted];
+			memcpy(reinterpret_cast<void*>(site.address), site.replacement.data(), site.length);
+			if (!FlushInstructionCache(GetCurrentProcess(), reinterpret_cast<LPCVOID>(site.address), site.length)) {
+				failure_ = Failure::FlushFailed;
+				failureAddress_ = site.address;
+				failureCode_ = GetLastError();
+				writeFailed = true;
+				++attempted;
+				break;
+			}
+			if (memcmp(reinterpret_cast<const void*>(site.address), site.replacement.data(), site.length) != 0) {
+				failure_ = Failure::ReadbackFailed;
+				failureAddress_ = site.address;
+				writeFailed = true;
+				++attempted;
+				break;
+			}
+		}
+		if (writeFailed) {
+			bool rollbackFlushed = true;
+			for (size_t i = attempted; i > 0; --i) {
+				Site& site = sites_[i - 1];
+				memcpy(reinterpret_cast<void*>(site.address), site.original.data(), site.length);
+				if (!FlushInstructionCache(GetCurrentProcess(), reinterpret_cast<LPCVOID>(site.address), site.length)) {
+					rollbackFlushed = false;
+					failureCode_ = GetLastError();
+				}
+			}
+			const bool restored = RestoreOpenedRegions();
+			result_ = rollbackFlushed && restored && MatchesOriginal(siteCount_)
+				? PatchResult::Original : PatchResult::RollbackIncomplete;
+			return result_;
+		}
+
+		const bool restored = RestoreOpenedRegions();
+		if (!restored) {
+			failure_ = Failure::RestoreFailed;
+			result_ = PatchResult::RollbackIncomplete;
+			return result_;
+		}
+		for (size_t i = 0; i < siteCount_; ++i) {
+			if (memcmp(reinterpret_cast<const void*>(sites_[i].address), sites_[i].replacement.data(), sites_[i].length) != 0) {
+				failure_ = Failure::ReadbackFailed;
+				failureAddress_ = sites_[i].address;
+				result_ = PatchResult::RollbackIncomplete;
+				return result_;
+			}
+		}
+		result_ = PatchResult::Installed;
+		return result_;
+	}
+
+	PatchResult PreparedPatchSet::Rollback() noexcept {
+		operationAttempted_ = true;
+		failure_ = Failure::None;
+		failureAddress_ = 0;
+		failureCode_ = ERROR_SUCCESS;
+		if (!prepared_) {
+			result_ = PatchResult::Original;
+			return result_;
+		}
+		if (result_ == PatchResult::Original && MatchesOriginal(siteCount_)) {
+			result_ = PatchResult::Original;
+			return result_;
+		}
+
+		for (size_t i = 0; i < regionCount_; ++i) {
+			if (!SetRegionProtection(regions_[i], PAGE_EXECUTE_READWRITE)) {
+				failure_ = Failure::OpenFailed;
+				failureAddress_ = regions_[i].base;
+				const bool restored = RestoreOpenedRegions();
+				result_ = restored && MatchesOriginal(siteCount_)
+					? PatchResult::Original : PatchResult::RollbackIncomplete;
+				return result_;
+			}
+			regions_[i].opened = true;
+		}
+
+		for (size_t i = 0; i < siteCount_; ++i) {
+			const Site& site = sites_[i];
+			const void* bytes = reinterpret_cast<const void*>(site.address);
+			if (memcmp(bytes, site.original.data(), site.length) == 0
+				|| memcmp(bytes, site.replacement.data(), site.length) == 0)
+				continue;
+			failure_ = Failure::CommitMismatch;
+			failureAddress_ = site.address;
+			const bool restored = RestoreOpenedRegions();
+			result_ = restored && MatchesOriginal(siteCount_)
+				? PatchResult::Original : PatchResult::RollbackIncomplete;
+			return result_;
+		}
+
+		bool flushed = true;
+		for (size_t i = 0; i < siteCount_; ++i) {
+			Site& site = sites_[i];
+			if (memcmp(reinterpret_cast<const void*>(site.address), site.original.data(), site.length) != 0)
+				memcpy(reinterpret_cast<void*>(site.address), site.original.data(), site.length);
+			if (!FlushInstructionCache(GetCurrentProcess(), reinterpret_cast<LPCVOID>(site.address), site.length)) {
+				flushed = false;
+				failureCode_ = GetLastError();
+			}
+		}
+		const bool restored = RestoreOpenedRegions();
+		result_ = flushed && restored && MatchesOriginal(siteCount_)
+			? PatchResult::Original : PatchResult::RollbackIncomplete;
+		if (result_ == PatchResult::RollbackIncomplete && failure_ == Failure::None)
+			failure_ = !flushed ? Failure::FlushFailed : Failure::RestoreFailed;
+		return result_;
+	}
+
+	void* PreparedPatchSet::NativeEntry(size_t site) const noexcept {
+		return site < siteCount_ ? sites_[site].nativeEntry : nullptr;
+	}
+
+	void PreparedPatchSet::Report(const char* group) const {
+		if (prepared_ && !operationAttempted_) {
+			LOG_INFO(group << " was prepared; no patch was attempted" << std::endl);
+			return;
+		}
+		if (!prepared_ && failure_ != Failure::None) {
+			if (failure_ == Failure::BytesMismatch)
+				LOG_ERROR(group << " expected bytes did not match at 0x" << std::hex << failureAddress_
+					<< std::dec << "; no patch was written" << std::endl);
+			else
+				LOG_ERROR(group << " could not be prepared at 0x" << std::hex << failureAddress_
+					<< std::dec << " (error " << failureCode_ << "); no patch was written" << std::endl);
+			return;
+		}
+		if (result_ == PatchResult::Installed)
+			LOG_INFO(group << " installed all " << siteCount_ << " sites" << std::endl);
+		else if (result_ == PatchResult::Original)
+			LOG_INFO(group << " is confirmed original at every attempted site" << std::endl);
+		else
+			LOG_ERROR(group << " is in an unknown state at 0x" << std::hex << failureAddress_
+				<< std::dec << " (error " << failureCode_ << "); native pass-through remains active" << std::endl);
+	}
 }
 
 uint32_t MemUtil::GetTextSectionAddress() {

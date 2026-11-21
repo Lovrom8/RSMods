@@ -89,6 +89,14 @@ namespace ProfileSaveStreaming {
 		std::atomic<bool> streamFailed = false;
 		tCompressBound origCompressBound = nullptr;
 		tCompress2 origCompress2 = nullptr;
+		std::atomic<bool> g_saveGroupEnabled{ false };
+		void* g_nativeCloneSection = nullptr;
+		void* g_nativePrintRoot = nullptr;
+		MemUtil::PreparedPatchSet g_saveGroupPatches;
+
+		bool SaveGroupEnabled() noexcept {
+			return g_saveGroupEnabled.load(std::memory_order_acquire);
+		}
 
 		void** VTable(void* object) {
 			return *reinterpret_cast<void***>(object);
@@ -487,6 +495,8 @@ namespace ProfileSaveStreaming {
 		/// We already have the compressed data, and the game's commit step passes an empty buffer because our JSON string is empty.
 		/// </summary>
 		uint32_t __cdecl CompressBound(uint32_t sourceLen) {
+			if (!SaveGroupEnabled())
+				return origCompressBound(sourceLen);
 			if (sourceLen == 0 && OnSaveThread() && save.payload == Payload::Streamed) {
 				save.armed = true;
 				return static_cast<uint32_t>(save.compressed.size());
@@ -499,6 +509,8 @@ namespace ProfileSaveStreaming {
 		/// Any other empty source is a cancelled save. Failing here takes the writer's own "couldn't write the file" path, so the file isn't touched.
 		/// </summary>
 		int __cdecl Compress2(uint8_t* dest, uint32_t* destLen, const uint8_t* source, uint32_t sourceLen, int level) {
+			if (!SaveGroupEnabled())
+				return origCompress2(dest, destLen, source, sourceLen, level);
 			if (sourceLen != 0)
 				return origCompress2(dest, destLen, source, sourceLen, level);
 
@@ -529,6 +541,13 @@ namespace ProfileSaveStreaming {
 
 		void __declspec(naked) cloneSectionHook() {
 			__asm {
+				pushfd
+				pushad
+				call SaveGroupEnabled
+				test al, al
+				jz native
+				popad
+				popfd
 				pushad
 				push ebx						// Section value (the game holds a reference until the jump back)
 				lea eax, [ebp - 0x20]			// Section name
@@ -538,11 +557,22 @@ namespace ProfileSaveStreaming {
 				popad
 				push offset Offsets::ptr_profileSaveCloneSectionJmpBck // Releases the section, skipping the clone and insert.
 				jmp MemUtil::JumpToVersioned
+			native:
+				popad
+				popfd
+				jmp dword ptr [g_nativeCloneSection]
 			}
 		}
 
 		void __declspec(naked) printRootHook() {
 			__asm {
+				pushfd
+				pushad
+				call SaveGroupEnabled
+				test al, al
+				jz native
+				popad
+				popfd
 				pushad
 				push dword ptr [ebp - 0x3C]		// Output string
 				push ebx						// Root
@@ -551,6 +581,10 @@ namespace ProfileSaveStreaming {
 				popad
 				push offset Offsets::ptr_profileSavePrintRootJmpBck
 				jmp MemUtil::JumpToVersioned
+			native:
+				popad
+				popfd
+				jmp dword ptr [g_nativePrintRoot]
 			}
 		}
 
@@ -673,75 +707,212 @@ namespace ProfileSaveStreaming {
 		// none may execute a span while it is half written. Nothing in between may allocate or log: a suspended thread can
 		// hold the heap or log lock.
 		class OtherThreadsSuspended {
-			std::vector<HANDLE> threads_;
+		public:
+			enum class Failure { None, Snapshot, TooManyThreads, OpenLiveThread, SuspendLiveThread, Context, InPatchSpan, PassLimit };
+			struct FailureInfo {
+				Failure reason = Failure::None;
+				DWORD threadId = 0;
+				DWORD error = ERROR_SUCCESS;
+				unsigned pass = 0;
+			};
 
-			void ResumeAll() {
-				for (HANDLE thread : threads_) {
-					ResumeThread(thread);
-					CloseHandle(thread);
+		private:
+			struct Thread {
+				DWORD id = 0;
+				HANDLE handle = nullptr;
+			};
+			static constexpr size_t maxThreads = 4096;
+			static constexpr unsigned maxPasses = 4;
+			std::array<Thread, maxThreads> threads_{};
+			size_t threadCount_ = 0;
+			FailureInfo failure_{};
+
+			bool SnapshotIds(std::array<DWORD, maxThreads>& ids, size_t& count) {
+				count = 0;
+				HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPTHREAD, 0);
+				if (snapshot == INVALID_HANDLE_VALUE) {
+					failure_ = { Failure::Snapshot, 0, GetLastError(), 0 };
+					return false;
 				}
-				threads_.clear();
+				THREADENTRY32 entry{};
+				entry.dwSize = sizeof(entry);
+				BOOL more = Thread32First(snapshot, &entry);
+				if (!more) {
+					failure_ = { Failure::Snapshot, 0, GetLastError(), 0 };
+					CloseHandle(snapshot);
+					return false;
+				}
+				const DWORD processId = GetCurrentProcessId();
+				const DWORD currentThreadId = GetCurrentThreadId();
+				while (more) {
+					if (entry.th32OwnerProcessID == processId && entry.th32ThreadID != currentThreadId) {
+						if (count == ids.size()) {
+							failure_ = { Failure::TooManyThreads, entry.th32ThreadID, ERROR_MORE_DATA, 0 };
+							CloseHandle(snapshot);
+							return false;
+						}
+						ids[count++] = entry.th32ThreadID;
+					}
+					entry.dwSize = sizeof(entry);
+					SetLastError(ERROR_SUCCESS);
+					more = Thread32Next(snapshot, &entry);
+					if (!more && GetLastError() != ERROR_NO_MORE_FILES) {
+						failure_ = { Failure::Snapshot, 0, GetLastError(), 0 };
+						CloseHandle(snapshot);
+						return false;
+					}
+				}
+				CloseHandle(snapshot);
+				return true;
+			}
+
+			bool IsStillListed(DWORD id, bool& listed) {
+				std::array<DWORD, maxThreads> ids{};
+				size_t count = 0;
+				if (!SnapshotIds(ids, count))
+					return false;
+				listed = false;
+				for (size_t i = 0; i < count; ++i)
+					listed |= ids[i] == id;
+				return true;
+			}
+
+			bool AlreadySuspended(DWORD id) const {
+				for (size_t i = 0; i < threadCount_; ++i)
+					if (threads_[i].id == id)
+						return true;
+				return false;
 			}
 
 			bool AnyInside(std::span<const std::pair<uintptr_t, size_t>> spans) {
-				for (HANDLE thread : threads_) {
+				for (size_t i = 0; i < threadCount_; ++i) {
 					CONTEXT context{};
 					context.ContextFlags = CONTEXT_CONTROL;
-					// Also waits for the suspension to take effect.
-					if (!GetThreadContext(thread, &context))
+					if (!GetThreadContext(threads_[i].handle, &context)) {
+						const DWORD error = GetLastError();
+						if (WaitForSingleObject(threads_[i].handle, 0) == WAIT_OBJECT_0)
+							continue;
+						failure_ = { Failure::Context, threads_[i].id, error, 0 };
 						return true;
+					}
 					for (const auto& [start, length] : spans) {
-						if (context.Eip > start && context.Eip < start + length)
+						if (context.Eip >= start && context.Eip < start + length) {
+							failure_ = { Failure::InPatchSpan, threads_[i].id, ERROR_SUCCESS, 0 };
 							return true;
+						}
 					}
 				}
 				return false;
 			}
 
 		public:
-			// True once every other thread is stopped outside the spans. Retries for about a second.
 			bool Suspend(std::span<const std::pair<uintptr_t, size_t>> spans) {
-				for (int attempt = 0; attempt < 100; ++attempt) {
-					HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPTHREAD, 0);
-					if (snapshot == INVALID_HANDLE_VALUE)
+				std::array<DWORD, maxThreads> ids{};
+				for (unsigned pass = 1; pass <= maxPasses; ++pass) {
+					size_t idCount = 0;
+					if (!SnapshotIds(ids, idCount)) {
+						failure_.pass = pass;
 						return false;
-					std::vector<DWORD> ids;
-					THREADENTRY32 entry{ sizeof(entry) };
-					for (BOOL more = Thread32First(snapshot, &entry); more; more = Thread32Next(snapshot, &entry)) {
-						if (entry.th32OwnerProcessID == GetCurrentProcessId() && entry.th32ThreadID != GetCurrentThreadId())
-							ids.push_back(entry.th32ThreadID);
 					}
-					CloseHandle(snapshot);
-
-					threads_.reserve(ids.size());
-					for (DWORD id : ids) {
-						HANDLE thread = OpenThread(THREAD_SUSPEND_RESUME | THREAD_GET_CONTEXT, FALSE, id);
-						if (!thread)
+					bool newlySuspended = false;
+					for (size_t i = 0; i < idCount; ++i) {
+						const DWORD id = ids[i];
+						if (AlreadySuspended(id))
 							continue;
-						if (SuspendThread(thread) == static_cast<DWORD>(-1)) {
-							CloseHandle(thread);
-							continue;
+						if (threadCount_ == threads_.size()) {
+							failure_ = { Failure::TooManyThreads, id, ERROR_MORE_DATA, pass };
+							return false;
 						}
-						threads_.push_back(thread);
+						HANDLE thread = OpenThread(THREAD_SUSPEND_RESUME | THREAD_GET_CONTEXT
+							| THREAD_QUERY_LIMITED_INFORMATION | SYNCHRONIZE, FALSE, id);
+						if (!thread) {
+							const DWORD error = GetLastError();
+							bool listed = true;
+							if (IsStillListed(id, listed) && !listed)
+								continue;
+							failure_ = { Failure::OpenLiveThread, id, error, pass };
+							return false;
+						}
+						const DWORD previousSuspendCount = SuspendThread(thread);
+						if (previousSuspendCount == static_cast<DWORD>(-1)) {
+							const DWORD error = GetLastError();
+							if (WaitForSingleObject(thread, 0) == WAIT_OBJECT_0) {
+								CloseHandle(thread);
+								continue;
+							}
+							CloseHandle(thread);
+							failure_ = { Failure::SuspendLiveThread, id, error, pass };
+							return false;
+						}
+						threads_[threadCount_++] = { id, thread };
+						newlySuspended |= previousSuspendCount == 0;
 					}
-					if (!AnyInside(spans))
+					if (AnyInside(spans)) {
+						if (failure_.reason != Failure::InPatchSpan) {
+							failure_.pass = pass;
+							return false;
+						}
+						failure_.reason = Failure::None;
+						ResumeAll();
+						if (pass == maxPasses) {
+							failure_ = { Failure::PassLimit, 0, ERROR_SUCCESS, pass };
+							return false;
+						}
+						Sleep(10);
+						continue;
+					}
+					if (!newlySuspended)
 						return true;
-					ResumeAll();
-					Sleep(10);
+					if (pass == maxPasses) {
+						failure_ = { Failure::PassLimit, 0, ERROR_SUCCESS, pass };
+						return false;
+					}
 				}
 				return false;
 			}
 
-			~OtherThreadsSuspended() {
-				ResumeAll();
+			void ResumeAll() noexcept {
+				for (size_t i = threadCount_; i > 0; --i) {
+					ResumeThread(threads_[i - 1].handle);
+					CloseHandle(threads_[i - 1].handle);
+					threads_[i - 1] = {};
+				}
+				threadCount_ = 0;
 			}
+
+			const FailureInfo& FailureDetails() const noexcept { return failure_; }
+
+			~OtherThreadsSuspended() { ResumeAll(); }
 		};
 
-		// Runs place with every other thread suspended outside the spans. place must not allocate or log.
+		void ReportSuspensionFailure(const OtherThreadsSuspended::FailureInfo& failure);
+
 		template <typename Place>
 		bool WithOthersSuspended(std::span<const std::pair<uintptr_t, size_t>> spans, Place place) {
 			OtherThreadsSuspended others;
-			return others.Suspend(spans) && place();
+			const bool suspended = others.Suspend(spans);
+			const bool placed = suspended && place();
+			const OtherThreadsSuspended::FailureInfo failure = others.FailureDetails();
+			others.ResumeAll();
+			if (!suspended)
+				ReportSuspensionFailure(failure);
+			return suspended && placed;
+		}
+
+		void ReportSuspensionFailure(const OtherThreadsSuspended::FailureInfo& failure) {
+			const char* reason = "unknown suspension failure";
+			switch (failure.reason) {
+			case OtherThreadsSuspended::Failure::Snapshot: reason = "thread snapshot failed"; break;
+			case OtherThreadsSuspended::Failure::TooManyThreads: reason = "thread snapshot exceeded its fixed capacity"; break;
+			case OtherThreadsSuspended::Failure::OpenLiveThread: reason = "could not open a live thread"; break;
+			case OtherThreadsSuspended::Failure::SuspendLiveThread: reason = "could not suspend a live thread"; break;
+			case OtherThreadsSuspended::Failure::Context: reason = "could not read a suspended thread context"; break;
+			case OtherThreadsSuspended::Failure::InPatchSpan: reason = "a thread remained in a patched span"; break;
+			case OtherThreadsSuspended::Failure::PassLimit: reason = "thread snapshot pass limit reached"; break;
+			case OtherThreadsSuspended::Failure::None: break;
+			}
+			LOG_ERROR("(PROFILE SAVE) Allocator patch install aborted before patching: " << reason << ", thread="
+				<< failure.threadId << ", pass=" << failure.pass << ", error=" << failure.error << std::endl);
 		}
 
 		// ---- Allocator chunk table growth ----
@@ -751,9 +922,23 @@ namespace ProfileSaveStreaming {
 		// whole array: O(chunks^2) bytes moved over a big profile load. This grows the capacity to at least double instead. The code
 		// after it already reallocates and refreshes every pointer into the array, so only the size it asks for changes.
 		uintptr_t g_chunkGrowthResume = 0;
+		std::atomic<bool> g_chunkGrowthEnabled{ false };
+		void* g_nativeChunkGrowth = nullptr;
+		MemUtil::PreparedPatchSet g_chunkGrowthPatches;
+
+		bool ChunkGrowthEnabled() noexcept {
+			return g_chunkGrowthEnabled.load(std::memory_order_acquire);
+		}
 
 		void __declspec(naked) chunkGrowthHook() {
 			__asm {
+				pushfd
+				pushad
+				call ChunkGrowthEnabled
+				test al, al
+				jz native
+				popad
+				popfd
 				// The replaced instructions: capacity, count + 1, compare
 				mov eax, dword ptr [esi + 0x1C]
 				inc edi
@@ -771,6 +956,10 @@ namespace ProfileSaveStreaming {
 				cmp edi, eax
 			fits:
 				jmp dword ptr [g_chunkGrowthResume]
+			native:
+				popad
+				popfd
+				jmp dword ptr [g_nativeChunkGrowth]
 			}
 		}
 
@@ -808,21 +997,26 @@ namespace ProfileSaveStreaming {
 			}
 
 			g_chunkGrowthResume = site + sizeof(kChunkGrowthHookBytes);
-			VersioningStruct<uintptr_t> hook({ site, site });
-			PatchGroup patches;
-			const std::pair<uintptr_t, size_t> spans[] = { { site, sizeof(kChunkGrowthHookBytes) } };
-			bool restored = true;
-			const bool hooked = WithOthersSuspended(spans, [&] {
-				if (patches.Hook(hook, chunkGrowthHook, sizeof(kChunkGrowthHookBytes), kChunkGrowthHookBytes))
-					return true;
-				restored = patches.Undo();
-				return false;
-			});
-			if (!hooked) {
-				LOG_ERROR("(PROFILE SAVE) Failed to hook the allocator chunk table growth, leaving the allocator unchanged"
-					<< (restored ? "" : " (original bytes NOT restored)") << std::endl);
+			const MemUtil::PreparedPatchRequest request{ reinterpret_cast<LPVOID>(site),
+				MemUtil::PreparedPatchKind::Jump,
+				std::span<const unsigned char>(kChunkGrowthHookBytes, sizeof(kChunkGrowthHookBytes)),
+				0, reinterpret_cast<uintptr_t>(chunkGrowthHook), true };
+			if (!g_chunkGrowthPatches.Prepare(std::span<const MemUtil::PreparedPatchRequest>(&request, 1))) {
+				g_chunkGrowthPatches.Report("(PROFILE SAVE) Allocator chunk table growth");
 				return;
 			}
+			g_nativeChunkGrowth = g_chunkGrowthPatches.NativeEntry(0);
+			const std::pair<uintptr_t, size_t> spans[] = { { site, sizeof(kChunkGrowthHookBytes) } };
+			MemUtil::PatchResult outcome = MemUtil::PatchResult::Original;
+			const bool hooked = WithOthersSuspended(spans, [&] {
+				outcome = g_chunkGrowthPatches.Commit();
+				if (outcome == MemUtil::PatchResult::Installed)
+					g_chunkGrowthEnabled.store(true, std::memory_order_release);
+				return outcome == MemUtil::PatchResult::Installed;
+			});
+			g_chunkGrowthPatches.Report("(PROFILE SAVE) Allocator chunk table growth");
+			if (!hooked)
+				return;
 
 			LOG_INFO("(PROFILE SAVE) Allocator chunk tables grow geometrically (hook at 0x" << std::hex << site << std::dec << ")" << std::endl);
 		}
@@ -845,7 +1039,13 @@ namespace ProfileSaveStreaming {
 
 		constexpr size_t kAllocatorHintSlots = 512;
 		std::array<std::atomic<uint64_t>, kAllocatorHintSlots> g_allocatorFullHints{};
-		uintptr_t g_allocatorScanResume = 0, g_allocatorDoDeallocate = 0;
+		uintptr_t g_allocatorScanResume = 0, g_allocatorScanContinue = 0, g_allocatorDoDeallocate = 0;
+		std::atomic<bool> g_allocatorHintEnabled{ false };
+		MemUtil::PreparedPatchSet g_allocatorHintPatches;
+
+		bool AllocatorHintEnabled() noexcept {
+			return g_allocatorHintEnabled.load(std::memory_order_acquire);
+		}
 
 		std::atomic<uint64_t>& AllocatorHintSlot(const uint8_t* allocator) {
 			return g_allocatorFullHints[(reinterpret_cast<uintptr_t>(allocator) * 2654435761u >> 16) % kAllocatorHintSlots];
@@ -893,6 +1093,13 @@ namespace ProfileSaveStreaming {
 
 		void __declspec(naked) allocatorScanHook() {
 			__asm {
+				pushfd
+				pushad
+				call AllocatorHintEnabled
+				test al, al
+				jz native
+				popad
+				popfd
 				pushad
 				// The allocator
 				push esi
@@ -902,17 +1109,37 @@ namespace ProfileSaveStreaming {
 				// The replaced instruction; the game's new-chunk path expects the count in EDI
 				mov edi, dword ptr [esi + 0x18]
 				jmp dword ptr [g_allocatorScanResume]
+			native:
+				popad
+				popfd
+				mov edi, dword ptr [esi + 0x18]
+				cmp edi, edx
+				jbe nativeTaken
+				jmp dword ptr [g_allocatorScanContinue]
+			nativeTaken:
+				jmp dword ptr [g_allocatorScanResume]
 			}
 		}
 
 		void __declspec(naked) allocatorDeallocHook() {
 			__asm {
+				pushfd
+				pushad
+				call AllocatorHintEnabled
+				test al, al
+				jz native
+				popad
+				popfd
 				pushad
 				// The allocator
 				push esi
 				call NoteAllocatorDeallocate
 				add esp, 4
 				popad
+				jmp dword ptr [g_allocatorDoDeallocate]
+			native:
+				popad
+				popfd
 				jmp dword ptr [g_allocatorDoDeallocate]
 			}
 		}
@@ -969,41 +1196,38 @@ namespace ProfileSaveStreaming {
 				LOG_WARNING("(PROFILE SAVE) Expected three allocator deallocate calls, found " << count << std::endl);
 				return;
 			}
-			PatchGroup patches;
-			VersioningStruct<uintptr_t> scan({ scanSite + kAllocatorScanHookOffset,
-				scanSite + kAllocatorScanHookOffset });
-			if (!patches.ValidateHook(scan, kAllocatorScanHookBytes, sizeof(kAllocatorScanHookBytes)))
-				return;
-			for (uintptr_t site : calls) {
-				VersioningStruct<uintptr_t> call({ site, site });
-				if (!patches.ValidateRedirect(call, deallocSite))
-					return;
-			}
 			g_allocatorScanResume = scanSite + kAllocatorScanResumeOffset;
+			g_allocatorScanContinue = scanSite + kAllocatorScanHookOffset + sizeof(kAllocatorScanHookBytes);
 			g_allocatorDoDeallocate = deallocSite;
-			const std::pair<uintptr_t, size_t> spans[] = {
-				{ scan.Get(), sizeof(kAllocatorScanHookBytes) }, { calls[0], 5 }, { calls[1], 5 }, { calls[2], 5 }
-			};
-			// Built out here: a VersioningStruct allocates.
-			std::array<VersioningStruct<uintptr_t>, 3> callSites{ VersioningStruct<uintptr_t>({ calls[0], calls[0] }),
-				VersioningStruct<uintptr_t>({ calls[1], calls[1] }), VersioningStruct<uintptr_t>({ calls[2], calls[2] }) };
-			bool restored = true;
-			const bool hooked = WithOthersSuspended(spans, [&] {
-				bool placed = true;
-				for (auto& call : callSites)
-					placed = placed && patches.Redirect(call, allocatorDeallocHook, deallocSite);
-				if (placed && patches.Hook(scan, allocatorScanHook, sizeof(kAllocatorScanHookBytes), kAllocatorScanHookBytes))
-					return true;
-				restored = patches.Undo();
-				return false;
-			});
-			if (!hooked) {
-				LOG_ERROR("(PROFILE SAVE) Failed to install the allocator chunk scan hint, leaving the allocator unchanged"
-					<< (restored ? "" : " (original bytes NOT restored)") << std::endl);
+			std::array<MemUtil::PreparedPatchRequest, 4> requests{};
+			requests[0] = { reinterpret_cast<LPVOID>(scanSite + kAllocatorScanHookOffset),
+				MemUtil::PreparedPatchKind::Jump,
+				std::span<const unsigned char>(kAllocatorScanHookBytes, sizeof(kAllocatorScanHookBytes)),
+				0, reinterpret_cast<uintptr_t>(allocatorScanHook), false };
+			for (size_t i = 0; i < calls.size(); ++i) {
+				requests[i + 1] = { reinterpret_cast<LPVOID>(calls[i]), MemUtil::PreparedPatchKind::Call,
+					{}, deallocSite, reinterpret_cast<uintptr_t>(allocatorDeallocHook), false };
+			}
+			if (!g_allocatorHintPatches.Prepare(requests)) {
+				g_allocatorHintPatches.Report("(PROFILE SAVE) Allocator chunk scan hint");
 				return;
 			}
+			const std::pair<uintptr_t, size_t> spans[] = {
+				{ scanSite + kAllocatorScanHookOffset, sizeof(kAllocatorScanHookBytes) },
+				{ calls[0], 5 }, { calls[1], 5 }, { calls[2], 5 }
+			};
+			MemUtil::PatchResult outcome = MemUtil::PatchResult::Original;
+			const bool hooked = WithOthersSuspended(spans, [&] {
+				outcome = g_allocatorHintPatches.Commit();
+				if (outcome == MemUtil::PatchResult::Installed)
+					g_allocatorHintEnabled.store(true, std::memory_order_release);
+				return outcome == MemUtil::PatchResult::Installed;
+			});
+			g_allocatorHintPatches.Report("(PROFILE SAVE) Allocator chunk scan hint");
+			if (!hooked)
+				return;
 			LOG_INFO("(PROFILE SAVE) Allocator chunk scan hint installed: scan 0x" << std::hex
-				<< scanSite << ", deallocate 0x" << deallocSite << ", callers 0x"
+				<< scanSite + kAllocatorScanHookOffset << ", deallocate 0x" << deallocSite << ", callers 0x"
 				<< calls[0] << ", 0x" << calls[1] << ", 0x" << calls[2] << std::dec << std::endl);
 		}
 
@@ -1039,6 +1263,13 @@ namespace ProfileSaveStreaming {
 		bool g_readSlowWarningLogged = false, g_parseSlowWarningLogged = false;
 		tJsonParse origParse = nullptr;
 		tSaveCall origSave = nullptr;
+		std::atomic<bool> g_loadGroupEnabled{ false };
+		void* g_nativeLoadTick = nullptr;
+		MemUtil::PreparedPatchSet g_loadGroupPatches;
+
+		bool LoadGroupEnabled() noexcept {
+			return g_loadGroupEnabled.load(std::memory_order_acquire);
+		}
 
 		typedef void* (*tGetAllocatorOwner)();
 		typedef void(__fastcall* tAllocatorCall)(void* allocator, void* edx);
@@ -1172,6 +1403,10 @@ namespace ProfileSaveStreaming {
 		/// The game's profile parse call. Hand over what ParseProfile already parsed.
 		/// </summary>
 		void __cdecl Parse(void** out, int flags, const char** cursor) {
+			if (!LoadGroupEnabled()) {
+				origParse(out, flags, cursor);
+				return;
+			}
 			if (parsedRoot && *cursor == parseText) {
 				*out = parsedRoot;
 				parsedRoot = nullptr;
@@ -1221,6 +1456,13 @@ namespace ProfileSaveStreaming {
 
 		void __declspec(naked) loadTickHook() {
 			__asm {
+				pushfd
+				pushad
+				call LoadGroupEnabled
+				test al, al
+				jz native
+				popad
+				popfd
 				pushad
 				push ebx						// The profile service
 				call LoadTick
@@ -1228,6 +1470,10 @@ namespace ProfileSaveStreaming {
 				popad
 				push offset Offsets::ptr_profileLoadTickJmpBck // End of the tick
 				jmp MemUtil::JumpToVersioned
+			native:
+				popad
+				popfd
+				jmp dword ptr [g_nativeLoadTick]
 			}
 		}
 
@@ -1436,26 +1682,32 @@ namespace ProfileSaveStreaming {
 			const uintptr_t expectedBoundTarget = ExpectedCallTarget(Offsets::ptr_profileSaveCompressBoundCall, 0x007CE0F7, 0x00E31830, 0x003CEC87, 0x00A308E0);
 			const uintptr_t expectedCompressTarget = ExpectedCallTarget(Offsets::ptr_profileSaveCompress2Call, 0x007CE147, 0x00E31790, 0x003CECD7, 0x00A30840);
 
-			// All or nothing: the clone hook without the others would save an empty profile.
-			PatchGroup patches;
-			if (!patches.ValidateRedirect(Offsets::ptr_profileSaveCompressBoundCall, expectedBoundTarget)
-				|| !patches.ValidateRedirect(Offsets::ptr_profileSaveCompress2Call, expectedCompressTarget)
-				|| !patches.ValidateHook(Offsets::ptr_profileSavePrintRoot, expectedPrintRoot, sizeof(expectedPrintRoot))
-				|| !patches.ValidateHook(Offsets::ptr_profileSaveCloneSection, expectedCloneSection, sizeof(expectedCloneSection))) {
-				LOG_ERROR("(PROFILE SAVE) Profile save sites did not match the reviewed bytes and call targets, leaving streaming saves unchanged" << std::endl);
-				return;
-			}
-
 			origCompressBound = reinterpret_cast<tCompressBound>(expectedBoundTarget);
 			origCompress2 = reinterpret_cast<tCompress2>(expectedCompressTarget);
-			if (!patches.Redirect(Offsets::ptr_profileSaveCompressBoundCall, CompressBound, expectedBoundTarget)
-				|| !patches.Redirect(Offsets::ptr_profileSaveCompress2Call, Compress2, expectedCompressTarget)
-				|| !patches.Hook(Offsets::ptr_profileSavePrintRoot, printRootHook, sizeof(expectedPrintRoot), expectedPrintRoot)
-				|| !patches.Hook(Offsets::ptr_profileSaveCloneSection, cloneSectionHook, sizeof(expectedCloneSection), expectedCloneSection)) {
-				patches.Undo();
-				LOG_ERROR("(PROFILE SAVE) Failed to hook the profile save, not streaming profile saves" << std::endl);
+			const std::array<MemUtil::PreparedPatchRequest, 4> requests = {{
+				{ reinterpret_cast<LPVOID>(Offsets::ptr_profileSaveCompressBoundCall.Get()), MemUtil::PreparedPatchKind::Call,
+					{}, expectedBoundTarget, reinterpret_cast<uintptr_t>(CompressBound), true },
+				{ reinterpret_cast<LPVOID>(Offsets::ptr_profileSaveCompress2Call.Get()), MemUtil::PreparedPatchKind::Call,
+					{}, expectedCompressTarget, reinterpret_cast<uintptr_t>(Compress2), true },
+				{ reinterpret_cast<LPVOID>(Offsets::ptr_profileSavePrintRoot.Get()), MemUtil::PreparedPatchKind::Jump,
+					std::span<const unsigned char>(expectedPrintRoot, sizeof(expectedPrintRoot)), 0,
+					reinterpret_cast<uintptr_t>(printRootHook), true },
+				{ reinterpret_cast<LPVOID>(Offsets::ptr_profileSaveCloneSection.Get()), MemUtil::PreparedPatchKind::Jump,
+					std::span<const unsigned char>(expectedCloneSection, sizeof(expectedCloneSection)), 0,
+					reinterpret_cast<uintptr_t>(cloneSectionHook), true }
+			}};
+			if (!g_saveGroupPatches.Prepare(requests)) {
+				g_saveGroupPatches.Report("(PROFILE SAVE) Streaming save group");
 				return;
 			}
+			g_nativePrintRoot = g_saveGroupPatches.NativeEntry(2);
+			g_nativeCloneSection = g_saveGroupPatches.NativeEntry(3);
+			const MemUtil::PatchResult outcome = g_saveGroupPatches.Commit();
+			if (outcome == MemUtil::PatchResult::Installed)
+				g_saveGroupEnabled.store(true, std::memory_order_release);
+			g_saveGroupPatches.Report("(PROFILE SAVE) Streaming save group");
+			if (outcome != MemUtil::PatchResult::Installed)
+				return;
 
 			LOG_INFO("(PROFILE SAVE) Streaming profile saves" << std::endl);
 		}
@@ -1463,21 +1715,26 @@ namespace ProfileSaveStreaming {
 		bool InitializeLoading() {
 			const uintptr_t expectedTarget = ExpectedCallTarget(Offsets::ptr_profileParseCall, 0x00896CDC, 0x00889010, 0x0049681C, 0x00488A90);
 
-			// The parse redirect only hands over what the tick parsed, and the tick needs it to use that parse.
-			PatchGroup patches;
-			if (!patches.ValidateRedirect(Offsets::ptr_profileParseCall, expectedTarget)
-				|| !patches.ValidateHook(Offsets::ptr_profileLoadTick, ExpectedLoadTickBytes(), sizeof(expectedLoadTick))) {
-				LOG_ERROR("(PROFILE SAVE) Profile load sites did not match the reviewed bytes and call target, leaving background loading unchanged" << std::endl);
-				return false;
-			}
-
 			origParse = reinterpret_cast<tJsonParse>(expectedTarget);
-			if (!patches.Redirect(Offsets::ptr_profileParseCall, Parse, expectedTarget)
-				|| !patches.Hook(Offsets::ptr_profileLoadTick, loadTickHook, sizeof(expectedLoadTick), ExpectedLoadTickBytes())) {
-				patches.Undo();
-				LOG_ERROR("(PROFILE SAVE) Failed to hook the profile load, loading profiles on the main thread" << std::endl);
+			const uint8_t* expectedTick = ExpectedLoadTickBytes();
+			const std::array<MemUtil::PreparedPatchRequest, 2> requests = {{
+				{ reinterpret_cast<LPVOID>(Offsets::ptr_profileParseCall.Get()), MemUtil::PreparedPatchKind::Call,
+					{}, expectedTarget, reinterpret_cast<uintptr_t>(Parse), true },
+				{ reinterpret_cast<LPVOID>(Offsets::ptr_profileLoadTick.Get()), MemUtil::PreparedPatchKind::Jump,
+					std::span<const unsigned char>(expectedTick, sizeof(expectedLoadTick)), 0,
+					reinterpret_cast<uintptr_t>(loadTickHook), true }
+			}};
+			if (!g_loadGroupPatches.Prepare(requests)) {
+				g_loadGroupPatches.Report("(PROFILE SAVE) Background load group");
 				return false;
 			}
+			g_nativeLoadTick = g_loadGroupPatches.NativeEntry(1);
+			const MemUtil::PatchResult outcome = g_loadGroupPatches.Commit();
+			if (outcome == MemUtil::PatchResult::Installed)
+				g_loadGroupEnabled.store(true, std::memory_order_release);
+			g_loadGroupPatches.Report("(PROFILE SAVE) Background load group");
+			if (outcome != MemUtil::PatchResult::Installed)
+				return false;
 
 			LOG_INFO("(PROFILE SAVE) Loading profiles in the background" << std::endl);
 			return true;

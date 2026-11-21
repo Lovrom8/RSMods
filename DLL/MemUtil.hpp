@@ -34,6 +34,73 @@ namespace MemUtil {
 	enum class PatchResult { Installed, Original, RollbackIncomplete };
 	PatchResult WritePatch(LPVOID address, LPCVOID changeToMake, size_t len);
 	PatchResult WritePointerPatch(LPVOID address, LPCVOID value);
+	enum class PreparedPatchKind { Jump, Call };
+	struct PreparedPatchRequest {
+		LPVOID address = nullptr;
+		PreparedPatchKind kind = PreparedPatchKind::Jump;
+		std::span<const unsigned char> expectedBytes{};
+		uintptr_t expectedTarget = 0;
+		uintptr_t replacementTarget = 0;
+		bool captureNativeEntry = false;
+	};
+
+	// Preparation owns all patch and region metadata used while code is being rewritten.
+	class PreparedPatchSet {
+	public:
+		static constexpr size_t MaxSites = 8;
+		static constexpr size_t MaxPatchBytes = 32;
+		static constexpr size_t MaxRegions = MaxSites * 2;
+
+		PreparedPatchSet() = default;
+		~PreparedPatchSet();
+		PreparedPatchSet(const PreparedPatchSet&) = delete;
+		PreparedPatchSet& operator=(const PreparedPatchSet&) = delete;
+
+		bool Prepare(std::span<const PreparedPatchRequest> requests);
+		PatchResult Commit() noexcept;
+		PatchResult Rollback() noexcept;
+		void Report(const char* group) const;
+		void* NativeEntry(size_t site) const noexcept;
+		size_t Size() const noexcept { return siteCount_; }
+
+	private:
+		enum class Failure { None, InvalidRequest, Capacity, BytesMismatch, QueryFailed, GatewayFailed,
+			OpenFailed, CommitMismatch, WriteFailed, FlushFailed, ReadbackFailed, RestoreFailed };
+		struct Site {
+			uintptr_t address = 0;
+			size_t length = 0;
+			std::array<unsigned char, MaxPatchBytes> original{};
+			std::array<unsigned char, MaxPatchBytes> replacement{};
+			void* nativeEntry = nullptr;
+			bool ownsNativeEntry = false;
+		};
+		struct Region {
+			uintptr_t base = 0;
+			SIZE_T size = 0;
+			uintptr_t queryBase = 0;
+			SIZE_T querySize = 0;
+			ULONG protection = 0;
+			bool opened = false;
+		};
+
+		bool SetRegionProtection(Region& region, ULONG protection) noexcept;
+		bool RestoreOpenedRegions() noexcept;
+		bool MatchesOriginal(size_t count) const noexcept;
+		void ReleaseNativeEntries() noexcept;
+
+		std::array<Site, MaxSites> sites_{};
+		std::array<Region, MaxRegions> regions_{};
+		size_t siteCount_ = 0;
+		size_t regionCount_ = 0;
+		PatchResult result_ = PatchResult::Original;
+		Failure failure_ = Failure::None;
+		uintptr_t failureAddress_ = 0;
+		DWORD failureCode_ = ERROR_SUCCESS;
+		bool prepared_ = false;
+		bool operationAttempted_ = false;
+		bool useWineApis_ = true;
+		bool protectSyscallResolved_ = false;
+	};
 	bool PatchAdr(VersioningStruct<uintptr_t>& address, LPCVOID changeToMake, size_t len, bool addBaseHandle = false);
 	bool PatchAdr(LPVOID address, LPCVOID changeToMake, size_t len);
 	bool PatchAdr(uintptr_t address, LPCVOID changeToMake, size_t len, bool addBaseHandle);

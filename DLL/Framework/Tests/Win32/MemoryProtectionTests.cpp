@@ -1,8 +1,35 @@
 #ifdef _WIN32
 #include "../../../stdafx.h"
 #include <cassert>
+#include <new>
 #include <stdexcept>
 #include "../../../SettingEdits.hpp"
+
+namespace {
+	std::atomic<bool> g_countingAllocations{ false };
+	std::atomic<unsigned int> g_allocationCount{ 0 };
+}
+
+void* operator new(std::size_t size) {
+	if (g_countingAllocations.load(std::memory_order_relaxed))
+		g_allocationCount.fetch_add(1, std::memory_order_relaxed);
+	if (void* allocation = std::malloc(size))
+		return allocation;
+	throw std::bad_alloc();
+}
+
+void* operator new[](std::size_t size) {
+	if (g_countingAllocations.load(std::memory_order_relaxed))
+		g_allocationCount.fetch_add(1, std::memory_order_relaxed);
+	if (void* allocation = std::malloc(size))
+		return allocation;
+	throw std::bad_alloc();
+}
+
+void operator delete(void* allocation) noexcept { std::free(allocation); }
+void operator delete[](void* allocation) noexcept { std::free(allocation); }
+void operator delete(void* allocation, std::size_t) noexcept { std::free(allocation); }
+void operator delete[](void* allocation, std::size_t) noexcept { std::free(allocation); }
 
 namespace SettingEdits {
 	unsigned int writes = 0;
@@ -44,11 +71,15 @@ namespace {
 	unsigned int g_failFrom = 0;
 	bool g_failFlush = false;
 	void* g_failFlushAddress = nullptr;
+	unsigned int g_flushCalls = 0;
+	unsigned int g_failFlushCall = 0;
+	unsigned int g_failFlushFrom = 0;
 	void* g_armRestoreFailureAddress = nullptr;
 	void* g_failRestoreAddress = nullptr;
 	bool g_slowCall = false;
 	bool g_failQuery = false;
 	int __cdecl Replacement() { return 7; }
+	int __cdecl TestCallOriginal() { return 42; }
 	std::vector<BYTE> MakeTestPe32() {
 		std::vector<BYTE> image(0x400);
 		IMAGE_DOS_HEADER dos{};
@@ -147,7 +178,9 @@ namespace {
 		return VirtualProtect(address, size, protection, old);
 	}
 	BOOL WINAPI TestFlushInstructionCache(HANDLE process, LPCVOID address, SIZE_T size) {
-		if (g_failFlush && (!g_failFlushAddress || address == g_failFlushAddress))
+		++g_flushCalls;
+		if ((g_failFlush && (!g_failFlushAddress || address == g_failFlushAddress))
+			|| g_flushCalls == g_failFlushCall || (g_failFlushFrom && g_flushCalls >= g_failFlushFrom))
 			return FALSE;
 		if (address == g_armRestoreFailureAddress) {
 			g_failRestoreAddress = g_armRestoreFailureAddress;
@@ -297,6 +330,97 @@ int main(int argc, char** argv) {
 		68, const_cast<PBYTE>(signature), "xxxx")
 		== static_cast<uint32_t>(reinterpret_cast<uintptr_t>(patternPages + 64)));
 	assert(VirtualFree(patternPages, 0, MEM_RELEASE));
+
+	const bool savedHostPolicy = MemoryHostPolicy().useWineApis;
+	MemoryHostPolicy().useWineApis = true;
+	auto* preparedPage = static_cast<unsigned char*>(VirtualAlloc(nullptr, 4096,
+		MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE));
+	assert(preparedPage);
+	unsigned char originalA[] = { 0xE8, 0, 0, 0, 0 };
+	const unsigned char originalB[] = { 6, 7, 8, 9, 10 };
+	const uintptr_t originalCallTarget = reinterpret_cast<uintptr_t>(&TestCallOriginal);
+	const uintptr_t firstPreparedSite = reinterpret_cast<uintptr_t>(preparedPage + 16);
+	const uint32_t originalCallRelative = static_cast<uint32_t>(originalCallTarget - (firstPreparedSite + 5));
+	memcpy(originalA + 1, &originalCallRelative, sizeof(originalCallRelative));
+	memcpy(preparedPage + 16, originalA, sizeof(originalA));
+	memcpy(preparedPage + 48, originalB, sizeof(originalB));
+	const std::array<MemUtil::PreparedPatchRequest, 2> preparedRequests = {{
+		{ preparedPage + 16, MemUtil::PreparedPatchKind::Call,
+			{}, originalCallTarget,
+			reinterpret_cast<uintptr_t>(&Replacement), false },
+		{ preparedPage + 48, MemUtil::PreparedPatchKind::Jump,
+			std::span<const unsigned char>(originalB, sizeof(originalB)), 0,
+			reinterpret_cast<uintptr_t>(&Replacement), false }
+	}};
+	const unsigned char mismatch[] = { 0xCC, 7, 8, 9, 10 };
+	MemUtil::PreparedPatchRequest mismatchRequest = preparedRequests[1];
+	mismatchRequest.expectedBytes = std::span<const unsigned char>(mismatch, sizeof(mismatch));
+	MemUtil::PreparedPatchSet mismatchSet;
+	const unsigned int mismatchOpens = g_openCalls;
+	assert(!mismatchSet.Prepare(std::span<const MemUtil::PreparedPatchRequest>(&mismatchRequest, 1)));
+	assert(g_openCalls == mismatchOpens && memcmp(preparedPage + 16, originalA, sizeof(originalA)) == 0);
+
+	MemUtil::PreparedPatchSet preparedSet;
+	const unsigned int queriesBeforePrepared = g_queryCalls;
+	assert(preparedSet.Prepare(preparedRequests));
+	assert(g_queryCalls - queriesBeforePrepared == 2);
+	const unsigned int opensBeforePrepared = g_openCalls;
+	const unsigned int restoresBeforePrepared = g_restoreCalls;
+	g_allocationCount = 0;
+	g_countingAllocations = true;
+	const MemUtil::PatchResult preparedInstall = preparedSet.Commit();
+	g_countingAllocations = false;
+	assert(preparedInstall == MemUtil::PatchResult::Installed);
+	assert(g_allocationCount == 0);
+	assert(g_openCalls - opensBeforePrepared == 1 && g_restoreCalls - restoresBeforePrepared == 1);
+	uint32_t installedCallRelative = 0;
+	memcpy(&installedCallRelative, preparedPage + 17, sizeof(installedCallRelative));
+	assert(preparedPage[16] == 0xE8 && firstPreparedSite + 5 + installedCallRelative
+		== reinterpret_cast<uintptr_t>(&Replacement));
+	assert(preparedPage[48] == 0xE9);
+	g_allocationCount = 0;
+	g_countingAllocations = true;
+	const MemUtil::PatchResult preparedRollback = preparedSet.Rollback();
+	g_countingAllocations = false;
+	assert(preparedRollback == MemUtil::PatchResult::Original && g_allocationCount == 0);
+	assert(memcmp(preparedPage + 16, originalA, sizeof(originalA)) == 0);
+	assert(memcmp(preparedPage + 48, originalB, sizeof(originalB)) == 0);
+
+	assert(preparedSet.Prepare(std::span<const MemUtil::PreparedPatchRequest>(preparedRequests.data(), 1)));
+	g_failCall = g_protectCalls + 1;
+	g_allocationCount = 0;
+	g_countingAllocations = true;
+	const MemUtil::PatchResult openFailure = preparedSet.Commit();
+	g_countingAllocations = false;
+	assert(openFailure == MemUtil::PatchResult::Original && g_allocationCount == 0);
+	g_failCall = 0;
+	assert(memcmp(preparedPage + 16, originalA, sizeof(originalA)) == 0);
+
+	assert(preparedSet.Prepare(std::span<const MemUtil::PreparedPatchRequest>(preparedRequests.data(), 1)));
+	g_failFlushCall = g_flushCalls + 1;
+	g_allocationCount = 0;
+	g_countingAllocations = true;
+	const MemUtil::PatchResult flushRollback = preparedSet.Commit();
+	g_countingAllocations = false;
+	assert(flushRollback == MemUtil::PatchResult::Original && g_allocationCount == 0);
+	g_failFlushCall = 0;
+	assert(memcmp(preparedPage + 16, originalA, sizeof(originalA)) == 0);
+
+	assert(preparedSet.Prepare(std::span<const MemUtil::PreparedPatchRequest>(preparedRequests.data(), 1)));
+	g_failFlushFrom = g_flushCalls + 1;
+	g_allocationCount = 0;
+	g_countingAllocations = true;
+	const MemUtil::PatchResult incompleteRollback = preparedSet.Commit();
+	g_countingAllocations = false;
+	assert(incompleteRollback == MemUtil::PatchResult::RollbackIncomplete && g_allocationCount == 0);
+	g_failFlushFrom = 0;
+	assert(memcmp(preparedPage + 16, originalA, sizeof(originalA)) == 0);
+	assert(VirtualFree(preparedPage, 0, MEM_RELEASE));
+	MemoryHostPolicy().useWineApis = savedHostPolicy;
+	g_protectCalls = g_openCalls = g_restoreCalls = g_queryCalls = 0;
+	g_failCall = g_failFrom = 0;
+	g_failFlushCall = g_failFlushFrom = 0;
+
 	auto* page = static_cast<unsigned char*>(VirtualAlloc(nullptr, 4096,
 		MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE));
 	assert(page);
