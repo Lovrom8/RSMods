@@ -24,7 +24,12 @@ pwsh DLL/Framework/Tests/BuildAndRun.ps1         # MSVC framework tests, Windows
 
 The repo is developed on both Windows and macOS. On macOS the configurator builds for plain `net10.0` without the
 Windows-only parts, and the native DLL itself cannot be built. Keep code that only works on Windows behind
-`[WindowsFact]`/`[WindowsTheory]` in tests and out of the portable framework test set.
+`[WindowsFact]`/`[WindowsTheory]` in tests (not an early `return`, which reports a pass that never ran) and out of
+the portable framework test set: `BuildAndRun.sh` builds every `DLL/Framework/Tests/*Tests.cpp`, so Windows-only
+framework tests go in `DLL/Framework/Tests/Win32/`.
+
+The DLL builds at `/W4 /WX`; fix warnings instead of silencing them. In path literals write `\\`: `"\*"` compiles
+to `"*"` with only warning C4129.
 
 ## Mods and the manifest
 
@@ -36,6 +41,37 @@ Windows-only parts, and the native DLL itself cannot be built. Keep code that on
 - Never edit `mods.manifest.json` by hand. Only the DLL writes it: regenerate it with
   `pwsh DLL/Framework/Tests/BuildAndRun.ps1 -DumpManifest` after changing any setting declaration. The pre-commit
   hook in `.githooks/` and CI both check it.
+- Every key is a keybind declared in `Settings()` that the user can rebind; no fixed keys, and debug-only code is
+  compiled out of Release. Don't default to keys Windows, Steam or the game already use: F11, F12, Enter, Escape,
+  Space, Delete, PageUp, PageDown. The one fixed key is Alt+Enter, which forwards to the game's own F11 fullscreen
+  toggle.
+
+## Memory patching
+
+- All code writes go through `MemUtil::PreparedPatchSet`. No raw `memcpy` or `VirtualProtect` in a mod.
+- Every patch byte-checks its whole site and does nothing on a mismatch. An unknown game executable gets no patches.
+- Learn & Play is relocated: its addresses are RVAs in `LnpSites`, expanded from the live module base, never a fixed
+  image base.
+- The game is already running when `DllMain` runs; keep loader-lock work out of it.
+- Nothing allocates, logs, throws or takes a lock while other threads are suspended: prepare first, report after the
+  resume. Pausing threads is opt-in (`RequireThreadExclusion()`), not the default.
+- Never free a hook gateway the game can still call, even after the original bytes are restored.
+- A green build and test run do not show that a patch works. Check a game boot's `RSMods_debug.txt` for the
+  committed groups and for mismatch lines.
+
+## Threads, settings and evidence
+
+- State shared between a worker thread and `MainThread` needs synchronisation or a hand-off through
+  `MainThreadInbox`; a flag plus a container read on both sides is a race.
+- When a setting is renamed with `migratesFrom`, check that an old "off" cannot override the new default and
+  silently disable a feature.
+- Fixes are on by default. Add a toggle only when users really need the choice, never as a hotkey or environment
+  variable gate.
+- Resolve files relative to the game executable, not the current directory.
+- A timing or race claim needs repeated alternating runs of the old and new build; one clean launch is not proof.
+- Build the smallest design the current behaviour needs: no extra switches, caches or frameworks for a future use.
+- Never commit binaries, logs, local profiles, game files or machine-specific paths. Keep each file's existing line
+  endings.
 
 ## Code style
 
@@ -45,6 +81,7 @@ Write code for a human reader who follows it from top to bottom.
 - Do not split a function into many one-line helpers. A reader should not have to jump between definitions to follow one idea. Extract a helper when it names a real concept or is used in more than one place.
 - Do not let a function grow to hundreds of lines either. When it does several distinct jobs, split it along those jobs.
 - Match the surrounding code's conventions rather than introducing new ones.
+- Keep comments short and about the code: no investigation history, tester names or timings.
 
 ## Commits
 
