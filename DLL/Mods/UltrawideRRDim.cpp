@@ -1,5 +1,6 @@
 #include "../stdafx.h"
 #include "UltrawideRRDim.hpp"
+#include "../LnpSiteCheck.hpp"
 
 namespace {
 	// Decoded from the September 2022 remaster; the state id offset is the one the game reads
@@ -100,6 +101,11 @@ namespace {
 	}
 
 	bool ValidateOriginal(uintptr_t site, uintptr_t target) {
+		if (GameVersion::IsLearnAndPlay())
+			return site == LnpSites::At(LnpSites::kRrDimCall)
+				&& target == LnpSites::At(LnpSites::kRrDimTarget)
+				&& LnpSites::MatchesAll({ LnpSites::kRrDimCall, LnpSites::kRrDimTarget, LnpSites::kRrDimReturn })
+				&& ValidateSite(site, target);
 		static constexpr unsigned char expectedTarget[] = {
 			0x55, 0x8B, 0xEC, 0x53, 0x8B, 0x5D, 0x08, 0x83,
 			0x7B, 0x0C, 0x00, 0x56, 0x57, 0x8B, 0xF0

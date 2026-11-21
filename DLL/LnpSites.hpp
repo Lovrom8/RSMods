@@ -102,4 +102,13 @@ namespace LnpSites {
 
 	// The profile platform-ID check's branch, with its lead-in.
 	inline constexpr Span kProfileIdCheck = { 0x3CF14C, "80 7C 24 0F 00 74 2F" };
+	// Loft post-effects call and its target, including the callee's stack cleanup.
+	inline constexpr Span kRrDimCall = { 0x375B5A, "E8 01 18 00 00" };
+	inline constexpr Span kRrDimTarget = { 0x377360, "55 8B EC 53 8B 5D 08 83 7B 0C 00 56 57 8B F0" };
+	inline constexpr Span kRrDimReturn = { 0x377609, "C2 08 00" };
+
+	// Pitch reference setter and the route dispatcher through its call to the setter.
+	inline constexpr uint32_t kPitchManagerGlobal = 0xF6057C;
+	inline constexpr Span kPitchReference = { 0xDD930, "55 8B EC 83 E4 F8 83 EC 10 83 7D 08 00 53 57 74 31 DB 45 08 83 EC 08 DC 35 @E25D10 D9 5C 24 14 D9 44 24 14 D9 5C 24 04 D9 05 @D99904 D9 1C 24 E8 C9 7D 00 00 DC 0D @E25D08 83 C4 08 EB 06 D9 05 @E25D00 33 C0 D9 9E 5C 13 00 00" };
+	inline constexpr Span kPitchRoute = { 0xEA020, "55 8B EC 56 83 F9 05 74 4E 33 C0 EB 03 8D 49 00 39 0C 85 @F587B0 74 09 40 83 F8 0A 7C F1 5E 5D C3 83 F8 FF 74 30 85 C9 75 0A A1 @F6057C 8B 40 10 EB 0E 83 F9 02 75 1D 8B 0D @F6057C 8B 41 14 85 C0 74 10 8B 70 04 85 F6 74 09 8B 55 08 52 E8 B9 38 FF FF 5E 5D C3" };
 }

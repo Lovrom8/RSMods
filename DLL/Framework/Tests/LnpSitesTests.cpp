@@ -37,6 +37,7 @@ int main() {
 		kUplayDialogManagerHide, kUplayWin32Skip, kRdvMetadataEntry, kRdvMetadataNoop, kDlcStorePrefetch,
 		kDlcInstalledCheck, kFrameBudgetLoad, kFrameBudgetThirty, kBootLoftLight, kSetViewFrustum, kGfxOpenEx, kGfxTell, kGfxLength, kGfxRead, kGfxSeek,
 		kVfsTable, kEngineStringDestroy, kMapperAddReferenceCall, kMapperAddReference, kProfileIdCheck,
+		kRrDimCall, kRrDimTarget, kRrDimReturn, kPitchReference, kPitchRoute,
 	};
 	for (const Span& span : all) {
 		const bool parsed = Expand(span.bytes, 0x1D0000, out);
@@ -59,6 +60,15 @@ int main() {
 	};
 	Check(target(kMapperAddReferenceCall, 0) == kMapperAddReference.rva, "AddReference call target");
 	Check(target(kUplayHideDialog, 17) == kUplayDialogManagerHide.rva, "hideDialog call target");
+	Check(target(kRrDimCall, 0) == kRrDimTarget.rva, "RR Dim call target");
+	Check(target(kPitchRoute, 0x52) == kPitchReference.rva, "pitch route call target");
+	Check(Expand(kPitchRoute.bytes, 0, out) && out.size() >= 0x40, "pitch route span");
+	for (size_t at : { size_t(0x2C), size_t(0x3C) }) {
+		if (out.size() < at + 4) { Check(false, "pitch manager operand present"); continue; }
+		const uint32_t manager = out[at] | out[at + 1] << 8 | out[at + 2] << 16
+			| static_cast<uint32_t>(out[at + 3]) << 24;
+		Check(manager == kPitchManagerGlobal, "pitch manager operand");
+	}
 
 	if (failures) {
 		std::printf("%d LnpSites check(s) failed\n", failures);

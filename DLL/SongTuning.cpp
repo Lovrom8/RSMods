@@ -1,8 +1,112 @@
 #include "stdafx.h"
 #include "SongTuning.hpp"
+#include "LnpSiteCheck.hpp"
 #include <atomic>
 
 namespace Setting = Settings::Setting;
+
+namespace {
+	thread_local int lpPitchRoute = -1;
+	std::atomic<uintptr_t> lpPitchObjects[3]{};
+	std::atomic<bool> lpPitchHooksReady{ false };
+	uintptr_t lpPitchRouteOriginal = 0;
+	uintptr_t lpPitchReferenceOriginal = 0;
+
+	void __cdecl CaptureLpPitchRoute(int route) {
+		lpPitchRoute = route;
+	}
+
+	void __cdecl CaptureLpPitchObject(uintptr_t object) {
+		if (lpPitchRoute >= 0 && lpPitchRoute < 3)
+			lpPitchObjects[lpPitchRoute].store(object, std::memory_order_release);
+		lpPitchRoute = -1;
+	}
+
+	void __declspec(naked) LpPitchRouteHook() {
+		__asm {
+			pushfd
+			pushad
+			push ecx
+			call CaptureLpPitchRoute
+			add esp, 4
+			popad
+			popfd
+			jmp dword ptr [lpPitchRouteOriginal]
+		}
+	}
+
+	void __declspec(naked) LpPitchReferenceHook() {
+		__asm {
+			pushfd
+			pushad
+			push esi
+			call CaptureLpPitchObject
+			add esp, 4
+			popad
+			popfd
+			jmp dword ptr [lpPitchReferenceOriginal]
+		}
+	}
+
+	void InstallLpPitchHooks() {
+		if (!GameVersion::IsLearnAndPlay()) return;
+		static bool attempted = false;
+		static MemUtil::PreparedPatchSet* patches = nullptr;
+		if (attempted) return;
+		attempted = true;
+		if (!LnpSites::MatchesAll({ LnpSites::kPitchRoute, LnpSites::kPitchReference })) {
+			LOG_WARNING("(TRUE TUNING) LP route or reference bytes mismatch; hooks skipped" << std::endl);
+			return;
+		}
+		static constexpr unsigned char routeBytes[]{ 0x55, 0x8B, 0xEC, 0x56, 0x83, 0xF9, 0x05 };
+		static constexpr unsigned char referenceBytes[]{ 0x55, 0x8B, 0xEC, 0x83, 0xE4, 0xF8 };
+		MemUtil::PreparedPatchRequest requests[2]{};
+		requests[0].address = reinterpret_cast<LPVOID>(LnpSites::At(LnpSites::kPitchRoute));
+		requests[0].kind = MemUtil::PreparedPatchKind::Jump;
+		requests[0].expectedBytes = routeBytes;
+		requests[0].replacementTarget = reinterpret_cast<uintptr_t>(&LpPitchRouteHook);
+		requests[0].captureNativeEntry = true;
+		requests[1].address = reinterpret_cast<LPVOID>(LnpSites::At(LnpSites::kPitchReference));
+		requests[1].kind = MemUtil::PreparedPatchKind::Jump;
+		requests[1].expectedBytes = referenceBytes;
+		requests[1].replacementTarget = reinterpret_cast<uintptr_t>(&LpPitchReferenceHook);
+		requests[1].captureNativeEntry = true;
+		// Game threads may still reach these gateways during DLL teardown.
+		patches = new MemUtil::PreparedPatchSet();
+		if (!patches->Prepare(requests)) {
+			LOG_WARNING("(TRUE TUNING) LP pitch hooks could not be prepared" << std::endl);
+			return;
+		}
+		lpPitchRouteOriginal = reinterpret_cast<uintptr_t>(patches->NativeEntry(0));
+		lpPitchReferenceOriginal = reinterpret_cast<uintptr_t>(patches->NativeEntry(1));
+		const auto result = patches->Commit();
+		if (result == MemUtil::PatchResult::Installed)
+			lpPitchHooksReady.store(true, std::memory_order_release);
+		else
+			LOG_WARNING("(TRUE TUNING) LP pitch hooks not confirmed; native read retained" << std::endl);
+	}
+
+	bool ReadLpPitchReference(float& value) {
+		if (!lpPitchHooksReady.load(std::memory_order_acquire)) return false;
+		bool resolved = false;
+		const auto route = SongTuning::GetPath(&resolved);
+		const int index = static_cast<int>(route);
+		if (!resolved || (index != 0 && index != 2)) return false;
+		const uintptr_t object = lpPitchObjects[index].load(std::memory_order_acquire);
+		uintptr_t manager = 0, routeObject = 0, current = 0;
+		if (!object || !MemUtil::TryRead(LnpSites::At(LnpSites::kPitchManagerGlobal), manager) || !manager
+			|| !MemUtil::TryRead(manager + (index == 0 ? 0x10 : 0x14), routeObject) || !routeObject
+			|| !MemUtil::TryRead(routeObject + 4, current) || current != object)
+			return false;
+		int guitarClass = 0, ceiling = 0, floorNote = 0;
+		return MemUtil::TryRead(object + 0x11EC, guitarClass)
+			&& MemUtil::TryRead(object + 0x11F0, ceiling)
+			&& MemUtil::TryRead(object + 0x11F4, floorNote)
+			&& MemUtil::TryRead(object + 0x135C, value)
+			&& (guitarClass == 1 || guitarClass == 2) && ceiling == 128
+			&& floorNote >= 0 && floorNote <= 24 && value > 20.0f && value < 2000.0f;
+	}
+}
 
 /// <summary>
 /// Get Tuning of all 6 strings (even on bass)
@@ -159,6 +263,7 @@ bool SongTuning::IsOnBassPath() {
 /// Hooks the single-player tuner menu's per-frame tick so GetTuningAtTuner can find the open tuner.
 /// </summary>
 void SongTuning::InstallTunerHook() {
+	InstallLpPitchHooks();
 	if (originalTunerTick)
 		return;
 
@@ -478,6 +583,9 @@ bool SongTuning::IsSongInStandard(Tuning tuning) {
 
 /// <returns>True Tuning. ex: A440, A432</returns>
 int SongTuning::GetTrueTuning() {
+	float reference = 0;
+	if (GameVersion::IsLearnAndPlay() && ReadLpPitchReference(reference))
+		return static_cast<int>(floor(reference));
 	uintptr_t trueTunePointer = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_trueTuning, Offsets::ptr_trueTuningOffsets);
 
 	if (!trueTunePointer) {

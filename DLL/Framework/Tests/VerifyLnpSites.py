@@ -52,10 +52,19 @@ def call_target(rva):
 
 checks = [("SetLoftState", call_target(0x375A74 + 13), 0x375AE0),
           ("AddReference", call_target(0x9E995), 0x9E250),
+          ("LoftPostFxSetState", call_target(0x375B5A), 0x377360),
+          ("PitchReference", call_target(0xEA072), 0xDD930),
           ("uiDialogManagerHide", call_target(0x1A48F0 + 17), 0x1DE3E0)]
 for name, actual, expected in checks:
     ok = actual == expected
     failed += not ok
     print(f"{'MATCH' if ok else 'DIFF '} call target {name:22} RVA 0x{actual:06X}")
-print(f"{len(spans) + len(checks) - failed} of {len(spans) + len(checks)} checks match")
+
+manager = int(re.search(r"kPitchManagerGlobal = 0x([0-9A-Fa-f]+)", source).group(1), 16)
+for offset in (0x2C, 0x3C):
+    actual = int.from_bytes(pe.get_data(0xEA020 + offset, 4), "little")
+    ok = actual == base + manager
+    failed += not ok
+    print(f"{'MATCH' if ok else 'DIFF '} pitch manager operand +0x{offset:X}")
+print(f"{len(spans) + len(checks) + 2 - failed} of {len(spans) + len(checks) + 2} checks match")
 sys.exit(1 if failed else 0)
