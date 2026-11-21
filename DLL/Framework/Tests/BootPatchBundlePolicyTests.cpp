@@ -10,19 +10,20 @@ using Framework::BootPatch::Member;
 
 int main() {
 	assert(BundleFor(Member::SourceSignIn) == Bundle::SignIn);
+	assert(BundleFor(Member::ProfileCompletion) == Bundle::SignIn);
 	assert(BundleFor(Member::ProfileAutoLoad) == Bundle::ProfileAutoLoad);
 	assert(BundleFor(Member::DlcStorePrefetch) == Bundle::UltrafastCore);
 	assert(BundleFor(Member::DlcOwnership) == Bundle::UltrafastCore);
 	assert(BundleFor(Member::LazyVfs) == Bundle::UltrafastCore);
 	assert(BundleFor(Member::NativeBegin) == Bundle::UltrafastCore);
 	assert(BundleFor(Member::BootIntro) == Bundle::UltrafastCore);
-	assert(BundleFor(Member::BootLoft) == Bundle::UltrafastCore);
+	assert(BundleFor(Member::BootLoft) == Bundle::SignIn);
 	assert(BundleFor(Member::TitleFade) == Bundle::UltrafastCore);
 	assert(BundleFor(Member::DxvkFrameBudget) == Bundle::DxvkFrameBudget);
 
-	assert(std::string_view(DisabledFeatures(Bundle::SignIn)) == "source sign-in");
+	assert(std::string_view(DisabledFeatures(Bundle::SignIn)) == "source sign-in, profile completion and BootLoft");
 	assert(std::string_view(DisabledFeatures(Bundle::ProfileAutoLoad)) == "profile autoload");
 	assert(std::string_view(DisabledFeatures(Bundle::UltrafastCore))
-		== "DLC store prefetch, DLC ownership, LazyVfs, NativeBegin, BootIntro, BootLoft, TitleFade");
+		== "DLC store prefetch, DLC ownership, LazyVfs, NativeBegin, BootIntro, TitleFade");
 	assert(std::string_view(DisabledFeatures(Bundle::DxvkFrameBudget)) == "DXVK frame budget");
 }

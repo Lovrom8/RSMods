@@ -81,7 +81,7 @@ namespace {
     public:
         MOD_ID(BootLoftMod)
         bool IsEnabled(const Framework::ModContext&) const override {
-            return installed && MemUtil::BootPatchBundleEnabled(Framework::BootPatch::Bundle::UltrafastCore);
+            return installed && MemUtil::BootPatchBundleEnabled(Framework::BootPatch::Bundle::SignIn);
         }
         void OnTick(Framework::ModContext& c) override {
             const auto& menu = GameState::currentMenu;
@@ -111,9 +111,9 @@ namespace {
     Framework::ModRegistrar<BootLoftMod> bootLoftReg;
 }
 
+// Skipping sign-in and the profile screens exposes the title's 10 s light fade, so this follows the sign-in
+// bundle, not Ultrafast Load.
 void BootLoft::Install() {
-    if (!UltrafastLoad::Enabled())
-        return;
     const bool lnp = GameVersion::IsLearnAndPlay();
     if (!lnp && !GameVersion::IsSeptember2022()) {
         LOG_INFO("(LOFT LIGHT) Boot loft changes disabled on this build" << std::endl);

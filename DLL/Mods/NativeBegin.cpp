@@ -99,6 +99,62 @@ namespace {
 		return mode;
 	}
 
+	// The picker continuation does not run the title's splash-release step.
+	void ReleaseTitleSplash() {
+		uintptr_t service = 0, context = 0, click = 0, vtable = 0;
+		unsigned char released = 0;
+		unsigned short flags = 0;
+		static bool skipLogged = false;
+		if (!MemUtil::TryRead(gameService, service) || !service
+			|| !MemUtil::TryRead(service + 0x28, context) || !context
+			|| !MemUtil::TryRead(context + 0x20C, released)
+			|| !MemUtil::TryRead(context + 0xCC, click)) {
+			if (!skipLogged)
+				LOG_WARNING("(PROFILE) Title splash state could not be read; release left to the game" << std::endl);
+			skipLogged = true;
+			return;
+		}
+		if (released) {
+			if (!skipLogged)
+				LOG_INFO("(PROFILE) Title splash already released" << std::endl);
+			skipLogged = true;
+			return;
+		}
+		if (click && (!MemUtil::TryRead(click, vtable)
+			|| vtable != Offsets::startupPreLoadClickVtable.Get()
+			|| !MemUtil::TryRead(click + 0x08, flags))) {
+			LOG_WARNING("(PROFILE) Title splash identity could not be verified" << std::endl);
+			return;
+		}
+		const unsigned short clearedFlags = flags & 0xFFFE;
+		const unsigned char done = 1;
+		std::array<MemUtil::PreparedPatchRequest, 2> requests{};
+		size_t count = 0;
+		if (click) {
+			auto& request = requests[count++];
+			request.address = reinterpret_cast<void*>(click + 0x08);
+			request.kind = MemUtil::PreparedPatchKind::Bytes;
+			request.expectedBytes = { reinterpret_cast<const unsigned char*>(&flags), sizeof(flags) };
+			request.replacementBytes = { reinterpret_cast<const unsigned char*>(&clearedFlags), sizeof(clearedFlags) };
+			request.length = sizeof(flags);
+		}
+		auto& request = requests[count++];
+		request.address = reinterpret_cast<void*>(context + 0x20C);
+		request.kind = MemUtil::PreparedPatchKind::Bytes;
+		request.expectedBytes = { &released, sizeof(released) };
+		request.replacementBytes = { &done, sizeof(done) };
+		request.length = sizeof(done);
+		MemUtil::PreparedPatchSet update;
+		if (!update.Prepare(std::span<const MemUtil::PreparedPatchRequest>(requests.data(), count))) {
+			update.Report("(PROFILE) Title splash release");
+			return;
+		}
+		const auto result = update.Commit();
+		update.Report("(PROFILE) Title splash release");
+		if (result == MemUtil::PatchResult::Installed)
+			LOG_INFO("(PROFILE) Native title splash released before profile continuation" << std::endl);
+	}
+
 	void __cdecl CompleteProfileSignIn() {
 		const unsigned char mode = PrimaryInputMode();
 		// Sign-in is complete here. Use this profile, never a transient cached mode.
@@ -118,6 +174,7 @@ namespace {
 		LOG_INFO("(NATIVE BEGIN) Loaded profile input mode=" << static_cast<unsigned int>(mode)
 			<< "; continuing through stock first-run/menu selection" << std::endl);
 		// The title always requests MainMenu. The picker checks FinishedFE and opens setup.
+		ReleaseTitleSplash();
 		reinterpret_cast<void(__cdecl*)()>(profileContinuation)();
 	}
 
@@ -153,18 +210,11 @@ namespace {
 	}
 }
 
-void NativeBegin::Install() {
+void NativeBegin::InstallProfileCompletion() {
 	if (!GameVersion::IsSeptember2022() && !GameVersion::IsLearnAndPlay()) {
-		LOG_WARNING("(NATIVE BEGIN) Not installed: the executable is not a supported build" << std::endl);
+		LOG_WARNING("(PROFILE) Completion unchanged: unsupported executable" << std::endl);
 		return;
 	}
-	titleVtable = Offsets::startupTitleVtable;
-	titleTickSlot = titleVtable + 0x18;
-	titleTick = Offsets::startupTitleTick;
-	connectSingleton = Offsets::startupConnectSingleton;
-	connectVtable = Offsets::startupConnectVtable;
-	connectBeginSlot = connectVtable + 0x7C;
-	connectBegin = Offsets::startupConnectBegin;
 	armWarning = Offsets::startupArmWarning;
 	gameService = Offsets::startupGameService;
 	saveProfile = Offsets::startupSaveProfile;
@@ -181,16 +231,49 @@ void NativeBegin::Install() {
 	constexpr unsigned char setBytes[] = { 0x51, 0x56, 0x8B, 0xF0, 0x32, 0xC0, 0x57, 0x80, 0xF9, 0x04 };
 	constexpr unsigned char defaultBytes[] = { 0x55, 0x8B, 0xEC, 0x83, 0xEC, 0x08, 0x53, 0x57 };
 	constexpr unsigned char continuationBytes[] = { 0x55, 0x8B, 0xEC, 0x83, 0xEC, 0x74 };
-	if (!getInputMode || !setInputMode || !defaultInputMode || !profileContinuation
+	constexpr unsigned char splashReleaseBytes[] = {
+		0x8B, 0x40, 0x28, 0x80, 0xB8, 0x0C, 0x02, 0x00, 0x00, 0x00, 0x75, 0x13,
+		0x8B, 0x88, 0xCC, 0x00, 0x00, 0x00, 0x85, 0xC9, 0x74, 0x09, 0xBA, 0xFE,
+		0xFF, 0x00, 0x00, 0x66, 0x21, 0x51, 0x08, 0x88, 0x98, 0x0C, 0x02, 0x00, 0x00
+	};
+	const auto splashRelease = GameVersion::CheckedSite("PROFILE",
+		{ "native title splash release", 0x0073CF23, 0x0033D973 },
+		splashReleaseBytes, nullptr, sizeof(splashReleaseBytes));
+	if (!splashRelease || !getInputMode || !setInputMode || !defaultInputMode || !profileContinuation
 		|| !MemUtil::MatchesBytes(signInFlowCompleteCall, completeBytes)
 		|| !MemUtil::MatchesBytes(getInputMode, getBytes)
 		|| !MemUtil::MatchesBytes(setInputMode, setBytes)
 		|| !MemUtil::MatchesBytes(defaultInputMode, defaultBytes)
 		|| !MemUtil::MatchesBytes(profileContinuation, continuationBytes)) {
 		MemUtil::FailBootPatchBundle();
-		LOG_WARNING("(NATIVE BEGIN) Boot bypass off: profile input completion sites unavailable or mismatched" << std::endl);
+		LOG_WARNING("(PROFILE) Completion off: input or title splash sites unavailable or mismatched" << std::endl);
 		return;
 	}
+	if (!MemUtil::MatchesBytes(armWarning, armWarningBytes)
+		|| !MemUtil::MatchesBytes(saveProfile, saveProfileBytes)) {
+		MemUtil::FailBootPatchBundle();
+		LOG_WARNING("(PROFILE) Completion unchanged: autosave sites did not match" << std::endl);
+		return;
+	}
+	MemUtil::PlaceHook(reinterpret_cast<void*>(signInFlowCompleteCall),
+		reinterpret_cast<void*>(&CompleteProfileSignIn), sizeof(completeBytes));
+	MemUtil::PlaceHook(reinterpret_cast<void*>(armWarning),
+		reinterpret_cast<void*>(&SignInCompleteThunk), sizeof(armWarningBytes));
+	LOG_INFO("(PROFILE) Profile completion staged independently of Ultrafast Load" << std::endl);
+}
+
+void NativeBegin::Install() {
+	if (!GameVersion::IsSeptember2022() && !GameVersion::IsLearnAndPlay()) {
+		LOG_WARNING("(NATIVE BEGIN) Not installed: the executable is not a supported build" << std::endl);
+		return;
+	}
+	titleVtable = Offsets::startupTitleVtable;
+	titleTickSlot = titleVtable + 0x18;
+	titleTick = Offsets::startupTitleTick;
+	connectSingleton = Offsets::startupConnectSingleton;
+	connectVtable = Offsets::startupConnectVtable;
+	connectBeginSlot = connectVtable + 0x7C;
+	connectBegin = Offsets::startupConnectBegin;
 	uintptr_t tick = 0;
 	if (!Read(titleTickSlot, tick) || tick != titleTick || !MemUtil::MatchesBytes(connectBeginSlot, std::span<const unsigned char>(
 		reinterpret_cast<const unsigned char*>(&connectBegin), sizeof(connectBegin)))) {
@@ -199,16 +282,6 @@ void NativeBegin::Install() {
 		return;
 	}
 	const uintptr_t hook = reinterpret_cast<uintptr_t>(&TitleTick);
-	LOG_INFO("(NATIVE BEGIN) Input completion original at 0x" << std::hex << signInFlowCompleteCall
-		<< std::dec << ": 55 8B EC 83 EC 20" << std::endl);
-	MemUtil::PlaceHook(reinterpret_cast<void*>(signInFlowCompleteCall),
-		reinterpret_cast<void*>(&CompleteProfileSignIn), sizeof(completeBytes));
 	MemUtil::PatchAdr(reinterpret_cast<LPVOID>(titleTickSlot), &hook, sizeof(hook));
-	if (MemUtil::MatchesBytes(armWarning, armWarningBytes) && MemUtil::MatchesBytes(saveProfile, saveProfileBytes))
-		MemUtil::PlaceHook(reinterpret_cast<void*>(armWarning), reinterpret_cast<void*>(&SignInCompleteThunk), sizeof(armWarningBytes));
-	else {
-		MemUtil::FailBootPatchBundle();
-		LOG_WARNING("(NATIVE BEGIN) Autosave warning left as is: its site doesn't match" << std::endl);
-	}
-	LOG_INFO("(NATIVE BEGIN) Installed" << std::endl);
+	LOG_INFO("(NATIVE BEGIN) Automatic Begin staged" << std::endl);
 }

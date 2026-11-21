@@ -13,6 +13,7 @@ namespace Framework::BootPatch {
 
 	enum class Member {
 		SourceSignIn,
+		ProfileCompletion,
 		ProfileAutoLoad,
 		DlcStorePrefetch,
 		DlcOwnership,
@@ -29,7 +30,9 @@ namespace Framework::BootPatch {
 
 	constexpr Bundle BundleFor(Member member) {
 		switch (member) {
-		case Member::SourceSignIn: return Bundle::SignIn;
+		case Member::SourceSignIn:
+		case Member::ProfileCompletion:
+		case Member::BootLoft: return Bundle::SignIn;
 		case Member::ProfileAutoLoad: return Bundle::ProfileAutoLoad;
 		case Member::DxvkFrameBudget: return Bundle::DxvkFrameBudget;
 		case Member::DlcStorePrefetch:
@@ -37,7 +40,6 @@ namespace Framework::BootPatch {
 		case Member::LazyVfs:
 		case Member::NativeBegin:
 		case Member::BootIntro:
-		case Member::BootLoft:
 		case Member::TitleFade: return Bundle::UltrafastCore;
 		case Member::Count: return Bundle::Count;
 		}
@@ -47,6 +49,7 @@ namespace Framework::BootPatch {
 	constexpr const char* MemberName(Member member) {
 		switch (member) {
 		case Member::SourceSignIn: return "UplayLogin source sign-in";
+		case Member::ProfileCompletion: return "profile completion";
 		case Member::ProfileAutoLoad: return "ProfileAutoLoad";
 		case Member::DlcStorePrefetch: return "DLC store prefetch";
 		case Member::DlcOwnership: return "DLC ownership";
@@ -63,7 +66,7 @@ namespace Framework::BootPatch {
 
 	constexpr const char* BundleName(Bundle bundle) {
 		switch (bundle) {
-		case Bundle::SignIn: return "source sign-in";
+		case Bundle::SignIn: return "source sign-in, profile completion and BootLoft";
 		case Bundle::ProfileAutoLoad: return "profile autoload";
 		case Bundle::UltrafastCore: return "ultrafast load core";
 		case Bundle::DxvkFrameBudget: return "DXVK frame budget";
@@ -74,10 +77,10 @@ namespace Framework::BootPatch {
 
 	constexpr const char* DisabledFeatures(Bundle bundle) {
 		switch (bundle) {
-		case Bundle::SignIn: return "source sign-in";
+		case Bundle::SignIn: return "source sign-in, profile completion and BootLoft";
 		case Bundle::ProfileAutoLoad: return "profile autoload";
 		case Bundle::UltrafastCore:
-			return "DLC store prefetch, DLC ownership, LazyVfs, NativeBegin, BootIntro, BootLoft, TitleFade";
+			return "DLC store prefetch, DLC ownership, LazyVfs, NativeBegin, BootIntro, TitleFade";
 		case Bundle::DxvkFrameBudget: return "DXVK frame budget";
 		case Bundle::Count: return "unknown";
 		}

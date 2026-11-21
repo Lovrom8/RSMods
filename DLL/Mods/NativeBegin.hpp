@@ -1,7 +1,10 @@
 #pragma once
 
-// Begin native sign-in once per launch when the title is ready, then save and skip the warning.
+// Keep profile completion separate from automatic title advancement.
 namespace NativeBegin {
-	// Install the title Tick hook at DLL attach; unsupported builds remain unchanged.
+	// Required profile continuation belongs to the sign-in bundle.
+	void InstallProfileCompletion();
+
+	// Automatic Begin belongs to the optional ultrafast bundle.
 	void Install();
 }

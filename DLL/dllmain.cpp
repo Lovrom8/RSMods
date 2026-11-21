@@ -335,6 +335,10 @@ void Initialize() {
 	MemUtil::BeginBootPatchBundle(Framework::BootPatch::Bundle::SignIn);
 	if (MemUtil::BootPatchMember(Framework::BootPatch::Member::SourceSignIn))
 		UplayLoginMod::Install();
+	if (MemUtil::BootPatchMember(Framework::BootPatch::Member::ProfileCompletion))
+		NativeBegin::InstallProfileCompletion();
+	if (MemUtil::BootPatchMember(Framework::BootPatch::Member::BootLoft))
+		BootLoft::Install();
 	MemUtil::CommitBootPatchBundle();
 
 	MemUtil::BeginBootPatchBundle(Framework::BootPatch::Bundle::ProfileAutoLoad);
@@ -350,15 +354,15 @@ void Initialize() {
 			if (MemUtil::BootPatchMember(Framework::BootPatch::Member::DlcOwnership))
 				BugPrevention::DeferDlcOwnershipQueries();
 		}
-		if (MemUtil::BootPatchMember(Framework::BootPatch::Member::BootLoft))
-			BootLoft::Install();
 		if (MemUtil::BootPatchMember(Framework::BootPatch::Member::TitleFade))
 			TitleFade::Install();
 		if (MemUtil::BootPatchMember(Framework::BootPatch::Member::LazyVfs))
 			LazyVfs::Install();
 		if (MemUtil::BootPatchMember(Framework::BootPatch::Member::BootIntro))
 			BootIntro::Remove();
-		if (MemUtil::BootPatchMember(Framework::BootPatch::Member::NativeBegin))
+		// Automatic Begin only hands over to the replacement completion; without it the title waits for the player.
+		if (MemUtil::BootPatchBundleEnabled(Framework::BootPatch::Bundle::SignIn)
+			&& MemUtil::BootPatchMember(Framework::BootPatch::Member::NativeBegin))
 			NativeBegin::Install();
 	}
 	MemUtil::CommitBootPatchBundle();
