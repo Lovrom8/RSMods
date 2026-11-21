@@ -209,7 +209,7 @@ void Offsets::Initialize() {
 	func_profileSongs = { {0x0056D9D0, baseHandle + 0x0016F170} };			// Code | The e8 at the end of the pattern above (finds the profile's songs - profile id in EAX, out pointer on the stack)
 
 	// Zero RVAs disable unmapped DLC scan sites; byte-check mapped sites before patching.
-	enumDeep49E105 = { {0x0049E105, 0} };
+	enumDeep49E105 = { {0x0049E105, baseHandle + 0x0009E995} };
 	enumDeep8DC12D = { {0x008DC12D, baseHandle + 0x004DB57D} };
 	enumMapperHash = { {0x0049BFD0, baseHandle + 0x0009C7C0} };
 	enumMapperHashCall0 = { {0x0049DC08, baseHandle + 0x0009E3F8} };
@@ -286,7 +286,7 @@ void Offsets::Initialize() {
 	ptr_psarcVtable = { {0x011D995C, baseHandle + 0x00DDB22C} };
 	// Scalar deleting destructor, vtable slot 0.
 	func_psarcDestructor = { {0x008A3780, baseHandle + 0x004A3050} };
-	enumBannerStringDestroy = { {0x0085C810, 0} };
+	enumBannerStringDestroy = { {0x0085C810, baseHandle + 0x00555910} };
 	// DLC service Tick is vtable slot 10.
 	ptr_dlcServiceTickSlot = { {0x011DBF6C, baseHandle + 0x00DDD83C} };
 	func_dlcServiceTick = { {0x008C9CB0, baseHandle + 0x004C9310} };

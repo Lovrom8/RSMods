@@ -1,5 +1,6 @@
 #include "../stdafx.h"
 #include "EnumerationDrain.hpp"
+#include "../LnpSiteCheck.hpp"
 #include "UltrafastLoadMod.hpp"
 #include "EnumerationFrameBudget.hpp"
 #include "LazyVfs.hpp"
@@ -2198,6 +2199,12 @@ namespace {
 		bannerCallSite = Offsets::ptr_dlcBannerCall;
 		bannerFunc = Offsets::func_showBanner;
 		stringDestroyFunc = Offsets::enumBannerStringDestroy;
+		if (GameVersion::IsLearnAndPlay()
+			&& (stringDestroyFunc != LnpSites::At(LnpSites::kEngineStringDestroy)
+				|| !LnpSites::Matches(LnpSites::kEngineStringDestroy))) {
+			stringDestroyFunc = 0;
+			LOG_WARNING("(ENUMERATION) Learn & Play string destructor bytes did not match; banner stays native" << std::endl);
+		}
 		return tickSlot && tickFunc && loadTickFunc && installNextFunc && removeLastFunc && packagesPtr && waitingPtr
 			&& registerCallSite && registerFunc && shaderScanCallSite && shaderScanFunc && bannerCallSite && bannerFunc;
 	}
@@ -2300,7 +2307,7 @@ void EnumerationDrain::Install() {
 	// Banner suppression requires the engine destructor for its string argument.
 	if (stringDestroyFunc)
 		bannerHooked = RedirectCall(bannerCallSite, bannerFunc, &BannerThunk, bannerOriginalRel, "Enumeration banner");
-	else
+	else if (!GameVersion::IsLearnAndPlay())
 		LOG_INFO("(ENUMERATION) Native enumeration banner kept: its string destructor is unmapped on this game version" << std::endl);
 	// Tick call order: load step, then install step with the service in ESI.
 	stockInstallHooked = RedirectCall(tickFunc + stockInstallCallOffset, installNextFunc, &StockInstallThunk, stockInstallOriginalRel, "Tick install step");

@@ -1,5 +1,6 @@
 #ifndef ENUMERATION_PREPARATION_TEST
 #include "../stdafx.h"
+#include "../LnpSiteCheck.hpp"
 #endif
 #include "EnumerationPreparation.hpp"
 #include "../Framework/ShaderScan.hpp"
@@ -436,8 +437,7 @@ bool EnumerationPreparation::Install() {
 	const uintptr_t mapperNative = MapperRestore::SiteTarget(mapperSite);
 	const uintptr_t mapperTarget = MapperRestore::Target(mapperNative);
 	if (mapperNative && mapperTarget != mapperNative)
-		patches.push_back(Branch(mapperSite, mapperNative, &MapperRestore::Hook, 0xE8,
-			{ 0xE8, 0x56, 0xF9, 0xFF, 0xFF }));
+		patches.push_back(Branch(mapperSite, mapperNative, &MapperRestore::Hook, 0xE8, MapperRestore::SiteBytes()));
     const bool llid = EnumerationLlid::AddPatches(patches, true);
     if (!llid)
         LOG_WARNING("(ENUMERATION) Native LLID sites unmapped; asset LLIDs stay native" << std::endl);

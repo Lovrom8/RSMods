@@ -2,6 +2,7 @@
 #include "UplayLoginMod.hpp"
 #include "../GameState.hpp"
 #include "../SettingEdits.hpp"
+#include "../LnpSiteCheck.hpp"
 #include <atomic>
 
 using Framework::Enum;
@@ -10,13 +11,13 @@ namespace Setting = Settings::Setting;
 
 namespace {
 	// Login dialog slots: +0x18 Tick, +0x110 cancel; cancel pops the dialog stage.
-	constexpr uintptr_t dialogVtable = 0x011C2F00;
-	constexpr uintptr_t dialogTickSlot = dialogVtable + 0x18;
-	constexpr uintptr_t dialogTick = 0x0074D250;
-	constexpr uintptr_t dialogCancelSlot = dialogVtable + 0x110;
-	constexpr uintptr_t dialogCancel = 0x006A9080;
-	constexpr uintptr_t transitionBeginSlot = dialogVtable + 0x6C;
-	constexpr uintptr_t transitionBegin = 0x006A85B0;
+	uintptr_t dialogVtable = 0x011C2F00;
+	uintptr_t dialogTickSlot = dialogVtable + 0x18;
+	uintptr_t dialogTick = 0x0074D250;
+	uintptr_t dialogCancelSlot = dialogVtable + 0x110;
+	uintptr_t dialogCancel = 0x006A9080;
+	uintptr_t transitionBeginSlot = dialogVtable + 0x6C;
+	uintptr_t transitionBegin = 0x006A85B0;
 	constexpr unsigned char transitionBeginBytes[] = {
 		0x55, 0x8B, 0xEC, 0x83, 0xEC, 0x08, 0x8D, 0x45,
 		0xF8, 0x50, 0x81, 0xC1, 0xC0, 0x02, 0x00, 0x00
@@ -35,7 +36,7 @@ namespace {
 	// Connect service in ECX; plain ret.
 	uintptr_t connectSingleton = 0;
 	uintptr_t connectVtable = 0;
-	constexpr uintptr_t connectSkip = 0x008B8E10;
+	uintptr_t connectSkip = 0x008B8E10;
 	constexpr unsigned char connectSkipBytes[] = { 0x8B, 0x01, 0x8B, 0x90, 0x00, 0x02, 0x00, 0x00, 0xFF, 0xD2 };
 
 	constexpr const char* settingAsk = "ask";
@@ -50,9 +51,9 @@ namespace {
 	// Re-arm once the dialog transitions in for a new sign-in pass.
 	bool skipped = false;
 	std::atomic<bool> skippedThisSession{ false };
-	constexpr uintptr_t downloadLatestMetadata = 0x008C4AB0;
+	uintptr_t downloadLatestMetadata = 0x008C4AB0;
 	constexpr unsigned char downloadEntryBytes[] = { 0x51, 0x83, 0x7E, 0x04, 0x03 };
-	constexpr uintptr_t downloadNoop = 0x008C4B0C;
+	uintptr_t downloadNoop = 0x008C4B0C;
 	constexpr unsigned char downloadNoopBytes[] = { 0xC6, 0x44, 0x37, 0x0A, 0x01, 0x59, 0xC3 };
 	uintptr_t downloadTrampoline = 0;
 	uintptr_t downloadNoopJump = downloadNoop;
@@ -130,21 +131,21 @@ namespace {
 	}
 
 	// Cancel ConnectingToRDV only during saved-credentials login; dialog id is at +0x2C0.
-	constexpr uintptr_t listVtable = 0x011BBF88;
-	constexpr uintptr_t listTickSlot = listVtable + 0x18;
-	constexpr uintptr_t listTick = 0x005DB180;
-	constexpr uintptr_t listCancelSlot = listVtable + 0x110;
-	constexpr uintptr_t listTransitionBeginSlot = listVtable + 0x6C;
+	uintptr_t listVtable = 0x011BBF88;
+	uintptr_t listTickSlot = listVtable + 0x18;
+	uintptr_t listTick = 0x005DB180;
+	uintptr_t listCancelSlot = listVtable + 0x110;
+	uintptr_t listTransitionBeginSlot = listVtable + 0x6C;
 	constexpr uintptr_t off_dialogId = 0x2C0;
 	constexpr char connectingId[] = "ConnectingToRDV";
 	constexpr char loadingProfileId[] = "RS2LoadingProfile";
-	constexpr uintptr_t hideDialog = 0x005A32C0;
+	uintptr_t hideDialog = 0x005A32C0;
 	constexpr unsigned char hideDialogBytes[] = {
 		0x55, 0x8B, 0xEC, 0x8B, 0x45, 0x08, 0x8B, 0x0D, 0x2C,
 		0xF6, 0x35, 0x01, 0x8B, 0x51, 0x10, 0x50, 0x52, 0xE8,
 		0xFA, 0xA1, 0x03, 0x00, 0x5D, 0xC2, 0x04, 0x00
 	};
-	constexpr uintptr_t uiDialogManagerHide = 0x005DD4D0;
+	uintptr_t uiDialogManagerHide = 0x005DD4D0;
 	constexpr unsigned char uiDialogManagerHideBytes[] = {
 		0x55, 0x8B, 0xEC, 0x83, 0xE4, 0xF8, 0x83, 0xEC,
 		0x24, 0xA1, 0x40, 0xB2, 0x25, 0x01, 0x33, 0xC4
@@ -156,7 +157,7 @@ namespace {
 	// Substate 3 denotes saved-credentials login.
 	constexpr uintptr_t off_profileService = 0x0C;
 	constexpr uintptr_t win32SkipSlot = 0x64;
-	constexpr uintptr_t win32Skip = 0x008CB580;
+	uintptr_t win32Skip = 0x008CB580;
 	constexpr uintptr_t off_win32Substate = 0xCC;
 	constexpr int substateSavedLogin = 3;
 
@@ -393,50 +394,61 @@ SettingDefs UplayLoginMod::Settings() const {
 bool UplayLoginMod::IsSourceProfileLoading() { return sourceSignInStarted != 0; }
 
 namespace {
-	// Learn & Play supports source sign-in and SkipLogin hooks only; unmapped dialog/RDV hooks stay off.
-	void InstallLnp() {
-		const struct { uintptr_t site; const char* role; } unmapped[] = {
-			{ 0x006A9080, "UIMenu_SelectionListDialog::OnDialogCanceled: Uplay and ConnectingToRDV dialog skips off" },
-			{ 0x006A9095, "the dialog ID read inside it: ConnectingToRDV cancel off" },
-			{ 0x00961350, "the connect service's profile-service getter: saved-login detection off" },
-			{ 0x008C4AB0, "the RDV metadata download entry: RDV metadata guard off" },
-			{ 0x008C4B0C, "its no-download branch: RDV metadata guard off" },
-		};
-		for (const auto& site : unmapped)
-			LOG_INFO("(UPLAY) Learn & Play: 2022 site 0x" << std::hex << site.site << std::dec << " is unmapped, " << site.role << std::endl);
-
+	// Validate relocated slots and native spans before staging any dialog hooks.
+	bool MapLnp() {
 		uintptr_t config = 0;
 		const uintptr_t gameService = Offsets::startupGameService;
 		unsigned char configBytes[] = { 0x55, 0x8B, 0xEC, 0x51, 0xA1, 0, 0, 0, 0 };
 		memcpy(configBytes + 5, &gameService, sizeof(gameService));
-		if (!Read(configBoolSlot, config) || config != configBool || !MemUtil::MatchesBytes(configBool, configBytes)) {
-			MemUtil::FailBootPatchBundle();
-			LOG_WARNING("(UPLAY) Learn & Play: config bool slot or bytes did not match; source sign-in not installed" << std::endl);
-			return;
-		}
-		const uintptr_t configHook = reinterpret_cast<uintptr_t>(&ConfigBoolHook);
-		if (!MemUtil::PatchAdr(reinterpret_cast<LPVOID>(configBoolSlot), &configHook, sizeof(configHook))) {
-			MemUtil::FailBootPatchBundle();
-			LOG_WARNING("(UPLAY) Learn & Play: config bool slot write failed; source sign-in not installed" << std::endl);
-			return;
-		}
-		LOG_INFO("(UPLAY) Learn & Play: RendezVous.SkipLogin answer installed" << std::endl);
-		InstallSourceFlow();
+		if (!Read(configBoolSlot, config) || config != configBool || !MemUtil::MatchesBytes(configBool, configBytes))
+			return false;
+		using namespace LnpSites;
+		if (!MatchesAll({ kUplayDialogCancel, kUplayDialogIdRead, kUplayDialogTickSlot, kUplayDialogTransitionSlot,
+			kUplayDialogCancelSlot, kUplayDialogTick, kUplayTransitionBegin, kUplayListTickSlot, kUplayListTransitionSlot,
+			kUplayListCancelSlot, kUplayListTick, kUplayConnectSkip, kUplayProfileServiceSlot, kUplayProfileServiceGetter,
+			kUplayHideDialog, kUplayDialogManagerHide, kUplayWin32Skip }))
+			return false;
+		dialogVtable = At(kUplayDialogTickSlot) - 0x18;
+		dialogTickSlot = At(kUplayDialogTickSlot);
+		dialogTick = At(kUplayDialogTick);
+		dialogCancelSlot = At(kUplayDialogCancelSlot);
+		dialogCancel = At(kUplayDialogCancel);
+		transitionBeginSlot = At(kUplayDialogTransitionSlot);
+		transitionBegin = At(kUplayTransitionBegin);
+		listVtable = At(kUplayListTickSlot) - 0x18;
+		listTickSlot = At(kUplayListTickSlot);
+		listTick = At(kUplayListTick);
+		listCancelSlot = At(kUplayListCancelSlot);
+		listTransitionBeginSlot = At(kUplayListTransitionSlot);
+		connectSkip = At(kUplayConnectSkip);
+		hideDialog = At(kUplayHideDialog);
+		uiDialogManagerHide = At(kUplayDialogManagerHide);
+		win32Skip = At(kUplayWin32Skip);
+		return true;
 	}
 }
 
 void UplayLoginMod::InstallMetadataGuard() {
-	if (!GameVersion::IsSeptember2022())
+	const bool lnp = GameVersion::IsLearnAndPlay();
+	if (!lnp && !GameVersion::IsSeptember2022())
 		return;
-	if (MemUtil::MatchesBytes(downloadLatestMetadata, downloadEntryBytes)
-		&& MemUtil::MatchesBytes(downloadNoop, downloadNoopBytes)) {
+	const bool matches = lnp
+		? LnpSites::MatchesAll({ LnpSites::kRdvMetadataEntry, LnpSites::kRdvMetadataNoop })
+		: MemUtil::MatchesBytes(downloadLatestMetadata, downloadEntryBytes) && MemUtil::MatchesBytes(downloadNoop, downloadNoopBytes);
+	if (matches) {
+		if (lnp) {
+			downloadLatestMetadata = LnpSites::At(LnpSites::kRdvMetadataEntry);
+			downloadNoop = LnpSites::At(LnpSites::kRdvMetadataNoop);
+			downloadNoopJump = downloadNoop;
+		}
 		downloadTrampoline = reinterpret_cast<uintptr_t>(MemUtil::TrampHook(
 			reinterpret_cast<PBYTE>(downloadLatestMetadata),
 			reinterpret_cast<PBYTE>(&DownloadLatestMetadataHook), sizeof(downloadEntryBytes)));
 		if (downloadTrampoline)
 			LOG_INFO("(UPLAY) RDV metadata guard installed" << std::endl);
-		else
+		else {
 			LOG_WARNING("(UPLAY) RDV metadata guard hook failed; native metadata path retained" << std::endl);
+		}
 	} else {
 		LOG_WARNING("(UPLAY) RDV metadata guard bytes did not match; native metadata path retained" << std::endl);
 	}
@@ -447,11 +459,13 @@ void UplayLoginMod::Install() {
 	connectVtable = Offsets::startupConnectVtable;
 	configBoolSlot = Offsets::startupConfigBoolSlot;
 	configBool = Offsets::startupConfigBool;
-	if (GameVersion::IsLearnAndPlay()) {
-		InstallLnp();
+	const bool lnp = GameVersion::IsLearnAndPlay();
+	if (lnp && !MapLnp()) {
+		MemUtil::FailBootPatchBundle();
+		LOG_WARNING("(UPLAY) Learn & Play: dialog, list or connect bytes did not match; not installed" << std::endl);
 		return;
 	}
-	if (!GameVersion::IsSeptember2022()) {
+	if (!lnp && !GameVersion::IsSeptember2022()) {
 		LOG_WARNING("(UPLAY) Not installed: the executable is not a supported build" << std::endl);
 		return;
 	}
@@ -471,8 +485,8 @@ void UplayLoginMod::Install() {
 		LOG_WARNING("(UPLAY) Early dialog skip not installed: transition callback did not match" << std::endl);
 		return;
 	}
-	hideLoadingDialogReady = MemUtil::MatchesBytes(hideDialog, hideDialogBytes)
-		&& MemUtil::MatchesBytes(uiDialogManagerHide, uiDialogManagerHideBytes);
+	hideLoadingDialogReady = lnp || (MemUtil::MatchesBytes(hideDialog, hideDialogBytes)
+		&& MemUtil::MatchesBytes(uiDialogManagerHide, uiDialogManagerHideBytes));
 	if (!hideLoadingDialogReady) {
 		MemUtil::FailBootPatchBundle();
 		LOG_WARNING("(UPLAY) Profile-loading dialog left visible: native hide bytes did not match" << std::endl);
@@ -491,7 +505,7 @@ void UplayLoginMod::Install() {
 	MemUtil::PatchAdr(reinterpret_cast<LPVOID>(configBoolSlot), &configHook, sizeof(configHook));
 	const uintptr_t listHook = reinterpret_cast<uintptr_t>(&ListTick);
 	MemUtil::PatchAdr(reinterpret_cast<LPVOID>(listTickSlot), &listHook, sizeof(listHook));
-	LOG_INFO("(UPLAY) Installed" << std::endl);
+	LOG_INFO("(UPLAY) Installed" << (lnp ? " on Learn & Play" : "") << std::endl);
 	InstallSourceFlow();
 }
 

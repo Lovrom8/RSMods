@@ -315,7 +315,7 @@ void Initialize() {
 	UplayLoginMod::InstallMetadataGuard();
 	MemUtil::BeginBootPatchBundle();
 	if (UltrafastLoad::Enabled()) {
-		if (GameVersion::IsSeptember2022()) {
+		if (GameVersion::IsSeptember2022() || GameVersion::IsLearnAndPlay()) {
 			if (MemUtil::BootPatchMember("DLC store prefetch"))
 				BugPrevention::SkipDlcStorePrefetch();
 			if (MemUtil::BootPatchMember("DLC ownership"))

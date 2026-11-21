@@ -1,6 +1,7 @@
 #include "../stdafx.h"
 #include "BootLoft.hpp"
 #include "UltrafastLoadMod.hpp"
+#include "../LnpSiteCheck.hpp"
 
 namespace {
 	uintptr_t kBootLoftLightSite = 0;
@@ -29,15 +30,19 @@ namespace {
 		}
 	}
 	void InstallLight() {
-		kBootLoftLightSite = GameVersion::CheckedSite("LOFT LIGHT", { "first light set", 0x00775304, 0 },
-            kBootLoftLightExpected, nullptr, sizeof(kBootLoftLightExpected));
+		kBootLoftLightSite = GameVersion::IsLearnAndPlay()
+			? LnpSites::At(LnpSites::kBootLoftLight)
+			: GameVersion::CheckedSite("LOFT LIGHT", { "first light set", 0x00775304, 0 },
+                kBootLoftLightExpected, nullptr, sizeof(kBootLoftLightExpected));
         if (!kBootLoftLightSite) {
 			MemUtil::FailBootPatchBundle();
 			LOG_WARNING("(LOFT LIGHT) Boot light byte span mismatch at 0x00775304; no changes made" << std::endl);
 			return;
 		}
 		kBootLoftLightCall = kBootLoftLightSite + 13;
-		loftSetState = kBootLoftLightCall + 5 + 0x5A;
+		int32_t target = 0;
+		std::memcpy(&target, reinterpret_cast<const void*>(kBootLoftLightCall + 1), sizeof(target));
+		loftSetState = kBootLoftLightCall + 5 + target;
 		const int32_t relative = static_cast<int32_t>(reinterpret_cast<uintptr_t>(&BootLoftLightThunk) - (kBootLoftLightCall + 5));
 		if (!MemUtil::PatchAdr(reinterpret_cast<LPVOID>(kBootLoftLightCall + 1), &relative, sizeof(relative))) {
 			LOG_ERROR("(LOFT LIGHT) Boot light patch failed" << std::endl);
@@ -107,14 +112,21 @@ namespace {
 void BootLoft::Install() {
     if (!UltrafastLoad::Enabled())
         return;
-    if (!GameVersion::IsSeptember2022()) {
+    const bool lnp = GameVersion::IsLearnAndPlay();
+    if (!lnp && !GameVersion::IsSeptember2022()) {
         LOG_INFO("(LOFT LIGHT) Boot loft changes disabled on this build" << std::endl);
+        return;
+    }
+    if (lnp && !LnpSites::MatchesAll({ LnpSites::kBootLoftLight, LnpSites::kSetViewFrustum })) {
+        MemUtil::FailBootPatchBundle();
+        LOG_WARNING("(LOFT LIGHT) Learn & Play light or frustum span mismatch; not installed" << std::endl);
         return;
     }
     InstallLight();
     constexpr unsigned char expected[] = { 0x55, 0x8B, 0xEC, 0x51, 0xD9, 0x42, 0x10 };
-    const auto site = GameVersion::CheckedSite("LOFT", { "SetViewFrustum", 0x009D90C0, 0 },
-        expected, nullptr, sizeof(expected));
+    const auto site = lnp ? LnpSites::At(LnpSites::kSetViewFrustum)
+        : GameVersion::CheckedSite("LOFT", { "SetViewFrustum", 0x009D90C0, 0 },
+            expected, nullptr, sizeof(expected));
     if (!site) {
         MemUtil::FailBootPatchBundle();
         return;
@@ -122,4 +134,6 @@ void BootLoft::Install() {
     frustumTrampoline = MemUtil::TrampHook(reinterpret_cast<PBYTE>(site),
         reinterpret_cast<PBYTE>(&FrustumHook), sizeof(expected));
     installed = frustumTrampoline != nullptr;
+    if (lnp && installed)
+        LOG_INFO("(LOFT) SetViewFrustum hook installed" << std::endl);
 }

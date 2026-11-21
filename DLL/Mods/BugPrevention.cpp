@@ -1,11 +1,12 @@
 #include "../stdafx.h"
 #include "BugPrevention.hpp"
 #include "../MemUtil.hpp"
+#include "../LnpSiteCheck.hpp"
 
 namespace BugPrevention {
 	void DeferDlcOwnershipQueries() {
 		// Leave each LocalDLC entry unqueried so IsOwned checks it on demand.
-		constexpr Framework::GameVersion::Site site{ "Init installed query", 0x008DBB74, 0 };
+		constexpr Framework::GameVersion::Site site{ "Init installed query", 0x008DBB74, LnpSites::kDlcInstalledCheck.rva };
 		constexpr unsigned char expected[] = {
 			0x50, 0x8B, 0x42, 0x1C, 0xFF, 0xD0, 0x88, 0x44, 0x24,
 			0x5D, 0x8B, 0x46, 0x1C, 0xC6, 0x44, 0x24, 0x5F, 0x01
@@ -32,7 +33,7 @@ namespace BugPrevention {
 
 	void SkipDlcStorePrefetch() {
 		// The store requests its DLC information again when it opens.
-		constexpr Framework::GameVersion::Site site{ "Init store prefetch", 0x008DBBEA, 0 };
+		constexpr Framework::GameVersion::Site site{ "Init store prefetch", 0x008DBBEA, LnpSites::kDlcStorePrefetch.rva };
 		constexpr unsigned char expected[] = { 0x50, 0x56, 0xE8, 0x1F, 0x07, 0x00, 0x00 };
 		constexpr unsigned char skipped[] = { 0x50, 0x56, 0x83, 0xC4, 0x08, 0x90, 0x90 };
 		const uintptr_t address = GameVersion::CheckedSite("DLC STORE", site, expected, nullptr, sizeof(expected));
@@ -102,6 +103,12 @@ namespace BugPrevention {
 	/// Skip profile save file Steam Account Id check to allow sharing profiles without needing external tooling.
 	/// </summary>
 	void BypassSaveFilePlatformIdCheck() {
+		if (GameVersion::IsLearnAndPlay()
+			&& (Offsets::ptr_SaveFilePlatformIdCheck.Get() != LnpSites::At(LnpSites::kProfileIdCheck) + 5
+				|| !LnpSites::Matches(LnpSites::kProfileIdCheck))) {
+			LOG_WARNING("(PROFILE ID) Learn & Play lead-in or branch mismatch; game check retained" << std::endl);
+			return;
+		}
 		constexpr byte alwaysContinue = 0xEB;
 		MemUtil::PatchAdr(Offsets::ptr_SaveFilePlatformIdCheck, &alwaysContinue, sizeof(alwaysContinue));
 		LOG_INFO("(BUG PREVENTION) Allowed cross-platform-ID PRFLDB and JSON reads" << std::endl);

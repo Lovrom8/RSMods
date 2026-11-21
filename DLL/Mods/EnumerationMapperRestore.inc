@@ -513,8 +513,18 @@ namespace MapperRestore {
 		sessionThread.store(0, std::memory_order_release);
 	}
 
+	std::vector<unsigned char> SiteBytes() {
+		if (GameVersion::IsLearnAndPlay())
+			return { 0xE8, 0xB6, 0xF8, 0xFF, 0xFF };
+		return { 0xE8, 0x56, 0xF9, 0xFF, 0xFF };
+	}
+
 	uintptr_t SiteTarget(uintptr_t site) {
-		const unsigned char callBytes[] = { 0xE8, 0x56, 0xF9, 0xFF, 0xFF };
+		if (GameVersion::IsLearnAndPlay()
+			&& (site != LnpSites::At(LnpSites::kMapperAddReferenceCall)
+				|| !LnpSites::MatchesAll({ LnpSites::kMapperAddReferenceCall, LnpSites::kMapperAddReference })))
+			return 0;
+		const std::vector<unsigned char> callBytes = SiteBytes();
 		if (!site || !MemUtil::MatchesBytes(site, callBytes)) return 0;
 		int32_t relative = 0;
 		std::memcpy(&relative, reinterpret_cast<const void*>(site + 1), sizeof(relative));
@@ -530,6 +540,7 @@ namespace MapperRestore {
 		digestEnabled = false;
 		verifyReadback = false;
 		if (!native) { armedReason = "AddReference call-site byte guard failed"; return native; }
+		if (GameVersion::IsLearnAndPlay()) { armedReason = "native helpers unmapped on Learn & Play"; return native; }
 		const unsigned char insertBytes[] = { 0x55, 0x8B, 0xEC, 0x8B, 0x4D, 0x08, 0x53, 0x8B, 0x5D, 0x0C };
 		const unsigned char constructBytes[] = { 0x55, 0x8B, 0xEC, 0x8B, 0x4D, 0x08, 0x53, 0x56, 0x57, 0x8B, 0x7D, 0x0C };
 		const unsigned char pushDirBytes[] = { 0x8B, 0x47, 0x04, 0x3B, 0x47, 0x08, 0x74, 0x26, 0x85, 0xC0 };
@@ -541,7 +552,7 @@ namespace MapperRestore {
 		if (!MemUtil::MatchesBytes(kInsertUnique, insertBytes) || !MemUtil::MatchesBytes(kConstructRange, constructBytes)
 			|| !MemUtil::MatchesBytes(kPushDir, pushDirBytes) || !MemUtil::MatchesBytes(kRefCtor, refCtorBytes)
 			|| !MemUtil::MatchesBytes(kCopyRef, copyBytes) || !MemUtil::MatchesBytes(kFreeRef, freeBytes)
-			|| !MemUtil::MatchesBytes(kGrow, growBytes) || !MemUtil::MatchesBytes(0x49DA60, nativeBytes)
+			|| !MemUtil::MatchesBytes(kGrow, growBytes) || !MemUtil::MatchesBytes(native, nativeBytes)
 			|| !*reinterpret_cast<const uintptr_t*>(kLockEnterSlot) || !*reinterpret_cast<const uintptr_t*>(kLockLeaveSlot)
 			|| !*reinterpret_cast<const uintptr_t*>(kThreadIdSlot) || !Offsets::func_engineStringDestroy) {
 			armedReason = "a native helper failed its byte guard";

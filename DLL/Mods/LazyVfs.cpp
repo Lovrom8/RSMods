@@ -1,6 +1,7 @@
 #include "../stdafx.h"
 #include "LazyVfs.hpp"
 #include "CacheStore.hpp"
+#include "../LnpSiteCheck.hpp"
 
 #include <mutex>
 #include <unordered_map>
@@ -8,8 +9,8 @@
 #include <sys/stat.h>
 
 namespace {
-	constexpr uintptr_t table = 0x012EE6BC;
-	constexpr uintptr_t natives[8] = { 0x00499C00, 0x00499C30, 0x00499C50, 0x00499C70, 0x00499C90, 0x00499CA0,
+	uintptr_t table = 0x012EE6BC;
+	uintptr_t natives[8] = { 0x00499C00, 0x00499C30, 0x00499C50, 0x00499C70, 0x00499C90, 0x00499CA0,
 		0x00499CB0, 0x00499D00 };
 
 	// Open returns its handle through the out parameter.
@@ -431,9 +432,19 @@ namespace {
 void LazyVfs::Install() {
 	// Install only when callback and native targets are mapped for this build.
 	const Framework::GameVersion::Site tableSite{ "GRVFS callback table", table, 0 };
-	if (!GameVersion::IsSeptember2022())
+	const bool lnp = GameVersion::IsLearnAndPlay();
+	if (!lnp && !GameVersion::IsSeptember2022())
 		return;
-	if (!GameVersion::CheckedSite("VFS", tableSite, reinterpret_cast<const std::uint8_t*>(natives), nullptr, sizeof(natives))) {
+	if (lnp) {
+		if (!LnpSites::Matches(LnpSites::kVfsTable)) {
+			MemUtil::FailBootPatchBundle();
+			LOG_WARNING("(VFS) Learn & Play native callback table mismatch; lazy psarc opens not installed" << std::endl);
+			return;
+		}
+		table = LnpSites::At(LnpSites::kVfsTable);
+		for (int i = 0; i < 8; ++i)
+			natives[i] = LnpSites::At(LnpSites::kVfsNatives[i]);
+	} else if (!GameVersion::CheckedSite("VFS", tableSite, reinterpret_cast<const std::uint8_t*>(natives), nullptr, sizeof(natives))) {
 		MemUtil::FailBootPatchBundle();
 		return;
 	}

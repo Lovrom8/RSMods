@@ -1,6 +1,7 @@
 #include "../stdafx.h"
 #include "DxvkFrameBudget.hpp"
 #include "UltrafastLoadMod.hpp"
+#include "../LnpSiteCheck.hpp"
 
 #include <string>
 
@@ -293,19 +294,24 @@ namespace {
 void DxvkFrameBudget::Install() {
 	if (!UltrafastLoad::Enabled())
 		return;
-	if (!GameVersion::IsSeptember2022()) {
+	const bool lnp = GameVersion::IsLearnAndPlay();
+	if (!lnp && !GameVersion::IsSeptember2022()) {
 		LOG_INFO("(DXVK) Boot frame budget disabled: unsupported executable " << Framework::GameVersion::BuildName(GameVersion::Current()) << std::endl);
 		return;
 	}
 	if (!GameUsesDxvk())
 		return;
-	const uintptr_t budgetLoad = GameVersion::CheckedSite("DXVK", kBudgetLoadSite,
-		kBudgetLoadBytes, nullptr, sizeof(kBudgetLoadBytes));
+	const uintptr_t budgetLoad = lnp
+		? (LnpSites::MatchesAll({ LnpSites::kFrameBudgetLoad, LnpSites::kFrameBudgetThirty })
+			? LnpSites::At(LnpSites::kFrameBudgetLoad) : 0)
+		: GameVersion::CheckedSite("DXVK", kBudgetLoadSite, kBudgetLoadBytes, nullptr, sizeof(kBudgetLoadBytes));
 	if (!budgetLoad) {
+		if (lnp)
+			LOG_WARNING("(DXVK) Learn & Play frame budget span mismatch; not installed" << std::endl);
 		MemUtil::FailBootPatchBundle();
 		return;
 	}
-	kServiceGlobal = GameVersion::Resolve(kServiceGlobalSite);
+	kServiceGlobal = lnp ? Offsets::startupGameService.Get() : GameVersion::Resolve(kServiceGlobalSite);
 	if (!kServiceGlobal) {
 		MemUtil::FailBootPatchBundle();
 		return;

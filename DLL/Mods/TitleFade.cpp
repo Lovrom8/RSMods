@@ -1,5 +1,6 @@
 #include "../stdafx.h"
 #include "TitleFade.hpp"
+#include "../LnpSiteCheck.hpp"
 #include "TitleFadeBytes.hpp"
 #include "UltrafastLoadMod.hpp"
 
@@ -186,23 +187,38 @@ void TitleFade::Install() {
 	};
 	if (!UltrafastLoad::Enabled())
         return;
-    if (!GameVersion::IsSeptember2022()) {
+    const bool lnp = GameVersion::IsLearnAndPlay();
+    if (!lnp && !GameVersion::IsSeptember2022()) {
         LOG_INFO("(TITLE FADE) Disabled on this build" << std::endl);
         return;
     }
-    kFileOpenEx = GameVersion::CheckedSite("TITLE FADE", { "GFX OpenEx", 0x00C30330, 0 },
-        kFileOpenExBytes, nullptr, sizeof(kFileOpenExBytes));
-    kFileRead = GameVersion::CheckedSite("TITLE FADE", { "GFX Read", 0x00C30530, 0 },
-        kFileReadBytes, nullptr, sizeof(kFileReadBytes));
-    g_fileTell = GameVersion::CheckedSite("TITLE FADE", { "GFX Tell", 0x00C30500, 0 },
-        tellBytes, nullptr, sizeof(tellBytes));
-    g_fileLength = GameVersion::CheckedSite("TITLE FADE", { "GFX Length", 0x00C30510, 0 },
-        lengthBytes, nullptr, sizeof(lengthBytes));
-    g_fileSeek = GameVersion::CheckedSite("TITLE FADE", { "GFX Seek", 0x00C305E0, 0 },
-        seekBytes, nullptr, sizeof(seekBytes));
-    if (!kFileOpenEx || !kFileRead || !g_fileTell || !g_fileLength || !g_fileSeek) {
-        MemUtil::FailBootPatchBundle();
-        return;
+    if (lnp) {
+        using namespace LnpSites;
+        if (!MatchesAll({ kGfxOpenEx, kGfxRead, kGfxTell, kGfxLength, kGfxSeek })) {
+            MemUtil::FailBootPatchBundle();
+            LOG_WARNING("(TITLE FADE) Learn & Play GFX span mismatch; not installed" << std::endl);
+            return;
+        }
+        kFileOpenEx = At(kGfxOpenEx);
+        kFileRead = At(kGfxRead);
+        g_fileTell = At(kGfxTell);
+        g_fileLength = At(kGfxLength);
+        g_fileSeek = At(kGfxSeek);
+    } else {
+        kFileOpenEx = GameVersion::CheckedSite("TITLE FADE", { "GFX OpenEx", 0x00C30330, 0 },
+            kFileOpenExBytes, nullptr, sizeof(kFileOpenExBytes));
+        kFileRead = GameVersion::CheckedSite("TITLE FADE", { "GFX Read", 0x00C30530, 0 },
+            kFileReadBytes, nullptr, sizeof(kFileReadBytes));
+        g_fileTell = GameVersion::CheckedSite("TITLE FADE", { "GFX Tell", 0x00C30500, 0 },
+            tellBytes, nullptr, sizeof(tellBytes));
+        g_fileLength = GameVersion::CheckedSite("TITLE FADE", { "GFX Length", 0x00C30510, 0 },
+            lengthBytes, nullptr, sizeof(lengthBytes));
+        g_fileSeek = GameVersion::CheckedSite("TITLE FADE", { "GFX Seek", 0x00C305E0, 0 },
+            seekBytes, nullptr, sizeof(seekBytes));
+        if (!kFileOpenEx || !kFileRead || !g_fileTell || !g_fileLength || !g_fileSeek) {
+            MemUtil::FailBootPatchBundle();
+            return;
+        }
     }
 
 	g_fileReadTrampoline = reinterpret_cast<uintptr_t>(MemUtil::TrampHook(
