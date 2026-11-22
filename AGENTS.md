@@ -31,6 +31,9 @@ framework tests go in `DLL/Framework/Tests/Win32/`.
 The DLL builds at `/W4 /WX`; fix warnings instead of silencing them. In path literals write `\\`: `"\*"` compiles
 to `"*"` with only warning C4129.
 
+`.claude/skills/cpp-build/SKILL.md` is the procedure for fixing a failing build: the MSBuild command, MSVC
+and linker errors, and the manifest rebuild.
+
 ## Mods and the manifest
 
 - Scaffold a new mod with `Build/New-Mod.ps1 -Name <Name>`; it also lists the files in `DLL.vcxproj` and
