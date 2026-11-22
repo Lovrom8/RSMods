@@ -82,8 +82,20 @@ Write code for a human reader who follows it from top to bottom.
 - Do not let a function grow to hundreds of lines either. When it does several distinct jobs, split it along those jobs.
 - Match the surrounding code's conventions rather than introducing new ones.
 - Keep comments short and about the code: no investigation history, tester names or timings.
+- Put a comment above the code it explains, on its own line, not trailing at the end of one.
+
+`.claude/skills/cpp-code/SKILL.md` is the C++ standard for `DLL/`: the Core Guidelines plus the house rules
+that override them here (naming, function size, and what hook and patch code may not do). Read it before
+non-trivial C++ work. The rules in this file win if the two ever disagree.
 
 ## Commits
 
 Write the subject as a short imperative sentence describing the behaviour change, without a type prefix
 (e.g. "Defer the DLC installed checks at startup"). Branch off `develop`, the main branch.
+
+Most commits need no body. Add one only for what a reader of the diff cannot see: why the change is shaped
+this way, a limitation that survives it, or a compatibility trap. Keep it to a few plain sentences.
+
+A commit message is not a report. Keep research notes, evidence, validation diaries, review requests and
+pending work out of it: those belong in `docs/`, a pull request or an issue, where they can be corrected
+after the fact. Do not format a body with markdown headings, bullet lists or backticks.
