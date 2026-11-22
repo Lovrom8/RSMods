@@ -185,6 +185,12 @@
     <ClCompile Include="Mods\FretlessMod.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
+    <ClCompile Include="Mods\UpdateNoticeMod.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mods\GameNotification.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
     <ClCompile Include="Mods\GreenScreenWallMod.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
@@ -818,6 +824,12 @@
       <Filter>Mods\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Mods\FretlessMod.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\UpdateNoticeMod.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\GameNotification.hpp">
       <Filter>Mods\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Mods\GreenScreenWallMod.hpp">

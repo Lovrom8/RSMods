@@ -19,6 +19,7 @@ namespace Framework::CacheFile {
 
 	constexpr uint32_t kEnumeration = 1;
 	constexpr uint32_t kVfs = 2;
+	constexpr uint32_t kUpdateCheck = 3;
 
 	inline uint64_t Fnv64(const void* data, size_t size) {
 		uint64_t hash = 0xcbf29ce484222325ull;

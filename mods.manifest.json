@@ -2705,6 +2705,30 @@
     "entryTitle": "Green Screen Wall"
   },
   {
+    "key": "UpdateNoticeEnabled",
+    "ini": {
+      "section": "Toggle Switches",
+      "name": "UpdateNoticeEnabled"
+    },
+    "type": "Bool",
+    "default": "on",
+    "label": "Update Notice",
+    "hint": "Shows a notice in the main menu if a newer RSMods or RS_ASIO release is on GitHub.\nNothing is updated for you: the notice names what is out of date and where to download it.\nChecks the GitHub release pages in the background about once a month and stays silent if it cannot reach them.",
+    "category": "Toggle Switches",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null,
+    "editedBy": null,
+    "mod": "UpdateNoticeMod",
+    "entry": "UpdateNoticeEnabled",
+    "heading": "Game & Window",
+    "entryTitle": "Update Notice"
+  },
+  {
     "key": "FretlessModeEnabled",
     "ini": {
       "section": "Toggle Switches",

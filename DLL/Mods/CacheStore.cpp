@@ -57,6 +57,7 @@ namespace {
 		const auto result = store.Load(folder, Identity(folder, path), {
 			{ Framework::CacheFile::kEnumeration, 1 },
 			{ Framework::CacheFile::kVfs, 1 },
+			{ Framework::CacheFile::kUpdateCheck, 1 },
 		});
 		const std::string file = Utf8(store.Path());
 		if (result.migrated)
