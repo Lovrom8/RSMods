@@ -40,6 +40,19 @@ dotnet test Installer.Core.Tests/Installer.Core.Tests.csproj
 `BuildAndRun.sh` builds every `DLL/Framework/Tests/*Tests.cpp`, so a test that includes `Windows.h`
 belongs in `DLL/Framework/Tests/Win32/`.
 
+Three Windows-only suites are not in that `$Tests` list and CI does not run them. Run the one that
+covers the change by hand:
+
+```sh
+pwsh DLL/Framework/Tests/Win32/BuildMemoryProtectionTests.ps1   # MemUtil, a patch site or a hook
+pwsh DLL/Framework/Tests/Win32/BuildCacheStoreTests.ps1         # the cache file or its sections
+pwsh DLL/Framework/Tests/Win32/BuildEnumerationTests.ps1        # the DLC scan
+```
+
+`BuildMemoryProtectionTests.ps1` executes the production stubs with stack canaries, so it catches a
+broken stub that compiles and passes every other test. A change to `MemUtil`, a patch site or a hook
+is not done until it passes.
+
 For a complete local check follow CI's order (`appveyor.yml`, `build_script`): test GUI.Core,
 publish the configurator, create the payload, test Installer.Core, test the mod framework, build
 the native DLL, verify the manifest, publish the installer.
@@ -52,8 +65,8 @@ the native DLL, verify the manifest, publish the installer.
 3. **Fix one cause at a time**, with the smallest change that removes it.
 4. **Rebuild after each fix.** Stop and report if the same error survives three attempts, a fix adds
    more errors than it removes, the fix needs an architectural change, or a dependency is missing.
-5. **Run the tests** that cover the touched code once the build is green, then report what was
-   fixed and what remains.
+5. **Run the tests.** They are part of the build, not a step after it: a compile that succeeds with
+   a failing test is a failed build. Then report what was fixed and what remains.
 
 ## Reading MSVC output
 

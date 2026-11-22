@@ -22,6 +22,20 @@ sh DLL/Framework/Tests/BuildAndRun.sh            # portable framework tests (g++
 pwsh DLL/Framework/Tests/BuildAndRun.ps1         # MSVC framework tests, Windows only
 ```
 
+The tests are part of the build, not a later step: CI runs every suite inside its build script, so a
+build with a failing test is a failed build. Three Windows-only suites are not in `BuildAndRun.ps1`'s
+list and have their own scripts in `DLL/Framework/Tests/Win32/`. Run them by hand when the change
+touches what they cover:
+
+```sh
+pwsh DLL/Framework/Tests/Win32/BuildMemoryProtectionTests.ps1   # MemUtil, a patch site or a hook
+pwsh DLL/Framework/Tests/Win32/BuildCacheStoreTests.ps1         # the cache file or its sections
+pwsh DLL/Framework/Tests/Win32/BuildEnumerationTests.ps1        # the DLC scan
+```
+
+`BuildMemoryProtectionTests.ps1` executes the production stubs with stack canaries. Any change to
+`MemUtil`, a patch site or a hook runs it before the change is considered done.
+
 The repo is developed on both Windows and macOS. On macOS the configurator builds for plain `net10.0` without the
 Windows-only parts, and the native DLL itself cannot be built. Keep code that only works on Windows behind
 `[WindowsFact]`/`[WindowsTheory]` in tests (not an early `return`, which reports a pass that never ran) and out of
