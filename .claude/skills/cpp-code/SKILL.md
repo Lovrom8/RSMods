@@ -720,6 +720,45 @@ std::vector<std::unique_ptr<Point>> indirect_points; // BAD: pointer chasing
 - Choosing "clever" low-level code over clear abstractions (Per.4, Per.5)
 - Ignoring data layout and cache behavior (Per.19)
 
+### In this repository
+
+- **Prefer a table to another branch.** A new patch site, boot bundle, mod setting or mixer channel
+  is a row of data, not a new `if`. `DLL/Mods/VolumeDisplayMod.hpp` is the shape to copy: a small
+  `struct` and a `static constexpr std::array` where the row index carries the meaning. A table is
+  reviewable at a glance and testable without the game; a branch chain is neither.
+- **Settings are declared, not parsed.** A mod returns them from `Settings()` and
+  `mods.manifest.json` is generated from that. Never hand-edit the manifest and never read a key
+  out of the ini yourself.
+- **Per-frame code pays every frame.** A `Tick` or a hook on a game thread reads a cached value; it
+  does not recompute, allocate, format a string or touch the filesystem. Compute on change, read on
+  the frame.
+- **Per.6 is a hard rule here.** No performance claim without a measurement over repeated runs of
+  both builds. "Should be faster" is not a result.
+- **Do not reach for SIMD intrinsics.** This is a 32-bit x86 DLL running inside someone else's
+  frame, and nothing in it is a throughput kernel. If a hot loop ever turns out to be one, it needs
+  a cpuid feature check, a runtime dispatch and a scalar fallback, which is a design decision and
+  not a local optimisation.
+
+## Hand-written asm
+
+A `__declspec(naked)` stub is the one place the compiler cannot check the work, so the rules are
+mechanical. The production examples are in `DLL/MemUtil.cpp`.
+
+- A naked function has no prologue, no epilogue and no locals. Do nothing in it but save state,
+  call into ordinary C++, and restore.
+- **`ret N` must equal the callee-popped argument bytes exactly.** Five pointer-sized arguments is
+  `ret 14h`, six is `ret 18h`. The wrong `N` compiles, links, and passes every portable test, then
+  corrupts the stack at runtime. That has already happened once here.
+- Account for what you pushed when reading an argument off the stack.
+  `MemUtil::JumpToVersioned` reads `[esp + 36]` because `pushfd` and `pushad` sit below it.
+- Keep hook state per thread. A value shared between hooks sends one thread to another thread's
+  address.
+- A change to a stub or a site runs `pwsh DLL/Framework/Tests/Win32/BuildMemoryProtectionTests.ps1`,
+  which executes the production stubs with stack canaries. That suite exists because of the `ret`
+  bug above, and it is not in the default test run.
+- Everything else about patching, including the single-writer rule and byte-checked sites, is in
+  `AGENTS.md`, "Memory patching". Read it before touching a hook.
+
 ## Comments
 
 - Put a comment on its own line above the code it explains, never trailing at the end of a line.
