@@ -185,9 +185,12 @@ namespace BugPrevention {
 
 
 	/// <summary>
-	/// In extremely rare cases, the user may have an audio in device have a driver issue.
-	/// This causes Rocksmith to crash when it reads all of their audio input devices.
-	/// This just patches out those checks, so it won't crash when EBX is a nullptr.
+	/// Lets an input device that reports fewer than one channel through audio enumeration.
+	/// Added for a driver fault that made enumeration crash. Despite what this comment used to say,
+	/// it cannot be a null-pointer guard: the game tests the device for null and for a null first
+	/// member before this site, so the two instructions removed here are the channel-count test and
+	/// its branch. Whether admitting such a device is the right cure is unsettled; it behaves the
+	/// same on both builds.
 	/// </summary>
 	void PreventPortAudioInDeviceCrash() {
 		const auto replacement = MakeBytes(0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90);

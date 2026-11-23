@@ -191,4 +191,11 @@ void CustomSongTitles::HookSongListsKoko() {
 /// </summary>
 void CustomSongTitles::LoadSettings() {
 	songTitles = Settings::GetCustomSongTitles();
+
+	// The game hands the name straight to its own sprintf as the format string, with no arguments,
+	// so a bare % would be read as a conversion specifier. Double it to print one literally.
+	for (std::string& title : songTitles) {
+		for (std::size_t at = title.find('%'); at != std::string::npos; at = title.find('%', at + 2))
+			title.insert(at, 1, '%');
+	}
 }
