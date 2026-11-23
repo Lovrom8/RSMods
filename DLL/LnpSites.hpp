@@ -76,7 +76,9 @@ namespace LnpSites {
 	inline constexpr Span kAdvancedDisplayCrash = { 0x51E343, "8A 51 04 57 8B 7E 0C 88 10 2B 01 33 D2 F7 F7 FE 41 05 88 41 04" };
 	inline constexpr Span kPortAudioInCrash = { 0x842C25, "83 7B 0C 01 0F 8C 75 02 00 00 8B 85 C8 FE FF FF 80 B8 DF 1B 00 00 00 75 0B" };
 	inline constexpr Span kInvalidInputTreeCheck = { 0x570130, "85 DB 0F 84 98 00 00 00 8B 4D 0C 8B 41 10 8B 51 14 56 57 89 45 F4 89 55 F8" };
-	inline constexpr Span kInvalidInputTreeEmpty = { 0x5701D0, "5B 8B E5 5D C2 08 00" };
+	// Starts before the jump-back address, so the span is an identity instead of a bare epilogue that
+	// would match hundreds of functions. The epilogue itself is the last 7 bytes, at 0x5701D0.
+	inline constexpr Span kInvalidInputTreeEmpty = { 0x5701C6, "85 C0 8B C7 78 02 8B C6 5F 5E 5B 8B E5 5D C2 08 00" };
 	inline constexpr Span kCalibrationSampleCount = { 0x1EADF1, "8B 54 24 10 89 93 88 07 00 00 D9 6C 24 0E 85 C9 74 07 8B 01 8B 50 08 FF D2" };
 
 	// Output sample-rate requirement: the global load, the 48000 compare and the branch the hook feeds.
