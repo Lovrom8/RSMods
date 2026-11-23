@@ -158,6 +158,11 @@ namespace Menu {
 		if (visibility <= 0.001f)
 			return;
 
+		// A minimised window reports a zero display size, which would make every size below zero and
+		// drive SetWindowFontScale to 0. Nothing is visible at that point anyway.
+		if (io.DisplaySize.x <= 0.0f || io.DisplaySize.y <= 0.0f || io.FontGlobalScale <= 0.0f)
+			return;
+
 		const bool indeterminate = !progress.completed && (progress.detected == 0 || progress.processed == 0);
 		// EndScene can run repeatedly per frame, so DeltaTime cannot drive fill easing.
 		const float fraction = progress.completed ? 1.0f
