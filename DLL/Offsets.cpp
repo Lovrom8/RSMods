@@ -44,6 +44,9 @@ VersioningStruct<uintptr_t> Offsets::startupSplashSite = { {0x005A536C, startupB
 VersioningStruct<uintptr_t> Offsets::startupSplashResume = { {0x005A5375, startupBase + 0x001A6935} };
 VersioningStruct<uintptr_t> Offsets::startupPreLoadClickVtable = { {0x011D069C, startupBase + 0x00DD1EC4} };
 
+// An entry whose slots carry no baseHandle holds RVAs, not addresses: its consumers add
+// Offsets::baseHandle or GameVersion::ModuleBase() themselves. Adding a base here would double it,
+// so keep the convention of the entry you are editing and never read one of those with a raw Get().
 void Offsets::Initialize() {
 	baseHandle = (uintptr_t)GetModuleHandle(NULL);
 

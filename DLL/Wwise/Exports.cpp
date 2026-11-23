@@ -10,7 +10,9 @@ void Wwise::Exports::Initialize() {
 
 	// IAkStreamMgr
 	// Only has a single pointer, and is protected https://www.audiokinetic.com/library/2015.1.9_5624/?source=SDK&id=class_a_k_1_1_i_ak_stream_mgr_a85c6043c1a45f13b7df2f05729248b1f.html
-	func_Wwise_IAkStreamMgr_m_pStreamMgr = { {0x00f1c460, 0x00F53580} }; // Idk
+	// The pointer itself, which StreamMgr::Create writes and IAkStreamMgr::Get reads. Both
+	// addresses carry the m_pStreamMgr symbol in their image, referenced from 18 sites in each.
+	func_Wwise_IAkStreamMgr_m_pStreamMgr = { {0x01352580, baseHandle + 0x00F53580} };
 
 	// MemoryMgr
 	func_Wwise_Memory_CheckPoolId = { {0x00E9FF70, baseHandle + 0x00A9EEE0} };
@@ -98,7 +100,7 @@ void Wwise::Exports::Initialize() {
 	func_Wwise_Sound_PrepareBank_Char_Callback = { {0x00ec3800,  baseHandle + 0x00AC2EC0 } };
 	func_Wwise_Sound_PrepareBank_Char_BankContent = { {0x00ec4590, baseHandle + 0x00AC3C50} };
 	func_Wwise_Sound_PrepareEvent_EventID_UInt32 = { {0x00ec2480, baseHandle + 0x00AC1AE0} };
-	func_Wwise_Sound_PrepareEvent_EventID_UInt32_Callback_Void = { {baseHandle + 0x00AC1B60} };
+	func_Wwise_Sound_PrepareEvent_EventID_UInt32_Callback_Void = { {0x00EC2500, baseHandle + 0x00AC1B60} };
 	func_Wwise_Sound_PrepareEvent_Char_UInt32 = { {0x00ec39f0, baseHandle + 0x00AC30B0 } };
 	func_Wwise_Sound_PrepareEvent_Char_UInt32_Callback_Void = { {0x00ec3ce0, baseHandle + 0x00AC33A0 } };
 	func_Wwise_Sound_PrepareGameSyncs_UInt32_UInt32_UInt32_Callback_Void = { {0x00ec3f60, baseHandle + 0x00AC1C30} };
