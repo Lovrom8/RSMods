@@ -272,7 +272,8 @@ namespace QualityOfLife {
 	/// <summary>
 	/// With Fast Load the title screen can get stuck on the loading screen forever: it asks for its Flash movie while the game is
 	/// still indexing its files, gets no answer, and never asks again. While a menu is ready except for its movie, ask for the movie
-	/// again every 250 ms (and 3 frames), for up to 30 seconds. Does nothing while menus load normally.
+	/// again every 250 ms (and 3 frames), for up to 30 seconds. Does nothing while menus load normally. Installs on both the
+	/// September 2022 and Learn & Play builds; each site is byte-checked and the pair fails closed.
 	/// </summary>
 	void RetryFastLoadUponSoftLock() {
 		const uintptr_t menuLoadUpdate = Offsets::ptr_menuLoadUpdate.GetValue();
@@ -291,7 +292,7 @@ namespace QualityOfLife {
 		}
 		const auto movieSite = MakeSite("menu movie setup", menuMovieSetup, VersionedPattern<6>{
 			ExactPattern(MakeBytes(0x55, 0x8B, 0xEC, 0x83, 0xE4, 0xF8)),
-			UnavailablePattern<6>()
+			ExactPattern(MakeBytes(0x55, 0x8B, 0xEC, 0x83, 0xE4, 0xF8))
 		}, movieJump);
 		const auto loadSite = MakeSite("menu load update", menuLoadUpdate, VersionedPattern<6>{
 			ExactPattern(MakeBytes(0x55, 0x8B, 0xEC, 0x83, 0xE4, 0xF8)),

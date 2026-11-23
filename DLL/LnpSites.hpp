@@ -67,6 +67,11 @@ namespace LnpSites {
 	inline constexpr Span kUplayDialogManagerHide = { 0x1DE3E0, "55 8B EC 83 E4 F8 83 EC 24 A1 @E5C240 33 C4" };
 	inline constexpr Span kUplayWin32Skip = { 0x4CABE0, "C7 81 CC 00 00 00 04 00 00 00 83 3D @F75E90" };
 
+	// The menu movie retry: movie setup, load update and the movie request it calls, whole signatures.
+	inline constexpr Span kMenuMovieSetup = { 0x815EE0, "55 8B EC 83 E4 F8 83 EC 14 56 8B F1 80 BE 21 01 00 00 00" };
+	inline constexpr Span kMenuLoadUpdate = { 0x19EF80, "55 8B EC 83 E4 F8 83 EC 14 8B 45 08 53 8B 58 0C 83 C3 04" };
+	inline constexpr Span kMenuMovieRequest = { 0x8189E0, "55 8B EC 83 E4 F8 83 EC 08 56 8B F0 8B 4E" };
+
 	// RDV metadata guard: DownloadLatestMetadata's entry and its no-download branch.
 	inline constexpr Span kRdvMetadataEntry = { 0x4C4090, "51 83 7E 04 03" };
 	inline constexpr Span kRdvMetadataNoop = { 0x4C40EC, "C6 44 37 0A 01 59 C3" };
