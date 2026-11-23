@@ -1,5 +1,5 @@
-"""Check every Learn & Play span in DLL/LnpSites.hpp against the LP Dec 2024 unpacked dump.
-Usage: python VerifyLnpSites.py path/to/Rocksmith2014_lp_dec2024_dump.exe
+"""Check every Learn & Play span in DLL/LnpSites.hpp against a Learn & Play Dec 2024 image.
+Usage: python VerifyLnpSites.py path/to/image.exe
 Requires pefile. Never modifies the image. Exits non-zero if any span differs.
 """
 import re
@@ -8,7 +8,7 @@ from pathlib import Path
 import pefile
 
 root = Path(__file__).resolve().parents[3]
-assert Path(sys.argv[1]).stat().st_size == 53509632, "Wrong LP dump size"
+assert Path(sys.argv[1]).stat().st_size == 53509632, "Wrong LP image size"
 pe = pefile.PE(sys.argv[1], fast_load=True)
 base = pe.OPTIONAL_HEADER.ImageBase
 assert base == 0x1D0000 and pe.OPTIONAL_HEADER.SizeOfImage == 0x330C000, "Wrong LP image"

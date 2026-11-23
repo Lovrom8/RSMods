@@ -20,7 +20,7 @@ int main() {
 
 	Check(Expand("55 8B EC", 0x1D0000, out) && out == std::vector<unsigned char>{ 0x55, 0x8B, 0xEC }, "plain bytes");
 	Check(Expand("A1 @E5C240 33", 0x1D0000, out)
-		&& out == std::vector<unsigned char>{ 0xA1, 0x40, 0xC2, 0x02, 0x01, 0x33 }, "operand at the dump base");
+		&& out == std::vector<unsigned char>{ 0xA1, 0x40, 0xC2, 0x02, 0x01, 0x33 }, "operand at the preferred base");
 	Check(Expand("@E5C240", 0x00A20000, out)
 		&& out == std::vector<unsigned char>{ 0x40, 0xC2, 0x87, 0x01 }, "operand follows the load address");
 	Check(!Expand("5", 0, out), "half byte rejected");
