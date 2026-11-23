@@ -40,8 +40,11 @@ namespace {
 		uintptr_t vtable = 0;
 		int state = 0;
 		unsigned char input = 0;
+		// Learn & Play leaves the title scene standing when Begin starts before the title is input-ready,
+		// so wait for 0x12 there. The 2022 fast boot has always begun from the hidden title and is unaffected.
+		const bool hiddenAllowed = GameVersion::IsSeptember2022();
 		const bool ready = Read(title, vtable) && vtable == titleVtable
-			&& Read(title + off_state, state) && (state == stateLoadedHidden || state == stateInputReady)
+			&& Read(title + off_state, state) && (state == stateInputReady || (state == stateLoadedHidden && hiddenAllowed))
 			&& Read(title + off_inputEnabled, input) && input != 0;
 		const bool edge = ready && state != readyState;
 		wasReady = ready;
@@ -267,6 +270,9 @@ void NativeBegin::Install() {
 		LOG_WARNING("(NATIVE BEGIN) Not installed: the executable is not a supported build" << std::endl);
 		return;
 	}
+	LOG_INFO("(NATIVE BEGIN) Begin starts from the "
+		<< (GameVersion::IsSeptember2022() ? "hidden title (0x11) or the input-ready title (0x12)" : "input-ready title (0x12) only")
+		<< std::endl);
 	titleVtable = Offsets::startupTitleVtable;
 	titleTickSlot = titleVtable + 0x18;
 	titleTick = Offsets::startupTitleTick;
