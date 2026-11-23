@@ -115,6 +115,10 @@ void UpdateNoticeMod::OnMenuTick(ModContext&) {
 	if (shown_)
 		return;
 	if (!started_) {
+		// A setup dialog counts as a menu, so wait for the main menu before touching the network.
+		if (EnumerationDrain::MainMenuReadySeconds() <= 0.0)
+			return;
+
 		started_ = true;
 		const auto stored = LoadRecord();
 		const uint64_t now = NowSeconds();
@@ -153,6 +157,11 @@ void UpdateNoticeMod::OnMenuTick(ModContext&) {
 		shown_ = true;
 		LOG_INFO("(UPDATE NOTICE) could not show the notice after " << attempts_ << " attempts" << std::endl);
 	}
+}
+
+void UpdateNoticeMod::OnDisabled(ModContext&) {
+	// Turning the setting off only stops the menu callbacks, so cancel a request that is already in flight.
+	Stop();
 }
 
 void UpdateNoticeMod::OnShutdown(ModContext&) {
