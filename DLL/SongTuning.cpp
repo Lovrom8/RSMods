@@ -339,10 +339,18 @@ Tuning SongTuning::GetTuningAtTuner(bool logFailures) {
 /// <returns>Should we Display The Extended Range Colors?</returns>
 bool SongTuning::IsExtendedRangeSong() {
 	uintptr_t addrTimerEnabled = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_timer, Offsets::ptr_timerBaseOffsets);
+
+	// The chain is unreadable outside a song and briefly during a transition, so report each outage
+	// once rather than on every retry.
+	static bool reportedPointer = false;
 	if (!addrTimerEnabled) {
-		LOG_ERROR("Invalid Pointer: IsExtendedRangeSong" << std::endl);
+		if (!reportedPointer) {
+			reportedPointer = true;
+			LOG_WARNING("Invalid Pointer: IsExtendedRangeSong" << std::endl);
+		}
 		return false;
 	}
+	reportedPointer = false;
 
 	if (!Settings::IsOn(Setting::ExtendedRangeEnabled))
 		return false;
@@ -367,10 +375,15 @@ bool SongTuning::IsExtendedRangeSong() {
 	bool dropTuning = IsSongInDrop(tuning);
 
 	// HighestLowest Tuning Pointer is invalid
+	static bool reportedTuning = false;
 	if (lowestTuning == 666) {
-		LOG_ERROR("Invalid Tuning: GetHighestLowestString -> IsExtendedRangeSong" << std::endl);
+		if (!reportedTuning) {
+			reportedTuning = true;
+			LOG_WARNING("Invalid Tuning: GetHighestLowestString -> IsExtendedRangeSong" << std::endl);
+		}
 		return false;
 	}
+	reportedTuning = false;
 
 	// Bass below C standard fix (A220 range)
 	if (GetTrueTuning() <= 260)
@@ -396,23 +409,35 @@ bool SongTuning::IsExtendedRangeSong() {
 bool SongTuning::IsExtendedRangeTuner() {
 	uintptr_t addrTuningText = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_tuningText, Offsets::ptr_tuningTextOffsets);
 
-	// Either null or is not in a pre-song tuner
+	// Either null or is not in a pre-song tuner, which is the normal case everywhere else, so report
+	// each outage once instead of on every retry.
+	static bool reportedPointer = false;
 	if (!addrTuningText) {
-		LOG_ERROR("Invalid Pointer: IsExtendedRangeTuner" << std::endl);
+		if (!reportedPointer) {
+			reportedPointer = true;
+			LOG_WARNING("Invalid Pointer: IsExtendedRangeTuner" << std::endl);
+		}
 		return false;
 	}
+	reportedPointer = false;
 
 	// Verify the user actually wants Extended Range enabled.
 	if (!Settings::IsOn(Setting::ExtendedRangeEnabled))
 		return false;
 
-	Tuning tunerSongTuning = GetTuningAtTuner();
+	// Let the reason print only alongside the first report, so a closed tuner doesn't log a pair every retry.
+	static bool reportedTuning = false;
+	Tuning tunerSongTuning = GetTuningAtTuner(!reportedTuning);
 
 	// Tuning Not Found
 	if (tunerSongTuning.lowE == 69) {
-		LOG_ERROR("Invalid Tuning: IsExtendedRangeTuner" << std::endl);
+		if (!reportedTuning) {
+			reportedTuning = true;
+			LOG_WARNING("Invalid Tuning: IsExtendedRangeTuner" << std::endl);
+		}
 		return false;
 	}
+	reportedTuning = false;
 
 	int lowestTuning = tunerSongTuning.lowE;
 

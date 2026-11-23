@@ -34,16 +34,28 @@ float SongTimer::SongTimer() {
 	uintptr_t addrTimerBase = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_timer, Offsets::ptr_timerBaseOffsets);
 	uintptr_t addrTimerRare = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_timerRare, Offsets::ptr_timerRareOffsets, true);
 
+	// This runs every tick, and the chain is briefly unreadable around a song transition. Report each
+	// outage once, when it starts, instead of once per tick.
+	static bool reportedBase = false, reportedRare = false;
+
 	if (!addrTimerBase) {
-		LOG_ERROR("Invalid Pointer: (BASE) ShowSongTimer" << std::endl);
+		if (!reportedBase) {
+			reportedBase = true;
+			LOG_WARNING("Invalid Pointer: (BASE) ShowSongTimer" << std::endl);
+		}
 		return 0.f;
 	}
+	reportedBase = false;
 
 	// At this point, we can verify that the timer is a valid time.
 	if (!addrTimerRare) {
-		LOG_ERROR("Invalid Pointer: (RARE) ShowSongTimer" << std::endl);
+		if (!reportedRare) {
+			reportedRare = true;
+			LOG_WARNING("Invalid Pointer: (RARE) ShowSongTimer" << std::endl);
+		}
 		return *(float*)addrTimerBase;
 	}
+	reportedRare = false;
 
 	// We entered a song where the base timer does not work.
 	// Cause for this is unknown but we need to check, or time based mods (looping, song timer) will break.
