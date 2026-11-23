@@ -35,7 +35,9 @@ namespace {
 			return;
 		}
 		const auto fakeTitles = MakeSite("localized-title hook", fakeTitlesAddress, VersionedPattern<6>{
-			ExactPattern(MakeBytes(0x8B, 0x0D, 0xFC, 0xFB, 0x35, 0x01)), ExactPattern(MakeBytes(0x8B, 0x0D, 0xFC, 0x0B, 0x13, 0x01))
+			// The operand is an absolute address, so it must come from the live module base and not
+			// from the dump's preferred base.
+			ExactPattern(MakeBytes(0x8B, 0x0D, 0xFC, 0xFB, 0x35, 0x01)), ExpandLnpPattern<6>("8B 0D @F60BFC")
 		}, fakeJump);
 		const std::uintptr_t sprintfImmediate = Offsets::patch_sprintfArg.GetValue();
 		const auto sprintfArguments = MakeSite("localized-title argument count",
@@ -50,7 +52,8 @@ namespace {
 			return;
 		}
 		const auto missingLocalization = MakeSite("missing-localization hook", missingAddress, VersionedPattern<5>{
-			ExactPattern(MakeBytes(0x68, 0x58, 0x3B, 0x1D, 0x01)), ExactPattern(MakeBytes(0x68, 0x78, 0x53, 0xFA, 0x00))
+			// Pushes an absolute string address, so expand it from the live base, not the dump's.
+			ExactPattern(MakeBytes(0x68, 0x58, 0x3B, 0x1D, 0x01)), ExpandLnpPattern<5>("68 @DD5378")
 		}, missingJump);
 		// Each hook returns to the instruction after its stolen bytes in whichever build is running.
 		if (fakeTitlesAddress)

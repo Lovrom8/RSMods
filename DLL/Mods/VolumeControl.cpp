@@ -32,13 +32,12 @@ namespace {
 		}, replacement);
 	}
 
-	SiteDescriptor<8> FocusVariableSite() {
-		constexpr auto mask = MakeBytes(0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
-		// The first byte is the live focus flag and changes while the game runs.
-		return MakeSite("focus-state variable", Offsets::ptr_IsWindowInFocus.GetValue(), VersionedPattern<8>{
-			MaskedPattern(MakeBytes(0x00, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00), mask),
-			MaskedPattern(MakeBytes(0x01, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00), mask)
-		}, MakeBytes(0x01, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00));
+	SiteDescriptor<1> FocusVariableSite() {
+		// The flag is live data and its neighbours are runtime state, so no byte of it is checked.
+		// The setter instruction identifies the site: it encodes this address.
+		const auto any = MaskedPattern(MakeBytes(0x00), MakeBytes(0x00));
+		return MakeSite("focus-state variable", Offsets::ptr_IsWindowInFocus.GetValue(),
+			VersionedPattern<1>{ any, any }, MakeBytes(0x01));
 	}
 
 	SiteDescriptor<6> FocusLostPauseSite() {
