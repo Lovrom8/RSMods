@@ -72,6 +72,27 @@ namespace LnpSites {
 	inline constexpr Span kMenuLoadUpdate = { 0x19EF80, "55 8B EC 83 E4 F8 83 EC 14 8B 45 08 53 8B 58 0C 83 C3 04" };
 	inline constexpr Span kMenuMovieRequest = { 0x8189E0, "55 8B EC 83 E4 F8 83 EC 08 56 8B F0 8B 4E" };
 
+	// Bug prevention hooks: each span starts at the stolen bytes and runs on into the code the hook returns to.
+	inline constexpr Span kAdvancedDisplayCrash = { 0x51E343, "8A 51 04 57 8B 7E 0C 88 10 2B 01 33 D2 F7 F7 FE 41 05 88 41 04" };
+	inline constexpr Span kPortAudioInCrash = { 0x842C25, "83 7B 0C 01 0F 8C 75 02 00 00 8B 85 C8 FE FF FF 80 B8 DF 1B 00 00 00 75 0B" };
+	inline constexpr Span kInvalidInputTreeCheck = { 0x570130, "85 DB 0F 84 98 00 00 00 8B 4D 0C 8B 41 10 8B 51 14 56 57 89 45 F4 89 55 F8" };
+	inline constexpr Span kInvalidInputTreeEmpty = { 0x5701D0, "5B 8B E5 5D C2 08 00" };
+	inline constexpr Span kCalibrationSampleCount = { 0x1EADF1, "8B 54 24 10 89 93 88 07 00 00 D9 6C 24 0E 85 C9 74 07 8B 01 8B 50 08 FF D2" };
+
+	// Output sample-rate requirement: the global load, the 48000 compare and the branch the hook feeds.
+	inline constexpr Span kSampleRateRequirement = { 0xAC5CB2, "A1 @F52888 48 B8 80 BB 00 00 75 05 B8 C0 5D 00 00 50" };
+
+	// The song-preview Wwise event name, overwritten in place with a same-length string.
+	inline constexpr Span kSongPreviewEvent = { 0xDB3088, "50 6C 61 79 5F 25 73 5F 50 72 65 76 69 65 77 00 53 6F 72 74 4C 69 73 74 56 69 65 77 00" };
+
+	// Custom song titles: the two appendage calls, the localized-title load of the game services global
+	// (the one func_ecxAddress names), and the missing-localization format push with its sprintf cleanup.
+	inline constexpr Span kTitleAddedSpaces = { 0x152544, "E8 17 51 EB FF 8D 45 B0 8D 55 A8 8D 4D C0 89 45 C0 89 4D C4 8B C6 39 55 AC 74 03 8B 45 98" };
+	inline constexpr Span kTitleAddedNumbers = { 0x152585, "E8 D6 50 EB FF 8B D6 3B D7 74 19 8D 45 C0 39 45 C4 8B C6 74 03 8B 45 B0 8B 4D C0 51 50" };
+	inline constexpr Span kTitleLocalizedLoad = { 0x1524F8, "8B 45 E0 8B 0D @F60BFC 50 6A 01 51 8D 4D 80" };
+	inline constexpr Span kTitleMissingPush = { 0x43290A, "8B 54 24 18 8B 4C 24 14 50 8B 42 2C 50 68 @DD5378" };
+	inline constexpr Span kTitleSprintfCleanup = { 0x432921, "83 C4 0C 8B 44 24 18 8B 48 4C 2B 48 48 B8 AB AA AA 2A" };
+
 	// RDV metadata guard: DownloadLatestMetadata's entry and its no-download branch.
 	inline constexpr Span kRdvMetadataEntry = { 0x4C4090, "51 83 7E 04 03" };
 	inline constexpr Span kRdvMetadataNoop = { 0x4C40EC, "C6 44 37 0A 01 59 C3" };

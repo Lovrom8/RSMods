@@ -178,7 +178,7 @@ namespace BugPrevention {
 		}
 		const auto site = MakeSite("advanced-display hook", address, VersionedPattern<7>{
 			ExactPattern(MakeBytes(0x8A, 0x51, 0x04, 0x57, 0x8B, 0x7E, 0x0C)),
-			UnavailablePattern<7>()
+			ExactPattern(MakeBytes(0x8A, 0x51, 0x04, 0x57, 0x8B, 0x7E, 0x0C))
 		}, replacement);
 		InstallSites("Advanced-display guard", CaptureSites(ReadSite, site));
 	}
@@ -193,7 +193,7 @@ namespace BugPrevention {
 		const auto replacement = MakeBytes(0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90);
 		const auto site = MakeSite("PortAudio input guard", Offsets::ptr_PortAudioInCrash.GetValue(), VersionedPattern<10>{
 			ExactPattern(MakeBytes(0x83, 0x7B, 0x0C, 0x01, 0x0F, 0x8C, 0x75, 0x02, 0x00, 0x00)),
-			UnavailablePattern<10>()
+			ExactPattern(MakeBytes(0x83, 0x7B, 0x0C, 0x01, 0x0F, 0x8C, 0x75, 0x02, 0x00, 0x00))
 		}, replacement);
 		InstallSites("PortAudio input guard", CaptureSites(ReadSite, site));
 	}
@@ -294,7 +294,7 @@ namespace BugPrevention {
 		}
 		const auto site = MakeSite("invalid-input tree hook", address, VersionedPattern<hookLength>{
 			ExactPattern(MakeBytes(0x85, 0xDB, 0x0F, 0x84, 0x98, 0x00, 0x00, 0x00)),
-			UnavailablePattern<hookLength>()
+			ExactPattern(MakeBytes(0x85, 0xDB, 0x0F, 0x84, 0x98, 0x00, 0x00, 0x00))
 		}, replacement);
 		InstallSites("UI input guard", CaptureSites(ReadSite, site));
 	}
@@ -335,7 +335,7 @@ namespace BugPrevention {
 		}
 		const auto site = MakeSite("calibration sample-count hook", address, VersionedPattern<10>{
 			ExactPattern(MakeBytes(0x8B, 0x54, 0x24, 0x10, 0x89, 0x93, 0x88, 0x07, 0x00, 0x00)),
-			UnavailablePattern<10>()
+			ExactPattern(MakeBytes(0x8B, 0x54, 0x24, 0x10, 0x89, 0x93, 0x88, 0x07, 0x00, 0x00))
 		}, replacement);
 		InstallSites("High-framerate calibration guard", CaptureSites(ReadSite, site));
 	}

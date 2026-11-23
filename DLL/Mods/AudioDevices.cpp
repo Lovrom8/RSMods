@@ -302,7 +302,8 @@ void AudioDevices::ChangeOutputSampleRate() {
 		return;
 	}
 	const auto requirements = MakeSite("sample-rate requirement", requirementAddress,
-		VersionedPattern<5>{ ExactPattern(MakeBytes(0xB8, 0x80, 0xBB, 0x00, 0x00)), UnavailablePattern<5>() }, requirementJump);
+		VersionedPattern<5>{ ExactPattern(MakeBytes(0xB8, 0x80, 0xBB, 0x00, 0x00)),
+			ExactPattern(MakeBytes(0xB8, 0x80, 0xBB, 0x00, 0x00)) }, requirementJump);
 	const auto divide = MakeSite("sample-rate divide guard", divideAddress,
 		VersionedPattern<5>{ ExactPattern(MakeBytes(0xF7, 0xF3, 0xC1, 0xEE, 0x10)),
 			ExactPattern(MakeBytes(0xF7, 0xF3, 0xC1, 0xEE, 0x10)) }, divideJump);

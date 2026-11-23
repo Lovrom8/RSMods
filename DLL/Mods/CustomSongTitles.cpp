@@ -23,10 +23,10 @@ namespace {
 		const auto spacesReplacement = MakeBytes(0x58, 0x58, 0x90, 0x90, 0x90);
 		const auto numbersReplacement = MakeBytes(0x5A, 0x5A, 0x90, 0x90, 0x90);
 		const auto spaces = MakeSite("added spaces call", Offsets::patch_addedSpaces.GetValue(), VersionedPattern<5>{
-			ExactPattern(MakeBytes(0xE8, 0xD7, 0x64, 0xEB, 0xFF)), UnavailablePattern<5>()
+			ExactPattern(MakeBytes(0xE8, 0xD7, 0x64, 0xEB, 0xFF)), ExactPattern(MakeBytes(0xE8, 0x17, 0x51, 0xEB, 0xFF))
 		}, spacesReplacement);
 		const auto numbers = MakeSite("added numbers call", Offsets::patch_addedNumbers.GetValue(), VersionedPattern<5>{
-			ExactPattern(MakeBytes(0xE8, 0x96, 0x64, 0xEB, 0xFF)), UnavailablePattern<5>()
+			ExactPattern(MakeBytes(0xE8, 0x96, 0x64, 0xEB, 0xFF)), ExactPattern(MakeBytes(0xE8, 0xD6, 0x50, 0xEB, 0xFF))
 		}, numbersReplacement);
 		const auto fakeTitlesAddress = Offsets::hookAddr_ModifyLocalized.GetValue();
 		std::array<std::uint8_t, 6> fakeJump{};
@@ -35,12 +35,12 @@ namespace {
 			return;
 		}
 		const auto fakeTitles = MakeSite("localized-title hook", fakeTitlesAddress, VersionedPattern<6>{
-			ExactPattern(MakeBytes(0x8B, 0x0D, 0xFC, 0xFB, 0x35, 0x01)), UnavailablePattern<6>()
+			ExactPattern(MakeBytes(0x8B, 0x0D, 0xFC, 0xFB, 0x35, 0x01)), ExactPattern(MakeBytes(0x8B, 0x0D, 0xFC, 0x0B, 0x13, 0x01))
 		}, fakeJump);
 		const std::uintptr_t sprintfImmediate = Offsets::patch_sprintfArg.GetValue();
 		const auto sprintfArguments = MakeSite("localized-title argument count",
 			sprintfImmediate ? sprintfImmediate - 2 : 0, VersionedPattern<3>{
-				ExactPattern(MakeBytes(0x83, 0xC4, 0x0C)), UnavailablePattern<3>()
+				ExactPattern(MakeBytes(0x83, 0xC4, 0x0C)), ExactPattern(MakeBytes(0x83, 0xC4, 0x0C))
 			}, MakeBytes(0x83, 0xC4, 0x04));
 		const auto missingAddress = Offsets::hookAddr_MissingLocalization.GetValue();
 		std::array<std::uint8_t, 5> missingJump{};
@@ -50,11 +50,12 @@ namespace {
 			return;
 		}
 		const auto missingLocalization = MakeSite("missing-localization hook", missingAddress, VersionedPattern<5>{
-			ExactPattern(MakeBytes(0x68, 0x58, 0x3B, 0x1D, 0x01)), UnavailablePattern<5>()
+			ExactPattern(MakeBytes(0x68, 0x58, 0x3B, 0x1D, 0x01)), ExactPattern(MakeBytes(0x68, 0x78, 0x53, 0xFA, 0x00))
 		}, missingJump);
-		if (fakeTitlesAddress && ::GameVersion::Current() == Framework::GameVersion::Build::September2022)
+		// Each hook returns to the instruction after its stolen bytes in whichever build is running.
+		if (fakeTitlesAddress)
 			Offsets::hookBackAddr_FakeTitles.Get() = fakeTitlesAddress + 6;
-		if (missingAddress && ::GameVersion::Current() == Framework::GameVersion::Build::September2022)
+		if (missingAddress)
 			Offsets::hookBackAddr_missingLocalization.Get() = missingAddress + 5;
 
 		if (includeMissingLocalization)
@@ -160,10 +161,10 @@ void __declspec(naked) missingLocalizationHookFunc() {
 /// </summary>
 void CustomSongTitles::PatchSongListAppendages() {
 	const auto spaces = MakeSite("added spaces call", Offsets::patch_addedSpaces.GetValue(), VersionedPattern<5>{
-		ExactPattern(MakeBytes(0xE8, 0xD7, 0x64, 0xEB, 0xFF)), UnavailablePattern<5>()
+		ExactPattern(MakeBytes(0xE8, 0xD7, 0x64, 0xEB, 0xFF)), ExactPattern(MakeBytes(0xE8, 0x17, 0x51, 0xEB, 0xFF))
 	}, MakeBytes(0x58, 0x58, 0x90, 0x90, 0x90));
 	const auto numbers = MakeSite("added numbers call", Offsets::patch_addedNumbers.GetValue(), VersionedPattern<5>{
-		ExactPattern(MakeBytes(0xE8, 0x96, 0x64, 0xEB, 0xFF)), UnavailablePattern<5>()
+		ExactPattern(MakeBytes(0xE8, 0x96, 0x64, 0xEB, 0xFF)), ExactPattern(MakeBytes(0xE8, 0xD6, 0x50, 0xEB, 0xFF))
 	}, MakeBytes(0x5A, 0x5A, 0x90, 0x90, 0x90));
 	InstallSites("Song-list appendage patches", CaptureSites(ReadSite, spaces, numbers));
 }
