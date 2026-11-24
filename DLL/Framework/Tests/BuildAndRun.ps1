@@ -123,6 +123,7 @@ $Tests = @(
     @{ Name = 'ProfilePatchPolicyTests'; Sources = @() },
     @{ Name = 'LnpSitesTests';          Sources = @() },
     @{ Name = 'IniPatchTests';          Sources = @() },  # header-only DLL/IniPatch.hpp
+    @{ Name = 'InputGainPolicyTests';   Sources = @() },  # header-only DLL/InputGainPolicy.hpp
     @{ Name = 'UpdateNoticeTests';      Sources = @() },  # header-only version compare and message text
     @{ Name = 'StateMachineTests';      Sources = @('ModRegistry.cpp', 'ResourceLedger.cpp', 'HookWatchdog.cpp', 'StallMonitor.cpp', 'CommandRouter.cpp', 'MainThreadInbox.cpp', 'CommandCollisionDiagnostics.cpp', 'HudRegistry.cpp', 'MenuRegistry.cpp', 'DrawRegistry.cpp', 'AudioInput.cpp', 'SettingsSchema.cpp') }
 )
