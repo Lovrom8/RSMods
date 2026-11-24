@@ -7,7 +7,7 @@ public:
 	MOD_ID(InputGainMod)
 	Framework::SettingDefs Settings() const override;
 	bool IsEnabled(const Framework::ModContext&) const override { return false; }
-	static void OnProfileLoaded(unsigned int player);
+	static void OnProfileLoaded();
 };
 
 namespace InputGain {

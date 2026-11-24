@@ -41,10 +41,12 @@ Framework::SettingDefs InputGainMod::Settings() const {
 	};
 }
 
-void InputGainMod::OnProfileLoaded(unsigned int player) {
-	// Only the first primary profile load belongs to startup. Native clear always uses player zero.
+void InputGainMod::OnProfileLoaded() {
+	// Only the first profile load belongs to startup, and the native clear always uses player zero.
+	// The hook's argument is an untyped uintptr_t the original code called a profile, so nothing is
+	// read from it: gating on an unconfirmed player index would silently skip the check.
 	static bool checked = false;
-	if (player != 0 || checked)
+	if (checked)
 		return;
 	checked = true;
 
@@ -70,9 +72,10 @@ void InputGainMod::OnProfileLoaded(unsigned int player) {
 		return;
 	}
 
+	// Player zero, to match the gain the native clear acts on.
 	using IsOverridden = bool(__fastcall*)(unsigned int);
 	const InputGainPolicy::GainReading reading{ true, InputGain::ReadPrimaryGain(getGain),
-		reinterpret_cast<IsOverridden>(getOverride)(player) };
+		reinterpret_cast<IsOverridden>(getOverride)(0) };
 	const auto action = InputGainPolicy::Decide(reading, settingOn);
 	if (action == InputGainPolicy::GainAction::Clear)
 		reinterpret_cast<void(__cdecl*)()>(clearGain)();
