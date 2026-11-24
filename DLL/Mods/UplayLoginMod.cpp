@@ -1,5 +1,6 @@
 #include "../stdafx.h"
 #include "UplayLoginMod.hpp"
+#include "InputGainMod.hpp"
 #include "../GameState.hpp"
 #include "../SettingEdits.hpp"
 #include "../LnpSiteCheck.hpp"
@@ -217,12 +218,14 @@ namespace {
 		sourceFlow(service);
 	}
 
-	void __fastcall SourceLoaded(void* gameInterface, void*, uintptr_t profile) {
+	void __fastcall SourceLoaded(void* gameInterface, void*, uintptr_t player) {
 		if (sourceSignInStarted != 0) {
 			LOG_INFO("(UPLAY) Profile loaded after source sign-in " << GetTickCount64() - sourceSignInStarted << " ms" << std::endl);
 			sourceSignInStarted = 0;
 		}
-		sourceLoaded(gameInterface, profile);
+		// The options are loaded. Check them before the game notifies its audio listeners.
+		InputGainMod::OnProfileLoaded(player);
+		sourceLoaded(gameInterface, player);
 	}
 
 	void InstallSourceFlow() {

@@ -1,5 +1,29 @@
 [
   {
+    "key": "FixClampedInputGain",
+    "ini": {
+      "section": "Mod Settings",
+      "name": "FixClampedInputGain"
+    },
+    "type": "Bool",
+    "default": "on",
+    "label": "Fix Clamped Input Gain",
+    "hint": "Restore the default input gain at startup if calibration stored the maximum.\nKeeps the gain you chose with the in-game input gain override.",
+    "category": "Mod Settings",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null,
+    "editedBy": null,
+    "mod": "InputGainMod",
+    "entry": "FixClampedInputGain",
+    "heading": "Audio",
+    "entryTitle": "Fix Clamped Input Gain"
+  },
+  {
     "key": "SongDatesEnabled",
     "ini": {
       "section": "Toggle Switches",

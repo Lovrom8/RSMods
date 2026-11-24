@@ -4,6 +4,7 @@
 #include <new>
 #include <stdexcept>
 #include "../../../SettingEdits.hpp"
+#include "../../../Mods/InputGainMod.hpp"
 
 namespace {
 	std::atomic<bool> g_countingAllocations{ false };
@@ -759,6 +760,51 @@ extern "C" __declspec(naked) int __cdecl CheckNextThreadAbi() {
 	}
 }
 
+namespace {
+	const float syntheticGain = 0.625f;
+
+	__declspec(naked) void SyntheticGainGetter() {
+		__asm {
+			test ecx, ecx
+			jnz other_player
+			fld dword ptr [syntheticGain]
+			ret
+		other_player:
+			fldz
+			ret
+		}
+	}
+
+	void TestInputGainAbi() {
+		using InputGain::ReadPrimaryGain;
+		int stackDelta;
+		unsigned int canary;
+		float gain;
+		__asm {
+			push ebx
+			mov ebx, esp
+			push 13579BDFh
+			push offset SyntheticGainGetter
+			mov ecx, 1
+			call ReadPrimaryGain
+			add esp, 4
+
+			mov edx, [esp]
+			lea eax, [esp + 4]
+			sub eax, ebx
+			mov esp, ebx
+			pop ebx
+			mov stackDelta, eax
+			mov canary, edx
+			fstp gain
+		}
+		assert(stackDelta == 0 && canary == 0x13579BDF);
+		assert(gain == syntheticGain);
+		assert(ReadPrimaryGain(reinterpret_cast<uintptr_t>(&SyntheticGainGetter)) == syntheticGain);
+		puts("Primary input gain getter stack and ST0 return PASS");
+	}
+}
+
 int main(int argc, char** argv) {
 	const std::vector<BYTE> validPe = MakeTestPe32();
 	const auto syscallNumber = MemUtil::Detail::ExtractSyscallFromPE(validPe, "NtProtectVirtualMemory");
@@ -825,6 +871,7 @@ int main(int argc, char** argv) {
 		puts("Detection PASS");
 		return 0;
 	}
+	TestInputGainAbi();
 	assert(MemUtil::IsRunningOnWine());
 	MemUtil::LogMemoryProtectionPolicy();
 	const bool configuredWineApis = MemoryHostPolicy().useWineApis;

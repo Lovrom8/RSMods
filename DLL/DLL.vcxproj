@@ -380,6 +380,9 @@
     <ClCompile Include="Mods\SongDatesMod.cpp">
       <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="Mods\InputGainMod.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
     <ClCompile Include="ObjectUtil.cpp" />
     <ClCompile Include="CC\Effects\ShuffleTonesEffect.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../stdafx.h</PrecompiledHeaderFile>
@@ -600,6 +603,7 @@
     <ClInclude Include="Mods\MetronomeWav.hpp" />
     <ClInclude Include="Mods\MetronomeCountIn.hpp" />
     <ClInclude Include="Mods\SongDatesMod.hpp" />
+    <ClInclude Include="Mods\InputGainMod.hpp" />
     <ClInclude Include="Mods\SongDatesOfficial.inc" />
     <ClInclude Include="Framework\GamePhase.hpp" />
     <ClInclude Include="Framework\CommandCollisionDiagnostics.hpp" />
