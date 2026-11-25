@@ -317,6 +317,9 @@
     <ClCompile Include="Mods\InputGainMod.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
+    <ClCompile Include="Mods\SongSourceAuthorGroupsMod.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
     <ClCompile Include="MemUtil.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -959,6 +962,9 @@
       <Filter>Mods\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Mods\InputGainMod.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\SongSourceAuthorGroupsMod.hpp">
       <Filter>Mods\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Mods\SongDatesOfficial.inc">

@@ -1,5 +1,29 @@
 [
   {
+    "key": "AddAuthorSort",
+    "ini": {
+      "section": "Toggle Switches",
+      "name": "AddAuthorSort"
+    },
+    "type": "Bool",
+    "default": "on",
+    "label": "Group Custom Songs by Author in SOURCE",
+    "hint": "Groups custom songs by their package author inside the SOURCE sort, with a heading per author.\nThe name comes from each custom package's toolkit.version; official songs are grouped by source (RS:R DLC, RS:R, RS1 DLC, RS1).\nPackages are read as the game starts, so turning this on takes effect after restarting the game.",
+    "category": "Toggle Switches",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null,
+    "editedBy": null,
+    "mod": "SongSourceAuthorGroupsMod",
+    "entry": "AddAuthorSort",
+    "heading": "Songs & Profiles",
+    "entryTitle": "Group Custom Songs by Author in SOURCE"
+  },
+  {
     "key": "FixClampedInputGain",
     "ini": {
       "section": "Mod Settings",
