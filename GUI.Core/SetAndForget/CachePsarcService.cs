@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace RSMods.SetAndForget
 {
-    /// <summary>The cache.psarc operations <see cref="CachePsarcService"/> needs. A seam for tests.</summary>
+    /// <summary>The psarc operations <see cref="CachePsarcService"/> and <see cref="StaticPsarcService"/> need. A seam for tests.</summary>
     internal interface ICacheArchive
     {
         bool Contains(string archivePath, string entryName);
@@ -27,6 +27,7 @@ namespace RSMods.SetAndForget
         private const string AggregateGraphEntry = "sltsv1_aggregategraph.nt";
 
         private readonly ICacheArchive _archive;
+        private readonly StaticPsarcService _static;
 
         public CachePsarcService()
             : this(new PsarcCacheArchive())
@@ -36,6 +37,7 @@ namespace RSMods.SetAndForget
         internal CachePsarcService(ICacheArchive archive)
         {
             _archive = archive ?? throw new ArgumentNullException(nameof(archive));
+            _static = new StaticPsarcService(archive);
         }
 
         /// <summary>
@@ -92,18 +94,33 @@ namespace RSMods.SetAndForget
                 cache.Inject(Constants.DirectConnectStartupJson_CustomPath, Constants.Cache7_7zPath, Constants.DirectConnectStartupJson_InternalPath);
             });
 
+        /// <summary>
+        /// Replaces the Learn a Song options movie with one that shows a scroll bar and the visible range
+        /// for the other arrangements, in place of the game's (-N) and (+N) row markers, and the Score Attack
+        /// options movie with one that pages its other arrangements four at a time. The Score Attack movie
+        /// lives only in static.psarc, which a copy in cache.psarc does not override, so it is replaced there.
+        /// </summary>
+        public void AddArrangementScrolling()
+        {
+            Modify(cache => cache.Inject(
+                Constants.LASArrangementsGFX_CustomPath, Constants.Cache8_7zPath, Constants.LASArrangementsGFX_InternalPath));
+            _static.Replace(Constants.ScoreAttackArrangementsGFX_CustomPath, Constants.ScoreAttackArrangementsGFX_InternalPath);
+        }
+
         public void AddIncreasedVolumeWwiseBank() =>
             Modify(cache => cache.Inject(
                 Constants.WwiseInitBnk_CustomPath, Constants.Cache3_7zPath, Constants.WwiseInitBnk_InternalPath));
 
         /// <summary>
-        /// Restores the original cache archive from the backup created during the first unpack. Confirmation
-        /// and result presentation belong to the frontend; returning false means no backup was available.
+        /// Restores the original cache archive from the backup created during the first unpack, and static.psarc
+        /// if a mod changed it. Confirmation and result presentation belong to the frontend; returning false means
+        /// no backup was available.
         /// </summary>
         public bool RestoreDefaults()
         {
+            bool restoredStatic = _static.RestoreDefaults();
             if (!File.Exists(Constants.CacheBackupPath))
-                return false;
+                return restoredStatic;
 
             File.Copy(Constants.CacheBackupPath, Constants.CachePsarcPath, true);
             GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, typeof(CachePsarcService).Assembly, "RSMods.Core.Resources", ["tuning.database.json"]);
@@ -143,6 +160,8 @@ namespace RSMods.SetAndForget
             EnsureResource(Constants.TuningJSON_CustomPath, "tuning.database.json");
             EnsureResource(Constants.IntroGFX_MidPath, "introsequence_mid.gfx");
             EnsureResource(Constants.IntroGFX_MaxPath, "introsequence_max.gfx");
+            EnsureResource(Constants.LASArrangementsGFX_CustomPath, "las_songoptions_arrangements.gfx");
+            EnsureResource(Constants.ScoreAttackArrangementsGFX_CustomPath, "sa_songoptions_arrangements.gfx");
             EnsureResource(Constants.LocalizationCSV_CustomPath, "maingame.csv");
             EnsureResource(Constants.ExtendedMenuJson_CustomPath, "ui_menu_pillar_mission.database.json");
             EnsureResource(Constants.MainMenuJson_CustomPath, "ui_menu_pillar_main.database.json");

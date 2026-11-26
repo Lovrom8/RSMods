@@ -95,7 +95,9 @@
     <EmbeddedResource Include="Resources\introsequence_max.gfx" />
     <EmbeddedResource Include="Resources\introsequence_mid.gfx" />
     <EmbeddedResource Include="Resources\introsequence_original.gfx" />
+    <EmbeddedResource Include="Resources\las_songoptions_arrangements.gfx" />
     <EmbeddedResource Include="Resources\maingame.csv" />
+    <EmbeddedResource Include="Resources\sa_songoptions_arrangements.gfx" />
     <EmbeddedResource Include="Resources\sltsv1_aggregategraph.nt" />
     <EmbeddedResource Include="Resources\tuning.database.json" />
     <EmbeddedResource Include="Resources\ui_menu_pillar_main.database.json" />

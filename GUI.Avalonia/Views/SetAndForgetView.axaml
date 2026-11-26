@@ -85,6 +85,18 @@
 
                         <Grid Classes="action" ColumnDefinitions="*,Auto">
                             <StackPanel Spacing="2">
+                                <TextBlock Classes="actionname" Text="More than five arrangements" />
+                                <TextBlock Classes="hint" Text="Songs with more than five arrangements: Learn a Song and Score Attack list four other arrangements at a time, with a scroll bar and the visible range (e.g. 3-6 / 10)." />
+                            </StackPanel>
+                            <Button
+                                AutomationProperties.Name="Apply More than five arrangements"
+                                Command="{Binding AddArrangementScrollingCommand}"
+                                Content="Apply" />
+                        </Grid>
+                        <Border Classes="divider" />
+
+                        <Grid Classes="action" ColumnDefinitions="*,Auto">
+                            <StackPanel Spacing="2">
                                 <TextBlock Classes="actionname" Text="Fast Load" />
                                 <TextBlock Classes="hint" Text="Skips the intro screens. Checks your drive first: HDDs and unknown drives ask for confirmation, NVMe can opt into the fastest variant." />
                             </StackPanel>

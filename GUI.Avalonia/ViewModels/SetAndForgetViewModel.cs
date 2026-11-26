@@ -537,6 +537,13 @@ internal sealed partial class SetAndForgetViewModel(
         "Unable to update the game's files");
 
     [RelayCommand(CanExecute = nameof(CanRun))]
+    private Task AddArrangementScrollingAsync() => RunModActionAsync(
+        cache.AddArrangementScrolling,
+        "Adding arrangement scrolling...",
+        "Game files updated successfully.",
+        "Unable to update the game's files");
+
+    [RelayCommand(CanExecute = nameof(CanRun))]
     private Task AddDirectConnectAsync() => RunModActionAsync(
         cache.AddDirectConnectModeOption,
         "Adding Direct Connect mode...",

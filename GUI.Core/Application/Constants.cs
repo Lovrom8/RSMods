@@ -27,11 +27,14 @@ namespace RSMods.Data
         public static string TwitchTokenPath { get { return Path.Combine(BaseDirectory, "TwitchAuth.dat"); } }
         public static string TwitchRewardsPath { get { return Path.Combine(BaseDirectory, "TwitchEnabledEffects.xml"); } }
         public static string CachePsarcPath { get { return Path.Combine(RSFolder, "cache.psarc"); } }
+        public static string StaticPsarcPath { get { return Path.Combine(RSFolder, "static.psarc"); } }
+        public static string StaticBackupPath { get { return Path.Combine(RSFolder, "static.rsmods.bak"); } }
         public static string WorkFolder { get { return Path.Combine(BaseDirectory, "Temp"); } }
         public static string CachePcPath { get { return Path.Combine(WorkFolder, "cache_psarc_RS2014_Pc"); } }
         public static string Cache3_7zPath { get { return Path.Combine(CachePcPath, "cache3.7z"); } }
         public static string Cache4_7zPath { get { return Path.Combine(CachePcPath, "cache4.7z"); } }
         public static string Cache7_7zPath { get { return Path.Combine(CachePcPath, "cache7.7z"); } }
+        public static string Cache8_7zPath { get { return Path.Combine(CachePcPath, "cache8.7z"); } }
         public static string WwiseInitBnk_InternalPath { get { return Path.Combine("audio", "windows", "init.bnk"); } }
         public static string WwiseInitBnk_CustomPath { get { return Path.Combine(CustomModsFolder, "init.bnk"); } }
         public static string LocalizationCSV_InternalPath { get { return Path.Combine("localization", "maingame.csv"); } }
@@ -43,6 +46,10 @@ namespace RSMods.Data
         public static string IntroGFX_CustomPath { get { return Path.Combine(CustomModsFolder, "introsequence.gfx"); } }
         public static string IntroGFX_MaxPath { get { return Path.Combine(CustomModsFolder, "introsequence_max.gfx"); } }
         public static string IntroGFX_MidPath { get { return Path.Combine(CustomModsFolder, "introsequence_mid.gfx"); } }
+        public static string LASArrangementsGFX_InternalPath { get { return Path.Combine("gfxassets", "views", "las_songoptions.gfx"); } }
+        public static string LASArrangementsGFX_CustomPath { get { return Path.Combine(CustomModsFolder, "las_songoptions_arrangements.gfx"); } }
+        public static string ScoreAttackArrangementsGFX_InternalPath { get { return Path.Combine("gfxassets", "views", "sa_songoptions.gfx"); } }
+        public static string ScoreAttackArrangementsGFX_CustomPath { get { return Path.Combine(CustomModsFolder, "sa_songoptions_arrangements.gfx"); } }
         public static string CacheBackupPath { get { return Path.Combine(RSFolder, "cache.bak"); } }
         public static string ExtendedMenuJson_CustomPath { get { return Path.Combine(CustomModsFolder, "ui_menu_pillar_mission.database.json"); } }
         public static string ExtendedMenuJson_InternalPath { get { return Path.Combine("manifests", "ui_menu_pillar_mission.database.json"); } }
